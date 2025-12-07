@@ -9,7 +9,7 @@ ENV LANG C.UTF-8
 # Variabili per la connessione al DB (Cruciali per entrypoint.sh)
 ENV DB_HOST db
 ENV DB_PORT 5432
-ENV DB_USER odoo_user
+ENV DB_USER odoo
 ENV DB_PASSWORD odoo_password
 
 # 2. Aggiornamento sistema e installazione dipendenze di sistema (come ROOT)
@@ -81,6 +81,4 @@ WORKDIR /opt/odoo/src
 # 10. ENTRYPOINT e CMD
 # Usa ENTRYPOINT per eseguire lo script di attesa che bloccherà l'avvio di Odoo finché il DB non è pronto
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-
-# CMD passerà gli argomenti a entrypoint.sh
-CMD ["-i", "base", "--without-demo", "all"]
+CMD ["-c", "/etc/odoo/odoo.conf"]
