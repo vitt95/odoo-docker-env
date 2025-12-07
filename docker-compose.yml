@@ -1,61 +1,53 @@
-version: '3.7' # Puoi rimuovere questa riga se ti dà fastidio, ma la lascio per chiarezza
+version: '3.7'
 
 services:
-  # Servizio Database PostgreSQL
   db:
-    image: postgres:16-alpine 
+    image: postgres:16-alpine
     restart: unless-stopped
     environment:
-      - POSTGRES_DB=odoo_db
-      - POSTGRES_USER=odoo_user
-      - POSTGRES_PASSWORD=odoo_password # ⚠️ Cambia questa password!
+      POSTGRES_USER: odoo
+      POSTGRES_PASSWORD: odoo_password
+      POSTGRES_DB: postgres
     volumes:
       - odoo17-database-data:/var/lib/postgresql/data
 
-  # Servizio Web Odoo (Ora costruito da zero)
   odoo:
     build:
-      context: . 
-      dockerfile: Dockerfile 
+      context: .
+      dockerfile: Dockerfile
     restart: unless-stopped
     depends_on:
       - db
     ports:
-      - "8069:8069" # Odoo Web: http://localhost:8069
-      - "8072:8072" # Long Polling
+      - "8069:8069"   # Odoo web
+      - "8072:8072"   # Odoo longpolling
     environment:
-      - DB_HOST=db # Variabile usata da entrypoint.sh (nome del servizio)
-      - DB_USER=odoo_user # Variabile usata da entrypoint.sh
-      - DB_PASSWORD=odoo_password # Variabile usata da entrypoint.sh
-      - ODOO_MASTER_PASSWD=odoo # ⚠️ Password Master di Odoo (IMPORTANTE: Cambiala!)
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: odoo           # deve corrispondere a POSTGRES_USER
+      DB_PASSWORD: odoo_password
+      ODOO_MASTER_PASSWD: odoo
     volumes:
-      # Mappiamo i dati web (sessioni, allegati)
       - odoo17-web-data:/var/lib/odoo
-      # Mappiamo in lettura/scrittura il codice sorgente (per la modifica)
-      - ./src:/opt/odoo/src 
-      # Mappiamo in lettura/scrittura i moduli custom
+      - ./src:/opt/odoo/src
       - ./custom_addons:/mnt/extra-addons
-      # Mappiamo in lettura il file di configurazione
       - ./config/odoo.conf:/etc/odoo/odoo.conf
-    # 💥 RIMOZIONE DI "command": Questo assicura che venga eseguito l'ENTRYPOINT e il CMD del Dockerfile.
-    # command: python3 /opt/odoo/src/odoo-bin -c /etc/odoo/odoo.conf
 
-  # Servizio Database Explorer (pgAdmin 4)
   pgadmin:
     image: dpage/pgadmin4
     restart: unless-stopped
     depends_on:
       - db
     ports:
-      - "5050:80" # pgAdmin Web: http://localhost:5050
+      - "5050:80"
     environment:
-      - PGADMIN_DEFAULT_EMAIL=admin@odoo.com # (Risolto l'errore .local)
-      - PGADMIN_DEFAULT_PASSWORD=admin_password 
-      - PGADMIN_CONFIG_SERVER_MODE=False
+      PGADMIN_DEFAULT_EMAIL: admin@odoo.com
+      PGADMIN_DEFAULT_PASSWORD: admin_password
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
     volumes:
       - pgadmin-data:/var/lib/pgadmin
-      
-# Definizione dei volumi per la persistenza dei dati
+      - ./config/pgadmin/servers.json:/pgadmin4/servers.json
+
 volumes:
   odoo17-web-data:
   odoo17-database-data:
