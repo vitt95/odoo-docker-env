@@ -1,0 +1,12 @@
+// =============================================================================
+// Premium components — Card
+// =============================================================================
+// Lighter borders + softer corners. No forced shadow (Odoo uses .card in dense
+// contexts too); elevation is opt-in via .shadow-* utilities.
+// =============================================================================
+
+.card {
+    --bs-card-border-radius: var(--pui-radius-lg);
+    --bs-card-border-color: var(--pui-color-border);
+    --bs-card-inner-border-radius: calc(var(--pui-radius-lg) - 1px);
+}

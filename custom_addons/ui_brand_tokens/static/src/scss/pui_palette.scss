@@ -1,0 +1,99 @@
+// =============================================================================
+// Premium skin — Palette (pure SCSS variables, single source of truth)
+// =============================================================================
+// Only $pui-* variable definitions: no CSS output, no Odoo helper calls, no
+// $o-* mapping. Because it emits nothing and depends on nothing, it is safe to
+// include in ANY bundle (backend Premium bundle AND web.assets_frontend for the
+// login). It feeds:
+//   - pui_tokens.premium.scss   (emits the --pui-* custom properties)
+//   - pui_core_map.premium.scss (maps onto Odoo $o-*, backend only)
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// COLOR — cool neutral ramp + indigo accent (Linear/Stripe/Vercel register)
+// -----------------------------------------------------------------------------
+$pui-white: #ffffff;
+$pui-black: #000000;
+
+$pui-gray-100: #f7f8fa; // app background
+$pui-gray-200: #eef0f4; // subtle fills, hover surfaces
+$pui-gray-300: #e3e6ec; // borders (default)
+$pui-gray-400: #cdd2db; // borders (strong), disabled
+$pui-gray-500: #9aa1ae; // muted text, placeholders
+$pui-gray-600: #6b7280; // secondary text
+$pui-gray-700: #3f4653; // body text
+$pui-gray-800: #262b35; // strong text
+$pui-gray-900: #14181f; // headings
+
+$pui-accent: #5b5bd6; // brand / primary action
+$pui-accent-rgb: 91, 91, 214; // for rgba() glows/focus rings
+$pui-success: #16a34a;
+$pui-info: #0ea5e9;
+$pui-warning: #f59e0b;
+$pui-danger: #e5484d;
+
+// -----------------------------------------------------------------------------
+// RADIUS
+// -----------------------------------------------------------------------------
+$pui-radius-sm: 6px;
+$pui-radius-md: 8px;
+$pui-radius-lg: 12px;
+$pui-radius-pill: 999px;
+
+// -----------------------------------------------------------------------------
+// TYPOGRAPHY — system stack, Inter first when present (no web font loaded)
+// -----------------------------------------------------------------------------
+$pui-font-sans: ("Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Ubuntu, "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji");
+$pui-font-heading: ("Inter", "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+$pui-font-mono: (SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace);
+
+$pui-font-size-xs: 12px;
+$pui-font-size-sm: 13px;
+$pui-font-size-base: 14px; // keep Odoo density contract
+$pui-font-size-lg: 16px;
+$pui-font-size-xl: 20px;
+
+$pui-font-weight-normal: 400;
+$pui-font-weight-medium: 500;
+$pui-font-weight-semibold: 600;
+$pui-font-weight-bold: 700;
+
+$pui-line-tight: 1.25;
+$pui-line-base: 1.5;
+$pui-line-loose: 1.7;
+
+// -----------------------------------------------------------------------------
+// SPACING — component-level scale (does NOT touch $o-spacer grid unit)
+// -----------------------------------------------------------------------------
+$pui-space-1: 4px;
+$pui-space-2: 8px;
+$pui-space-3: 12px;
+$pui-space-4: 16px;
+$pui-space-5: 20px;
+$pui-space-6: 24px;
+$pui-space-8: 32px;
+$pui-space-10: 40px;
+
+// -----------------------------------------------------------------------------
+// ELEVATION — soft, low-contrast shadows
+// -----------------------------------------------------------------------------
+$pui-shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.06);
+$pui-shadow-md: 0 4px 12px rgba(16, 24, 40, 0.08);
+$pui-shadow-lg: 0 12px 32px rgba(16, 24, 40, 0.12);
+
+// -----------------------------------------------------------------------------
+// MOTION — short, near-imperceptible
+// -----------------------------------------------------------------------------
+$pui-motion-fast: 120ms;
+$pui-motion-base: 180ms;
+$pui-motion-slow: 260ms;
+$pui-ease: cubic-bezier(0.4, 0, 0.2, 1); // standard (in-out)
+$pui-ease-out: cubic-bezier(0.16, 1, 0.3, 1); // decelerate — entrances
+$pui-ease-in: cubic-bezier(0.4, 0, 1, 1); // accelerate — exits
+
+// -----------------------------------------------------------------------------
+// LAYOUT — shell dimensions (consumed by the Premium Sidebar/Shell, Fase 6)
+// -----------------------------------------------------------------------------
+$pui-sidebar-width: 248px;
+$pui-sidebar-width-collapsed: 64px;
+$pui-navbar-height: 48px;

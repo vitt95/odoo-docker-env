@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Premium login (pilot). The login is a server-side QWeb template served
+        with web.assets_frontend (not the backend Premium bundle) and rendered
+        pre-authentication, so:
+          - styling comes from a frontend stylesheet scoped under .pui-login;
+          - the skin is chosen instance-wide via the ir.config_parameter
+            'pui.login_skin' (no per-user preference is available here).
+
+        We replace only the layout container of web.login_layout, keeping the
+        functional form untouched: the form (t-out="0"), the company logo, the
+        footer flags (disable_footer / disable_database_manager) and all field
+        names/actions are preserved. When login_skin != 'premium' the original
+        Odoo markup is rendered verbatim (Classic stays byte-for-byte).
+    -->
+    <template id="login_layout_premium" inherit_id="web.login_layout">
+        <xpath expr="//div[hasclass('container')]" position="replace">
+            <t t-set="login_skin"
+               t-value="request.env['ir.config_parameter'].sudo().get_param('pui.login_skin', 'premium')"/>
+
+            <t t-if="login_skin == 'premium'">
+                <div class="pui-login">
+                    <div class="pui-login__card">
+                        <div class="pui-login__logo">
+                            <img t-attf-src="/web/binary/company_logo{{ '?dbname='+db if db else '' }}"
+                                 alt="Logo"/>
+                        </div>
+                        <t t-out="0"/>
+                        <div class="pui-login__footer" t-if="not disable_footer">
+                            <t t-if="not disable_database_manager">
+                                <a href="/web/database/manager">Manage Databases</a>
+                                <span class="pui-login__dot">·</span>
+                            </t>
+                            <a href="https://www.odoo.com?utm_source=db&amp;utm_medium=auth" target="_blank">
+                                Powered by <span>Odoo</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </t>
+
+            <t t-else="">
+                <!-- Classic: original web.login_layout container, verbatim. -->
+                <div class="container py-5">
+                    <div t-attf-class="card border-0 mx-auto bg-100 {{login_card_classes}} o_database_list" style="max-width: 300px;">
+                        <div class="card-body">
+                            <div class="text-center pb-3 border-bottom mb-4">
+                                <img t-attf-src="/web/binary/company_logo{{ '?dbname='+db if db else '' }}" alt="Logo" style="max-height:120px; max-width: 100%; width:auto"/>
+                            </div>
+                            <t t-out="0"/>
+                            <div class="text-center small mt-4 pt-3 border-top" t-if="not disable_footer">
+                                <t t-if="not disable_database_manager">
+                                    <a class="border-end pe-2 me-1" href="/web/database/manager">Manage Databases</a>
+                                </t>
+                                <a href="https://www.odoo.com?utm_source=db&amp;utm_medium=auth" target="_blank">Powered by <span>Odoo</span></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </xpath>
+    </template>
+</odoo>

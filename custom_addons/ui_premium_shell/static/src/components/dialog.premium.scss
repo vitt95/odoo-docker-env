@@ -1,0 +1,30 @@
+// =============================================================================
+// Premium components — Dialog / Modal
+// =============================================================================
+// Odoo's Dialog (OWL) renders Bootstrap .modal markup. Tune the container:
+// softer corners, soft elevation, token borders on header/footer.
+// =============================================================================
+
+.modal-content {
+    --bs-modal-border-radius: var(--pui-radius-lg);
+    --bs-modal-border-color: var(--pui-color-border);
+
+    border-radius: var(--pui-radius-lg);
+    box-shadow: var(--pui-shadow-lg);
+    overflow: hidden; // keep header/footer corners clipped to the radius
+}
+
+.modal-header,
+.modal-footer {
+    border-color: var(--pui-color-border);
+}
+
+// Title + softer backdrop (Fase 14 refinements).
+.modal-title {
+    font-weight: var(--pui-font-weight-semibold);
+    color: var(--pui-color-heading);
+}
+
+.modal-backdrop.show {
+    opacity: 0.4;
+}

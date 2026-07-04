@@ -1,0 +1,61 @@
+// =============================================================================
+// Premium skin — map the $pui-* palette onto Odoo core ($o-*)
+// =============================================================================
+// BACKEND ONLY. Loaded (after pui_palette.scss, before primary_variables.scss)
+// exclusively in ui_theme_engine.assets_web_premium — NEVER in the frontend
+// bundle, so the portal/website/login keep Odoo's default $o-* unless we opt
+// them in explicitly.
+//
+// All $o-* carry `!default`; assigning here wins with zero !important and
+// cascades to Bootstrap ($primary, $gray-*, $border-radius, ...) through
+// web/static/src/scss/bootstrap_overridden.scss.
+//
+// Only high-leverage, low-risk levers (color, typography family, radius).
+// $o-spacer (grid) is deliberately left untouched to preserve Odoo's layout
+// contract; component spacing uses --pui-space-* per-component in later phases.
+// =============================================================================
+
+// Grays -> borders, surfaces, muted text, app background
+$o-gray-100: $pui-gray-100;
+$o-gray-200: $pui-gray-200;
+$o-gray-300: $pui-gray-300;
+$o-gray-400: $pui-gray-400;
+$o-gray-500: $pui-gray-500;
+$o-gray-600: $pui-gray-600;
+$o-gray-700: $pui-gray-700;
+$o-gray-800: $pui-gray-800;
+$o-gray-900: $pui-gray-900;
+
+// Brand / primary -> $primary, links, buttons, active states (via darken())
+$o-community-color: $pui-accent;
+$o-brand-odoo: $pui-accent;
+$o-brand-primary: $pui-accent;
+
+// Semantic
+$o-success: $pui-success;
+$o-info: $pui-info;
+$o-warning: $pui-warning;
+$o-danger: $pui-danger;
+
+// Typography family (font size kept at Odoo default for density)
+$o-system-fonts: $pui-font-sans;
+$o-headings-font-family: o-add-unicode-support-font($pui-font-heading);
+
+// Radius
+$o-border-radius: o-to-rem($pui-radius-md);
+$o-border-radius-sm: o-to-rem($pui-radius-sm);
+$o-border-radius-lg: o-to-rem($pui-radius-lg);
+
+// Navbar -> light premium top bar. Apps now live in the sidebar, so the bar
+// becomes a clean surface with dark text and an accent active state (instead
+// of the full-bleed brand-colored bar). These $o-navbar-* vars come from
+// navbar.variables.scss (loaded after primary_variables, i.e. after this file),
+// so assigning here wins their `!default`.
+$o-navbar-height: 48px;
+$o-navbar-background: $pui-white;
+$o-navbar-border-bottom: 1px solid $pui-gray-300;
+$o-navbar-entry-color: $pui-gray-600;
+$o-navbar-entry-color--hover: $pui-gray-900;
+$o-navbar-entry-color--active: $pui-accent;
+$o-navbar-entry-bg--active: rgba($pui-accent, 0.10);
+$o-navbar-brand-color: $pui-gray-900;

@@ -1,0 +1,50 @@
+// =============================================================================
+// Premium — List View
+// =============================================================================
+// Token-driven restyle of the compiler-generated list table via existing
+// classes + Odoo/Bootstrap table CSS variables. No DOM changes.
+//
+// Odoo's table var prefix is inconsistent across core (some `--bs-table-*`,
+// some `--table-*`), so hover/active/border are set under both names; the
+// unused one is inert.
+// =============================================================================
+
+.o_list_view {
+    // Clean, sticky header on a surface background.
+    .o_list_renderer {
+        --ListRenderer-thead-bg-color: var(--pui-color-surface);
+        --ListRenderer-thead-border-end-color: var(--pui-color-border);
+    }
+
+    .o_list_renderer thead {
+        border-bottom: 2px solid var(--pui-color-border);
+
+        th {
+            color: var(--pui-color-secondary);
+            font-weight: var(--pui-font-weight-semibold);
+            font-size: var(--pui-font-size-sm);
+        }
+    }
+
+    // Row hover / selected / borders (both prefixes for safety).
+    .o_list_table {
+        --bs-table-hover-bg: var(--pui-color-surface-sunken);
+        --table-hover-bg: var(--pui-color-surface-sunken);
+        --bs-table-active-bg: var(--pui-accent-soft);
+        --table-active-bg: var(--pui-accent-soft);
+        --bs-table-border-color: var(--pui-color-border);
+        --table-border-color: var(--pui-color-border);
+    }
+
+    // Editing row: quiet accent tint instead of the default gray.
+    .o_list_table .o_data_row.o_selected_row > .o_data_cell {
+        background-color: rgba(var(--pui-accent-rgb), 0.04);
+    }
+
+    // Footer aggregates.
+    .o_list_table tfoot {
+        border-top: 2px solid var(--pui-color-border);
+        font-weight: var(--pui-font-weight-semibold);
+        color: var(--pui-color-heading);
+    }
+}

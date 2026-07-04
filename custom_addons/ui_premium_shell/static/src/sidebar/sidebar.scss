@@ -1,0 +1,175 @@
+// =============================================================================
+// Premium — App Sidebar
+// =============================================================================
+// Fixed left rail, token-driven. Present only in the Premium bundle.
+// =============================================================================
+
+.pui-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000; // above content, below dialogs/backdrops
+    display: flex;
+    flex-direction: column;
+    width: var(--pui-sidebar-width);
+    height: 100vh;
+    padding: var(--pui-space-3);
+    background: var(--pui-color-surface);
+    border-right: 1px solid var(--pui-color-border);
+    font-family: var(--pui-font-sans);
+    transition: width var(--pui-motion-base) var(--pui-ease);
+
+    // --- Brand -------------------------------------------------------------
+    &__brand {
+        display: flex;
+        align-items: center;
+        height: var(--pui-navbar-height);
+        padding: 0 var(--pui-space-2);
+        margin-bottom: var(--pui-space-2);
+    }
+
+    &__brand-logo {
+        max-height: 28px;
+        max-width: 100%;
+        width: auto;
+    }
+
+    // --- Nav ---------------------------------------------------------------
+    &__nav {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    &__item {
+        display: flex;
+        align-items: center;
+        gap: var(--pui-space-3);
+        width: 100%;
+        padding: var(--pui-space-2) var(--pui-space-3);
+        border: 0;
+        border-radius: var(--pui-radius-md);
+        background: transparent;
+        color: var(--pui-color-secondary);
+        font-size: var(--pui-font-size-base);
+        font-weight: var(--pui-font-weight-medium);
+        text-align: left;
+        cursor: pointer;
+        transition:
+            background-color var(--pui-motion-fast) var(--pui-ease),
+            color var(--pui-motion-fast) var(--pui-ease);
+
+        &:hover {
+            background: var(--pui-color-surface-sunken);
+            color: var(--pui-color-heading);
+        }
+
+        &:focus-visible {
+            outline: none;
+            box-shadow: var(--pui-focus-ring);
+        }
+
+        &--active {
+            background: var(--pui-accent-soft);
+            color: var(--pui-color-accent);
+
+            .pui-sidebar__icon-fallback {
+                background: var(--pui-color-accent);
+                color: #fff;
+            }
+        }
+    }
+
+    &__icon {
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+
+        img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+    }
+
+    &__icon-fallback {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        border-radius: var(--pui-radius-sm);
+        background: var(--pui-color-surface-sunken);
+        color: var(--pui-color-secondary);
+        font-size: var(--pui-font-size-xs);
+        font-weight: var(--pui-font-weight-bold);
+    }
+
+    &__label {
+        flex: 1 1 auto;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    // --- Footer / collapse -------------------------------------------------
+    &__footer {
+        margin-top: var(--pui-space-2);
+        padding-top: var(--pui-space-2);
+        border-top: 1px solid var(--pui-color-border);
+    }
+
+    &__collapse {
+        display: flex;
+        align-items: center;
+        gap: var(--pui-space-3);
+        width: 100%;
+        padding: var(--pui-space-2) var(--pui-space-3);
+        border: 0;
+        border-radius: var(--pui-radius-md);
+        background: transparent;
+        color: var(--pui-color-muted);
+        font-size: var(--pui-font-size-sm);
+        cursor: pointer;
+        transition: background-color var(--pui-motion-fast) var(--pui-ease);
+
+        &:hover {
+            background: var(--pui-color-surface-sunken);
+            color: var(--pui-color-text);
+        }
+
+        i {
+            width: 24px;
+            text-align: center;
+        }
+    }
+
+    // --- Collapsed state ---------------------------------------------------
+    &--collapsed {
+        width: var(--pui-sidebar-width-collapsed);
+
+        .pui-sidebar__label {
+            display: none;
+        }
+
+        .pui-sidebar__item,
+        .pui-sidebar__collapse {
+            justify-content: center;
+            gap: 0;
+        }
+    }
+}
+
+// Mobile (<md): hide the fixed sidebar; native Odoo nav takes over (the shell
+// media query drops the body offset and un-hides the navbar apps menu).
+@media (max-width: 767.98px) {
+    .pui-sidebar {
+        display: none;
+    }
+}

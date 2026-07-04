@@ -1,1 +1,23 @@
+# --- Secrets & generated config (NEVER commit) ---
+.env
+config/odoo.conf
+*.pem
+
+# --- Odoo source: cloned into ./core, bind-mounted, never tracked (~1.2G) ---
 /src
+/core
+
+# --- Runtime artifacts ---
+/logs/*
+!/logs/.gitkeep
+/backups/*
+!/backups/.gitkeep
+/enterprise/*
+!/enterprise/.gitkeep
+/filestore/
+
+# --- Python ---
+__pycache__/
+*.pyc
+*.pyo
+.tokensave

@@ -1,0 +1,25 @@
+// =============================================================================
+// Premium components — Dropdown menus
+// =============================================================================
+// Odoo dropdowns render the Bootstrap .dropdown-menu markup, so tuning the
+// --bs-dropdown-* variables reaches every menu (navbar, cog, user menu, ...).
+// =============================================================================
+
+.dropdown-menu {
+    --bs-dropdown-border-radius: var(--pui-radius-md);
+    --bs-dropdown-border-color: var(--pui-color-border);
+    --bs-dropdown-link-active-bg: var(--pui-color-accent);
+    --bs-dropdown-link-active-color: #fff;
+    --bs-dropdown-link-hover-bg: var(--pui-color-surface-sunken);
+    --bs-dropdown-item-padding-y: var(--pui-space-2);
+
+    border-radius: var(--pui-radius-md);
+    box-shadow: var(--pui-shadow-md);
+}
+
+.dropdown-item {
+    border-radius: var(--pui-radius-sm);
+    transition:
+        background-color var(--pui-motion-fast) var(--pui-ease),
+        color var(--pui-motion-fast) var(--pui-ease);
+}

@@ -1,0 +1,32 @@
+[options]
+; ===========================================================================
+; Common Odoo configuration (mode-agnostic).
+; install.sh renders this template into config/odoo.conf, substituting the
+; secrets below from .env. The rendered file is gitignored.
+; Per-mode options (workers, dev reload, log level, proxy) are passed as CLI
+; flags by docker-compose.<mode>.yml — they override anything set here.
+; The stack runs Odoo from source (odoo-bin), bypassing the official entrypoint
+; that used to inject the DB connection from HOST/USER/PASSWORD env vars. So
+; db_* are set here, rendered from .env by install.sh into a gitignored,
+; chmod 600 file.
+; ===========================================================================
+
+; Master password for the database manager (create / backup / restore / dup).
+admin_passwd = $ODOO_ADMIN_PASSWD
+
+; DB connection (rendered from .env; was previously injected by the entrypoint).
+db_host = db
+db_port = 5432
+db_user = $POSTGRES_USER
+db_password = $POSTGRES_PASSWORD
+
+; Module search paths: Odoo 18 core (from ./core bind-mount), then custom,
+; then optional enterprise.
+addons_path = /opt/odoo/core/odoo/addons,/opt/odoo/core/addons,/mnt/extra-addons,/mnt/enterprise
+
+; Persistent filestore (attachments) and sessions.
+data_dir = /var/lib/odoo
+
+; Log to stdout so Docker captures it (12-factor). Rotation handled by the
+; json-file logging driver in compose.
+logfile = None

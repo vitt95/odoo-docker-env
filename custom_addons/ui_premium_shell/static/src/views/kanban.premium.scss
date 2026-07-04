@@ -1,0 +1,52 @@
+// =============================================================================
+// Premium — Kanban View
+// =============================================================================
+// Token-driven restyle of the compiler-generated kanban via existing classes +
+// CSS variables. No DOM changes. The card INNER markup is defined by the view
+// arch, so we only style the record container (.o_kanban_record).
+// =============================================================================
+
+.o_kanban_view {
+    // Board canvas = app background.
+    --Kanban-background: var(--pui-color-bg);
+
+    // Cards: from Odoo's stacked/shared-border look to separated premium cards.
+    // (Default uses `margin-bottom: -border` so cards share edges; we give them
+    // a gap, radius, soft shadow and a hover lift instead.)
+    .o_kanban_renderer .o_kanban_record:not(.o_kanban_ghost):not(.o_legacy_kanban_record) {
+        margin: 0 0 var(--pui-space-3);
+        border: 1px solid var(--pui-color-border);
+        border-radius: var(--pui-radius-lg);
+        background-color: var(--pui-color-surface);
+        box-shadow: var(--pui-shadow-sm);
+        transition:
+            box-shadow var(--pui-motion-base) var(--pui-ease),
+            border-color var(--pui-motion-fast) var(--pui-ease),
+            transform var(--pui-motion-fast) var(--pui-ease);
+
+        &:first-of-type {
+            margin-top: 1px;
+        }
+
+        &:hover {
+            border-color: var(--pui-color-border-strong);
+            box-shadow: var(--pui-shadow-md);
+            transform: translateY(-1px);
+        }
+
+        &:focus-visible {
+            outline: none;
+            box-shadow: var(--pui-focus-ring);
+        }
+    }
+
+    // Column header.
+    .o_kanban_header .o_column_title {
+        color: var(--pui-color-heading);
+        font-weight: var(--pui-font-weight-semibold);
+    }
+
+    .o_kanban_header .o_kanban_counter {
+        color: var(--pui-color-secondary);
+    }
+}

@@ -1,0 +1,4 @@
+# Extra Python dependencies required by custom addons (one per line).
+# Installed into the Odoo image at build time. Keep empty if none are needed.
+openpyxl
+requests

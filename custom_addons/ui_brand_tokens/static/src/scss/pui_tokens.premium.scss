@@ -1,0 +1,88 @@
+// =============================================================================
+// Premium skin — Design Tokens as CSS custom properties (--pui-*)
+// =============================================================================
+// Runtime layer of the hybrid. Emitted on :root from the same $pui-* SCSS
+// source defined in pui_variables.premium.scss (loaded earlier in this bundle),
+// so core ($o-*) and Premium components share one source of truth.
+//
+// These are consumed by Premium components (Sidebar, Shell, redesigned views).
+// Defining custom properties has no visual effect until a component references
+// them — this file alone does not alter Classic-looking core markup.
+// =============================================================================
+
+:root {
+    // --- Color -------------------------------------------------------------
+    --pui-color-bg: #{$pui-gray-100};
+    --pui-color-surface: #{$pui-white};
+    --pui-color-surface-sunken: #{$pui-gray-200};
+    --pui-color-text: #{$pui-gray-700};
+    --pui-color-heading: #{$pui-gray-900};
+    --pui-color-secondary: #{$pui-gray-600};
+    --pui-color-muted: #{$pui-gray-500};
+    --pui-color-border: #{$pui-gray-300};
+    --pui-color-border-strong: #{$pui-gray-400};
+
+    --pui-color-accent: #{$pui-accent};
+    --pui-accent-rgb: #{$pui-accent-rgb};
+    // Derived accent utilities (single source -> consistency, DRY).
+    --pui-accent-soft: #{rgba($pui-accent, 0.10)}; // subtle tint (active/hover bg)
+    --pui-focus-ring: 0 0 0 3px #{rgba($pui-accent, 0.25)}; // one focus ring everywhere
+    --pui-color-success: #{$pui-success};
+    --pui-color-info: #{$pui-info};
+    --pui-color-warning: #{$pui-warning};
+    --pui-color-danger: #{$pui-danger};
+
+    // --- Radius ------------------------------------------------------------
+    --pui-radius-sm: #{$pui-radius-sm};
+    --pui-radius-md: #{$pui-radius-md};
+    --pui-radius-lg: #{$pui-radius-lg};
+    --pui-radius-pill: #{$pui-radius-pill};
+
+    // --- Spacing -----------------------------------------------------------
+    --pui-space-1: #{$pui-space-1};
+    --pui-space-2: #{$pui-space-2};
+    --pui-space-3: #{$pui-space-3};
+    --pui-space-4: #{$pui-space-4};
+    --pui-space-5: #{$pui-space-5};
+    --pui-space-6: #{$pui-space-6};
+    --pui-space-8: #{$pui-space-8};
+    --pui-space-10: #{$pui-space-10};
+
+    // --- Typography --------------------------------------------------------
+    --pui-font-sans: #{inspect($pui-font-sans)};
+    --pui-font-heading: #{inspect($pui-font-heading)};
+    --pui-font-mono: #{inspect($pui-font-mono)};
+
+    --pui-font-size-xs: #{$pui-font-size-xs};
+    --pui-font-size-sm: #{$pui-font-size-sm};
+    --pui-font-size-base: #{$pui-font-size-base};
+    --pui-font-size-lg: #{$pui-font-size-lg};
+    --pui-font-size-xl: #{$pui-font-size-xl};
+
+    --pui-font-weight-normal: #{$pui-font-weight-normal};
+    --pui-font-weight-medium: #{$pui-font-weight-medium};
+    --pui-font-weight-semibold: #{$pui-font-weight-semibold};
+    --pui-font-weight-bold: #{$pui-font-weight-bold};
+
+    --pui-line-tight: #{$pui-line-tight};
+    --pui-line-base: #{$pui-line-base};
+    --pui-line-loose: #{$pui-line-loose};
+
+    // --- Elevation ---------------------------------------------------------
+    --pui-shadow-sm: #{$pui-shadow-sm};
+    --pui-shadow-md: #{$pui-shadow-md};
+    --pui-shadow-lg: #{$pui-shadow-lg};
+
+    // --- Motion ------------------------------------------------------------
+    --pui-motion-fast: #{$pui-motion-fast};
+    --pui-motion-base: #{$pui-motion-base};
+    --pui-motion-slow: #{$pui-motion-slow};
+    --pui-ease: #{$pui-ease};
+    --pui-ease-out: #{$pui-ease-out};
+    --pui-ease-in: #{$pui-ease-in};
+
+    // --- Layout (shell dimensions, consumed in Fase 6) ---------------------
+    --pui-sidebar-width: #{$pui-sidebar-width};
+    --pui-sidebar-width-collapsed: #{$pui-sidebar-width-collapsed};
+    --pui-navbar-height: #{$pui-navbar-height};
+}

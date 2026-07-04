@@ -1,0 +1,33 @@
+// =============================================================================
+// Premium — Chatter (mail)
+// =============================================================================
+// The chatter (mail module) has a high upstream churn, so — per the Discovery
+// constraint — we ONLY tune tokens/SCSS on its existing classes and NEVER touch
+// its templates. Much of it already inherits the Premium look through the Fase 2
+// $o-* cascade (accent hover/focus, token borders); this file adds the deltas.
+// =============================================================================
+
+// Composer as a clean, rounded premium field.
+.o-mail-Composer {
+    border-radius: var(--pui-radius-lg);
+}
+
+.o-mail-Composer-input {
+    border-radius: var(--pui-radius-md);
+}
+
+// Message: round the hover highlight for a softer feel.
+.o-mail-Message {
+    border-radius: var(--pui-radius-md);
+    transition: background-color var(--pui-motion-fast) var(--pui-ease);
+}
+
+// Followers / activity affordances -> token surfaces.
+.o-mail-Followers-button:focus {
+    background-color: var(--pui-color-surface-sunken);
+}
+
+.o-mail-Follower-details:hover,
+.o-mail-Follower-action:hover {
+    --chatter_follower-bg--hover: var(--pui-color-surface-sunken);
+}

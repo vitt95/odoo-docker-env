@@ -1,54 +1,80 @@
-version: '3.7'
+# =============================================================================
+# Base stack (mode-agnostic). Always combined with one override file:
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml  ...
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml ...
+# No `version:` key — obsolete in Compose v2.
+# =============================================================================
 
 services:
   db:
-    image: postgres:16-alpine
-    restart: unless-stopped
+    image: postgres:${POSTGRES_VERSION:-16}-alpine
     environment:
-      POSTGRES_USER: odoo
-      POSTGRES_PASSWORD: odoo_password
-      POSTGRES_DB: postgres
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+      POSTGRES_USER: ${POSTGRES_USER:-odoo}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      # Keep PGDATA in a subdir so the volume root stays clean.
+      PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
-      - odoo17-database-data:/var/lib/postgresql/data
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - odoo_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-odoo} -d ${POSTGRES_DB:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   odoo:
     build:
       context: .
       dockerfile: Dockerfile
-    restart: unless-stopped
+      args:
+        ODOO_IMAGE_TAG: ${ODOO_IMAGE_TAG:-18.0}
+    image: odoo-custom:${ODOO_IMAGE_TAG:-18.0}
     depends_on:
-      - db
-    ports:
-      - "8069:8069"   # Odoo web
-      - "8072:8072"   # Odoo longpolling
+      db:
+        condition: service_healthy
     environment:
-      DB_HOST: db
-      DB_PORT: 5432
-      DB_USER: odoo           # deve corrispondere a POSTGRES_USER
-      DB_PASSWORD: odoo_password
-      ODOO_MASTER_PASSWD: odoo
+      # Consumed by the official Odoo entrypoint -> injected as db_host/user/pass.
+      HOST: db
+      PORT: 5432
+      USER: ${POSTGRES_USER:-odoo}
+      PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
     volumes:
-      - odoo17-web-data:/var/lib/odoo
-      - ./src:/opt/odoo/src
-      - ./custom_addons:/mnt/extra-addons
-      - ./config/odoo.conf:/etc/odoo/odoo.conf
-
-  pgadmin:
-    image: dpage/pgadmin4
+      - odoo_filestore:/var/lib/odoo
+      - ./config/odoo.conf:/etc/odoo/odoo.conf:ro
+      # Odoo 18 core source: stack runs from this bind-mount (see command in
+      # the dev/prod override). Read-only: edits happen on the host, the
+      # container only reads — hot-reload in dev still picks them up.
+      - ./core:/opt/odoo/core:ro
+      - ./custom_addons:/mnt/extra-addons:ro
+      - ./enterprise:/mnt/enterprise:ro
+    networks:
+      - odoo_net
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8069/web/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
     restart: unless-stopped
-    depends_on:
-      - db
-    ports:
-      - "5050:80"
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@odoo.com
-      PGADMIN_DEFAULT_PASSWORD: admin_password
-      PGADMIN_CONFIG_SERVER_MODE: 'False'
-    volumes:
-      - pgadmin-data:/var/lib/pgadmin
-      - ./config/pgadmin/servers.json:/pgadmin4/servers.json
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 volumes:
-  odoo17-web-data:
-  odoo17-database-data:
-  pgadmin-data:
+  db_data:
+  odoo_filestore:
+
+networks:
+  odoo_net:
+    driver: bridge

@@ -1,0 +1,37 @@
+// =============================================================================
+// Premium components — Buttons
+// =============================================================================
+// Colors already come from Fase 2 ($o-btns-bs-override -> accent). Here we
+// refine shape, motion and focus only, via Bootstrap 5.3 component variables
+// (--bs-btn-*) plus a token-driven focus-visible ring. Box sizing is left to
+// Bootstrap/Odoo to preserve the dense backend layout.
+// =============================================================================
+
+.btn {
+    --bs-btn-border-radius: var(--pui-radius-md);
+    --bs-btn-font-weight: var(--pui-font-weight-medium);
+
+    transition:
+        background-color var(--pui-motion-fast) var(--pui-ease),
+        border-color var(--pui-motion-fast) var(--pui-ease),
+        color var(--pui-motion-fast) var(--pui-ease),
+        box-shadow var(--pui-motion-fast) var(--pui-ease),
+        transform var(--pui-motion-fast) var(--pui-ease);
+
+    &:active {
+        transform: translateY(0.5px);
+    }
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: var(--pui-focus-ring);
+    }
+}
+
+.btn-sm {
+    --bs-btn-border-radius: var(--pui-radius-sm);
+}
+
+.btn-lg {
+    --bs-btn-border-radius: var(--pui-radius-lg);
+}

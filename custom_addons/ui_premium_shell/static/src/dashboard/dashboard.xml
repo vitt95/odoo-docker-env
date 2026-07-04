@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="ui_premium_shell.PuiDashboard">
+        <div class="pui-dashboard o_action">
+            <div class="pui-dashboard__inner">
+
+                <header class="pui-dashboard__header">
+                    <h1 class="pui-dashboard__greeting">
+                        <t t-esc="greeting"/><t t-if="user.name">, <t t-esc="user.name"/></t>
+                    </h1>
+                    <p class="pui-dashboard__meta">
+                        <span class="pui-dashboard__date" t-esc="today"/>
+                        <t t-if="companyName">
+                            <span class="pui-dashboard__sep">·</span>
+                            <span t-esc="companyName"/>
+                        </t>
+                    </p>
+                </header>
+
+                <section class="pui-dashboard__section">
+                    <h2 class="pui-dashboard__section-title">Le tue applicazioni</h2>
+                    <div class="pui-dashboard__grid">
+                        <t t-foreach="apps" t-as="app" t-key="app.id">
+                            <button type="button"
+                                    class="pui-dashboard__app"
+                                    t-att-title="app.name"
+                                    t-on-click="() => this.openApp(app)">
+                                <span class="pui-dashboard__app-icon">
+                                    <img t-if="app.webIconData" t-attf-src="{{ app.webIconData }}" alt=""/>
+                                    <span t-else="" class="pui-dashboard__app-fallback" t-esc="appInitial(app)"/>
+                                </span>
+                                <span class="pui-dashboard__app-name" t-esc="app.name"/>
+                            </button>
+                        </t>
+                    </div>
+                </section>
+
+                <section class="pui-dashboard__section">
+                    <h2 class="pui-dashboard__section-title">Panoramica</h2>
+                    <div class="pui-dashboard__placeholder">
+                        <i class="fa fa-chart-line pui-dashboard__placeholder-icon"/>
+                        <p class="pui-dashboard__placeholder-text">
+                            I widget di panoramica arriveranno qui.
+                        </p>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+    </t>
+
+</templates>

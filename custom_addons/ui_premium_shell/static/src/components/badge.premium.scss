@@ -1,0 +1,13 @@
+// =============================================================================
+// Premium components — Badge
+// =============================================================================
+
+.badge {
+    --bs-badge-border-radius: var(--pui-radius-sm);
+    --bs-badge-font-weight: var(--pui-font-weight-medium);
+}
+
+// Pill helper for status-style badges (opt-in via existing .rounded-pill)
+.badge.rounded-pill {
+    --bs-badge-border-radius: var(--pui-radius-pill);
+}

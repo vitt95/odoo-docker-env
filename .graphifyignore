@@ -1,0 +1,18 @@
+# Documentazione
+*.md
+*.rst
+*.txt
+
+# Git
+.git/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Output Graphify
+graphify-out/
+docs/*
+core/doc/*

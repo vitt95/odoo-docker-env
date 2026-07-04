@@ -1,0 +1,148 @@
+// =============================================================================
+// Premium — Dashboard (client action home screen)
+// =============================================================================
+
+.pui-dashboard {
+    height: 100%;
+    overflow-y: auto;
+    background: var(--pui-color-bg);
+    font-family: var(--pui-font-sans);
+    color: var(--pui-color-text);
+
+    &__inner {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: var(--pui-space-10) var(--pui-space-8);
+    }
+
+    // --- Header ------------------------------------------------------------
+    &__header {
+        margin-bottom: var(--pui-space-10);
+    }
+
+    &__greeting {
+        margin: 0 0 var(--pui-space-2);
+        font-size: 28px;
+        font-weight: var(--pui-font-weight-bold);
+        color: var(--pui-color-heading);
+        letter-spacing: -0.01em;
+    }
+
+    &__meta {
+        margin: 0;
+        color: var(--pui-color-muted);
+        font-size: var(--pui-font-size-base);
+        text-transform: capitalize;
+    }
+
+    &__sep {
+        margin: 0 var(--pui-space-2);
+        color: var(--pui-color-border-strong);
+    }
+
+    // --- Sections ----------------------------------------------------------
+    &__section {
+        margin-bottom: var(--pui-space-8);
+    }
+
+    &__section-title {
+        margin: 0 0 var(--pui-space-4);
+        font-size: var(--pui-font-size-sm);
+        font-weight: var(--pui-font-weight-semibold);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--pui-color-secondary);
+    }
+
+    // --- Apps grid ---------------------------------------------------------
+    &__grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: var(--pui-space-4);
+    }
+
+    &__app {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--pui-space-3);
+        padding: var(--pui-space-6) var(--pui-space-4);
+        border: 1px solid var(--pui-color-border);
+        border-radius: var(--pui-radius-lg);
+        background: var(--pui-color-surface);
+        color: var(--pui-color-heading);
+        font-size: var(--pui-font-size-base);
+        font-weight: var(--pui-font-weight-medium);
+        cursor: pointer;
+        transition:
+            border-color var(--pui-motion-fast) var(--pui-ease),
+            box-shadow var(--pui-motion-base) var(--pui-ease),
+            transform var(--pui-motion-fast) var(--pui-ease);
+
+        &:hover {
+            border-color: var(--pui-color-border-strong);
+            box-shadow: var(--pui-shadow-md);
+            transform: translateY(-2px);
+        }
+
+        &:focus-visible {
+            outline: none;
+            box-shadow: var(--pui-focus-ring);
+        }
+    }
+
+    &__app-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+
+        img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+    }
+
+    &__app-fallback {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        border-radius: var(--pui-radius-md);
+        background: rgba(var(--pui-accent-rgb), 0.12);
+        color: var(--pui-color-accent);
+        font-size: var(--pui-font-size-lg);
+        font-weight: var(--pui-font-weight-bold);
+    }
+
+    &__app-name {
+        text-align: center;
+    }
+
+    // --- Placeholder widget slot -------------------------------------------
+    &__placeholder {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: var(--pui-space-3);
+        padding: var(--pui-space-10);
+        border: 1px dashed var(--pui-color-border-strong);
+        border-radius: var(--pui-radius-lg);
+        background: var(--pui-color-surface);
+        color: var(--pui-color-muted);
+    }
+
+    &__placeholder-icon {
+        font-size: 28px;
+        opacity: 0.5;
+    }
+
+    &__placeholder-text {
+        margin: 0;
+        font-size: var(--pui-font-size-sm);
+    }
+}

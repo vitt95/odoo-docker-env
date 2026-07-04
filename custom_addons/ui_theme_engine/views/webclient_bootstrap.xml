@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Add the Premium skin branch to the web client bootstrap.
+
+        Native selection (web.webclient_bootstrap):
+            if color_scheme == 'dark':  web.assets_web_dark
+            else:                       web.assets_web
+
+        We replace the light/default branch so that, when not in dark mode:
+            if user.pui_skin == 'premium':  ui_theme_engine.assets_web_premium
+            else:                           web.assets_web  (Classic, untouched)
+
+        Source of truth is the user's stored preference (res.users.pui_skin),
+        read server-side here — the choice follows the user, no cookie needed.
+        Dark mode still wins as before; Premium+dark is handled in a later phase.
+    -->
+    <template id="webclient_bootstrap_premium" inherit_id="web.webclient_bootstrap">
+        <xpath expr="//t[@t-call-assets='web.assets_web']" position="replace">
+            <t t-if="request.env.user.pui_skin == 'premium'">
+                <t t-call-assets="ui_theme_engine.assets_web_premium" media="screen"/>
+            </t>
+            <t t-else="">
+                <t t-call-assets="web.assets_web" media="screen"/>
+            </t>
+        </xpath>
+    </template>
+</odoo>

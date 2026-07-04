@@ -1,0 +1,120 @@
+// =============================================================================
+// Premium login (pilot) — frontend-scoped styles
+// =============================================================================
+// Everything is scoped under .pui-login so it only applies to the Premium login
+// container (added by views/login.xml when pui.login_skin == 'premium').
+// Uses only --pui-* custom properties (runtime), so it needs no Odoo SCSS
+// helpers and stays portable in web.assets_frontend.
+// =============================================================================
+
+.pui-login {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--pui-space-6);
+    font-family: var(--pui-font-sans);
+    color: var(--pui-color-text);
+    background:
+        radial-gradient(1100px 520px at 50% -10%, rgba(var(--pui-accent-rgb), 0.10), transparent 60%),
+        var(--pui-color-bg);
+
+    &__card {
+        width: 100%;
+        max-width: 400px;
+        padding: var(--pui-space-8);
+        background: var(--pui-color-surface);
+        border: 1px solid var(--pui-color-border);
+        border-radius: var(--pui-radius-lg);
+        box-shadow: var(--pui-shadow-lg);
+    }
+
+    &__logo {
+        text-align: center;
+        margin-bottom: var(--pui-space-6);
+
+        img {
+            max-height: 56px;
+            max-width: 70%;
+            width: auto;
+        }
+    }
+
+    &__footer {
+        margin-top: var(--pui-space-6);
+        text-align: center;
+        font-size: var(--pui-font-size-sm);
+        color: var(--pui-color-muted);
+
+        a {
+            color: var(--pui-color-muted);
+            text-decoration: none;
+
+            &:hover {
+                color: var(--pui-color-text);
+            }
+        }
+
+        span { color: inherit; }
+    }
+
+    &__dot {
+        margin: 0 var(--pui-space-2);
+        color: var(--pui-color-border-strong);
+    }
+
+    // --- Form controls (scoped; does not touch global .form-control) --------
+    .form-label {
+        font-size: var(--pui-font-size-sm);
+        font-weight: var(--pui-font-weight-medium);
+        color: var(--pui-color-heading);
+        margin-bottom: var(--pui-space-2);
+    }
+
+    .form-control {
+        padding: 10px 12px;
+        font-size: var(--pui-font-size-base);
+        color: var(--pui-color-text);
+        background: var(--pui-color-surface);
+        border: 1px solid var(--pui-color-border);
+        border-radius: var(--pui-radius-md);
+        transition:
+            border-color var(--pui-motion-fast) var(--pui-ease),
+            box-shadow var(--pui-motion-fast) var(--pui-ease);
+
+        &:focus {
+            border-color: var(--pui-color-accent);
+            box-shadow: var(--pui-focus-ring);
+            outline: none;
+        }
+
+        &::placeholder { color: var(--pui-color-muted); }
+    }
+
+    .btn-primary {
+        padding: 10px 16px;
+        font-weight: var(--pui-font-weight-semibold);
+        color: #fff;
+        background: var(--pui-color-accent);
+        border: 1px solid var(--pui-color-accent);
+        border-radius: var(--pui-radius-md);
+        transition: filter var(--pui-motion-fast) var(--pui-ease);
+
+        &:hover,
+        &:focus {
+            filter: brightness(0.94);
+        }
+    }
+
+    .btn-link {
+        color: var(--pui-color-accent);
+        text-decoration: none;
+
+        &:hover { text-decoration: underline; }
+    }
+
+    .alert {
+        border-radius: var(--pui-radius-md);
+        font-size: var(--pui-font-size-sm);
+    }
+}

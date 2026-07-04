@@ -1,0 +1,54 @@
+# =============================================================================
+# DEV override: hot-reload, exposed ports, verbose logs, pgAdmin.
+# Combined with docker-compose.yml by `install.sh dev` / `manage.sh`.
+# =============================================================================
+
+services:
+  odoo:
+    # Run from the bind-mounted core source (./core -> /opt/odoo/core).
+    # --dev=reload,qweb,xml -> auto-reload Python + templates on change.
+    command:
+      - python3
+      - /opt/odoo/core/odoo-bin
+      - -c
+      - /etc/odoo/odoo.conf
+      - --dev=reload,qweb,werkzeug,xml
+      - --log-level=debug
+    ports:
+      - "${ODOO_PORT:-8069}:8069"
+      - "${ODOO_LONGPOLLING_PORT:-8072}:8072"
+    # Addons writable in dev for scaffolding/tooling that writes back.
+    volumes:
+      - ./custom_addons:/mnt/extra-addons:rw
+
+  db:
+    # Expose Postgres on the host for external DB tools during development.
+    ports:
+      - "${DB_PORT:-5432}:5432"
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@odoo.local}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:?PGADMIN_PASSWORD is required}
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+      - ./config/pgadmin/servers.json:/pgadmin4/servers.json:ro
+    networks:
+      - odoo_net
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  pgadmin_data:

@@ -1,0 +1,33 @@
+// =============================================================================
+// Premium — Calendar View
+// =============================================================================
+// FullCalendar (v6) is themed through --fc-* CSS variables. We override the
+// structural ones (borders, today, selection, now-indicator, day headers) with
+// tokens. Event colors are left untouched: Odoo drives them from the record's
+// color field, so they carry meaning and must not be flattened to the accent.
+// Scoped under .o_calendar_view; higher specificity than Odoo's own rules.
+// =============================================================================
+
+.o_calendar_view {
+    .o_calendar_widget {
+        --fc-border-color: var(--pui-color-border);
+        --fc-now-indicator-color: var(--pui-color-accent);
+        --fc-highlight-color: #{rgba($pui-accent, 0.08)};
+        --fc-neutral-bg-color: var(--pui-color-surface-sunken);
+
+        // Today: Odoo removes the default tint; re-add a gentle accent wash.
+        .fc-day-today:not(.o_calendar_disabled) {
+            --fc-today-bg-color: #{rgba($pui-accent, 0.05)};
+        }
+    }
+
+    // Column headers (day names).
+    .fc-col-header-cell {
+        color: var(--pui-color-secondary);
+        font-weight: var(--pui-font-weight-semibold);
+
+        &.fc-day-today {
+            color: var(--pui-color-accent);
+        }
+    }
+}

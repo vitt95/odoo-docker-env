@@ -1,0 +1,23 @@
+// =============================================================================
+// Premium components — Notification (toast)
+// =============================================================================
+// Odoo's notification root is .o_notification (not the Bootstrap .toast).
+// =============================================================================
+
+.o_notification {
+    border: 1px solid var(--pui-color-border);
+    border-radius: var(--pui-radius-md);
+    box-shadow: var(--pui-shadow-lg);
+    background-color: var(--pui-color-surface);
+}
+
+// Title typography (Fase 14). Type colors come from the .o_notification_bar
+// (bg-success/warning/danger/info), already tokenized via Fase 2.
+.o_notification_title {
+    font-weight: var(--pui-font-weight-semibold);
+    color: var(--pui-color-heading);
+}
+
+.o_notification_bar {
+    width: 4px;
+}

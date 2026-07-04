@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!--
+            Instance-level skin for the (pre-auth) login screen. The login has
+            no logged-in user, so it can't use the per-user res.users.pui_skin;
+            an admin picks it here. Values: 'premium' | 'classic'.
+            noupdate so an admin's change survives module upgrades.
+        -->
+        <record id="pui_login_skin_param" model="ir.config_parameter">
+            <field name="key">pui.login_skin</field>
+            <field name="value">premium</field>
+        </record>
+    </data>
+</odoo>

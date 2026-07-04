@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="ui_premium_shell.PuiSidebar">
+        <aside class="pui-sidebar" t-att-class="{ 'pui-sidebar--collapsed': state.collapsed }">
+            <div class="pui-sidebar__brand">
+                <a href="/odoo" class="pui-sidebar__brand-link" title="Home">
+                    <img class="pui-sidebar__brand-logo" t-attf-src="/web/binary/company_logo" alt="Home"/>
+                </a>
+            </div>
+
+            <nav class="pui-sidebar__nav">
+                <button type="button"
+                        class="pui-sidebar__item pui-sidebar__item--home"
+                        title="Home"
+                        t-on-click="() => this.openDashboard()">
+                    <span class="pui-sidebar__icon">
+                        <i class="fa fa-th-large"/>
+                    </span>
+                    <span class="pui-sidebar__label">Home</span>
+                </button>
+
+                <t t-foreach="apps" t-as="app" t-key="app.id">
+                    <button type="button"
+                            class="pui-sidebar__item"
+                            t-att-class="{ 'pui-sidebar__item--active': isActive(app) }"
+                            t-att-title="app.name"
+                            t-on-click="() => this.onAppClick(app)">
+                        <span class="pui-sidebar__icon">
+                            <img t-if="app.webIconData" t-attf-src="{{ app.webIconData }}" alt=""/>
+                            <span t-else="" class="pui-sidebar__icon-fallback" t-esc="appInitial(app)"/>
+                        </span>
+                        <span class="pui-sidebar__label" t-esc="app.name"/>
+                    </button>
+                </t>
+            </nav>
+
+            <div class="pui-sidebar__footer">
+                <button type="button"
+                        class="pui-sidebar__collapse"
+                        t-on-click="() => this.toggleCollapsed()"
+                        t-att-title="state.collapsed ? 'Expand' : 'Collapse'">
+                    <i class="fa" t-att-class="state.collapsed ? 'fa-angle-right' : 'fa-angle-left'"/>
+                    <span class="pui-sidebar__label">Collapse</span>
+                </button>
+            </div>
+        </aside>
+    </t>
+
+</templates>

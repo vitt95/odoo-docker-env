@@ -1,0 +1,50 @@
+// =============================================================================
+// Premium skin — App Shell layout integration
+// =============================================================================
+// Offsets the web client to make room for the fixed Premium sidebar and hides
+// the navbar's now-redundant apps menu (apps live in the sidebar). The navbar
+// stays in the DOM — only its apps menu / home toggle are hidden — so the
+// tour/JS contract on its classes is preserved.
+//
+// Responsive: the 248px fixed sidebar only makes sense with room to spare, so
+// the whole sidebar shell (offset + navbar hides) is gated to md+ (≥768px).
+// Below that the sidebar is hidden and Odoo's native app navigation (apps menu
+// + home toggle) is left intact, keeping mobile fully usable.
+// =============================================================================
+
+// ---- Desktop / tablet (md+): sidebar shell active ---------------------------
+@media (min-width: 768px) {
+    body.o_web_client.pui-has-sidebar {
+        padding-left: var(--pui-sidebar-width);
+        transition: padding-left var(--pui-motion-base) var(--pui-ease);
+
+        &.pui-sidebar-collapsed {
+            padding-left: var(--pui-sidebar-width-collapsed);
+        }
+    }
+
+    // Apps are in the sidebar: hide the navbar apps-menu + home toggle.
+    .o_navbar .o_navbar_apps_menu,
+    .o_main_navbar .o_menu_toggle {
+        display: none;
+    }
+}
+
+// Note: hiding the fixed sidebar below md is done in sidebar.scss (which loads
+// after this file and sets .pui-sidebar { display: flex }), so the media query
+// there wins on source order.
+
+// ---- Light top bar polish (all sizes) ---------------------------------------
+.o_main_navbar {
+    .o_menu_sections {
+        gap: 2px;
+
+        .o_nav_entry,
+        .dropdown-toggle {
+            border-radius: var(--pui-radius-md);
+            transition:
+                background-color var(--pui-motion-fast) var(--pui-ease),
+                color var(--pui-motion-fast) var(--pui-ease);
+        }
+    }
+}

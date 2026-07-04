@@ -1,0 +1,34 @@
+# =============================================================================
+# PROD override: multiprocess workers, hardened config, resource limits.
+# Odoo is bound to 127.0.0.1 only — expected behind a reverse proxy (TLS).
+# Postgres is NOT exposed to the host. No pgAdmin.
+# =============================================================================
+
+services:
+  odoo:
+    # Run from the bind-mounted core source (./core -> /opt/odoo/core).
+    command:
+      - python3
+      - /opt/odoo/core/odoo-bin
+      - -c
+      - /etc/odoo/odoo.conf
+      - --workers=${ODOO_WORKERS:-4}
+      - --max-cron-threads=2
+      - --proxy-mode
+      - --no-database-list
+      - --log-level=info
+      - --limit-time-cpu=600
+      - --limit-time-real=1200
+      - --limit-memory-soft=2147483648
+      - --limit-memory-hard=2684354560
+    ports:
+      # Loopback only: terminate TLS in an external reverse proxy.
+      - "127.0.0.1:${ODOO_PORT:-8069}:8069"
+      - "127.0.0.1:${ODOO_LONGPOLLING_PORT:-8072}:8072"
+    mem_limit: 4g
+    restart: always
+
+  db:
+    # No host port mapping in prod (internal network only).
+    restart: always
+    mem_limit: 2g

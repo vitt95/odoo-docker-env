@@ -1,0 +1,75 @@
+// =============================================================================
+// Premium — Form View
+// =============================================================================
+// Restyles the compiler-generated form markup via existing classes + the CSS
+// variables Odoo already exposes. No DOM changes. Colors/radius largely come
+// from Fase 2 tokens; here we add elevation, refine labels, statusbar, notebook.
+// =============================================================================
+
+// Canvas behind the sheet: app background so the white sheet reads as a card.
+.o_form_view .o_form_sheet_bg {
+    background-color: var(--pui-color-bg);
+}
+
+// The sheet as an elevated card.
+.o_form_view .o_form_sheet {
+    // Larger radius on md+ (var is consumed inside the media query).
+    --formView-sheet-border-radius-md: var(--pui-radius-lg);
+    box-shadow: var(--pui-shadow-sm);
+}
+
+// Field labels: quieter, medium weight.
+.o_form_view .o_form_label {
+    color: var(--pui-color-secondary);
+    font-weight: var(--pui-font-weight-medium);
+}
+
+// Record title.
+.o_form_view .oe_title,
+.o_form_view .oe_title input {
+    color: var(--pui-color-heading);
+}
+
+// -----------------------------------------------------------------------------
+// Statusbar
+// -----------------------------------------------------------------------------
+.o_form_view .o_form_statusbar {
+    background-color: var(--pui-color-surface);
+    border-bottom: 1px solid var(--pui-color-border);
+}
+
+// -----------------------------------------------------------------------------
+// Stat button box
+// -----------------------------------------------------------------------------
+.o_form_view .oe_button_box .o_stat_info,
+.o_form_view .oe_button_box .oe_stat_button {
+    transition:
+        background-color var(--pui-motion-fast) var(--pui-ease),
+        border-color var(--pui-motion-fast) var(--pui-ease);
+}
+
+.o_form_view .oe_button_box .oe_stat_button:hover {
+    background-color: var(--pui-color-surface-sunken);
+}
+
+// -----------------------------------------------------------------------------
+// Notebook tabs — accent the active tab
+// -----------------------------------------------------------------------------
+.o_form_view .o_notebook {
+    --notebook-link-border-color-active-accent: var(--pui-color-accent);
+
+    .nav-link {
+        color: var(--pui-color-secondary);
+        font-weight: var(--pui-font-weight-medium);
+        transition: color var(--pui-motion-fast) var(--pui-ease);
+
+        &:hover {
+            color: var(--pui-color-heading);
+        }
+
+        &.active {
+            color: var(--pui-color-accent);
+            font-weight: var(--pui-font-weight-semibold);
+        }
+    }
+}

@@ -1,0 +1,31 @@
+// =============================================================================
+// Premium components — Form controls (input / select / textarea)
+// =============================================================================
+// Refines border + focus ring only. Radius already inherits from $o-border-radius
+// (Fase 2). No height/padding changes, to keep inline list/form editing dense.
+// =============================================================================
+
+.form-control,
+.form-select {
+    transition:
+        border-color var(--pui-motion-fast) var(--pui-ease),
+        box-shadow var(--pui-motion-fast) var(--pui-ease);
+
+    &:focus {
+        border-color: var(--pui-color-accent);
+        box-shadow: var(--pui-focus-ring);
+    }
+}
+
+// Checkboxes / radios: accent + focus ring
+.form-check-input {
+    &:checked {
+        background-color: var(--pui-color-accent);
+        border-color: var(--pui-color-accent);
+    }
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: var(--pui-focus-ring);
+    }
+}

@@ -1,0 +1,51 @@
+// =============================================================================
+// Premium — Motion system
+// =============================================================================
+// Coherent, near-imperceptible motion. Only transform/opacity are animated
+// (GPU-friendly, no reflow/repaint of layout). Reusable keyframes are exposed
+// for later phases (Sidebar/Shell, Fase 6). Odoo keeps its own OWL t-transition
+// mounts (owl-fade, etc.); we only add entrances where core does not animate.
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// Reusable keyframes
+// -----------------------------------------------------------------------------
+@keyframes pui-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes pui-scale-in {
+    from { opacity: 0; transform: scale(0.98); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes pui-slide-up {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+// -----------------------------------------------------------------------------
+// Subtle entrance for dropdown menus (Odoo core does not animate the menu box)
+// -----------------------------------------------------------------------------
+.dropdown-menu.show {
+    animation: pui-scale-in var(--pui-motion-fast) var(--pui-ease-out);
+    transform-origin: top center;
+}
+
+// -----------------------------------------------------------------------------
+// Accessibility — honor the user's reduced-motion preference.
+// The blanket !important is the sanctioned exception to our no-!important rule:
+// it must override animated/inline styles from Bootstrap, Odoo and OWL to
+// reliably stop motion for users who ask for it (UI.md / CLAUDE.md a11y).
+// -----------------------------------------------------------------------------
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+    }
+}
