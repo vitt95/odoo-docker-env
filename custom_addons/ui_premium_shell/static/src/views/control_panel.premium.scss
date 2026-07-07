@@ -1,0 +1,122 @@
+// =============================================================================
+// Premium — Control Panel (breadcrumb + search + view switcher)
+// =============================================================================
+// Token-driven restyle over the native control-panel classes. No DOM/JS changes
+// — every class here is compiler-generated and functional; we only reskin.
+// Target = the reference's clean toolbar: surface bar, rounded search, pill
+// facets, and a segmented view switcher with an accent active state.
+// =============================================================================
+
+.o_control_panel {
+    background-color: var(--pui-color-surface);
+    border-bottom: 1px solid var(--pui-color-border);
+
+    // --- Breadcrumb -------------------------------------------------------
+    .o_breadcrumb {
+        .o_last_breadcrumb_item,
+        .active {
+            color: var(--pui-color-heading);
+            font-weight: var(--pui-font-weight-semibold);
+        }
+
+        a {
+            color: var(--pui-color-secondary);
+            transition: color var(--pui-motion-fast) var(--pui-ease);
+
+            &:hover {
+                color: var(--pui-color-accent);
+            }
+        }
+    }
+}
+
+// --- Search view: rounded input surface --------------------------------------
+.o_cp_searchview {
+    border: 1px solid var(--pui-color-border);
+    border-radius: var(--pui-radius-md);
+    background-color: var(--pui-color-surface-sunken);
+    transition:
+        border-color var(--pui-motion-fast) var(--pui-ease),
+        box-shadow var(--pui-motion-fast) var(--pui-ease),
+        background-color var(--pui-motion-fast) var(--pui-ease);
+
+    &:hover {
+        border-color: var(--pui-color-border-strong);
+    }
+
+    &.o_searchview_focused,
+    &:focus-within {
+        border-color: var(--pui-color-accent);
+        background-color: var(--pui-color-surface);
+        box-shadow: var(--pui-focus-ring);
+    }
+
+    .o_searchview_input {
+        color: var(--pui-color-text);
+
+        &::placeholder {
+            color: var(--pui-color-muted);
+        }
+    }
+
+    // --- Facets -> single blue-subtle pill (reference active filter) -------
+    .o_searchview_facet {
+        border-radius: var(--pui-radius-sm);
+        overflow: hidden;
+        background-color: var(--pui-color-selected);
+
+        .o_searchview_facet_label {
+            background-color: transparent;
+            color: var(--pui-color-selected-text);
+        }
+
+        .o_facet_values {
+            background-color: transparent;
+            color: var(--pui-color-selected-text);
+            font-weight: var(--pui-font-weight-semibold);
+        }
+    }
+}
+
+// --- View switcher: segmented control ---------------------------------------
+.o_cp_switch_buttons {
+    display: inline-flex;
+    padding: 2px;
+    border: 1px solid var(--pui-color-border);
+    border-radius: var(--pui-radius-md);
+    background-color: var(--pui-color-surface-sunken);
+    gap: 2px;
+
+    .btn {
+        --bs-btn-border-radius: var(--pui-radius-sm);
+        border: 0;
+        color: var(--pui-color-secondary);
+        transition:
+            background-color var(--pui-motion-fast) var(--pui-ease),
+            color var(--pui-motion-fast) var(--pui-ease);
+
+        &:hover {
+            background-color: var(--pui-color-surface-secondary);
+            color: var(--pui-color-heading);
+        }
+
+        // Active view -> raised accent chip.
+        &.active,
+        &.o_cp_switch_active {
+            background-color: var(--pui-color-surface);
+            color: var(--pui-color-accent);
+            box-shadow: var(--pui-shadow-sm);
+        }
+
+        &:focus-visible {
+            outline: none;
+            box-shadow: var(--pui-focus-ring);
+        }
+    }
+}
+
+// --- Filter / group-by dropdown toggles -> quiet pills -----------------------
+.o_cp_searchview .o_dropdown_title,
+.o_control_panel .o_searchview_dropdown_toggler {
+    border-radius: var(--pui-radius-md);
+}

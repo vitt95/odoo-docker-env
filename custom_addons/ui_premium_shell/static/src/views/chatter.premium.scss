@@ -31,3 +31,51 @@
 .o-mail-Follower-action:hover {
     --chatter_follower-bg--hover: var(--pui-color-surface-sunken);
 }
+
+// -----------------------------------------------------------------------------
+// Discuss surfaces — core mail ships hardcoded light backgrounds/borders here
+// (white header, gray core, .btn-light, .border-dark groups) that never got a
+// Dark version, so they leaked Light in Dark mode. Re-point them at tokens: one
+// ruleset fixes Dark and is a no-op in Light (tokens already resolve to the
+// light values). !important only where it must beat Bootstrap utilities
+// (.bg-*, .border-dark, .btn-light) that ship their own !important.
+// -----------------------------------------------------------------------------
+.o-mail-Discuss {
+    background-color: var(--pui-color-bg);
+}
+.o-mail-Discuss-header {
+    background-color: var(--pui-color-surface);
+    border-color: var(--pui-color-border) !important;
+}
+.o-mail-Discuss-core,
+.o-mail-Discuss-content,
+.o-mail-Discuss-threadContainer,
+.o-mail-Thread {
+    background-color: var(--pui-color-bg);
+}
+// Header action groups: drop the hardcoded light fill + dark border.
+.o-mail-Discuss-headerActionsGroup {
+    background-color: transparent !important;
+    border-color: var(--pui-color-border) !important;
+
+    .btn-secondary {
+        color: var(--pui-color-secondary);
+
+        &:hover {
+            background-color: var(--pui-color-hover) !important;
+            color: var(--pui-color-heading);
+        }
+    }
+}
+// .btn-light inside Discuss (sidebar options "…", mark-all-read): theme-aware.
+.o-mail-Discuss .btn-light,
+.o-mail-DiscussSidebar .btn-light,
+.o-mail-DiscussSidebar-optionsBtn.btn-light {
+    background-color: transparent !important;
+    color: var(--pui-color-secondary);
+
+    &:hover {
+        background-color: var(--pui-color-hover) !important;
+        color: var(--pui-color-heading);
+    }
+}

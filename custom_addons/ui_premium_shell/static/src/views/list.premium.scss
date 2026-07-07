@@ -28,6 +28,11 @@
 
     // Row hover / selected / borders (both prefixes for safety).
     .o_list_table {
+        // Base row background — core sets this to $o-view-background-color
+        // (white). Token-drive it so rows follow the theme (fixes white rows
+        // in dark). Light stays white via the token.
+        --table-bg: var(--pui-color-surface);
+        --bs-table-bg: var(--pui-color-surface);
         --bs-table-hover-bg: var(--pui-color-surface-sunken);
         --table-hover-bg: var(--pui-color-surface-sunken);
         --bs-table-active-bg: var(--pui-accent-soft);

@@ -20,6 +20,10 @@
                     <span class="pui-sidebar__label">Home</span>
                 </button>
 
+                <div class="pui-sidebar__section">
+                    <span class="pui-sidebar__section-label">Applicazioni</span>
+                </div>
+
                 <t t-foreach="apps" t-as="app" t-key="app.id">
                     <button type="button"
                             class="pui-sidebar__item"

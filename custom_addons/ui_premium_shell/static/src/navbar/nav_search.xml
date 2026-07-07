@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="ui_premium_shell.PuiNavSearch">
+        <div class="pui-nav-search">
+            <button type="button"
+                    class="pui-nav-search__btn"
+                    t-att-aria-label="label"
+                    t-att-title="label"
+                    t-on-click="() => this.open()">
+                <i class="fa fa-search pui-nav-search__icon" role="img" aria-hidden="true"/>
+                <span class="pui-nav-search__placeholder" t-esc="label"/>
+                <span class="pui-nav-search__kbd" aria-hidden="true">Ctrl K</span>
+            </button>
+        </div>
+    </t>
+
+</templates>

@@ -44,6 +44,10 @@
             ),
             "ui_brand_tokens/static/src/scss/pui_tokens.premium.scss",
             "ui_theme_engine/static/src/scss/engine.premium.scss",
+            # Premium-only user-menu entry: instant Light/Dark theme toggle
+            # (flips <html data-pui-theme>, persists async). Premium bundle only,
+            # so it never shows in Classic where the theme has no effect.
+            "ui_theme_engine/static/src/theme_switch/theme_switch_item.js",
             # Component library: restyles shared Bootstrap/Odoo primitives via
             # --pui-* so every button/input/dropdown/dialog/badge/card/toast in
             # the Premium skin is coherent. Loads after tokens, after core.
@@ -58,6 +62,11 @@
             # prefers-reduced-motion accessibility guard.
             "ui_premium_shell/static/src/scss/motion.premium.scss",
             "ui_premium_shell/static/src/scss/shell.premium.scss",
+            # Navbar: additive centered command-palette search launcher (systray
+            # item) + top-bar restyle. Native navbar/systray left fully intact.
+            "ui_premium_shell/static/src/navbar/nav_search.js",
+            "ui_premium_shell/static/src/navbar/nav_search.xml",
+            "ui_premium_shell/static/src/navbar/navbar.premium.scss",
             # Premium App Sidebar (new structural component). JS + OWL template
             # + styles, all Premium-only so registering it in main_components is
             # automatically skin-gated (Classic never loads it).
@@ -69,11 +78,13 @@
             "ui_premium_shell/static/src/dashboard/dashboard.xml",
             "ui_premium_shell/static/src/dashboard/dashboard.scss",
             # View redesigns (token-driven, no DOM changes).
+            "ui_premium_shell/static/src/views/control_panel.premium.scss",
             "ui_premium_shell/static/src/views/form.premium.scss",
             "ui_premium_shell/static/src/views/list.premium.scss",
             "ui_premium_shell/static/src/views/kanban.premium.scss",
             "ui_premium_shell/static/src/views/calendar.premium.scss",
             "ui_premium_shell/static/src/views/chatter.premium.scss",
+            "ui_premium_shell/static/src/views/settings.premium.scss",
         ],
     },
     "installable": True,

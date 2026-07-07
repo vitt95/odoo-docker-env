@@ -1,52 +1,108 @@
 // =============================================================================
-// Premium — Kanban View
+// Premium — Kanban View (faithful to the .ai/ui-example reference board)
 // =============================================================================
-// Token-driven restyle of the compiler-generated kanban via existing classes +
-// CSS variables. No DOM changes. The card INNER markup is defined by the view
-// arch, so we only style the record container (.o_kanban_record).
+// Reference = Atlassian-style board: a single tinted canvas, TRANSPARENT
+// columns (cards float on the canvas), compact cards with a SMALL radius, a
+// hairline border and a barely-there shadow, uppercase column labels with a
+// quiet inline count. Same structure in light and dark — only the tokens swap.
+// Token-driven, no DOM changes (card inner markup is view-arch defined).
 // =============================================================================
 
-.o_kanban_view {
-    // Board canvas = app background.
-    --Kanban-background: var(--pui-color-bg);
+// --- Cards: compact, small-radius, subtle — both grouped & ungrouped ---------
+// Matches core specificity (0,4,0) so the token surface wins over core white.
+.o_kanban_view .o_kanban_renderer {
+    // Denser rhythm, closer to the reference cards.
+    --KanbanRecord-padding-v: 10px;
+    --KanbanRecord-padding-h: 12px;
+    --KanbanRecord-margin-v: 4px;
+    --KanbanRecord-margin-h: 4px;
 
-    // Cards: from Odoo's stacked/shared-border look to separated premium cards.
-    // (Default uses `margin-bottom: -border` so cards share edges; we give them
-    // a gap, radius, soft shadow and a hover lift instead.)
-    .o_kanban_renderer .o_kanban_record:not(.o_kanban_ghost):not(.o_legacy_kanban_record) {
-        margin: 0 0 var(--pui-space-3);
-        border: 1px solid var(--pui-color-border);
-        border-radius: var(--pui-radius-lg);
+    .o_kanban_record:not(.o_kanban_ghost) {
+        margin: 0 0 8px;
+        border: 1px solid var(--pui-color-border-subtle);
+        border-radius: var(--pui-radius-sm); // small, reference-like (not pill)
         background-color: var(--pui-color-surface);
-        box-shadow: var(--pui-shadow-sm);
+        box-shadow: var(--pui-shadow-sm); // barely-there elevation
         transition:
-            box-shadow var(--pui-motion-base) var(--pui-ease),
-            border-color var(--pui-motion-fast) var(--pui-ease),
-            transform var(--pui-motion-fast) var(--pui-ease);
+            box-shadow var(--pui-motion-fast) var(--pui-ease),
+            border-color var(--pui-motion-fast) var(--pui-ease);
 
-        &:first-of-type {
-            margin-top: 1px;
-        }
-
+        // Reference cards do NOT jump; hover only firms border + shadow.
         &:hover {
-            border-color: var(--pui-color-border-strong);
+            border-color: var(--pui-color-border);
             box-shadow: var(--pui-shadow-md);
-            transform: translateY(-1px);
         }
 
-        &:focus-visible {
+        &:focus-visible,
+        &.o_kanban_record_selected {
             outline: none;
+            border-color: var(--pui-color-accent);
             box-shadow: var(--pui-focus-ring);
         }
     }
 
-    // Column header.
-    .o_kanban_header .o_column_title {
+    // Typography: strong title, muted meta (matches reference hierarchy).
+    .o_kanban_record .o_kanban_record_title,
+    .o_kanban_record strong {
         color: var(--pui-color-heading);
         font-weight: var(--pui-font-weight-semibold);
     }
-
-    .o_kanban_header .o_kanban_counter {
+    .o_kanban_record .text-muted,
+    .o_kanban_record small {
         color: var(--pui-color-secondary);
+    }
+
+    // Tag / label chips -> compact, subtle rounded pills (like the reference).
+    .o_kanban_record .o_tag {
+        border-radius: var(--pui-radius-sm);
+        font-weight: var(--pui-font-weight-medium);
+    }
+}
+
+// --- Grouped board: tinted canvas, TRANSPARENT columns -----------------------
+// NB: the `o_kanban_grouped` modifier lives on `.o_kanban_renderer`, not on the
+// controller root `.o_kanban_view` — so this must key off the renderer or the
+// rules never match (was the case: uppercase/transparent columns never applied).
+.o_kanban_renderer.o_kanban_grouped {
+    --Kanban-background: var(--pui-color-bg);
+    background-color: var(--pui-color-bg);
+
+    // Columns float on the canvas — no separate column fill (reference look).
+    .o_kanban_group {
+        background-color: transparent;
+
+        + .o_kanban_group {
+            margin-left: var(--pui-space-2);
+        }
+    }
+
+    // Header is position-sticky: give it the opaque canvas bg (never white,
+    // never bleed-through) so scrolled cards pass cleanly under it.
+    .o_kanban_header {
+        background-color: var(--pui-color-bg);
+    }
+
+    // Column label: small uppercase, quiet — reference style. The visible text
+    // sits in `.o_column_title > span.text-truncate`.
+    .o_column_title {
+        color: var(--pui-color-secondary);
+        font-size: var(--pui-font-size-xs) !important; // override core fs-4
+        font-weight: var(--pui-font-weight-semibold) !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.06em !important;
+
+        // Inline "(n)" count -> quiet muted text (NOT a strong pill).
+        > span:not(.text-truncate) {
+            color: var(--pui-color-muted);
+            font-weight: var(--pui-font-weight-medium);
+            letter-spacing: 0;
+        }
+    }
+
+    // Column total (progressbar aggregate, `.o_animated_number.text-900`):
+    // core's text-900 goes faint on the dark canvas — token it for both themes.
+    .o_kanban_counter .o_animated_number {
+        color: var(--pui-color-secondary) !important;
+        font-weight: var(--pui-font-weight-semibold);
     }
 }

@@ -1,0 +1,123 @@
+// =============================================================================
+// Premium — Navbar (top bar) restyle + centered search launcher
+// =============================================================================
+// The native navbar stays fully intact (all classes/systray/menu-sections are a
+// tour/JS contract). We only:
+//   - make the bar a clean token surface (bg/border), and
+//   - lay out the additive search launcher (a systray item) centered on wide
+//     screens, collapsed to an icon on narrow ones.
+// No DOM is removed; no functionality is forked.
+// =============================================================================
+
+.o_main_navbar {
+    position: relative; // anchor for the absolutely-centered search
+    background-color: var(--pui-color-surface);
+    border-bottom: 1px solid var(--pui-color-border);
+
+    // Systray icon buttons -> quiet, rounded, token-driven hover.
+    .o_menu_systray {
+        gap: 2px;
+
+        > .dropdown > button,
+        > button,
+        .o_menu_systray_item > .dropdown-toggle {
+            border-radius: var(--pui-radius-md);
+            transition:
+                background-color var(--pui-motion-fast) var(--pui-ease),
+                color var(--pui-motion-fast) var(--pui-ease);
+        }
+    }
+}
+
+// ---- Search launcher --------------------------------------------------------
+.pui-nav-search {
+    display: flex;
+    align-items: center;
+
+    &__btn {
+        display: flex;
+        align-items: center;
+        gap: var(--pui-space-2);
+        height: 32px;
+        padding: 0 var(--pui-space-3);
+        border: 1px solid var(--pui-color-border);
+        border-radius: var(--pui-radius-md);
+        background-color: var(--pui-color-surface-sunken);
+        color: var(--pui-color-muted);
+        font-size: var(--pui-font-size-sm);
+        font-family: var(--pui-font-sans);
+        cursor: pointer;
+        transition:
+            background-color var(--pui-motion-fast) var(--pui-ease),
+            border-color var(--pui-motion-fast) var(--pui-ease),
+            box-shadow var(--pui-motion-fast) var(--pui-ease);
+
+        &:hover {
+            border-color: var(--pui-color-border-strong);
+            background-color: var(--pui-color-surface);
+            color: var(--pui-color-secondary);
+        }
+
+        &:focus-visible {
+            outline: none;
+            box-shadow: var(--pui-focus-ring);
+        }
+    }
+
+    &__icon {
+        flex: 0 0 auto;
+        font-size: var(--pui-font-size-sm);
+    }
+
+    &__placeholder {
+        flex: 1 1 auto;
+        text-align: left;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    &__kbd {
+        flex: 0 0 auto;
+        padding: 1px 6px;
+        border: 1px solid var(--pui-color-border);
+        border-radius: var(--pui-radius-sm);
+        background-color: var(--pui-color-surface);
+        color: var(--pui-color-muted);
+        font-size: var(--pui-font-size-xs);
+        line-height: 1.4;
+    }
+}
+
+// Wide screens: center the search across the bar (reference layout).
+@media (min-width: 992px) {
+    .pui-nav-search {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: #{"min(680px, 42vw)"}; // interpolated so Sass emits CSS min(), not eval
+        z-index: 1; // above sections text, below dropdown menus (z 1000+)
+
+        &__btn {
+            width: 100%;
+        }
+    }
+}
+
+// Narrow screens (tablet/mobile): collapse to a compact icon in the systray
+// flow — no absolute centering, no overlap with app sections.
+@media (max-width: 991.98px) {
+    .pui-nav-search {
+        &__placeholder,
+        &__kbd {
+            display: none;
+        }
+
+        &__btn {
+            width: 34px;
+            padding: 0;
+            justify-content: center;
+        }
+    }
+}

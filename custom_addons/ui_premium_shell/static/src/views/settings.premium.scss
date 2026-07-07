@@ -1,0 +1,52 @@
+// =============================================================================
+// Premium — Settings (base.settings form)
+// =============================================================================
+// Core paints light-only surfaces here with no Dark variant, leaking Light in
+// Dark mode:
+//   - `.settings` content pane bg = white
+//   - section header `h2` bg = var(--settings__title-bg) (grays-200) -> the
+//     white bands behind "Utenti"/"Lingue"/"Aziende"
+//   - `.settingSearchHeader` + selected app tab = light fills
+// The real DOM chain differs from core's SCSS selectors (no `.o_settings_view`
+// ancestor in this build), and the winning white rule beats a plain
+// `.o_setting_container .settings`, so `!important` is used to guarantee the
+// override. Element carries no inline style, so `!important` wins cleanly.
+// No-op in Light (tokens resolve to light values); fixes Dark.
+// =============================================================================
+
+.o_setting_container {
+    // Section header bands (h2 uses this var) -> token surface.
+    --settings__title-bg: var(--pui-color-surface-sunken) !important;
+
+    .settings {
+        background-color: var(--pui-color-bg) !important;
+        color: var(--pui-color-text);
+    }
+
+    // Left app-selector column + its active item.
+    .settings_tab {
+        background-color: var(--pui-color-surface-sunken);
+    }
+    .settings_tab .selected {
+        background-color: var(--pui-color-selected) !important;
+        color: var(--pui-color-selected-text) !important;
+    }
+
+    // In-pane search header (was light gray).
+    .settings .settingSearchHeader {
+        background-color: var(--pui-color-surface) !important;
+    }
+
+    // Section blocks: readable headings + quiet muted text.
+    .settings .app_settings_block {
+        h2,
+        h3,
+        .o_form_label {
+            color: var(--pui-color-heading);
+        }
+
+        .text-muted {
+            color: var(--pui-color-muted) !important;
+        }
+    }
+}

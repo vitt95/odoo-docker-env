@@ -44,6 +44,20 @@
         gap: 2px;
     }
 
+    // --- Section label -----------------------------------------------------
+    &__section {
+        padding: var(--pui-space-4) var(--pui-space-3) var(--pui-space-2);
+    }
+
+    &__section-label {
+        font-size: var(--pui-font-size-xs);
+        font-weight: var(--pui-font-weight-semibold);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--pui-color-muted);
+        white-space: nowrap;
+    }
+
     &__item {
         display: flex;
         align-items: center;
@@ -155,6 +169,16 @@
         width: var(--pui-sidebar-width-collapsed);
 
         .pui-sidebar__label {
+            display: none;
+        }
+
+        // Collapsed rail has no room for a text section label; keep a hairline.
+        .pui-sidebar__section {
+            padding: var(--pui-space-2) 0;
+            margin: 0 var(--pui-space-3);
+            border-top: 1px solid var(--pui-color-border-subtle);
+        }
+        .pui-sidebar__section-label {
             display: none;
         }
 

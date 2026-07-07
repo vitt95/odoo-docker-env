@@ -1,28 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!--
-        Add the Premium skin branch to the web client bootstrap.
+        Premium branch of the web client bootstrap.
 
-        Native selection (web.webclient_bootstrap):
-            if color_scheme == 'dark':  web.assets_web_dark
-            else:                       web.assets_web
+        Two changes to web.webclient_bootstrap:
 
-        We replace the light/default branch so that, when not in dark mode:
-            if user.pui_skin == 'premium':  ui_theme_engine.assets_web_premium
-            else:                           web.assets_web  (Classic, untouched)
+        1) ASSET SELECTION. Native logic is:
+               if color_scheme cookie == 'dark':  web.assets_web_dark
+               else:                              web.assets_web
+           We make the Premium user OWN theming (per architecture decision
+           "Premium guides dark"): a premium user always loads the Premium
+           bundle, and light/dark is driven by our own data-pui-theme token
+           swap — NOT Odoo's separate dark bundle. Classic users are untouched
+           (native light/dark still applies verbatim).
 
-        Source of truth is the user's stored preference (res.users.pui_skin),
-        read server-side here — the choice follows the user, no cookie needed.
-        Dark mode still wins as before; Premium+dark is handled in a later phase.
+        2) HTML ATTRIBUTE. We stamp <html data-pui-theme="light|dark"> from the
+           user's stored res.users.pui_theme so the correct token set is active
+           on first paint (no flash). Only for premium users; classic gets no
+           attribute and keeps Odoo's native color-scheme behaviour.
+
+        Source of truth is the user's stored preference, read server-side here.
     -->
     <template id="webclient_bootstrap_premium" inherit_id="web.webclient_bootstrap">
-        <xpath expr="//t[@t-call-assets='web.assets_web']" position="replace">
+
+        <!--
+            1) Replace ONLY the native dark branch (t-if color_scheme=='dark')
+            with a premium-first chain that has NO trailing else. The original
+            native light branch (<t t-else="">web.assets_web</t>) is left in
+            place and becomes the else of this new chain:
+                if premium -> premium bundle
+                elif dark  -> native dark
+                else       -> native light   (original node, untouched)
+        -->
+        <xpath expr="//t[@t-call-assets='web.assets_web_dark']/.." position="replace">
             <t t-if="request.env.user.pui_skin == 'premium'">
                 <t t-call-assets="ui_theme_engine.assets_web_premium" media="screen"/>
             </t>
-            <t t-else="">
-                <t t-call-assets="web.assets_web" media="screen"/>
+            <t t-elif="request.cookies.get('color_scheme') == 'dark'">
+                <t t-call-assets="web.assets_web_dark" media="screen"/>
             </t>
+        </xpath>
+
+        <!-- 2) Stamp the theme attribute on <html> for premium users. -->
+        <xpath expr="//t[@t-set='body_classname']" position="after">
+            <t t-set="html_data"
+               t-value="{'data-pui-theme': request.env.user.pui_theme} if request.env.user.pui_skin == 'premium' else {}"/>
         </xpath>
     </template>
 </odoo>

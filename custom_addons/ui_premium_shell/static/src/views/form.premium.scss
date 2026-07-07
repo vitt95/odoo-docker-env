@@ -24,6 +24,38 @@
     font-weight: var(--pui-font-weight-medium);
 }
 
+// -----------------------------------------------------------------------------
+// Fields — flat / borderless, both themes (reference aesthetic; requested).
+// Form fields must read like the clean light-mode form: no boxed borders, just
+// a quiet baseline that turns accent on focus. Scoped to the form sheet so it
+// never touches search/settings/dialog inputs.
+// -----------------------------------------------------------------------------
+.o_form_view .o_form_sheet {
+    .o_field_widget input.o_input,
+    .o_field_widget textarea.o_input,
+    .o_field_widget .o_input,
+    .o_field_widget .o_input_dropdown > input {
+        background-color: transparent;
+        border: 0;
+        border-bottom: 1px solid transparent;
+        border-radius: 0;
+        transition: border-color var(--pui-motion-fast) var(--pui-ease);
+    }
+
+    // Reveal a quiet baseline on hover, accent on focus (no box, no ring).
+    .o_field_widget:hover input.o_input,
+    .o_field_widget:hover .o_input {
+        border-bottom-color: var(--pui-color-border);
+    }
+    .o_field_widget input.o_input:focus,
+    .o_field_widget textarea.o_input:focus,
+    .o_field_widget .o_input:focus {
+        border-bottom-color: var(--pui-color-accent);
+        box-shadow: none;
+        outline: none;
+    }
+}
+
 // Record title.
 .o_form_view .oe_title,
 .o_form_view .oe_title input {

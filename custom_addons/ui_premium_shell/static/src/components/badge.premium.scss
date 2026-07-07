@@ -11,3 +11,38 @@
 .badge.rounded-pill {
     --bs-badge-border-radius: var(--pui-radius-pill);
 }
+
+// -----------------------------------------------------------------------------
+// Semantic lozenges — ADS-style subtle status chips (reference status pills).
+// Bootstrap's .text-bg-*/.bg-* utilities set solid fill + #fff with !important,
+// so overriding needs !important to win. Scoped to NON-pill badges only: the
+// pill variant stays solid so red notification/count dots keep their strong
+// fill. Both themes via the --pui-loz-* token pairs.
+// -----------------------------------------------------------------------------
+.badge:not(.rounded-pill) {
+    &.text-bg-secondary,
+    &.bg-secondary {
+        background-color: var(--pui-loz-neutral-bg) !important;
+        color: var(--pui-loz-neutral-fg) !important;
+    }
+    &.text-bg-success,
+    &.bg-success {
+        background-color: var(--pui-loz-success-bg) !important;
+        color: var(--pui-loz-success-fg) !important;
+    }
+    &.text-bg-danger,
+    &.bg-danger {
+        background-color: var(--pui-loz-danger-bg) !important;
+        color: var(--pui-loz-danger-fg) !important;
+    }
+    &.text-bg-warning,
+    &.bg-warning {
+        background-color: var(--pui-loz-warning-bg) !important;
+        color: var(--pui-loz-warning-fg) !important;
+    }
+    &.text-bg-info,
+    &.bg-info {
+        background-color: var(--pui-loz-info-bg) !important;
+        color: var(--pui-loz-info-fg) !important;
+    }
+}

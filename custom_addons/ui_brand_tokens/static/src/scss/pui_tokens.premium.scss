@@ -1,38 +1,101 @@
 // =============================================================================
 // Premium skin — Design Tokens as CSS custom properties (--pui-*)
 // =============================================================================
-// Runtime layer of the hybrid. Emitted on :root from the same $pui-* SCSS
-// source defined in pui_variables.premium.scss (loaded earlier in this bundle),
-// so core ($o-*) and Premium components share one source of truth.
+// Runtime layer of the hybrid. Two responsibilities:
 //
-// These are consumed by Premium components (Sidebar, Shell, redesigned views).
-// Defining custom properties has no visual effect until a component references
-// them — this file alone does not alter Classic-looking core markup.
+//  1. THEME-INDEPENDENT tokens (radius, spacing, typography, motion, layout):
+//     emitted once on :root. Identical in every theme.
+//
+//  2. SEMANTIC COLOR tokens (bg/surface/text/border/accent/shadow/overlay…):
+//     emitted twice through `pui-color-tokens()` — the LIGHT set on :root and
+//     the DARK set on :root[data-pui-theme="dark"]. Components reference only
+//     these semantic names, so switching theme = swapping this one set, with
+//     ZERO changes to any component (Theme Engine contract, PROMPT_SECONDO §).
+//
+// The `data-pui-theme` attribute is written on <html> at boot (Fase C). When
+// absent, the LIGHT set on :root applies — light is the default/reference.
 // =============================================================================
 
+// -----------------------------------------------------------------------------
+// Semantic color-token emitter. One call = one complete theme.
+// Derived utilities (accent-soft, focus-ring) are computed here from the accent
+// so every theme stays internally consistent (single source -> DRY).
+// -----------------------------------------------------------------------------
+@mixin pui-color-tokens(
+    $bg, $surface, $surface-sunken, $surface-secondary,
+    $text, $heading, $secondary, $muted,
+    $border, $border-subtle, $border-strong,
+    $accent, $accent-rgb, $accent-soft-alpha, $ring-alpha, $primary-hover,
+    $success, $info, $warning, $danger,
+    $shadow-sm, $shadow-md, $shadow-lg, $overlay
+) {
+    // --- Surfaces & text ---------------------------------------------------
+    --pui-color-bg: #{$bg};
+    --pui-color-surface: #{$surface};
+    --pui-color-surface-sunken: #{$surface-sunken};
+    --pui-color-surface-secondary: #{$surface-secondary};
+    --pui-color-text: #{$text};
+    --pui-color-heading: #{$heading};
+    --pui-color-secondary: #{$secondary};
+    --pui-color-muted: #{$muted};
+
+    // --- Borders -----------------------------------------------------------
+    --pui-color-border: #{$border};
+    --pui-color-border-subtle: #{$border-subtle};
+    --pui-color-border-strong: #{$border-strong};
+
+    // --- Accent / primary --------------------------------------------------
+    --pui-color-accent: #{$accent};
+    --pui-color-primary-hover: #{$primary-hover};
+    --pui-accent-rgb: #{$accent-rgb};
+    --pui-accent-soft: #{rgba($accent, $accent-soft-alpha)}; // active/hover tint
+    --pui-focus-ring: 0 0 0 3px #{rgba($accent, $ring-alpha)}; // one ring everywhere
+
+    // --- Semantic ----------------------------------------------------------
+    --pui-color-success: #{$success};
+    --pui-color-info: #{$info};
+    --pui-color-warning: #{$warning};
+    --pui-color-danger: #{$danger};
+
+    // --- Elevation & overlay ----------------------------------------------
+    --pui-shadow-sm: #{$shadow-sm};
+    --pui-shadow-md: #{$shadow-md};
+    --pui-shadow-lg: #{$shadow-lg};
+    --pui-color-overlay: #{$overlay};
+}
+
+// -----------------------------------------------------------------------------
+// LIGHT — default set (reference). Applies whenever no dark attribute is set.
+// -----------------------------------------------------------------------------
 :root {
-    // --- Color -------------------------------------------------------------
-    --pui-color-bg: #{$pui-gray-100};
-    --pui-color-surface: #{$pui-white};
-    --pui-color-surface-sunken: #{$pui-gray-200};
-    --pui-color-text: #{$pui-gray-700};
-    --pui-color-heading: #{$pui-gray-900};
-    --pui-color-secondary: #{$pui-gray-600};
-    --pui-color-muted: #{$pui-gray-500};
-    --pui-color-border: #{$pui-gray-300};
-    --pui-color-border-strong: #{$pui-gray-400};
+    @include pui-color-tokens(
+        $bg: $pui-white, // reference: white page canvas
+        $surface: $pui-white,
+        $surface-sunken: $pui-gray-100, // soft-white wells / kanban columns
+        $surface-secondary: $pui-gray-100,
+        $text: $pui-navy-text, // Atlassian navy ramp
+        $heading: $pui-navy-heading,
+        $secondary: $pui-navy-secondary,
+        $muted: $pui-navy-muted,
+        $border: $pui-gray-300,
+        $border-subtle: $pui-gray-200,
+        $border-strong: $pui-gray-400,
+        $accent: $pui-accent,
+        $accent-rgb: $pui-accent-rgb,
+        $accent-soft-alpha: 0.10,
+        $ring-alpha: 0.25,
+        $primary-hover: darken($pui-accent, 6%),
+        $success: $pui-success,
+        $info: $pui-info,
+        $warning: $pui-warning,
+        $danger: $pui-danger,
+        $shadow-sm: $pui-shadow-sm,
+        $shadow-md: $pui-shadow-md,
+        $shadow-lg: $pui-shadow-lg,
+        $overlay: rgba(16, 24, 40, 0.40)
+    );
 
-    --pui-color-accent: #{$pui-accent};
-    --pui-accent-rgb: #{$pui-accent-rgb};
-    // Derived accent utilities (single source -> consistency, DRY).
-    --pui-accent-soft: #{rgba($pui-accent, 0.10)}; // subtle tint (active/hover bg)
-    --pui-focus-ring: 0 0 0 3px #{rgba($pui-accent, 0.25)}; // one focus ring everywhere
-    --pui-color-success: #{$pui-success};
-    --pui-color-info: #{$pui-info};
-    --pui-color-warning: #{$pui-warning};
-    --pui-color-danger: #{$pui-danger};
-
-    // --- Radius ------------------------------------------------------------
+    // --- Radius (theme-independent) ---------------------------------------
     --pui-radius-sm: #{$pui-radius-sm};
     --pui-radius-md: #{$pui-radius-md};
     --pui-radius-lg: #{$pui-radius-lg};
@@ -68,11 +131,6 @@
     --pui-line-base: #{$pui-line-base};
     --pui-line-loose: #{$pui-line-loose};
 
-    // --- Elevation ---------------------------------------------------------
-    --pui-shadow-sm: #{$pui-shadow-sm};
-    --pui-shadow-md: #{$pui-shadow-md};
-    --pui-shadow-lg: #{$pui-shadow-lg};
-
     // --- Motion ------------------------------------------------------------
     --pui-motion-fast: #{$pui-motion-fast};
     --pui-motion-base: #{$pui-motion-base};
@@ -81,8 +139,104 @@
     --pui-ease-out: #{$pui-ease-out};
     --pui-ease-in: #{$pui-ease-in};
 
-    // --- Layout (shell dimensions, consumed in Fase 6) ---------------------
+    // --- Layout (shell dimensions) ----------------------------------------
     --pui-sidebar-width: #{$pui-sidebar-width};
     --pui-sidebar-width-collapsed: #{$pui-sidebar-width-collapsed};
     --pui-navbar-height: #{$pui-navbar-height};
+
+    // --- Interaction layers (LIGHT) ---------------------------------------
+    --pui-color-selected: var(--pui-accent-soft); // selected filter/nav (ADS subtle blue)
+    --pui-color-selected-text: #{$pui-accent};
+    --pui-color-hover: #{$pui-gray-200}; // subtle neutral hover on surface
+    // Elevated plane (dropdown/modal/popover): white on the white canvas,
+    // depth from shadow (ADS light elevation). Dark overrides to a lighter navy.
+    --pui-color-elevated: #{$pui-white};
+
+    // --- Lozenge / status chips (LIGHT) -----------------------------------
+    --pui-loz-neutral-bg: #{$pui-loz-neutral-bg};
+    --pui-loz-neutral-fg: #{$pui-loz-neutral-fg};
+    --pui-loz-success-bg: #{$pui-loz-success-bg};
+    --pui-loz-success-fg: #{$pui-loz-success-fg};
+    --pui-loz-warning-bg: #{$pui-loz-warning-bg};
+    --pui-loz-warning-fg: #{$pui-loz-warning-fg};
+    --pui-loz-danger-bg: #{$pui-loz-danger-bg};
+    --pui-loz-danger-fg: #{$pui-loz-danger-fg};
+    --pui-loz-info-bg: #{$pui-loz-info-bg};
+    --pui-loz-info-fg: #{$pui-loz-info-fg};
+    --pui-status-success-solid: #{$pui-status-success-solid};
+    --pui-status-success-solid-fg: #{$pui-status-success-solid-fg};
+
+    // --- Avatar palette (theme-independent — defined once, applies to both)
+    --pui-avatar-1: #{$pui-avatar-1};
+    --pui-avatar-2: #{$pui-avatar-2};
+    --pui-avatar-3: #{$pui-avatar-3};
+    --pui-avatar-4: #{$pui-avatar-4};
+    --pui-avatar-5: #{$pui-avatar-5};
+    --pui-avatar-6: #{$pui-avatar-6};
+}
+
+// -----------------------------------------------------------------------------
+// DARK — swaps only the semantic color set. Everything else inherits from :root.
+// -----------------------------------------------------------------------------
+:root[data-pui-theme="dark"] {
+    @include pui-color-tokens(
+        $bg: $pui-d-bg,
+        $surface: $pui-d-surface,
+        $surface-sunken: $pui-d-surface-sunken,
+        $surface-secondary: $pui-d-surface-secondary,
+        $text: $pui-d-text,
+        $heading: $pui-d-heading,
+        $secondary: $pui-d-secondary,
+        $muted: $pui-d-muted,
+        $border: $pui-d-border,
+        $border-subtle: $pui-d-border-subtle,
+        $border-strong: $pui-d-border-strong,
+        $accent: $pui-d-accent,
+        $accent-rgb: $pui-d-accent-rgb,
+        $accent-soft-alpha: 0.18,
+        $ring-alpha: 0.35,
+        $primary-hover: lighten($pui-d-accent, 6%),
+        $success: $pui-d-success,
+        $info: $pui-d-info,
+        $warning: $pui-d-warning,
+        $danger: $pui-d-danger,
+        $shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.40),
+        $shadow-md: 0 4px 12px rgba(0, 0, 0, 0.45),
+        $shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.55),
+        $overlay: rgba(0, 0, 0, 0.60)
+    );
+
+    // --- Bootstrap 5.3 runtime bridge -------------------------------------
+    // Core Odoo chrome not yet pointed at --pui-* still reads Bootstrap's
+    // runtime vars. Remapping these darkens body/text/borders app-wide so the
+    // whole shell follows the toggle (not only Premium components).
+    color-scheme: dark;
+    --bs-body-bg: #{$pui-d-bg};
+    --bs-body-color: #{$pui-d-text};
+    --bs-emphasis-color: #{$pui-d-heading};
+    --bs-secondary-color: #{$pui-d-secondary};
+    --bs-tertiary-color: #{$pui-d-muted};
+    --bs-border-color: #{$pui-d-border};
+    --bs-secondary-bg: #{$pui-d-surface-secondary};
+    --bs-tertiary-bg: #{$pui-d-surface-sunken};
+
+    // --- Interaction layers (DARK) ----------------------------------------
+    --pui-color-selected: var(--pui-accent-soft);
+    --pui-color-selected-text: #{$pui-d-accent};
+    --pui-color-elevated: #{$pui-d-surface-secondary}; // lighter navy, ADS dark elevation
+    --pui-color-hover: #{$pui-d-loz-neutral-bg}; // one step above elevated so menu hover stays visible
+
+    // --- Lozenge / status chips (DARK) ------------------------------------
+    --pui-loz-neutral-bg: #{$pui-d-loz-neutral-bg};
+    --pui-loz-neutral-fg: #{$pui-d-loz-neutral-fg};
+    --pui-loz-success-bg: #{$pui-d-loz-success-bg};
+    --pui-loz-success-fg: #{$pui-d-loz-success-fg};
+    --pui-loz-warning-bg: #{$pui-d-loz-warning-bg};
+    --pui-loz-warning-fg: #{$pui-d-loz-warning-fg};
+    --pui-loz-danger-bg: #{$pui-d-loz-danger-bg};
+    --pui-loz-danger-fg: #{$pui-d-loz-danger-fg};
+    --pui-loz-info-bg: #{$pui-d-loz-info-bg};
+    --pui-loz-info-fg: #{$pui-d-loz-info-fg};
+    --pui-status-success-solid: #{$pui-d-status-success-solid};
+    --pui-status-success-solid-fg: #{$pui-d-status-success-solid-fg};
 }

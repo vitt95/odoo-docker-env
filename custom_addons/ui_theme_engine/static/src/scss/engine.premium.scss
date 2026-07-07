@@ -1,6 +1,636 @@
-// -----------------------------------------------------------------------------
-// Premium skin — engine-level styles
-// -----------------------------------------------------------------------------
-// Fase 0 (Skeleton): placeholder. Skin-switching logic lives server-side
-// (bundle selection) + controllers/skin.py; no styles needed yet.
-// -----------------------------------------------------------------------------
+// =============================================================================
+// Premium Theme Engine — Dark bridge for Odoo core surfaces
+// =============================================================================
+// Our components read only --pui-* tokens, so they follow the light/dark swap
+// for free. Odoo CORE chrome, however, is compiled from static $o-* SCSS colors
+// (white view backgrounds, near-black gray text) that CANNOT be turned into CSS
+// variables — they are consumed inside SCSS color math (mix/rgba/darken), which
+// requires real colors at compile time.
+//
+// So core dark is delivered here as a comprehensive override sheet scoped under
+// html[data-pui-theme="dark"] — the SAME pattern Odoo itself uses for its native
+// dark bundle (web.assets_web + **/*.dark.scss). It re-points core surfaces,
+// text, borders and elevation at --pui-* tokens. Light is untouched (this block
+// never matches without the attribute). The swap stays instant/reload-free.
+//
+// Elevation model (MUI3 quality benchmark): depth via progressively lighter
+// surfaces, not heavy shadows —
+//   bg (canvas) / sunken (inputs)  <  surface (cards)  <  surface-secondary
+//   (elevated: dropdown / modal / popover / headers / hover).
+// `!important` is used only where needed to beat compiled Bootstrap/Odoo utility
+// classes (.bg-*, .text-*, table vars).
+// =============================================================================
+
+html[data-pui-theme="dark"] {
+    color-scheme: dark;
+
+    // -------------------------------------------------------------------------
+    // 1. Base — webclient canvas + default text
+    // -------------------------------------------------------------------------
+    .o_web_client,
+    .o_action_manager,
+    .o_content,
+    .o_view_controller,
+    .o_renderer,
+    .o_kanban_renderer,
+    .o_calendar_view,
+    .o_form_view {
+        background-color: var(--pui-color-bg);
+        color: var(--pui-color-text);
+    }
+
+    // -------------------------------------------------------------------------
+    // 2. Surfaces (level 1) — cards, panels, sheets, tables, list
+    // -------------------------------------------------------------------------
+    .o_list_view,
+    .o_list_renderer,
+    .o_kanban_record:not(.o_kanban_ghost),
+    .o_form_sheet,
+    .o_setting_container .settings,
+    .card,
+    .o_field_many2many_tags_avatar_card,
+    .oe_kanban_card,
+    .o_dashboards,
+    .o_calendar_sidebar,
+    .o_search_panel {
+        background-color: var(--pui-color-surface);
+        color: var(--pui-color-text);
+        border-color: var(--pui-color-border);
+    }
+
+    // Form sheet floats on the canvas.
+    .o_form_view .o_form_sheet_bg {
+        background-color: var(--pui-color-bg);
+    }
+
+    // -------------------------------------------------------------------------
+    // 3. Elevated (level 2) — dropdowns, modals, popovers, tooltips, headers
+    // -------------------------------------------------------------------------
+    .dropdown-menu,
+    .o-dropdown--menu,
+    .o_popover,
+    .popover {
+        --bs-dropdown-bg: var(--pui-color-elevated);
+        --bs-popover-bg: var(--pui-color-elevated);
+        background-color: var(--pui-color-elevated) !important;
+        color: var(--pui-color-text);
+        border: 1px solid var(--pui-color-border);
+        box-shadow: var(--pui-shadow-lg);
+    }
+    .modal-content,
+    .o_dialog .modal-content {
+        --bs-modal-bg: var(--pui-color-elevated);
+        background-color: var(--pui-color-elevated);
+        color: var(--pui-color-text);
+        border: 1px solid var(--pui-color-border);
+    }
+    .modal-header,
+    .modal-footer {
+        border-color: var(--pui-color-border) !important;
+    }
+    .tooltip-inner,
+    .o-tooltip {
+        background-color: var(--pui-color-surface-secondary);
+        color: var(--pui-color-text);
+        border: 1px solid var(--pui-color-border);
+    }
+    .modal-backdrop.show {
+        background-color: var(--pui-color-overlay);
+    }
+
+    // -------------------------------------------------------------------------
+    // 4. Sunken — inputs / wells (below the card plane, always with a border)
+    // -------------------------------------------------------------------------
+    .o_field_widget input.o_input,
+    .o_field_widget textarea.o_input,
+    .o_field_widget .o_input,
+    .o_input,
+    .o_user_emails,
+    input.form-control,
+    textarea.form-control,
+    .form-control,
+    .form-select,
+    .o_searchview,
+    .o_cp_searchview {
+        background-color: var(--pui-color-surface-sunken);
+        color: var(--pui-color-text);
+        border: 1px solid var(--pui-color-border-strong);
+        border-radius: var(--pui-radius-md);
+    }
+    .o_searchview input,
+    .o_searchview_input {
+        background-color: transparent;
+        color: var(--pui-color-text);
+        &::placeholder { color: var(--pui-color-muted); }
+    }
+    ::placeholder { color: var(--pui-color-muted) !important; }
+
+    // -------------------------------------------------------------------------
+    // 4b. Buttons — the light/secondary variants compile to white ($white),
+    //     which reads as bright blobs in dark (toolbars, "…" menus, calendar
+    //     nav, discuss). Re-point their Bootstrap vars at tokens (no !important).
+    // -------------------------------------------------------------------------
+    .btn-light,
+    .btn-secondary,
+    .btn.btn-light,
+    .btn.btn-secondary {
+        --bs-btn-bg: var(--pui-color-surface-secondary);
+        --bs-btn-color: var(--pui-color-secondary);
+        --bs-btn-border-color: var(--pui-color-border);
+        --bs-btn-hover-bg: var(--pui-color-surface);
+        --bs-btn-hover-color: var(--pui-color-heading);
+        --bs-btn-hover-border-color: var(--pui-color-border-strong);
+        --bs-btn-active-bg: var(--pui-color-surface);
+        --bs-btn-active-color: var(--pui-color-heading);
+        --bs-btn-active-border-color: var(--pui-color-border-strong);
+    }
+
+    // -------------------------------------------------------------------------
+    // 5. Text — remap the compiled gray-ramp utilities to token text colors
+    // -------------------------------------------------------------------------
+    .text-900, .text-dark, h1, h2, h3, h4, h5, h6 {
+        color: var(--pui-color-heading) !important;
+    }
+    .text-800, .text-700, .o_form_label, label {
+        color: var(--pui-color-text) !important;
+    }
+    .text-600, .text-muted, .o_form_uri ~ .text-muted {
+        color: var(--pui-color-secondary) !important;
+    }
+    .text-500, .text-400 {
+        color: var(--pui-color-muted) !important;
+    }
+    a:not(.btn):not(.o_menu_entry_lvl_1):not(.dropdown-item) {
+        color: var(--pui-color-accent);
+    }
+
+    // -------------------------------------------------------------------------
+    // 6. Borders / separators that hardcode light grays
+    // -------------------------------------------------------------------------
+    .border, .border-top, .border-bottom, .border-start, .border-end,
+    .o_horizontal_separator, hr {
+        border-color: var(--pui-color-border) !important;
+    }
+    .o_horizontal_separator { color: var(--pui-color-heading) !important; }
+
+    // -------------------------------------------------------------------------
+    // 7. Settings app — themeable CSS vars + remaining light surfaces (B1)
+    // -------------------------------------------------------------------------
+    .o_setting_container {
+        --settings__tab-bg: var(--pui-color-surface);
+        --settings__tab-bg--active: var(--pui-accent-soft);
+        --settings__tab-color: var(--pui-color-secondary);
+        --settings__title-bg: var(--pui-color-surface-secondary);
+
+        .settings_tab { border-right: 1px solid var(--pui-color-border); }
+        .settings_tab .tab:hover,
+        .settings_tab .tab.selected { color: var(--pui-color-heading); }
+
+        .settings .app_settings_block h2 {
+            color: var(--pui-color-heading);
+        }
+        .settingSearchHeader {
+            background-color: var(--pui-color-surface-secondary) !important;
+            color: var(--pui-color-secondary);
+        }
+        // App-tile setting boxes.
+        .o_setting_box .o_form_label,
+        .o_setting_right_pane .text-muted { color: var(--pui-color-secondary); }
+    }
+
+    // -------------------------------------------------------------------------
+    // 8. Kanban / dashboards (B2, B3, B6)
+    // -------------------------------------------------------------------------
+    .o_kanban_record:not(.o_kanban_ghost) {
+        .o_kanban_record_title, strong, b, .fw-bold, .fw-bolder {
+            color: var(--pui-color-heading);
+        }
+        .text-muted, small, .o_kanban_record_subtitle {
+            color: var(--pui-color-secondary) !important;
+        }
+    }
+    // Bar-chart / progress placeholders drawn with light grays.
+    .o_kanban_record .bg-200,
+    .o_kanban_record .bg-100,
+    .progress {
+        background-color: var(--pui-color-surface-secondary) !important;
+    }
+    // Add-column ghost + its button (B6).
+    .o_kanban_group.o_kanban_add_column,
+    .o_column_quick_create .o_quick_create_folded,
+    .o_column_quick_create .o_quick_create_unfolded {
+        background-color: var(--pui-color-surface-secondary) !important;
+        color: var(--pui-color-text);
+    }
+    .o_kanban_add_column,
+    .o_kanban_config { color: var(--pui-color-secondary); }
+
+    // -------------------------------------------------------------------------
+    // 9. Tables / list rows
+    // -------------------------------------------------------------------------
+    .o_list_table {
+        color: var(--pui-color-text);
+        thead th {
+            background-color: var(--pui-color-surface) !important;
+            color: var(--pui-color-secondary) !important;
+            border-color: var(--pui-color-border) !important;
+        }
+        td, .o_data_cell { border-color: var(--pui-color-border-subtle) !important; }
+        .o_data_row:hover > .o_data_cell {
+            background-color: var(--pui-color-surface-secondary) !important;
+        }
+        tfoot { border-color: var(--pui-color-border) !important; }
+    }
+
+    // -------------------------------------------------------------------------
+    // 10. Generic Bootstrap surface utilities (catch-all for stray light fills)
+    // -------------------------------------------------------------------------
+    .bg-white, .bg-view, .bg-light {
+        background-color: var(--pui-color-surface) !important;
+    }
+    .bg-100 { background-color: var(--pui-color-surface) !important; }
+    .bg-200, .bg-300 { background-color: var(--pui-color-surface-secondary) !important; }
+
+    // Navbar: force dark surface + kill any compiled white on the app-section
+    // entries / brand (they inherit $o-navbar-* which is white in the light map).
+    .o_main_navbar {
+        background-color: var(--pui-color-surface);
+        border-bottom-color: var(--pui-color-border);
+        color: var(--pui-color-text);
+
+        .o_menu_brand { color: var(--pui-color-heading); }
+
+        .o_menu_sections {
+            .o_nav_entry, .dropdown-toggle, > button {
+                background-color: transparent !important;
+                color: var(--pui-color-secondary) !important;
+            }
+            .o_nav_entry:hover, .dropdown-toggle:hover, > button:hover,
+            .o_nav_entry.active, .show > .dropdown-toggle {
+                color: var(--pui-color-heading) !important;
+                background-color: var(--pui-color-surface-secondary) !important;
+            }
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // 11. Scrollbars — subtle, on-surface
+    // -------------------------------------------------------------------------
+    * {
+        scrollbar-color: var(--pui-color-border-strong) transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+        background-color: var(--pui-color-border-strong);
+        border-radius: var(--pui-radius-pill);
+    }
+    ::-webkit-scrollbar-track { background: transparent; }
+
+    // -------------------------------------------------------------------------
+    // 12. Calendar (FullCalendar) — grid, cells, headers, mini-picker, sidebar
+    //     Core hardcodes $o-view-background-color (white) + --fc-page-bg-color.
+    // -------------------------------------------------------------------------
+    .o_calendar_view,
+    .o_calendar_container,
+    .o_calendar_renderer,
+    .fc,
+    .fc-view-harness,
+    .fc .fc-scroller-harness,
+    .fc-col-header-cell,
+    .fc-timegrid-slot,
+    .fc-timegrid-axis,
+    .fc-daygrid-day,
+    .fc-list {
+        background-color: var(--pui-color-surface) !important;
+        color: var(--pui-color-text);
+    }
+    .fc {
+        --fc-page-bg-color: #{"var(--pui-color-surface)"};
+        --fc-neutral-bg-color: #{"var(--pui-color-surface-secondary)"};
+        --fc-border-color: #{"var(--pui-color-border)"};
+        --fc-list-event-hover-bg-color: #{"var(--pui-color-surface-secondary)"};
+        --fc-page-bg-color: var(--pui-color-surface);
+    }
+    .fc-theme-standard td,
+    .fc-theme-standard th,
+    .fc-scrollgrid,
+    .fc-timegrid-slot,
+    .fc-col-header-cell {
+        border-color: var(--pui-color-border) !important;
+    }
+    .fc-col-header-cell-cushion,
+    .fc-timegrid-slot-label-cushion,
+    .fc-timegrid-axis-cushion,
+    .fc-daygrid-day-number,
+    .fc-list-day-cushion {
+        color: var(--pui-color-secondary) !important;
+    }
+    .fc-cell-shaded,
+    .fc-day-disabled {
+        background-color: var(--pui-color-surface-sunken) !important;
+    }
+    // Mini month picker in the calendar side panel.
+    .o_datetime_picker,
+    .o_calendar_sidebar {
+        background-color: var(--pui-color-surface);
+        color: var(--pui-color-text);
+        .o_date_item_cell, .o_datetime_button { color: var(--pui-color-text); }
+        .o_today { color: var(--pui-color-accent); }
+    }
+
+    // -------------------------------------------------------------------------
+    // 13. Search panel (left faceted filter column) — B(new): white boxes
+    // -------------------------------------------------------------------------
+    .o_search_panel,
+    .o_search_panel_section,
+    .o_search_panel_field,
+    .o_search_panel_category,
+    .o_search_panel_filter {
+        background-color: var(--pui-color-surface) !important;
+        border-color: var(--pui-color-border) !important;
+        color: var(--pui-color-text);
+    }
+    .o_search_panel_section_header,
+    .o_search_panel_label_title { color: var(--pui-color-secondary); }
+    .o_search_panel_category_value .active,
+    .o_search_panel_category_value .o_search_panel_value.active,
+    .o_search_panel_field .active {
+        background-color: var(--pui-accent-soft) !important;
+        color: var(--pui-color-accent) !important;
+    }
+    .o_search_panel_counter { color: var(--pui-color-muted); }
+
+    // -------------------------------------------------------------------------
+    // 14. Kanban add-column ("+ Stage/Fase") — B6 residual white button/panel
+    // -------------------------------------------------------------------------
+    .o_column_quick_create,
+    .o_column_quick_create .o_quick_create_folded,
+    .o_column_quick_create .o_quick_create_unfolded,
+    .o_kanban_add_column {
+        background-color: var(--pui-color-surface-secondary) !important;
+        color: var(--pui-color-text) !important;
+        border-color: var(--pui-color-border) !important;
+    }
+    .o_column_quick_create .o_quick_create_folded:hover {
+        background-color: var(--pui-color-surface) !important;
+    }
+
+    // -------------------------------------------------------------------------
+    // 15. Discuss / Mail — main panels that still read light
+    // -------------------------------------------------------------------------
+    .o-mail-DiscussSidebar,
+    .o-mail-Discuss-content,
+    .o-mail-Thread,
+    .o-mail-Message,
+    .o-mail-Composer,
+    .o-mail-Composer-input {
+        background-color: var(--pui-color-surface);
+        color: var(--pui-color-text);
+    }
+    .o-mail-DiscussSidebar,
+    .o-mail-discussSidebarBgColor,
+    .o-mail-DiscussSidebar > div:first-child,
+    .o-mail-DiscussSidebar-header {
+        background-color: var(--pui-color-surface-secondary) !important;
+        border-color: var(--pui-color-border) !important;
+    }
+    .o-mail-Composer-input { background-color: var(--pui-color-surface-sunken); }
+    // Selected sidebar item: core mixes white+action (~#efeffb, near-white in
+    // dark). Re-point its var to the token accent tint.
+    .o-mail-DiscussSidebar-item,
+    .o-mail-DiscussSidebarChannel {
+        --mail-DiscussSidebar-itemActiveBgColor: var(--pui-accent-soft);
+    }
+    // Messaging-menu / systray dropdown (notifications) surfaces.
+    .o-mail-MessagingMenu,
+    .o-mail-NotificationItem {
+        background-color: var(--pui-color-surface-secondary);
+        color: var(--pui-color-text);
+    }
+    .o-mail-NotificationItem:hover {
+        background-color: var(--pui-color-surface) !important;
+    }
+
+    // -------------------------------------------------------------------------
+    // 16. Menu / dropdown item readability (Bug #1: items too dim)
+    // -------------------------------------------------------------------------
+    .dropdown-item,
+    .o-dropdown-item,
+    .o_menu_item,
+    .o-navbar-dropdownItem,
+    .o_menu_item > a,
+    .dropdown-menu a {
+        color: var(--pui-color-text) !important;
+    }
+    .dropdown-item:hover,
+    .o-dropdown-item:hover,
+    .o_menu_item:hover,
+    .dropdown-item.focus,
+    .dropdown-item:focus,
+    .o-dropdown-item.focus {
+        background-color: var(--pui-accent-soft) !important;
+        color: var(--pui-color-heading) !important;
+    }
+    .dropdown-item.selected,
+    .dropdown-item.active,
+    .o_menu_item.selected {
+        background-color: var(--pui-accent-soft) !important;
+        color: var(--pui-color-accent) !important;
+    }
+    // Search-panel / filter menu section headings stay bright, muted counters dim.
+    .o_menu_item .fa,
+    .dropdown-item .fa { color: var(--pui-color-secondary); }
+
+    // -------------------------------------------------------------------------
+    // 17. Form view — statusbar, notebook bar, fields (Bug #2, #4)
+    // -------------------------------------------------------------------------
+    .o_form_view {
+        // Statusbar arrow pills: core paints them white.
+        .o_form_statusbar,
+        .o_statusbar_status {
+            background-color: var(--pui-color-surface) !important;
+        }
+        .o_statusbar_status .btn,
+        .o_statusbar_status .o_arrow_button {
+            background-color: var(--pui-color-surface-secondary) !important;
+            color: var(--pui-color-secondary) !important;
+        }
+        .o_statusbar_status .btn.o_arrow_button_current,
+        .o_statusbar_status .btn.disabled.o_arrow_button_current,
+        .o_statusbar_status .o_arrow_button.o_first {
+            background-color: var(--pui-accent-soft) !important;
+            color: var(--pui-color-accent) !important;
+        }
+
+        // Notebook: kill the white tab-bar; keep a token baseline.
+        .o_notebook .o_notebook_headers,
+        .o_notebook .nav-tabs {
+            background-color: transparent !important;
+            border-bottom-color: var(--pui-color-border) !important;
+        }
+        .o_notebook .nav-item .nav-link.active {
+            background-color: transparent !important;
+            border-color: transparent transparent var(--pui-color-accent) !important;
+        }
+
+        // In-form list (one2many) rows: token, not white.
+        .o_field_x2many .o_list_table,
+        .o_field_x2many .o_list_renderer {
+            --table-bg: var(--pui-color-surface);
+            --bs-table-bg: var(--pui-color-surface);
+            background-color: var(--pui-color-surface);
+        }
+        .o_field_x2many .o_list_table th {
+            background-color: var(--pui-color-surface) !important;
+            color: var(--pui-color-secondary) !important;
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // 18. List view rows (Bug #2: white rows)
+    // -------------------------------------------------------------------------
+    .o_list_view .o_list_table {
+        --table-bg: var(--pui-color-surface);
+        --bs-table-bg: var(--pui-color-surface);
+    }
+    .o_list_view .o_list_table > tbody > tr,
+    .o_list_view .o_data_row {
+        background-color: var(--pui-color-surface);
+    }
+
+    // -------------------------------------------------------------------------
+    // 19. Chatter — header/topbar + message list still reading light
+    // -------------------------------------------------------------------------
+    .o-mail-Chatter,
+    .o-mail-Chatter-topbar,
+    .o-mail-Chatter .o-mail-Thread,
+    .o-mail-Chatter-content {
+        background-color: var(--pui-color-surface) !important;
+        color: var(--pui-color-text);
+    }
+    .o-mail-Chatter-topbar {
+        border-bottom-color: var(--pui-color-border) !important;
+    }
+
+    // -------------------------------------------------------------------------
+    // 20. View switcher (control panel) — keep dark in every state (Bug #2)
+    // -------------------------------------------------------------------------
+    .o_cp_switch_buttons .btn {
+        background-color: transparent !important;
+        color: var(--pui-color-secondary) !important;
+    }
+    .o_cp_switch_buttons .btn.active,
+    .o_cp_switch_buttons .btn.o_cp_switch_active {
+        background-color: var(--pui-color-surface-secondary) !important;
+        color: var(--pui-color-accent) !important;
+    }
+
+    // -------------------------------------------------------------------------
+    // 21. Systray dropdowns — messaging / activity / company (were still light)
+    // -------------------------------------------------------------------------
+    // Messaging menu: items default to var(--mail-MessagingMenu-bg, white) and
+    // unread/hover use mix()!important. Re-point the var + beat the !important.
+    --mail-MessagingMenu-bg: var(--pui-color-surface-secondary);
+    .o-mail-NotificationItem {
+        background-color: var(--pui-color-surface-secondary) !important;
+        color: var(--pui-color-text);
+    }
+    .o-mail-NotificationItem.o-unread {
+        background-color: var(--pui-accent-soft) !important;
+    }
+    .o-mail-NotificationItem:hover,
+    .o-mail-NotificationItem.o-active,
+    .o-mail-NotificationItem.o-unread:hover {
+        background-color: var(--pui-color-surface) !important;
+    }
+    .o-mail-NotificationItem-name,
+    .o-mail-NotificationItem-text { color: var(--pui-color-text) !important; }
+    .o-mail-NotificationItem-counter,
+    .o-mail-NotificationItem-date { color: var(--pui-color-muted) !important; }
+
+    // Activity menu dropdown.
+    .o-mail-ActivityMenu,
+    .o-mail-ActivityGroup,
+    .o-mail-ActivityGroup-icon {
+        background-color: var(--pui-color-surface-secondary) !important;
+        color: var(--pui-color-text);
+    }
+    .o-mail-ActivityGroup:hover { background-color: var(--pui-color-surface) !important; }
+
+    // Switch-company menu: selected/hover rows use light grays / company mix.
+    .o_switch_company_menu_items .selected,
+    .o_switch_company_menu_items .log_into:hover,
+    .o_switch_company_menu .selected {
+        background-color: var(--pui-accent-soft) !important;
+        color: var(--pui-color-heading) !important;
+    }
+    .o_switch_company_menu_items .toggle_company:hover,
+    .o_switch_company_menu_items > div:hover {
+        background-color: var(--pui-color-surface) !important;
+    }
+
+    // -------------------------------------------------------------------------
+    // 22. Command palette (Ctrl+K) — full-screen overlay dialog
+    // -------------------------------------------------------------------------
+    .o_command_palette,
+    .o_command_palette_listbox,
+    .o_command_palette_search,
+    .o_command_palette_footer {
+        background-color: var(--pui-color-surface-secondary) !important;
+        color: var(--pui-color-text);
+        border-color: var(--pui-color-border) !important;
+    }
+    .o_command_palette_search input { background-color: transparent; color: var(--pui-color-text); }
+    .o_command_category { color: var(--pui-color-secondary) !important; }
+    .o_command.focused,
+    .o_command:hover {
+        background-color: var(--pui-accent-soft) !important;
+        color: var(--pui-color-heading) !important;
+    }
+
+    // -------------------------------------------------------------------------
+    // 23. Pivot / Graph views + Attachment (FileViewer) + breadcrumb input
+    // -------------------------------------------------------------------------
+    .o_pivot_view, .o_pivot, .o_graph_view, .o_graph_renderer,
+    .o_pivot table, .o_pivot thead th, .o_pivot tbody td {
+        background-color: var(--pui-color-surface) !important;
+        color: var(--pui-color-text);
+        border-color: var(--pui-color-border) !important;
+    }
+    .o_pivot .o_pivot_header_cell_closed,
+    .o_pivot .o_pivot_measure_row { color: var(--pui-color-secondary) !important; }
+
+    .o-FileViewer,
+    .o-FileViewer-header,
+    .o-FileViewer-view {
+        background-color: var(--pui-color-overlay) !important;
+        color: var(--pui-color-text);
+    }
+
+    // Breadcrumb rename input (new record) reads white in the top bar.
+    .o_breadcrumb input,
+    .o_control_panel_breadcrumbs input {
+        background-color: var(--pui-color-surface-sunken) !important;
+        color: var(--pui-color-heading) !important;
+        border-color: var(--pui-color-border) !important;
+    }
+
+    // -------------------------------------------------------------------------
+    // 24. Kanban board canvas (belt: force dark, beat core white renderer).
+    //     Columns/headers stay TRANSPARENT (reference look) — cards float on
+    //     the canvas; only the renderer background is themed here.
+    // -------------------------------------------------------------------------
+    .o_kanban_renderer,
+    .o_kanban_view .o_kanban_renderer {
+        background-color: var(--pui-color-bg) !important;
+    }
+    .o_kanban_renderer.o_kanban_grouped .o_kanban_group {
+        background-color: transparent !important;
+    }
+    // Sticky header: opaque canvas (never white, no bleed-through on scroll).
+    .o_kanban_renderer.o_kanban_grouped .o_kanban_header {
+        background-color: var(--pui-color-bg) !important;
+    }
+    .o_column_title {
+        color: var(--pui-color-secondary) !important;
+    }
+}

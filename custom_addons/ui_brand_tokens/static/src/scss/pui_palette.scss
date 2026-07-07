@@ -10,7 +10,7 @@
 // =============================================================================
 
 // -----------------------------------------------------------------------------
-// COLOR — cool neutral ramp + indigo accent (Linear/Stripe/Vercel register)
+// COLOR — cool neutral ramp + Atlassian blue accent (reference: Jira Cloud / ADS)
 // -----------------------------------------------------------------------------
 $pui-white: #ffffff;
 $pui-black: #000000;
@@ -25,19 +25,94 @@ $pui-gray-700: #3f4653; // body text
 $pui-gray-800: #262b35; // strong text
 $pui-gray-900: #14181f; // headings
 
-$pui-accent: #5b5bd6; // brand / primary action
-$pui-accent-rgb: 91, 91, 214; // for rgba() glows/focus rings
+$pui-accent: #0c66e4; // brand / primary action — Atlassian blue (reference)
+$pui-accent-rgb: 12, 102, 228; // for rgba() glows/focus rings
 $pui-success: #16a34a;
 $pui-info: #0ea5e9;
 $pui-warning: #f59e0b;
 $pui-danger: #e5484d;
 
+// Light TEXT — Atlassian navy ramp (reference reads navy-tinted, not pure gray)
+$pui-navy-heading: #172b4d; // N800 — headings, card titles, strong text
+$pui-navy-text: #2c3e5d; // body text (navy, comfortable)
+$pui-navy-secondary: #44546f; // secondary / field values
+$pui-navy-muted: #626f86; // muted, placeholders, meta
+
+// Lozenge / status-chip pairs — LIGHT (ADS lozenge: subtle bg + readable fg)
+$pui-loz-neutral-bg: #f1f2f4;
+$pui-loz-neutral-fg: #44546f;
+$pui-loz-success-bg: #dcfff1;
+$pui-loz-success-fg: #216e4e;
+$pui-loz-warning-bg: #fff7d6;
+$pui-loz-warning-fg: #a54800;
+$pui-loz-danger-bg: #ffeceb;
+$pui-loz-danger-fg: #ae2e24;
+$pui-loz-info-bg: #e9f2ff;
+$pui-loz-info-fg: #0055cc;
+// Solid status (reference "Fixed" pill: bold green, dark text)
+$pui-status-success-solid: #4bce97;
+$pui-status-success-solid-fg: #164b35;
+
+// Avatar palette — theme-independent (reference colored initials avatars)
+$pui-avatar-1: #6554c0; // purple
+$pui-avatar-2: #1d7afc; // blue
+$pui-avatar-3: #2898bd; // teal
+$pui-avatar-4: #e56910; // orange
+$pui-avatar-5: #ca3521; // red
+$pui-avatar-6: #22a06b; // green
+
+// -----------------------------------------------------------------------------
+// COLOR — DARK ramp (cool navy neutrals, same indigo hue brightened for contrast)
+// -----------------------------------------------------------------------------
+// MUI3-inspired elevation model (quality benchmark only, NOT MUI aesthetics):
+// depth comes from progressively LIGHTER surfaces, not from heavy shadows. Four
+// distinct levels keep every panel separable without aggressive contrast.
+//   bg (base, lowest)  <  sunken (wells/inputs)  is darkest pair
+//   surface (cards)  <  surface-secondary (elevated: dropdown/modal/header)
+// Reference visual language stays Atlassian navy; MUI drives only the layering.
+// Values aligned to the reference board (Atlassian dark neutrals) for fidelity:
+// canvas #1D2125, raised card #22272B, overlay #282E33 — surfaces get lighter
+// with elevation (comfort model preserved), text at Atlassian legibility.
+$pui-d-bg: #1d2125; // app canvas (level 0) — reference board background
+$pui-d-surface-sunken: #161a1d; // wells, inputs (below cards)
+$pui-d-surface: #22272b; // cards / panels / sidebar / navbar (raised)
+$pui-d-surface-secondary: #282e33; // elevated: dropdown/modal/header/hover
+$pui-d-border-subtle: #2c333a; // hairline separators
+$pui-d-border: #38414a; // default border (clearly visible)
+$pui-d-border-strong: #5a6772; // strong border, hover, disabled
+$pui-d-muted: #8c9bab; // muted text, placeholders
+$pui-d-secondary: #9fadbc; // secondary text
+$pui-d-text: #c3ccd6; // body text (comfortable, Atlassian legibility)
+$pui-d-heading: #dee4ea; // headings (high, not harsh)
+
+$pui-d-accent: #579dff; // Atlassian dark-mode blue (brighter for contrast)
+$pui-d-accent-rgb: 87, 157, 255;
+$pui-d-success: #3fb950;
+$pui-d-info: #4aa3df;
+$pui-d-warning: #d8a541;
+$pui-d-danger: #f0575b;
+
+// Lozenge / status-chip pairs — DARK (ADS dark lozenge: deep bg + bright fg)
+$pui-d-loz-neutral-bg: #2c333a;
+$pui-d-loz-neutral-fg: #9fadbc;
+$pui-d-loz-success-bg: #164b35;
+$pui-d-loz-success-fg: #7ee2b8;
+$pui-d-loz-warning-bg: #533f04;
+$pui-d-loz-warning-fg: #f5cd47;
+$pui-d-loz-danger-bg: #5d1f1a;
+$pui-d-loz-danger-fg: #fd9891;
+$pui-d-loz-info-bg: #09326c;
+$pui-d-loz-info-fg: #85b8ff;
+// Solid status — dark (bold green pill)
+$pui-d-status-success-solid: #2abb7f;
+$pui-d-status-success-solid-fg: #0d2818;
+
 // -----------------------------------------------------------------------------
 // RADIUS
 // -----------------------------------------------------------------------------
-$pui-radius-sm: 6px;
-$pui-radius-md: 8px;
-$pui-radius-lg: 12px;
+$pui-radius-sm: 3px; // buttons, inputs, chips (ADS default radius)
+$pui-radius-md: 6px; // dropdowns, small panels
+$pui-radius-lg: 8px; // cards, dialogs, large panels
 $pui-radius-pill: 999px;
 
 // -----------------------------------------------------------------------------
