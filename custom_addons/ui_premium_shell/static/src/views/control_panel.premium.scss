@@ -120,3 +120,27 @@
 .o_control_panel .o_searchview_dropdown_toggler {
     border-radius: var(--pui-radius-md);
 }
+
+// --- Centre the search on the control bar (lg+) ------------------------------
+// Single-row layout: breadcrumb (left) · search (grows, centred) · switcher
+// (right). The search area (`.o_control_panel_actions`, which hosts
+// `.o_cp_searchview` via the `layout-actions` slot) takes the middle and
+// centres its input; the switcher cluster drops its native `flex-grow-1` so it
+// no longer eats the row and pushes the bar off-centre. `!important` beats the
+// Bootstrap utilities (`.justify-content-lg-around`, `.flex-grow-1`).
+@media (min-width: 992px) {
+    .o_control_panel .o_control_panel_main {
+        > .o_control_panel_actions {
+            flex: 1 1 auto;
+            justify-content: center !important;
+
+            .o_cp_searchview {
+                flex: 0 1 clamp(320px, 40vw, 520px);
+            }
+        }
+
+        > .o_control_panel_navigation {
+            flex-grow: 0 !important;
+        }
+    }
+}

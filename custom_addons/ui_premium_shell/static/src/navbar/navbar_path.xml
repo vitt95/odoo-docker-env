@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <!--
+        Premium dedicated navigation-path row (see .ai/ui-example/*/path-navbar.png).
+
+        The reference splits the top bar in two:
+          - the MAIN navbar keeps only the apps launcher, the centered search and
+            the systray;
+          - a second, quieter row underneath carries the module path
+            (app brand + menu sections, e.g. "CRM > Vendite > Rendicontazione").
+
+        Natively both the app brand (`.o_menu_brand`) and the section menu
+        (`web.NavBar.SectionsMenu`) live INSIDE `.o_main_navbar`. Pure CSS can't
+        lift them into a separate bar (different flow, and the row must sit
+        between the navbar and the control panel). So we add one sibling <nav>
+        after the main navbar and MOVE those two nodes into it — no markup is
+        added or removed, every class / handler / data-menu-xmlid / hotkey is
+        preserved, so menu navigation, tours and the ResizeObserver "more"
+        folding keep working. Styling is done in SCSS; the row only shows on
+        wide screens with a current app (small screens keep the native burger).
+    -->
+    <t t-inherit="web.NavBar" t-inherit-mode="extension">
+        <!-- 1) New path row, right after the main navbar. -->
+        <xpath expr="//nav[hasclass('o_main_navbar')]" position="after">
+            <nav t-if="!this.ui.isSmall and currentApp"
+                 class="o_navbar_path d-print-none"
+                 role="navigation"
+                 aria-label="Menu path"/>
+        </xpath>
+
+        <!-- 2) Move the app brand (currentApp.name) into the path row. -->
+        <xpath expr="//nav[hasclass('o_navbar_path')]" position="inside">
+            <xpath expr="//DropdownItem[@t-esc='currentApp.name']" position="move"/>
+        </xpath>
+
+        <!-- 3) Move the app section menu into the path row. -->
+        <xpath expr="//nav[hasclass('o_navbar_path')]" position="inside">
+            <xpath expr="//t[@t-call='web.NavBar.SectionsMenu']" position="move"/>
+        </xpath>
+    </t>
+
+</templates>

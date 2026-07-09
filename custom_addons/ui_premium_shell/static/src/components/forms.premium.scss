@@ -29,3 +29,20 @@
         box-shadow: var(--pui-focus-ring);
     }
 }
+
+// Toggle switches: core (bootstrap_review_backend) hardcodes the ON state to
+// $o-success (green) via `.form-switch .form-check-input:checked`, which beats
+// the generic rule above. Re-point the switch ON/focus/hover to the accent for
+// brand coherence (e.g. the "Onboarding/tour" toggle). Both themes.
+.form-switch .form-check-input {
+    &:checked {
+        background-color: var(--pui-color-accent);
+        border-color: var(--pui-color-accent);
+    }
+    &:focus {
+        border-color: var(--pui-color-accent);
+    }
+}
+.form-switch:hover .form-check-input:not(:disabled) {
+    border-color: var(--pui-color-accent);
+}

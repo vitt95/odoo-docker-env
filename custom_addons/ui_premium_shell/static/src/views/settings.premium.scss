@@ -32,6 +32,24 @@
         color: var(--pui-color-selected-text) !important;
     }
 
+    // Core sets `.tab:hover { color: $o-gray-900 }` (near-black) — unreadable in
+    // dark, where the tab bg is also dark, so the label vanishes on hover.
+    // Give hover a real surface + heading text; keep selected on its accent.
+    .settings_tab .tab {
+        transition:
+            background-color var(--pui-motion-fast) var(--pui-ease),
+            color var(--pui-motion-fast) var(--pui-ease);
+
+        &:hover {
+            background-color: var(--pui-color-surface-secondary);
+            color: var(--pui-color-heading);
+        }
+
+        &.selected {
+            color: var(--pui-color-selected-text);
+        }
+    }
+
     // In-pane search header (was light gray).
     .settings .settingSearchHeader {
         background-color: var(--pui-color-surface) !important;

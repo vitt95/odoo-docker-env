@@ -12,6 +12,14 @@
     --bs-badge-border-radius: var(--pui-radius-pill);
 }
 
+// Mail / discuss count badges default to $o-success (green) via
+// `--o-discuss-badge-bg` — off-brand for the Premium accent system. Re-point at
+// the accent so unread-message / activity counts read as brand notifications,
+// not "success". Core keeps the white text. Both themes.
+.o-discuss-badge {
+    --o-discuss-badge-bg: var(--pui-color-accent);
+}
+
 // -----------------------------------------------------------------------------
 // Semantic lozenges — ADS-style subtle status chips (reference status pills).
 // Bootstrap's .text-bg-*/.bg-* utilities set solid fill + #fff with !important,

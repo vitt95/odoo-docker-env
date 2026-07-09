@@ -22,6 +22,19 @@
     transition: background-color var(--pui-motion-fast) var(--pui-ease);
 }
 
+// Sticky action bar (Invia messaggio / Registra nota / Attività): core hardcodes
+// `background-color: $o-webclient-background-color` and a `.shadow-sm` divider
+// gradient from `$o-view-background-color` — both light, no Dark variant, so the
+// bar and its separator leak Light in Dark mode. Re-point at tokens (no-op in
+// Light). Same specificity as core; Premium bundle loads later, so it wins.
+.o-mail-Chatter-top {
+    background-color: var(--pui-color-surface);
+
+    &.shadow-sm {
+        background-image: linear-gradient(90deg, transparent, var(--pui-color-border), transparent);
+    }
+}
+
 // Followers / activity affordances -> token surfaces.
 .o-mail-Followers-button:focus {
     background-color: var(--pui-color-surface-sunken);

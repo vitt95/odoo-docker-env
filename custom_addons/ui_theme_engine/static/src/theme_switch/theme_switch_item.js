@@ -2,6 +2,7 @@ import { _t } from "@web/core/l10n/translation";
 import { registry } from "@web/core/registry";
 import { user } from "@web/core/user";
 import { session } from "@web/session";
+import { cookie } from "@web/core/browser/cookie";
 
 /**
  * User-menu entry to switch the Premium color theme (Light <-> Dark).
@@ -21,6 +22,21 @@ function currentTheme() {
     return document.documentElement.getAttribute(THEME_ATTR) || session.pui_theme || "light";
 }
 
+// Mirror the Premium theme into Odoo's native `color_scheme` cookie so
+// canvas-rendered widgets (Chart.js journal-dashboard graphs, graph-view
+// grids/labels) read the matching dark palette. Premium users never load the
+// native dark ASSET bundle (see webclient_bootstrap), so this cookie only
+// affects JS color reads — no CSS bundle conflict.
+function syncColorScheme(theme) {
+    if (cookie.get("color_scheme") !== theme) {
+        cookie.set("color_scheme", theme);
+    }
+}
+
+// First paint: align the cookie with the server-stamped theme before any
+// journal-dashboard graph renders.
+syncColorScheme(currentTheme());
+
 function themeSwitchItem(env) {
     const isDark = currentTheme() === "dark";
     return {
@@ -31,6 +47,7 @@ function themeSwitchItem(env) {
             const next = currentTheme() === "dark" ? "light" : "dark";
             document.documentElement.setAttribute(THEME_ATTR, next);
             session.pui_theme = next;
+            syncColorScheme(next);
             await env.services.orm.write("res.users", [user.userId], { pui_theme: next });
         },
         sequence: 30,

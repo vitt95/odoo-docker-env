@@ -66,6 +66,8 @@
             # item) + top-bar restyle. Native navbar/systray left fully intact.
             "ui_premium_shell/static/src/navbar/nav_search.js",
             "ui_premium_shell/static/src/navbar/nav_search.xml",
+            "ui_premium_shell/static/src/navbar/navbar_path.js",
+            "ui_premium_shell/static/src/navbar/navbar_path.xml",
             "ui_premium_shell/static/src/navbar/navbar.premium.scss",
             # Premium App Sidebar (new structural component). JS + OWL template
             # + styles, all Premium-only so registering it in main_components is

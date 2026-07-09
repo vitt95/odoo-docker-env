@@ -143,7 +143,44 @@ html[data-pui-theme="dark"] {
         --bs-btn-active-bg: var(--pui-color-surface);
         --bs-btn-active-color: var(--pui-color-heading);
         --bs-btn-active-border-color: var(--pui-color-border-strong);
+        // Odoo's backend theme sets `background-color` DIRECTLY on .btn-secondary
+        // /.btn-light (a light ramp value ~#e3e6ec) at a specificity that wins
+        // over Bootstrap's `background-color: var(--bs-btn-bg)`, so the vars above
+        // never surface. Assign the real properties so the token actually paints.
+        background-color: var(--pui-color-surface-secondary) !important;
+        color: var(--pui-color-secondary) !important;
+        border-color: var(--pui-color-border) !important;
+        &:hover {
+            background-color: var(--pui-color-surface) !important;
+            color: var(--pui-color-heading) !important;
+            border-color: var(--pui-color-border-strong) !important;
+        }
     }
+    // Link-style buttons keep Bootstrap's `#0b5bcc`, too dark on the dark canvas
+    // (contrast ~2:1). Point them at the (lighter) dark-accent. Field/record
+    // hyperlinks (o2m cells, o_form_uri) use Odoo's teal `#0180a5` — same issue.
+    .btn-link,
+    .o_field_widget a:not(.btn),
+    a.o_form_uri,
+    .o_form_uri {
+        color: var(--pui-color-accent) !important;
+        --bs-btn-color: var(--pui-color-accent);
+        --bs-btn-hover-color: var(--pui-color-primary-hover);
+    }
+    // Required list cells are tinted with Odoo's teal `#0180a5` (contrast ~2.2 on
+    // dark rows). Requiredness is already signalled by the header asterisk, so
+    // read the value in the normal text tone for legibility.
+    .o_list_table .o_data_cell.o_required_modifier,
+    .o_list_table .o_data_cell.o_required_modifier span { color: var(--pui-color-text) !important; }
+    // Upload/empty-state helper text (accounting drag-drop zone) uses a dark
+    // `#3f4653` that vanishes on the dark canvas (contrast ~1.7).
+    .account_drag_drop_btn,
+    .btn.pe-none.fw-normal,
+    .o_drop_area .btn.pe-none { color: var(--pui-color-secondary) !important; }
+    // Danger TEXT (overdue, inline errors) keeps a mid red (~2:1 on dark). Use
+    // the lozenge danger foreground, tuned to read on dark surfaces. Scoped away
+    // from danger BUTTONS, which keep their solid treatment.
+    .text-danger:not(.btn) { color: var(--pui-loz-danger-fg) !important; }
 
     // -------------------------------------------------------------------------
     // 5. Text — remap the compiled gray-ramp utilities to token text colors
@@ -183,8 +220,18 @@ html[data-pui-theme="dark"] {
         --settings__title-bg: var(--pui-color-surface-secondary);
 
         .settings_tab { border-right: 1px solid var(--pui-color-border); }
-        .settings_tab .tab:hover,
-        .settings_tab .tab.selected { color: var(--pui-color-heading); }
+        // Core sets `.settings_tab .tab:hover { color:#14181f }` at equal
+        // specificity AFTER us, so the hovered label turned dark-on-dark
+        // (invisible). Win with !important + give hover a visible surface so the
+        // row reads as interactive.
+        .settings_tab .tab:hover {
+            color: var(--pui-color-heading) !important;
+            background-color: var(--pui-color-surface-sunken) !important;
+        }
+        .settings_tab .tab.selected {
+            color: var(--pui-color-accent) !important;
+            background-color: var(--pui-accent-soft) !important;
+        }
 
         .settings .app_settings_block h2 {
             color: var(--pui-color-heading);
@@ -340,6 +387,16 @@ html[data-pui-theme="dark"] {
     // -------------------------------------------------------------------------
     // 13. Search panel (left faceted filter column) — B(new): white boxes
     // -------------------------------------------------------------------------
+    // The value rows are Bootstrap `.list-group-item`s: their bg comes from
+    // `--bs-list-group-bg` (#fff), which our dark set never remapped, so each
+    // category/filter row painted a WHITE card on the dark rail. Neutralise the
+    // list-group vars for the whole panel and let rows inherit the rail surface.
+    .o_search_panel {
+        --bs-list-group-bg: transparent;
+        --bs-list-group-color: var(--pui-color-text);
+        --bs-list-group-action-color: var(--pui-color-text);
+        --bs-list-group-border-color: var(--pui-color-border-subtle);
+    }
     .o_search_panel,
     .o_search_panel_section,
     .o_search_panel_field,
@@ -349,13 +406,39 @@ html[data-pui-theme="dark"] {
         border-color: var(--pui-color-border) !important;
         color: var(--pui-color-text);
     }
+    // Value rows + their inner list-group header: transparent so the rail shows
+    // through; only the active row gets the accent tint (below).
+    .o_search_panel .list-group-item,
+    .o_search_panel_category_value,
+    .o_search_panel_category_value > header,
+    .o_search_panel_filter_value {
+        background-color: transparent !important;
+        color: var(--pui-color-text);
+        border-color: var(--pui-color-border-subtle) !important;
+    }
     .o_search_panel_section_header,
     .o_search_panel_label_title { color: var(--pui-color-secondary); }
+    // Non-active hover on a value row: subtle neutral, never white.
+    .o_search_panel_category_value > header:hover:not(.active),
+    .o_search_panel .list-group-item-action:hover:not(.active) {
+        background-color: var(--pui-color-hover) !important;
+        color: var(--pui-color-heading) !important;
+    }
+    // Active row: accent-soft tint + accent text (overrides Bootstrap .active
+    // and the core `text-900` helper that would render near-black on dark).
     .o_search_panel_category_value .active,
+    .o_search_panel_category_value > header.active,
     .o_search_panel_category_value .o_search_panel_value.active,
     .o_search_panel_field .active {
         background-color: var(--pui-accent-soft) !important;
         color: var(--pui-color-accent) !important;
+    }
+    // Collapse (« ) button is a Bootstrap `.btn-light` → white by default.
+    .o_search_panel .btn-light,
+    .o_search_panel_sidebar .btn-light {
+        background-color: var(--pui-color-surface-sunken) !important;
+        color: var(--pui-color-secondary) !important;
+        border-color: var(--pui-color-border) !important;
     }
     .o_search_panel_counter { color: var(--pui-color-muted); }
 
@@ -555,6 +638,16 @@ html[data-pui-theme="dark"] {
         color: var(--pui-color-text);
     }
     .o-mail-ActivityGroup:hover { background-color: var(--pui-color-surface) !important; }
+    // "View all activities" footer + any group row are Bootstrap
+    // `.list-group-item`s (white --bs-list-group-bg). The footer sits OUTSIDE
+    // .o-mail-ActivityGroup, so it kept a solid white fill. Neutralise the fill
+    // (the menu's surface shows through); hover firms to surface.
+    .o-mail-ActivityMenu .list-group-item {
+        background-color: transparent !important;
+    }
+    .o-mail-ActivityMenu .list-group-item:hover {
+        background-color: var(--pui-color-surface) !important;
+    }
 
     // Switch-company menu: selected/hover rows use light grays / company mix.
     .o_switch_company_menu_items .selected,
@@ -598,6 +691,10 @@ html[data-pui-theme="dark"] {
     }
     .o_pivot .o_pivot_header_cell_closed,
     .o_pivot .o_pivot_measure_row { color: var(--pui-color-secondary) !important; }
+    // Data cells: core paints values in a muted ramp that drops below the ADS
+    // contrast floor on dark. Pin the numeric value to the primary text token.
+    .o_pivot .o_pivot_cell_value,
+    .o_pivot tbody td.o_pivot_cell_value { color: var(--pui-color-text) !important; }
 
     .o-FileViewer,
     .o-FileViewer-header,
@@ -612,6 +709,18 @@ html[data-pui-theme="dark"] {
         background-color: var(--pui-color-surface-sunken) !important;
         color: var(--pui-color-heading) !important;
         border-color: var(--pui-color-border) !important;
+    }
+
+    // Parent-path breadcrumb `<ol class="breadcrumb">`: Bootstrap compiles
+    // `$breadcrumb-bg: $o-control-panel-background-color` (white in the light
+    // map) into `--bs-breadcrumb-bg`, so the OL keeps a solid white fill in
+    // dark mode — the white slab behind the parent link (e.g. "Contatti"),
+    // while the record name (a sibling `.o_last_breadcrumb_item`, not in the
+    // OL) stays dark. Neutralise the fill; the parent link keeps its accent.
+    .o_breadcrumb .breadcrumb,
+    .o_control_panel_breadcrumbs .breadcrumb {
+        --bs-breadcrumb-bg: transparent;
+        background-color: transparent;
     }
 
     // -------------------------------------------------------------------------
@@ -633,4 +742,25 @@ html[data-pui-theme="dark"] {
     .o_column_title {
         color: var(--pui-color-secondary) !important;
     }
+
+    // -------------------------------------------------------------------------
+    // 25. Kanban record quick-create (inline "New" card form) — core wraps it in
+    //     `.o_kanban_quick_create.shadow` painted with $o-view-background-color
+    //     (white). The inner form + sheet inherit it, so labels read black-on-
+    //     white in dark. Re-point the card, the form and the sheet at a surface.
+    // -------------------------------------------------------------------------
+    .o_kanban_quick_create,
+    .o_kanban_quick_create .o_form_view,
+    .o_kanban_quick_create .o_kanban_quick_create_form,
+    .o_kanban_quick_create .o_form_sheet_bg,
+    .o_kanban_quick_create .o_form_sheet {
+        background-color: var(--pui-color-surface) !important;
+        color: var(--pui-color-text);
+    }
+    .o_kanban_quick_create {
+        border: 1px solid var(--pui-color-border) !important;
+        box-shadow: var(--pui-shadow-md);
+    }
+    .o_kanban_quick_create .o_form_label,
+    .o_kanban_quick_create label { color: var(--pui-color-text) !important; }
 }

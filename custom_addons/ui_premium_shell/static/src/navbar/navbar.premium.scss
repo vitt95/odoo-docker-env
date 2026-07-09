@@ -14,6 +14,23 @@
     background-color: var(--pui-color-surface);
     border-bottom: 1px solid var(--pui-color-border);
 
+    // Entry text colors are baked as STATIC SCSS in the core-map
+    // ($o-navbar-entry-color--hover: gray-900), which assumes a light bar — so
+    // on the dark Premium navbar the hover text turns near-black and vanishes
+    // (e.g. the company-switcher name on hover). Drive them from theme-aware
+    // tokens via the runtime CSS vars core already reads.
+    --NavBar-entry-color: var(--pui-color-secondary);
+    --NavBar-entry-color--hover: var(--pui-color-heading);
+    --NavBar-entry-color--active: var(--pui-color-accent);
+    --NavBar-brand-color: var(--pui-color-heading);
+    // Systray count badges default to $o-navbar-badge-bg ($o-success, green) —
+    // align with the accent so notification counters read as brand, not success.
+    // Badge text defaults to `inherit` (the dim `secondary` entry color): pin it
+    // bright white so the count reads illuminated on the accent fill (matches the
+    // messaging `.o-discuss-badge`, which is white).
+    --o-navbar-badge-bg: var(--pui-color-accent);
+    --o-navbar-badge-color: #fff;
+
     // Systray icon buttons -> quiet, rounded, token-driven hover.
     .o_menu_systray {
         gap: 2px;
@@ -25,6 +42,15 @@
             transition:
                 background-color var(--pui-motion-fast) var(--pui-ease),
                 color var(--pui-motion-fast) var(--pui-ease);
+        }
+
+        // Messaging (fa-comments) + activity (fa-clock-o) systray icons should
+        // sit at their hover brightness by default (requested): the entry color
+        // at rest is the dim `secondary`, brightening to `heading` on hover —
+        // pin these two icons to `heading` so they always read as active.
+        .fa-comments,
+        .fa-clock-o {
+            color: var(--pui-color-heading);
         }
     }
 }
@@ -91,16 +117,122 @@
 
 // Wide screens: center the search across the bar (reference layout).
 @media (min-width: 992px) {
+    .o_main_navbar {
+        // Single source for the search width, reused to reserve menu space.
+        --pui-navsearch-w: #{"min(680px, 42vw)"};
+    }
+
     .pui-nav-search {
         position: absolute;
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
-        width: #{"min(680px, 42vw)"}; // interpolated so Sass emits CSS min(), not eval
+        width: var(--pui-navsearch-w);
         z-index: 1; // above sections text, below dropdown menus (z 1000+)
 
         &__btn {
             width: 100%;
+        }
+    }
+
+    // The app menu-sections sit in normal flow and, on menu-heavy apps
+    // (Settings), grew right until they slid UNDER the absolutely-centered
+    // search. Cap their width to end before the search zone and hide the
+    // overflow — Odoo's ResizeObserver then folds the extra entries into its
+    // native "⋯ more" dropdown, so nothing is lost and nothing overlaps.
+    //
+    // The search's left edge is at `50% - navsearch-w/2`. Sections do NOT start
+    // at 0 — they begin after the apps icon + app brand (~200px). Since
+    // `max-width` bounds width (not the right edge), the reserve below must also
+    // cover that left offset, or the box's right edge overshoots the search and
+    // the last entry gets clipped mid-word under it (the "F|Q Search" overlap).
+    // Reserve = brand/apps offset (~200px) + a 40px gap before the search.
+    .o_main_navbar {
+        --pui-navsearch-reserve: 240px;
+    }
+    .o_main_navbar .o_menu_sections {
+        max-width: calc(50% - (var(--pui-navsearch-w) / 2) - var(--pui-navsearch-reserve));
+        overflow: hidden;
+    }
+}
+
+// ---- Dedicated navigation-path row ------------------------------------------
+// Second bar under the main navbar, carrying the module path (app brand + menu
+// sections) lifted out of the top bar by navbar_path.xml. Quiet, compact,
+// breadcrumb-like — the title focal point stays the control panel below.
+.o_navbar_path {
+    display: flex;
+    align-items: center;
+    gap: var(--pui-space-3);
+    min-height: 34px;
+    padding: 0 var(--pui-space-3);
+    background-color: var(--pui-color-surface);
+    border-bottom: 1px solid var(--pui-color-border);
+    font-size: var(--pui-font-size-xs);
+    font-weight: var(--pui-font-weight-semibold);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+
+    // App brand = first, accented path segment. It is a `.dropdown-item`
+    // (`width:100%`) with `.d-flex` — left as-is it eats the whole row and
+    // starves `.o_menu_sections` (width 0 -> every section folds into "more").
+    // Pin it to its content width so the sections keep the remaining space.
+    .o_menu_brand {
+        display: inline-flex !important;
+        flex: 0 0 auto !important;
+        width: auto !important;
+        align-items: center;
+        padding: 2px 4px;
+        color: var(--pui-color-accent);
+        background-color: transparent;
+        border: 0;
+        cursor: pointer;
+        transition: color var(--pui-motion-fast) var(--pui-ease);
+
+        &:hover {
+            color: var(--pui-color-accent);
+            text-decoration: underline;
+        }
+    }
+
+    // Section menu -> inline path segments (undo the main-navbar width cap).
+    // Simple (childless) sections render as `.dropdown-item` (block,
+    // width:100%); childful ones as dropdown buttons. Left as-is, a childless
+    // section stretches full width and shoves the rest to the far edge (the
+    // gap/split bug). Pin every segment to its content width so they stay inline.
+    .o_menu_sections {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--pui-space-3);
+        max-width: none;
+        overflow: visible;
+
+        > * {
+            flex: 0 0 auto !important;
+            width: auto !important;
+        }
+
+        .o_nav_entry,
+        .dropdown > button,
+        .dropdown-toggle,
+        button {
+            display: inline-flex !important;
+            align-items: center;
+            width: auto !important;
+            padding: 2px 4px;
+            color: var(--pui-color-accent);
+            background-color: transparent;
+            border: 0;
+            font: inherit;
+            letter-spacing: inherit;
+            text-transform: inherit;
+            transition: color var(--pui-motion-fast) var(--pui-ease);
+
+            &:hover {
+                color: var(--pui-color-accent);
+                text-decoration: underline;
+            }
         }
     }
 }
