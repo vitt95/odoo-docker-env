@@ -21,6 +21,16 @@
         }
     }
 
+    // Week-number chip in the header (e.g. "Settimana 28"). Ships as
+    // `.badge.bg-100` with hard-coded black text — invisible on the dark header
+    // (this badge lives in `.o_calendar_header`, not the control panel, so the
+    // control-panel `.bg-100` rule doesn't reach it). Re-point to tokens.
+    .o_calendar_header .badge.bg-100 {
+        background-color: var(--pui-color-surface-secondary);
+        color: var(--pui-color-secondary);
+        font-weight: var(--pui-font-weight-medium);
+    }
+
     // Column headers (day names).
     .fc-col-header-cell {
         color: var(--pui-color-secondary);

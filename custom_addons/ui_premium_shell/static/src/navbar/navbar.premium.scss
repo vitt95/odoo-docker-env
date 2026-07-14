@@ -9,6 +9,14 @@
 // No DOM is removed; no functionality is forked.
 // =============================================================================
 
+// Shared width token for the centred search widgets. The navbar launcher uses
+// it verbatim; the control-panel searchview derives from it (10% narrower), so
+// keeping a single source here keeps the two proportional. Hoisted to :root so
+// it resolves in the control panel too (which is not a navbar descendant).
+:root {
+    --pui-navsearch-w: #{"min(680px, 42vw)"};
+}
+
 .o_main_navbar {
     position: relative; // anchor for the absolutely-centered search
     background-color: var(--pui-color-surface);
@@ -117,11 +125,7 @@
 
 // Wide screens: center the search across the bar (reference layout).
 @media (min-width: 992px) {
-    .o_main_navbar {
-        // Single source for the search width, reused to reserve menu space.
-        --pui-navsearch-w: #{"min(680px, 42vw)"};
-    }
-
+    // `--pui-navsearch-w` is defined once at :root (top of file).
     .pui-nav-search {
         position: absolute;
         left: 50%;

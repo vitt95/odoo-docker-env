@@ -122,25 +122,110 @@
 }
 
 // --- Centre the search on the control bar (lg+) ------------------------------
-// Single-row layout: breadcrumb (left) · search (grows, centred) · switcher
-// (right). The search area (`.o_control_panel_actions`, which hosts
-// `.o_cp_searchview` via the `layout-actions` slot) takes the middle and
-// centres its input; the switcher cluster drops its native `flex-grow-1` so it
-// no longer eats the row and pushes the bar off-centre. `!important` beats the
-// Bootstrap utilities (`.justify-content-lg-around`, `.flex-grow-1`).
+// The search must sit at the *bar* midpoint, not merely be centred inside its
+// own slot. A plain flexbox can't do that: the left breadcrumb (~340px) and the
+// right switcher (~224px) have unequal widths, so the middle slot — and the
+// search inside it — drifts right. Lay the row out as a 3-column grid instead:
+// `1fr auto 1fr` makes the two side columns mathematically equal, so the centre
+// (auto) column is pinned to the exact bar midpoint regardless of how wide the
+// breadcrumb or switcher get. The breadcrumb (col 1) ellipsises within its 1fr
+// rather than shoving the grid; the switcher (col 3) hugs the right edge.
+// `:has(.o_cp_searchview)` restricts the grid centring to control bars that
+// actually host a searchview. The spreadsheet dashboard puts its global filters
+// (not a searchview) in the actions slot, so it keeps its native flex flow and
+// its filter row is never squeezed into the narrow centre column.
 @media (min-width: 992px) {
-    .o_control_panel .o_control_panel_main {
+    .o_control_panel:has(.o_cp_searchview) .o_control_panel_main {
+        display: grid !important; // beat Bootstrap's `.d-flex { …!important }`
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        column-gap: var(--pui-space-3);
+
+        > .o_control_panel_breadcrumbs {
+            grid-column: 1;
+            min-width: 0;
+            justify-self: start;
+            overflow: hidden;
+        }
+
         > .o_control_panel_actions {
-            flex: 1 1 auto;
-            justify-content: center !important;
+            grid-column: 2;
+            justify-self: center;
+            // 10% narrower than the navbar search launcher, from the shared token.
+            // `!important` beats Bootstrap's `.w-lg-auto { width:auto!important }`.
+            width: calc(var(--pui-navsearch-w, #{"min(680px, 42vw)"}) * 0.9) !important;
 
             .o_cp_searchview {
-                flex: 0 1 clamp(320px, 40vw, 520px);
+                width: 100%;
             }
         }
 
         > .o_control_panel_navigation {
+            grid-column: 3;
+            justify-self: end;
             flex-grow: 0 !important;
+        }
+    }
+}
+
+// --- Pager / date-nav label chips (`.badge.bg-100`) --------------------------
+// Odoo tags the secondary nav label (e.g. the calendar "Settimana 28") with
+// Bootstrap's `.bg-100` + black text. On the dark bar this renders as a stray
+// light chip with near-invisible contrast. Re-point both to tokens so the label
+// blends into the surface and stays readable in light and dark.
+.o_control_panel .badge.bg-100 {
+    background-color: var(--pui-color-surface-secondary);
+    color: var(--pui-color-secondary);
+    font-weight: var(--pui-font-weight-medium);
+}
+
+// --- Spreadsheet-dashboard global filters (`.o-filter-value`) ----------------
+// Native layout drops the filters into `.o_control_panel_actions` with
+// `justify-content-around`, so they scatter unevenly (4 on one row, 1 orphaned
+// on the next) and each ships as a bare, heavy-bordered input — reading as a
+// clunky boxed "board" in dark mode. Re-lay them as a tidy left-packed row of
+// equal cells and give every control (autocomplete + period <select>) the same
+// elegant token pill, so the filter form is aligned and premium in both themes.
+// NOTE: the dashboard body (scorecards, charts, section titles, tables) is drawn
+// on an o-spreadsheet <canvas>. Its light background is pixel-painted by the
+// library, so it can't be re-themed from CSS — overriding the grid/overlay
+// backgrounds only hides the canvas content and breaks the render. A true dark
+// dashboard needs an o-spreadsheet-level dark theme (JS), out of this layer's
+// scope. Here we only make the *filter form* aligned and premium.
+.o_spreadsheet_dashboard_action {
+    .o_control_panel_actions {
+        justify-content: flex-start !important; // pack left — no scatter
+        gap: var(--pui-space-3);
+        row-gap: var(--pui-space-2);
+    }
+
+    .o-filter-value {
+        width: 220px !important; // uniform cells → columns line up across rows
+        flex: 0 0 auto !important;
+
+        // One shared pill for every control type (input / autocomplete / select).
+        .o_input,
+        .o-autocomplete--input.o_input,
+        input.o_input,
+        select.o_input {
+            width: 100%;
+            min-height: 32px;
+            height: auto;
+            padding-left: var(--pui-space-3);
+            border-radius: var(--pui-radius-md);
+            border-color: var(--pui-color-border);
+            background-color: var(--pui-color-surface);
+            color: var(--pui-color-text);
+            transition:
+                border-color var(--pui-motion-fast) var(--pui-ease),
+                box-shadow var(--pui-motion-fast) var(--pui-ease);
+
+            &::placeholder { color: var(--pui-color-muted); }
+            &:hover { border-color: var(--pui-color-border-strong); }
+            &:focus {
+                border-color: var(--pui-color-accent);
+                box-shadow: var(--pui-focus-ring);
+            }
         }
     }
 }

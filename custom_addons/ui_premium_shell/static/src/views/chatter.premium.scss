@@ -12,6 +12,15 @@
     border-radius: var(--pui-radius-lg);
 }
 
+// The composer fill + action strip ship a hard-coded white bg (`bg-view`) with
+// no Dark variant, sitting behind the (themed) input. It only peeks at the
+// rounded edges today, but re-point it to the surface token so no white ever
+// leaks through in Dark. No-op in Light (token ≈ white).
+.o-mail-Composer-bg,
+.o-mail-Composer-actions {
+    background-color: var(--pui-color-surface) !important;
+}
+
 .o-mail-Composer-input {
     border-radius: var(--pui-radius-md);
 }

@@ -201,6 +201,80 @@ html[data-pui-theme="dark"] {
         color: var(--pui-color-accent);
     }
 
+    // Icon-only buttons keep Odoo's base `.btn` foreground `#3f4653`, which is
+    // near-invisible on the dark shell (contrast ~1.6). These appear in *every*
+    // view — the searchview magnifier, the control-panel actions cog, the kanban
+    // column config/add glyphs, the systray db chip — so re-point their icons to
+    // a legible token. Colour-variant buttons (primary/accent/danger…) set their
+    // own colour and are unaffected.
+    .o_searchview_icon,
+    .o_cp_action_menus .btn > .fa,
+    .o_cp_action_menus .btn > .oi,
+    .o_control_panel_breadcrumbs_actions .btn > .fa,
+    .o_kanban_config .btn,
+    .o_kanban_config .btn > .fa,
+    .o_kanban_quick_add,
+    .o_kanban_quick_add > .fa,
+    .o_kanban_header .o_kanban_load_more .fa,
+    .oe_topbar_name .fa,
+    // WYSIWYG: empty-field quick-insert "power buttons" + floating toolbar.
+    .o_we_power_buttons .power_button,
+    .o-we-toolbar .btn,
+    .o-we-toolbar .btn > .fa,
+    .o-we-toolbar .btn > .oi,
+    // Chatter message hover actions (react / star / reply / link…).
+    .o-mail-Message-actions .btn,
+    .o-mail-Message-actions .btn > .fa,
+    .o-mail-Message-actions .btn > .oi,
+    .o-mail-MessageActions .btn,
+    .o-mail-MessageActions .btn > .fa,
+    .o-mail-MessageActions .btn > .oi {
+        color: var(--pui-color-secondary) !important;
+    }
+    .o_searchview_icon:hover,
+    .o_cp_action_menus .btn:hover > .fa,
+    .o_kanban_config .btn:hover,
+    .o_kanban_quick_add:hover,
+    .o_kanban_quick_add:hover > .fa,
+    .o_we_power_buttons .power_button:hover,
+    .o-we-toolbar .btn:hover > .fa,
+    .o-mail-Message-actions .btn:hover,
+    .o-mail-Message-actions .btn:hover > .fa,
+    .o-mail-MessageActions .btn:hover,
+    .o-mail-MessageActions .btn:hover > .fa {
+        color: var(--pui-color-heading) !important;
+    }
+
+    // Company switcher toggles (dropdown is portaled to `.o_switch_company_menu_
+    // dropdown`): checked/partial glyphs to accent for brand — the native
+    // `.text-primary` #0c66e4 is off-palette; empty box stays a legible token.
+    .o_switch_company_menu_dropdown .fa-check-square,
+    .o_switch_company_menu_dropdown .fa-check-square-o,
+    .o_switch_company_menu_dropdown .fa-minus-square-o,
+    .o_switch_company_menu_dropdown .text-primary {
+        color: var(--pui-color-accent) !important;
+    }
+    .o_switch_company_menu_dropdown .fa-square-o {
+        color: var(--pui-color-secondary) !important;
+    }
+
+    // m2m tag delete "×": the generic link rule above tints it accent-blue, which
+    // is illegible on the pastel tag fill. Inherit the tag's own (dark) foreground
+    // so the × matches its label.
+    // Selectors carry 3 classes to beat `.o_field_widget a:not(.btn)` (0,2,1)
+    // above, which otherwise forces the delete link to accent.
+    .o_field_tags .o_tag .o_delete,
+    .o_field_tags .o_tag .oi-close,
+    .o_field_widget .o_tag .o_delete,
+    .o_field_widget .o_tag .oi-close {
+        color: inherit !important;
+        opacity: 0.65;
+    }
+    .o_field_tags .o_tag .o_delete:hover,
+    .o_field_widget .o_tag .o_delete:hover {
+        opacity: 1;
+    }
+
     // -------------------------------------------------------------------------
     // 6. Borders / separators that hardcode light grays
     // -------------------------------------------------------------------------

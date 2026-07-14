@@ -11,11 +11,16 @@
     background-color: var(--pui-color-bg);
 }
 
-// The sheet as an elevated card.
+// The sheet reads flat: same colour as the canvas, no border, no elevation —
+// so the form blends into the page instead of floating as a card. Overrides the
+// level-1 surface group in engine.premium.scss (bg/border) for `.o_form_sheet`.
 .o_form_view .o_form_sheet {
     // Larger radius on md+ (var is consumed inside the media query).
     --formView-sheet-border-radius-md: var(--pui-radius-lg);
-    box-shadow: var(--pui-shadow-sm);
+
+    background-color: var(--pui-color-bg) !important;
+    border-color: var(--pui-color-bg) !important;
+    box-shadow: none !important;
 }
 
 // Field labels: quieter, medium weight.
@@ -79,12 +84,15 @@
 // bar. Promote each stat to a discrete raised card: elevated surface fill, a
 // clearly visible border, breathing room, an accent icon, an emphasised value
 // and a legible label — so the row is immediately scannable in both themes.
-.o_form_view .oe_button_box {
+.o_form_view .oe_button_box,
+.o_form_view .o-form-buttonbox {
     gap: var(--pui-space-2);
 }
 
 .o_form_view .oe_button_box .o_stat_info,
-.o_form_view .oe_button_box .oe_stat_button {
+.o_form_view .oe_button_box .oe_stat_button,
+.o_form_view .o-form-buttonbox .o_stat_info,
+.o_form_view .o-form-buttonbox .oe_stat_button {
     transition:
         background-color var(--pui-motion-fast) var(--pui-ease),
         border-color var(--pui-motion-fast) var(--pui-ease),
@@ -93,15 +101,21 @@
         color var(--pui-motion-fast) var(--pui-ease);
 }
 
-.o_form_view .oe_button_box .oe_stat_button {
+.o_form_view .oe_button_box .oe_stat_button,
+.o_form_view .o-form-buttonbox .oe_stat_button {
     background-color: var(--pui-color-surface-secondary);
     border: 1px solid var(--pui-color-border) !important;
     border-radius: var(--pui-radius-md);
-    color: var(--pui-color-secondary);
+    // Native `.btn-outline-secondary` hard-codes a near-black label (#3f4653)
+    // that vanishes on the dark bar; force the token colour on the button and
+    // every nested char/label span so the text stays legible in both themes.
+    color: var(--pui-color-text) !important;
 
     .o_stat_text,
-    .o_stat_info .o_stat_text {
-        color: var(--pui-color-secondary);
+    .o_stat_info .o_stat_text,
+    .o_stat_text .o_field_char,
+    .o_stat_text .o_field_char span {
+        color: var(--pui-color-text);
         font-weight: var(--pui-font-weight-medium);
     }
     .o_stat_value,
