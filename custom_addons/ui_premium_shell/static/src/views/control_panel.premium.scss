@@ -229,3 +229,51 @@
         }
     }
 }
+
+// --- Dashboard filter cells (`.o_filter_value_container`) ---------------------
+// PROMPT_DODICI §1: the individual filter value inputs each ship a heavy boxed
+// border that weighs the toolbar down. Drop the resting border to a quiet
+// sunken pill (fill carries the affordance, not a box) and reveal the accent
+// only on focus — cleaner, still clearly an input, correct in both themes.
+.o_filter_value_container {
+    border: 0;
+
+    .o_input,
+    input.o_input,
+    select.o_input {
+        border: 1px solid transparent;
+        border-radius: var(--pui-radius-md);
+        background-color: var(--pui-color-surface-sunken);
+        color: var(--pui-color-text);
+        transition:
+            border-color var(--pui-motion-fast) var(--pui-ease),
+            box-shadow var(--pui-motion-fast) var(--pui-ease);
+
+        &::placeholder { color: var(--pui-color-muted); }
+        &:hover { border-color: var(--pui-color-border); }
+        &:focus {
+            border-color: var(--pui-color-accent);
+            box-shadow: var(--pui-focus-ring);
+            outline: none;
+        }
+    }
+}
+
+// --- Dashboard period <select> arrow (`.date_filter_values`) ------------------
+// PROMPT_DODICI §2: the native select renders the OS arrow, which sits
+// vertically off-centre against the pill and clashes in Dark. Suppress the OS
+// appearance and paint a token caret precisely centred on the right, with room
+// reserved so the truncated label never runs under it. Caret is a neutral
+// muted-navy stroke that reads on both the light and dark sunken pill.
+.date_filter_values select.o_input,
+.date_filter_values .o_input.text-truncate {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding-right: var(--pui-space-6);
+    line-height: var(--pui-line-base);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23626f86' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='M4 6l4 4 4-4'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right var(--pui-space-2) center;
+    background-size: 14px 14px;
+}

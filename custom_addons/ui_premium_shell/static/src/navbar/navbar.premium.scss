@@ -40,25 +40,38 @@
     --o-navbar-badge-color: #fff;
 
     // Systray icon buttons -> quiet, rounded, token-driven hover.
+    // PROMPT_DODICI §6: at rest the icons sit at a tenue `secondary` tone
+    // (elegant, coherent with the bar); on hover the whole button brightens to
+    // `heading` with a soft surface highlight for a professional feedback. The
+    // colour is carried on the button so every glyph (notifiche / messaggi /
+    // attività / user-menu / eventuali extra) follows uniformly.
     .o_menu_systray {
         gap: 2px;
 
         > .dropdown > button,
         > button,
+        .o-dropdown.dropdown-toggle,
         .o_menu_systray_item > .dropdown-toggle {
             border-radius: var(--pui-radius-md);
-            transition:
-                background-color var(--pui-motion-fast) var(--pui-ease),
-                color var(--pui-motion-fast) var(--pui-ease);
-        }
+            color: var(--pui-color-secondary);
 
-        // Messaging (fa-comments) + activity (fa-clock-o) systray icons should
-        // sit at their hover brightness by default (requested): the entry color
-        // at rest is the dim `secondary`, brightening to `heading` on hover —
-        // pin these two icons to `heading` so they always read as active.
-        .fa-comments,
-        .fa-clock-o {
-            color: var(--pui-color-heading);
+            // PROMPT_TREDICI §2: hover must light ONLY the icon, not flood the
+            // whole button with a surface highlight (which read as heavy). The
+            // button keeps its resting colour; only the glyph brightens, with a
+            // soft colour transition on the icon itself. Applies to every systray
+            // toggle (activity clock, messaging, user-menu…) for coherence.
+            .fa,
+            .oi {
+                color: inherit;
+                transition: color var(--pui-motion-fast) var(--pui-ease);
+            }
+
+            &:hover .fa,
+            &:hover .oi,
+            &:focus-visible .fa,
+            &:focus-visible .oi {
+                color: var(--pui-color-heading);
+            }
         }
     }
 }
@@ -238,6 +251,87 @@
                 text-decoration: underline;
             }
         }
+    }
+}
+
+// ---- Company switcher menu (`.o_switch_company_menu_items`) -----------------
+// PROMPT_DODICI §8: the company-switch rows read as flat, dim text with an
+// off-palette checkmark. Give them a legible token treatment in BOTH themes
+// (the Dark surfaces are handled in engine.premium.scss §21; this is the base
+// text/hover/selected/checkmark layer that also fixes Light).
+.o_switch_company_menu_items {
+    color: var(--pui-color-text);
+
+    .o_switch_company_item {
+        border-radius: var(--pui-radius-sm);
+        transition:
+            background-color var(--pui-motion-fast) var(--pui-ease),
+            color var(--pui-motion-fast) var(--pui-ease),
+            box-shadow var(--pui-motion-fast) var(--pui-ease);
+    }
+
+    // Hover / focus -> discreet dark highlight. Bootstrap's `.dropdown-item`
+    // focus/hover/active paint a LIGHT bg (its `--bs-dropdown-link-*` defaults),
+    // which on the dark menu washes out the row — so we force the token surface
+    // with `!important` to beat those. Keyboard focus arrives as a `.focus`
+    // class (not `:focus` on the div), so all of `:hover/:focus/:focus-within/
+    // .focus` are covered.
+    .o_switch_company_item:hover,
+    .o_switch_company_item:focus,
+    .o_switch_company_item:focus-within,
+    .o_switch_company_item.focus,
+    .o_switch_company_item.o-navigable-active {
+        background-color: var(--pui-color-hover) !important;
+        outline: none;
+    }
+
+    // The company name span (`.company_label.text-700`) is pinned to the base
+    // text tone by the dark `.text-700 { … !important }` remap, so it never
+    // brightened with the row and read weak on focus/selected. Force it legible:
+    // base = text, and heading on hover/focus/selected (`!important` to outrank
+    // the remap). This is the core of "in focus/selected si vede male".
+    .o_switch_company_item .company_label {
+        color: var(--pui-color-text) !important;
+    }
+    .o_switch_company_item:hover .company_label,
+    .o_switch_company_item:focus .company_label,
+    .o_switch_company_item:focus-within .company_label,
+    .o_switch_company_item.focus .company_label,
+    .o_switch_company_item.o-navigable-active .company_label,
+    .o_switch_company_item.alert-secondary .company_label {
+        color: var(--pui-color-heading) !important;
+    }
+
+    // PROMPT_TREDICI §3: the CURRENT company row ships as Bootstrap
+    // `.alert-secondary` — a heavy light chip with its own dark text, so it
+    // reads invasive and the label is hard to read. Replace it with a refined,
+    // low-impact selected state: a discreet neutral surface + a slim accent left
+    // bar as the marker + high-contrast heading text. Modern, not saturated.
+    .o_switch_company_item.alert-secondary {
+        background-color: var(--pui-color-surface-secondary);
+        color: var(--pui-color-heading);
+        box-shadow: inset 3px 0 0 var(--pui-color-accent);
+    }
+
+    // The current company's inner `.log_into` area ships a hard-coded light-blue
+    // fill (`rgb(206,224,250)`, an alert-style highlight with no dark variant).
+    // On the dark menu it leaks light and washes out the label sitting on it —
+    // the real cause of "selected/focus si vede male". Neutralise it: the item's
+    // token surface + the accent left-bar already mark the current company.
+    .o_switch_company_item .log_into,
+    .o_switch_company_item[class*="log_into"],
+    .o_switch_company_item .log_into.alert-secondary {
+        background-color: transparent !important;
+    }
+
+    // Checkbox glyphs -> brand accent (native uses off-palette blue).
+    .fa-check-square,
+    .fa-check-square-o,
+    .fa-minus-square-o {
+        color: var(--pui-color-accent);
+    }
+    .fa-square-o {
+        color: var(--pui-color-muted);
     }
 }
 

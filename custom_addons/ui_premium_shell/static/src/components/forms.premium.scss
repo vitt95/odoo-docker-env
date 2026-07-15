@@ -42,7 +42,21 @@
     &:focus {
         border-color: var(--pui-color-accent);
     }
+
+    // OFF state: core paints the track transparent and the thumb with a
+    // near-black circle (`rgba(0,0,0,.25)`), which vanishes on the dark canvas
+    // (the pallina disappears). Give the OFF track a visible sunken fill + a
+    // strong border so the switch reads as an interactive control at rest, in
+    // both themes. The thumb itself is re-inked to a light circle in Dark
+    // (engine.premium.scss §Switch) where the black one would be invisible.
+    &:not(:checked) {
+        background-color: var(--pui-color-surface-sunken);
+        border-color: var(--pui-color-border-strong);
+    }
 }
 .form-switch:hover .form-check-input:not(:disabled) {
     border-color: var(--pui-color-accent);
+}
+.form-switch .form-check-input:disabled {
+    opacity: 0.5;
 }

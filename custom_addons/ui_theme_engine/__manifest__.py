@@ -58,6 +58,8 @@
             "ui_premium_shell/static/src/components/badge.premium.scss",
             "ui_premium_shell/static/src/components/card.premium.scss",
             "ui_premium_shell/static/src/components/notification.premium.scss",
+            "ui_premium_shell/static/src/components/empty_state.premium.scss",
+            "ui_premium_shell/static/src/components/wysiwyg.premium.scss",
             # Motion system: reusable keyframes + subtle entrances + the
             # prefers-reduced-motion accessibility guard.
             "ui_premium_shell/static/src/scss/motion.premium.scss",

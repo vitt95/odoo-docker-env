@@ -52,4 +52,61 @@
         font-weight: var(--pui-font-weight-semibold);
         color: var(--pui-color-heading);
     }
+
+    // Selected rows — PROMPT_DODICI §14 + PROMPT_TREDICI §1.
+    // Root cause (verified via computed style): Odoo tags selected rows with
+    // Bootstrap's contextual `.table-info`, which locally sets
+    // `--table-active-bg: #c5e1ee` / `--table-active-color: #000` on the row.
+    // Bootstrap paints the CELLS from those table variables (the box-shadow /
+    // `-state` mechanism), NOT from `background-color` — so overriding
+    // `background-color`/`color` on the cells never wins. The structural fix is
+    // to re-point the exact variables Bootstrap reads. Both the `--table-*`
+    // (Odoo-stripped) and `--bs-table-*` names are set for safety; the unused
+    // one is inert. Result: a subtle accent-soft tint + high-contrast heading
+    // text, theme-correct in Light and Dark, no light-cyan leak.
+    .o_data_row.table-info,
+    .o_data_row.o_data_row_selected,
+    .o_data_row.table-info.o_data_row_selected {
+        --table-active-bg: var(--pui-accent-soft);
+        --table-active-color: var(--pui-color-heading);
+        --table-bg-state: var(--pui-accent-soft);
+        --table-color-state: var(--pui-color-heading);
+        --bs-table-active-bg: var(--pui-accent-soft);
+        --bs-table-active-color: var(--pui-color-heading);
+        --bs-table-bg-state: var(--pui-accent-soft);
+        --bs-table-color-state: var(--pui-color-heading);
+    }
+
+    // Cell text on the selected row -> uniform high-contrast heading tone.
+    // The readonly/required cells (`.o_required_modifier.o_readonly_modifier`,
+    // e.g. the record name, stage, monetary) carry a dimmer colour from the base
+    // dark remap in engine §4, which — being scoped under `html[data-pui-theme]`
+    // — has specificity (0,4,1). We include `.o_list_table` here to reach (0,5,0)
+    // so this override wins in BOTH themes and every selected cell is fully
+    // legible on the accent tint (PROMPT_TREDICI §1).
+    .o_list_table .o_data_row.table-info > .o_data_cell,
+    .o_list_table .o_data_row.o_data_row_selected > .o_data_cell {
+        // The cyan tint is painted by a `box-shadow: inset … var(--table-bg-state)`
+        // whose variable is set ON THE CELL (not the row) by `.table-info`. Re-point
+        // the cell's own state vars to the accent-soft tint so the box-shadow paints
+        // the subtle brand tint instead of the light cyan.
+        --table-bg-state: var(--pui-accent-soft);
+        --table-color-state: var(--pui-color-heading);
+        --table-bg: transparent;
+        --bs-table-bg-state: var(--pui-accent-soft);
+        --bs-table-color-state: var(--pui-color-heading);
+        color: var(--pui-color-heading) !important;
+        opacity: 1;
+
+        span,
+        .o_field_widget,
+        .o_field_char,
+        .text-info,
+        .text-muted { color: var(--pui-color-heading) !important; }
+        a:not(.btn) { color: var(--pui-color-accent) !important; }
+        .fa,
+        .oi { color: var(--pui-color-secondary) !important; }
+        .o_field_badge,
+        .badge { color: inherit; }
+    }
 }

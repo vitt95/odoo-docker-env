@@ -42,15 +42,28 @@
     .o_field_widget .o_input_dropdown > input {
         background-color: transparent;
         border: 0;
-        border-bottom: 1px solid transparent;
+        // PROMPT_DODICI §4: the fields were fully borderless at rest, so an
+        // empty/unfocused field was invisible until hovered — especially in
+        // Dark. Keep an always-on quiet baseline (border-subtle) so every field
+        // is discoverable without hover; it strengthens to `border` on hover and
+        // to the accent on focus. Still flat (no box, no ring) per the reference.
+        border-bottom: 1px solid var(--pui-color-border-subtle);
         border-radius: 0;
         transition: border-color var(--pui-motion-fast) var(--pui-ease);
     }
 
-    // Reveal a quiet baseline on hover, accent on focus (no box, no ring).
+    // Strengthen the baseline on hover, accent on focus (no box, no ring).
     .o_field_widget:hover input.o_input,
     .o_field_widget:hover .o_input {
         border-bottom-color: var(--pui-color-border);
+    }
+
+    // Readonly fields keep the value legible but drop the interactive baseline
+    // so they don't read as editable.
+    .o_field_widget[readonly] input.o_input,
+    .o_field_widget .o_input[readonly] {
+        border-bottom-color: transparent;
+        color: var(--pui-color-text);
     }
     .o_field_widget input.o_input:focus,
     .o_field_widget textarea.o_input:focus,
@@ -104,7 +117,10 @@
 .o_form_view .oe_button_box .oe_stat_button,
 .o_form_view .o-form-buttonbox .oe_stat_button {
     background-color: var(--pui-color-surface-secondary);
-    border: 1px solid var(--pui-color-border) !important;
+    // PROMPT_DODICI §5: at rest the card outline was too faint to read as a
+    // discrete button — use the strong border so each stat is clearly framed
+    // before hover, in both themes.
+    border: 1px solid var(--pui-color-border-strong) !important;
     border-radius: var(--pui-radius-md);
     // Native `.btn-outline-secondary` hard-codes a near-black label (#3f4653)
     // that vanishes on the dark bar; force the token colour on the button and
@@ -161,6 +177,43 @@
         &.active {
             color: var(--pui-color-accent);
             font-weight: var(--pui-font-weight-semibold);
+        }
+    }
+}
+
+// -----------------------------------------------------------------------------
+// Stat-button overflow popover (`.o_dropdown_more` / `.o-form-buttonbox` in a
+// popover)
+// -----------------------------------------------------------------------------
+// PROMPT_DODICI §3: the "more" stat buttons are portaled into a popover OUTSIDE
+// `.o_form_view`, so the buttonbox rules above never reach them — they fall
+// back to the native `.btn-outline-secondary` (near-black `#3f4653` label) and
+// read as unreadable rows, invisible on the dark elevated surface. Re-apply the
+// legible token treatment here, scoped to the popover, for both themes.
+.o_popover.o-form-buttonbox,
+.o_popover .o-form-buttonbox,
+.o_dropdown_more {
+    .oe_stat_button {
+        color: var(--pui-color-text) !important;
+
+        .o_stat_text,
+        .o_stat_text .o_field_char,
+        .o_stat_text .o_field_char span {
+            color: var(--pui-color-text);
+            font-weight: var(--pui-font-weight-medium);
+        }
+        .o_stat_value {
+            color: var(--pui-color-heading);
+            font-weight: var(--pui-font-weight-semibold);
+        }
+        .o_button_icon,
+        > .fa {
+            color: var(--pui-color-accent);
+        }
+
+        &:hover {
+            background-color: var(--pui-color-hover);
+            .o_stat_text { color: var(--pui-color-heading); }
         }
     }
 }

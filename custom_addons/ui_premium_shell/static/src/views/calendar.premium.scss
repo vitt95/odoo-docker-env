@@ -40,4 +40,27 @@
             color: var(--pui-color-accent);
         }
     }
+
+    // Month (daygrid) events — legibility at rest.
+    // Odoo drives the event text from `--fc-event-text-color`, compiled to a
+    // static dark navy (`#3f4653`) with NO dark variant. In the month grid the
+    // event body sits over a faint colored `.fc-bg` tint, so time + title render
+    // dark-on-dark and are barely visible until hover (verified via computed
+    // style). Re-point the daygrid event text to token colours so it's legible
+    // at rest in both themes; the colored dot/tint still carries the record's
+    // meaning. A subtle hover highlight keeps the affordance.
+    .fc-daygrid-day-events {
+        .fc-event-main,
+        .fc-event-main .o_event_title,
+        .fc-event-main .fc-time,
+        .fc-event-main .fw-bolder,
+        .fc-event-title {
+            color: var(--pui-color-text) !important;
+        }
+
+        .fc-daygrid-block-event:hover,
+        .fc-daygrid-dot-event:hover {
+            background-color: var(--pui-color-hover);
+        }
+    }
 }

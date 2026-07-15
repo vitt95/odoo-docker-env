@@ -1,0 +1,52 @@
+// =============================================================================
+// Premium components — Empty / no-content help (`.o_nocontent_help`)
+// =============================================================================
+// PROMPT_DODICI §9: the empty-state help blocks (shown on views with no
+// records) use core gray utilities that read too faint — often near-invisible
+// on the dark canvas. Re-point the text, headings, links, icons and any CTA to
+// tokens so the guidance is always legible, in both themes. No DOM changes.
+// =============================================================================
+
+// Core compiles the help colours as static `$o-*` navy (root `#3f4653`, title
+// `#14181f`) via a selector more specific than a bare `.o_nocontent_help`, and
+// ships no Dark variant — so on the dark canvas both the title and body read
+// dark-on-dark (verified via computed style). We must win with a documented
+// `!important`, the same pattern the Dark bridge uses to re-point compiled core
+// colours; tokens then keep Light correct too. Scoped to the help block only.
+.o_nocontent_help {
+    color: var(--pui-color-secondary) !important;
+
+    // Primary guidance line + paragraphs.
+    p,
+    .o_view_nocontent_smiling_face + *,
+    .o_nocontent_help p {
+        color: var(--pui-color-secondary) !important;
+    }
+
+    // Emphasised lead line / title (core's near-black `#14181f`).
+    strong,
+    b,
+    h1, h2, h3,
+    .o_view_nocontent_smiling_face {
+        color: var(--pui-color-heading) !important;
+    }
+
+    // Illustrative faces / icons: keep them present but quiet.
+    .o_view_nocontent_smiling_face,
+    .o_view_nocontent_neutral_face,
+    .o_view_nocontent_empty_folder,
+    [class^="o_view_nocontent_"] {
+        opacity: 0.9;
+    }
+
+    .fa,
+    .oi {
+        color: var(--pui-color-muted);
+    }
+
+    // Links + call-to-action buttons.
+    a:not(.btn) {
+        color: var(--pui-color-accent);
+        &:hover { color: var(--pui-color-primary-hover); }
+    }
+}

@@ -21,8 +21,72 @@
     background-color: var(--pui-color-surface) !important;
 }
 
+// PROMPT_DODICI §11: the typed text ships as `.text-body`, but the caret,
+// placeholder and selection had no token treatment and the input could read
+// washed-out. Pin text/caret/placeholder/selection to tokens so the composer is
+// perfectly legible in both themes.
 .o-mail-Composer-input {
     border-radius: var(--pui-radius-md);
+    color: var(--pui-color-text);
+    caret-color: var(--pui-color-accent);
+
+    &::placeholder {
+        color: var(--pui-color-muted);
+    }
+    &::selection {
+        background-color: var(--pui-accent-soft);
+        color: var(--pui-color-heading);
+    }
+}
+
+// -----------------------------------------------------------------------------
+// Message content (`.o-mail-Message-contentContainer`) — PROMPT_DODICI §12
+// -----------------------------------------------------------------------------
+// Ensure the message body, links, quotes, and timestamp all resolve to tokens
+// so sent/received messages, replies and quotes stay legible in both themes.
+.o-mail-Message-contentContainer,
+.o-mail-Message-body {
+    color: var(--pui-color-text);
+
+    a:not(.btn) {
+        color: var(--pui-color-accent);
+        &:hover { color: var(--pui-color-primary-hover); }
+    }
+
+    // Quoted / replied-to text.
+    blockquote {
+        border-left: 2px solid var(--pui-color-border);
+        color: var(--pui-color-secondary);
+    }
+}
+
+// Timestamp + subtle meta.
+.o-mail-Message-date,
+.o-mail-Message-authorName ~ .o-mail-Message-date,
+.o-mail-Message-header .text-muted {
+    color: var(--pui-color-muted);
+}
+
+// -----------------------------------------------------------------------------
+// Follow / Following button (`.o-mail-Chatter-follow`) — PROMPT_DODICI §7
+// -----------------------------------------------------------------------------
+// Ships as `.btn-link.text-600`; the Dark bridge forces every `.btn-link` to
+// the accent, which was too loud for a resting toggle. Make it a quiet
+// `secondary` label that brightens to the accent on hover in both themes. The
+// scoped selector + `!important` beats the generic dark `.btn-link` rule.
+.o-mail-Chatter .o-mail-Chatter-follow.btn-link {
+    color: var(--pui-color-secondary) !important;
+    transition: color var(--pui-motion-fast) var(--pui-ease);
+
+    &:hover,
+    &:focus-visible {
+        color: var(--pui-color-accent) !important;
+    }
+    // "Stai seguendo" (active/following) state -> accent to signal it's on.
+    &.o-following,
+    &[aria-pressed="true"] {
+        color: var(--pui-color-accent) !important;
+    }
 }
 
 // Message: round the hover highlight for a softer feel.

@@ -1,0 +1,62 @@
+// =============================================================================
+// Premium components — WYSIWYG / rich-text toolbar (`.o-wysiwyg`, `.o-we-toolbar`)
+// =============================================================================
+// PROMPT_DODICI §13: the rich-text toolbar icons read too faint. The Dark
+// bridge (engine §6) already re-inks the floating toolbar buttons in Dark; this
+// is the theme-agnostic base that also fixes Light and covers the toolbar
+// states the brief lists — hover / active / selected / disabled / dropdown /
+// separator. Scoped to the editor so it never touches unrelated buttons.
+// =============================================================================
+
+.o-wysiwyg,
+.o-we-toolbar,
+.note-toolbar {
+    // Toolbar buttons + their glyphs at rest -> quiet secondary tone.
+    .btn,
+    .btn > .fa,
+    .btn > .oi,
+    .o-we-toolbar-buttons .btn {
+        color: var(--pui-color-secondary);
+        transition:
+            background-color var(--pui-motion-fast) var(--pui-ease),
+            color var(--pui-motion-fast) var(--pui-ease);
+    }
+
+    // Hover -> brighter + subtle surface highlight.
+    .btn:hover,
+    .btn:hover > .fa,
+    .btn:hover > .oi {
+        background-color: var(--pui-color-hover);
+        color: var(--pui-color-heading);
+    }
+
+    // Active / selected (e.g. bold currently applied) -> accent.
+    .btn.active,
+    .btn.active > .fa,
+    .btn.active > .oi,
+    .btn[aria-pressed="true"] {
+        color: var(--pui-color-accent);
+    }
+
+    // Disabled -> muted, no highlight.
+    .btn:disabled,
+    .btn.disabled,
+    .btn:disabled > .fa {
+        color: var(--pui-color-muted);
+        background-color: transparent;
+        opacity: 1;
+    }
+
+    // Dropdown toggles inside the toolbar.
+    .dropdown-toggle {
+        color: var(--pui-color-secondary);
+        &:hover { color: var(--pui-color-heading); }
+    }
+
+    // Vertical separators between button groups.
+    .o-we-toolbar-separator,
+    .btn-group + .btn-group,
+    .vertical-separator {
+        border-color: var(--pui-color-border-subtle);
+    }
+}

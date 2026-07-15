@@ -23,3 +23,60 @@
         background-color var(--pui-motion-fast) var(--pui-ease),
         color var(--pui-motion-fast) var(--pui-ease);
 }
+
+// -----------------------------------------------------------------------------
+// Popover content readability (`.o_popover` / `.popover`) — PROMPT_DODICI §3
+// -----------------------------------------------------------------------------
+// The elevated surface is handled by the token bg (engine §3 in Dark). Here we
+// pin the CONTENT — body text, links, icons, dividers, disabled — to tokens so
+// every popover in the app reads at the same quality in both themes, not just
+// the specific stat-button `.o_dropdown_more` from the brief.
+.o_popover,
+.popover {
+    color: var(--pui-color-text);
+
+    .popover-body,
+    .o_popover_body,
+    .popover-header {
+        color: var(--pui-color-text);
+    }
+    .popover-header {
+        background-color: transparent;
+        border-bottom-color: var(--pui-color-border-subtle);
+        font-weight: var(--pui-font-weight-semibold);
+    }
+
+    a:not(.btn) {
+        color: var(--pui-color-accent);
+        &:hover { color: var(--pui-color-primary-hover); }
+    }
+
+    .fa,
+    .oi {
+        color: var(--pui-color-secondary);
+    }
+
+    hr,
+    .dropdown-divider {
+        border-color: var(--pui-color-border-subtle);
+    }
+
+    .dropdown-item {
+        color: var(--pui-color-text);
+        &:hover,
+        &:focus-visible {
+            background-color: var(--pui-color-hover);
+            color: var(--pui-color-heading);
+        }
+        &.active,
+        &.selected {
+            background-color: var(--pui-accent-soft);
+            color: var(--pui-color-accent);
+        }
+        &:disabled,
+        &.disabled {
+            color: var(--pui-color-muted);
+            opacity: 1;
+        }
+    }
+}
