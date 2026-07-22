@@ -1,0 +1,101 @@
+// =============================================================================
+// Premium — Activity Summary table + Action-manager list separators
+// =============================================================================
+// Two tables the theme did not yet reach:
+//   §2  Activity view summary table (core `mail`, previously unstyled — raw
+//       Bootstrap `.table-bordered` heavy grid).
+//   §3  Generic list table under `.o_action_manager` — soften the separators
+//       to the same hairline weight for a consistent, premium look.
+// Token-driven, so both follow the Light/Dark swap for free. No DOM changes.
+//
+// Load order: registered AFTER list.premium.scss, so the §3 re-point below
+// wins on equal specificity via source order.
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// §2 — Activity Summary table
+// -----------------------------------------------------------------------------
+.o_activity_view_table.o_activity_view_table {
+    // Both var families — Odoo strips the `--bs-` prefix in some builds.
+    --bs-table-bg: var(--pui-color-surface);
+    --table-bg: var(--pui-color-surface);
+    --bs-table-border-color: var(--pui-color-border-subtle);
+    --table-border-color: var(--pui-color-border-subtle);
+
+    background: var(--pui-color-surface);
+    border: 1px solid var(--pui-color-border-subtle);
+    border-radius: var(--pui-radius-lg);
+    border-collapse: separate; // let the radius clip cleanly
+    border-spacing: 0;
+    overflow: hidden;
+
+    // `.table-bordered` draws a border on every cell — soften to hairlines.
+    > :not(caption) > * > * {
+        border-color: var(--pui-color-border-subtle);
+    }
+
+    thead th {
+        background: var(--pui-color-surface-secondary);
+        color: var(--pui-color-secondary);
+        font-weight: var(--pui-font-weight-semibold);
+        font-size: var(--pui-font-size-sm);
+        border-bottom: 1px solid var(--pui-color-border);
+        padding: var(--pui-space-3);
+        vertical-align: middle;
+        text-align: center;
+    }
+
+    tbody td,
+    tbody th {
+        padding: var(--pui-space-2);
+        vertical-align: middle;
+        color: var(--pui-color-text);
+        text-align: center;
+    }
+
+    // First column = record name — quiet heading tone, left aligned.
+    tbody tr > :first-child {
+        text-align: left;
+        color: var(--pui-color-heading);
+        font-weight: var(--pui-font-weight-medium);
+    }
+
+    tbody tr:hover > * {
+        background: var(--pui-color-surface-sunken);
+    }
+}
+
+// Activity cells — low-saturation token tints for the day-relative states.
+.o_activity_summary_cell {
+    transition: background-color var(--pui-motion-fast) var(--pui-ease);
+
+    &.today {
+        background: var(--pui-loz-info-bg);
+        color: var(--pui-loz-info-fg);
+    }
+    &.overdue {
+        background: var(--pui-loz-danger-bg);
+        color: var(--pui-loz-danger-fg);
+    }
+    &.planned {
+        background: var(--pui-loz-success-bg);
+        color: var(--pui-loz-success-fg);
+    }
+
+    // Full-height clickable inner wrapper (`.p-0.h-100`): keep it filling the
+    // cell so the tint covers the whole area, and lift subtly on hover.
+    &:hover {
+        box-shadow: inset 0 0 0 999px rgba(var(--pui-accent-rgb), 0.05);
+    }
+    .badge {
+        font-weight: var(--pui-font-weight-semibold);
+    }
+}
+
+// -----------------------------------------------------------------------------
+// §3 — Action-manager list separators (match the Activity hairline weight)
+// -----------------------------------------------------------------------------
+.o_action_manager .o_list_view .o_list_table {
+    --bs-table-border-color: var(--pui-color-border-subtle);
+    --table-border-color: var(--pui-color-border-subtle);
+}

@@ -84,6 +84,7 @@ activates the Premium skin for all internal users.
             "ui_premium_shell/static/src/components/notification.premium.scss",
             "ui_premium_shell/static/src/components/empty_state.premium.scss",
             "ui_premium_shell/static/src/components/wysiwyg.premium.scss",
+            "ui_premium_shell/static/src/components/close.premium.scss",
             # Motion system: reusable keyframes + subtle entrances + the
             # prefers-reduced-motion accessibility guard.
             "ui_premium_shell/static/src/scss/motion.premium.scss",
@@ -109,6 +110,7 @@ activates the Premium skin for all internal users.
             "ui_premium_shell/static/src/views/control_panel.premium.scss",
             "ui_premium_shell/static/src/views/form.premium.scss",
             "ui_premium_shell/static/src/views/list.premium.scss",
+            "ui_premium_shell/static/src/views/tables.premium.scss",
             "ui_premium_shell/static/src/views/kanban.premium.scss",
             "ui_premium_shell/static/src/views/calendar.premium.scss",
             "ui_premium_shell/static/src/views/chatter.premium.scss",
