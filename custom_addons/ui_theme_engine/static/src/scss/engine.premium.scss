@@ -24,6 +24,10 @@
 html[data-pui-theme="dark"] {
     color-scheme: dark;
 
+    .fa:before, .oi:before {
+        color: var(--pui-color-accent);
+    }
+
     // -------------------------------------------------------------------------
     // 1. Base — webclient canvas + default text
     // -------------------------------------------------------------------------
