@@ -2,11 +2,19 @@
 <templates xml:space="preserve">
 
     <t t-name="ui_premium_shell.PuiSidebar">
-        <aside class="pui-sidebar" t-att-class="{ 'pui-sidebar--collapsed': state.collapsed }">
+        <aside class="pui-sidebar" t-att-class="{ 'pui-sidebar--pinned': state.pinned }">
             <div class="pui-sidebar__brand">
                 <a href="/odoo" class="pui-sidebar__brand-link" title="Home">
                     <img class="pui-sidebar__brand-logo" t-attf-src="/web/binary/company_logo" alt="Home"/>
                 </a>
+                <button type="button"
+                        class="pui-sidebar__pin"
+                        t-att-class="{ 'pui-sidebar__pin--active': state.pinned }"
+                        t-att-aria-pressed="state.pinned ? 'true' : 'false'"
+                        t-on-click="() => this.togglePinned()"
+                        t-att-title="state.pinned ? 'Sblocca la barra laterale' : 'Fissa la barra laterale'">
+                    <i class="fa fa-thumb-tack"/>
+                </button>
             </div>
 
             <nav class="pui-sidebar__nav">
@@ -38,16 +46,6 @@
                     </button>
                 </t>
             </nav>
-
-            <div class="pui-sidebar__footer">
-                <button type="button"
-                        class="pui-sidebar__collapse"
-                        t-on-click="() => this.toggleCollapsed()"
-                        t-att-title="state.collapsed ? 'Expand' : 'Collapse'">
-                    <i class="fa" t-att-class="state.collapsed ? 'fa-angle-right' : 'fa-angle-left'"/>
-                    <span class="pui-sidebar__label">Collapse</span>
-                </button>
-            </div>
         </aside>
     </t>
 

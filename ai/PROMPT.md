@@ -1,100 +1,347 @@
-# Bootstrap Prompt
+# Role
 
-Prima di eseguire qualsiasi attività, leggi integralmente tutti i file presenti nella cartella `.ai/`.
+Agisci come un **Senior Frontend Engineer**, **Senior UX/UI Designer Enterprise** e **Design System Architect**, specializzato in:
 
-Leggi poi il file MODEL_STRATEGY dove ci sono le indicazioni su quali modelli usare e in quali fasi.
+- Enterprise UX
+- Design Systems
+- Dark Mode
+- CSS Architecture
+- Bootstrap
+- Accessibilità (WCAG AA/AAA)
+- Micro-interazioni premium
+- Refactoring CSS non distruttivo
 
-Considera tali file come **direttive progettuali vincolanti**, non come semplice documentazione.
-
-Il loro scopo è definire:
-
-* il modo in cui deve essere sviluppato il progetto;
-* le regole ingegneristiche da rispettare;
-* la filosofia del redesign;
-* i vincoli architetturali;
-* il processo decisionale da seguire.
-
-Se durante l'analisi individui incongruenze tra il codice esistente e le direttive, **non adeguare automaticamente le direttive al codice esistente**.
-
-Segnala invece il conflitto, spiegane le conseguenze e proponi una o più soluzioni motivate.
+Il tuo obiettivo è correggere esclusivamente i problemi visivi descritti, mantenendo la piena compatibilità con il resto del CMR, senza introdurre regressioni.
 
 ---
 
-## Fase 1 — Discovery
+# Regole Generali
 
-Prima di qualsiasi implementazione esegui una fase completa di analisi del progetto.
+Prima di modificare qualsiasi file:
 
-L'obiettivo non è produrre documentazione, ma costruire un modello mentale accurato dell'architettura del sistema.
+1. Analizza completamente i componenti coinvolti.
+2. Comprendi la gerarchia CSS esistente.
+3. Individua eventuali CSS Variables già presenti e riutilizzale ove possibile.
+4. Se necessario crea nuove variabili coerenti con il Design System.
+5. Non introdurre colori casuali.
+6. Mantieni la palette cromatica del CMR.
+7. Mantieni uno stile enterprise, moderno, premium e minimale.
+8. Evita CSS duplicato o ridondante.
+9. Non rompere layout esistenti.
+10. Non modificare la logica applicativa se non strettamente necessario.
+11. Verifica ogni modifica sia in **Light Mode** che in **Dark Mode**.
 
-Analizza in particolare:
+Per ogni componente verifica sempre:
 
-* struttura del repository;
-* moduli custom;
-* architettura frontend;
-* asset bundle;
-* componenti OWL;
-* template QWeb;
-* viste XML e relativa ereditarietà;
-* JavaScript;
-* SCSS;
-* registries;
-* services;
-* patch;
-* hook;
-* punti di estensione;
-* dipendenze tra componenti;
-* personalizzazioni già presenti.
-
-Per la UI analizza attentamente almeno:
-
-* Login
-* App Shell
-* Navbar
-* Sidebar
-* Dashboard
-* Search
-* Control Panel
-* Form View
-* List View
-* Kanban
-* Calendar
-* Chatter
-* Dialog
-* Notification
-* Systray
-* Discuss
-* ogni altro componente rilevante individuato durante l'analisi.
-
-Per ciascuno identifica:
-
-* dove viene renderizzato;
-* quali componenti lo compongono;
-* quali dipendenze possiede;
-* quali override sono già presenti;
-* quali classi CSS fanno parte del contratto funzionale con JavaScript o OWL;
-* quali classi sono invece esclusivamente presentazionali.
+- Default
+- Hover
+- Active
+- Focus
+- Disabled
+- Selected (quando presente)
+- Responsive
+- Accessibilità
+- Contrasto WCAG
 
 ---
 
-## Output atteso
+# 1. Fix `.btn-close`
 
-Al termine della Discovery non implementare nulla.
+La classe:
 
-Restituisci esclusivamente:
+```css
+.btn-close
+```
 
-1. Executive Summary
-2. Frontend Architecture
-3. UI Dependency Map
-4. Critical Points
-5. Theme Engine Proposal
-6. Roadmap tecnica consigliata
+in Dark Mode risulta poco visibile.
 
-Se ritieni che l'architettura proposta nelle direttive possa essere migliorata, proponi un'alternativa motivandola.
+## Obiettivi
 
-Non creare file.
+- Analizzare il motivo della scarsa visibilità.
+- Correggere colori, opacity, filter o SVG se necessario.
+- Garantire un contrasto elevato in entrambe le modalità.
+- Mantenere coerenza con Bootstrap e con il Design System del CMR.
+- Verificare anche:
+  - hover
+  - active
+  - focus
+- Il pulsante deve essere immediatamente riconoscibile senza risultare invasivo.
 
-Non modificare file.
+---
 
-Non scrivere codice, salvo piccoli esempi utili a spiegare una proposta architetturale.
+# 2. Restyling Activity Summary Table
 
-Attendi il mio via libera prima di iniziare qualsiasi implementazione.
+Classe coinvolta:
+
+```css
+table.table.table-bordered.mb-5.bg-view.o_activity_view_table
+```
+
+Questa tabella deve essere completamente rifinita dal punto di vista UX/UI.
+
+L'obiettivo è ottenere una tabella dal look enterprise, premium, moderna e molto più elegante.
+
+## Analizza completamente
+
+- struttura
+- header
+- tbody
+- celle
+- padding
+- spacing
+- border
+- radius
+- allineamenti
+- background
+- hover
+- focus
+- responsive
+
+---
+
+## Verifica tutte le celle dinamiche
+
+Analizza tutti gli stati, inclusi:
+
+```css
+.o_activity_summary_cell
+
+.o_activity_summary_cell.today
+
+.o_activity_summary_cell.overdue
+
+.o_activity_summary_cell.p-0.h-100
+```
+
+e qualsiasi altra variante presente nel codice.
+
+Per ogni variante verifica:
+
+- leggibilità
+- contrasto
+- colori
+- riempimenti
+- hover
+- active
+- focus
+
+---
+
+## Palette
+
+I colori devono essere:
+
+- coerenti con il CMR
+- armoniosi
+- poco saturi
+- eleganti
+- professionali
+- gradevoli anche dopo molte ore di utilizzo
+
+Particolare attenzione alla Dark Mode.
+
+---
+
+## Border
+
+Le linee della tabella sono troppo pesanti.
+
+Devono essere ripensate completamente.
+
+Obiettivo:
+
+- border molto più delicati
+- separatori meno invasivi
+- maggiore pulizia
+- migliore gerarchia visiva
+- aspetto premium
+
+La tabella deve risultare moderna e leggera.
+
+---
+
+## Verificare inoltre
+
+- badge
+- icone
+- numeri
+- testi
+- allineamenti verticali
+- celle vuote
+- celle piene
+- overflow
+- responsive
+
+Ogni elemento deve risultare perfettamente leggibile sia in Light che in Dark Mode.
+
+---
+
+# 3. Tabella presente dentro `.o_action_manager`
+
+Analizza completamente anche la tabella visualizzata sotto:
+
+```css
+.o_action_manager
+```
+
+## Verifica
+
+- header
+- tbody
+- footer
+- hover
+- selected
+- focus
+- active
+- contrasto
+- leggibilità
+- spaziature
+- padding
+
+Particolare attenzione alla Dark Mode.
+
+Verifica che siano sempre perfettamente visibili:
+
+- testo
+- badge
+- link
+- icone
+- pulsanti
+- righe selezionate
+- hover
+
+---
+
+## Border
+
+Anche qui le linee della tabella devono essere meno invasive.
+
+Devono risultare:
+
+- leggere
+- moderne
+- eleganti
+- coerenti con il resto del CMR
+
+Lo stile deve essere coerente con quello adottato nella Activity Summary.
+
+---
+
+# 4. Sidebar (`.pui-sidebar`)
+
+La sidebar deve essere completamente migliorata dal punto di vista UX.
+
+---
+
+## Hover Expand
+
+Quando la sidebar è collapsed:
+
+- passando il mouse deve espandersi automaticamente
+- l'espansione deve essere estremamente fluida
+- nessun flickering
+- nessun layout shift
+- nessun salto visivo
+
+L'animazione deve risultare premium.
+
+---
+
+## Pin
+
+Inserire una nuova icona nella parte superiore della sidebar.
+
+### Stato normale
+
+La sidebar:
+
+- rimane collapsed
+- in hover si espande
+- uscendo con il mouse torna collapsed
+
+---
+
+### Stato Pinnato
+
+Premendo il pin:
+
+- la sidebar rimane sempre espansa
+- il pin cambia stato visivamente
+- la preferenza viene salvata (es. localStorage se coerente con l'architettura del progetto)
+- la sidebar mantiene lo stesso livello qualitativo delle animazioni
+
+---
+
+### Unpin
+
+Premendo nuovamente il pin:
+
+- la sidebar torna collapsed
+- riprende il comportamento Hover Expand
+
+---
+
+## Animazioni
+
+Le animazioni devono essere curate nei minimi dettagli.
+
+Requisiti:
+
+- easing naturale
+- transizioni morbide
+- apertura elegante
+- chiusura elegante
+- nessun movimento brusco
+- nessun flickering
+- nessun layout shift
+- comparsa progressiva delle label
+- icone perfettamente stabili
+
+L'interazione deve trasmettere la qualità di un software enterprise di fascia alta.
+
+---
+
+# Design Goal
+
+L'interfaccia deve trasmettere la stessa qualità percepita dei migliori software enterprise moderni.
+
+Prendi ispirazione (non copiare) dai principi UX/UI adottati da prodotti come:
+
+- Linear
+- Stripe Dashboard
+- Vercel Dashboard
+- Notion Enterprise
+- Raycast
+- Arc Browser
+
+L'obiettivo è ottenere:
+
+- maggiore pulizia
+- migliore gerarchia visiva
+- contrasto ottimizzato
+- migliore leggibilità
+- eleganza
+- consistenza
+- qualità percepita superiore
+
+senza alterare l'identità visiva del CMR.
+
+---
+
+# Audit Finale Obbligatorio
+
+Prima di terminare:
+
+- verifica tutte le modifiche in Light Mode
+- verifica tutte le modifiche in Dark Mode
+- verifica responsive
+- verifica hover
+- verifica active
+- verifica focus
+- verifica accessibilità WCAG
+- verifica contrasto
+- verifica eventuali regressioni
+- elimina CSS inutilizzato introdotto durante il refactoring
+- assicurati che ogni modifica sia coerente con il Design System del CMR
+
+Non limitarti a correggere i bug: esegui un audit UX/UI completo dei componenti coinvolti e, dove individui incoerenze visive, correggile mantenendo uno stile uniforme, moderno e premium.

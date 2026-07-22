@@ -3,7 +3,7 @@ import { registry } from "@web/core/registry";
 import { useBus, useService } from "@web/core/utils/hooks";
 import { browser } from "@web/core/browser/browser";
 
-const COLLAPSE_KEY = "pui_sidebar_collapsed";
+const PIN_KEY = "pui_sidebar_pinned";
 
 /**
  * Premium App Sidebar.
@@ -13,6 +13,12 @@ const COLLAPSE_KEY = "pui_sidebar_collapsed";
  * selectMenu, exactly like the navbar. The original navbar stays in the DOM
  * (its classes are a tour/JS contract); Premium SCSS only hides its redundant
  * apps menu and shifts the content.
+ *
+ * Two states, driven by a single persisted flag:
+ *   • Unpinned (default) → collapsed rail; hovering expands it as an overlay
+ *     (pure CSS `:hover`, no JS), so the content never reflows.
+ *   • Pinned → always expanded; the content is offset by the full width.
+ * The body-class sync below is what tells shell.premium.scss how much to offset.
  *
  * Loaded only in the Premium asset bundle, so registering it in main_components
  * is automatically skin-gated: Classic never loads this file.
@@ -25,7 +31,7 @@ export class PuiSidebar extends Component {
         this.menuService = useService("menu");
         this.actionService = useService("action");
         this.state = useState({
-            collapsed: browser.localStorage.getItem(COLLAPSE_KEY) === "1",
+            pinned: browser.localStorage.getItem(PIN_KEY) === "1",
         });
         // Re-render when the active app changes (keeps the highlight in sync).
         useBus(this.env.bus, "MENUS:APP-CHANGED", () => this.render());
@@ -62,16 +68,18 @@ export class PuiSidebar extends Component {
         });
     }
 
-    toggleCollapsed() {
-        this.state.collapsed = !this.state.collapsed;
-        browser.localStorage.setItem(COLLAPSE_KEY, this.state.collapsed ? "1" : "0");
+    togglePinned() {
+        this.state.pinned = !this.state.pinned;
+        browser.localStorage.setItem(PIN_KEY, this.state.pinned ? "1" : "0");
         this._syncBodyClass();
     }
 
     _syncBodyClass() {
-        // Drives the content offset in SCSS (padding-left on the web client body).
+        // Drives the content offset in SCSS (padding-left on the web client
+        // body). Collapsed offset = whenever NOT pinned; hover-expand overlays
+        // the content in CSS and deliberately leaves this offset untouched.
         document.body.classList.add("pui-has-sidebar");
-        document.body.classList.toggle("pui-sidebar-collapsed", this.state.collapsed);
+        document.body.classList.toggle("pui-sidebar-collapsed", !this.state.pinned);
     }
 }
 

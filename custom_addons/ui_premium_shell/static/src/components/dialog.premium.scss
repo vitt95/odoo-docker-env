@@ -28,3 +28,49 @@
 .modal-backdrop.show {
     opacity: 0.4;
 }
+
+// -----------------------------------------------------------------------------
+// Icon legibility inside dialogs (audit §5 — especially Dark Mode)
+// -----------------------------------------------------------------------------
+// Odoo drops bare `<i class="fa …">` into modal chrome + body actions (delete,
+// print, pager, cog, upload). `.btn-close` is fixed in close.premium.scss; the
+// rest inherit body text and can read grey-on-grey in Dark. Give the chrome a
+// readable default + hover, keep glyphs that sit on a SOLID fill white, and
+// tint the two functions that must always be recognisable — destructive and
+// warning — but only on ghost / link / secondary contexts.
+
+.modal-header,
+.modal-footer {
+    .fa, .oi {
+        color: var(--pui-color-secondary);
+        transition: color var(--pui-motion-fast) var(--pui-ease);
+    }
+    .btn:hover .fa, .btn:hover .oi,
+    a:hover .fa, a:hover .oi {
+        color: var(--pui-color-heading);
+    }
+}
+
+// Glyphs on solid-filled buttons already carry white text — leave them.
+.modal .btn-primary,
+.modal .btn-danger,
+.modal .btn-success,
+.modal .btn-warning,
+.modal .btn-info {
+    .fa, .oi,
+    &:hover .fa, &:hover .oi {
+        color: currentColor;
+    }
+}
+
+// Function tints — destructive / warning stay recognisable in both modes,
+// only where the action is NOT a solid fill (so we never hide a glyph on its
+// own colour).
+.modal :is(.btn-link, .btn-secondary, .btn-light, .btn-outline-secondary, a:not(.btn), td, .o_button_icon) {
+    .fa-trash, .fa-trash-o {
+        color: var(--pui-color-danger);
+    }
+    .fa-exclamation-triangle, .fa-warning {
+        color: var(--pui-color-warning);
+    }
+}

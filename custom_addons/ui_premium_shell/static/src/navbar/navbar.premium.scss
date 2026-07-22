@@ -54,24 +54,40 @@
         .o_menu_systray_item > .dropdown-toggle {
             border-radius: var(--pui-radius-md);
             color: var(--pui-color-secondary);
+            transition:
+                background-color var(--pui-motion-fast) var(--pui-ease),
+                color var(--pui-motion-fast) var(--pui-ease);
 
-            // PROMPT_TREDICI §2: hover must light ONLY the icon, not flood the
-            // whole button with a surface highlight (which read as heavy). The
-            // button keeps its resting colour; only the glyph brightens, with a
-            // soft colour transition on the icon itself. Applies to every systray
-            // toggle (activity clock, messaging, user-menu…) for coherence.
+            // PROMPT_02 §6: uniform hover for EVERY systray toggle. Previously
+            // the messaging (fa-comments) button inherited a soft highlight box
+            // from core mail's `.o-mail-DiscussSystray-class:hover`
+            // (a hardcoded rgba(0,0,0,.075) — invisible in Dark), while the
+            // bare activity (fa-clock-o) button had none → visible inconsistency.
+            // Carry a token-driven hover box on the button itself so all toggles
+            // (clock / messaging / user-menu…) feel identical and theme-correct.
             .fa,
             .oi {
                 color: inherit;
                 transition: color var(--pui-motion-fast) var(--pui-ease);
             }
 
-            &:hover .fa,
-            &:hover .oi,
-            &:focus-visible .fa,
-            &:focus-visible .oi {
+            &:hover,
+            &:focus-visible {
+                background-color: var(--pui-color-hover);
                 color: var(--pui-color-heading);
+
+                .fa,
+                .oi {
+                    color: var(--pui-color-heading);
+                }
             }
+        }
+
+        // Neutralise core mail's hardcoded highlight on the messaging wrapper —
+        // the button's own token hover (above) now provides the consistent,
+        // theme-correct fill, so we avoid a double tint / the Dark-mode leak.
+        .o-mail-DiscussSystray-class:hover {
+            background-color: transparent;
         }
     }
 }

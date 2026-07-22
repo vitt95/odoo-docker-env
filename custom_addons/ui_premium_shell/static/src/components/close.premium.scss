@@ -1,0 +1,54 @@
+// =============================================================================
+// Premium — .btn-close (Bootstrap dismiss button)
+// =============================================================================
+// Bootstrap 5.3 paints `.btn-close` from the `--bs-btn-close-*` custom props:
+//   background: transparent var(--bs-btn-close-bg) center/1em auto no-repeat;
+//   opacity:    var(--bs-btn-close-opacity);
+// and `--bs-btn-close-bg` is a fixed BLACK "×" SVG. Its dark variant only fires
+// under `[data-bs-theme="dark"]`, which the Premium skin never sets (it toggles
+// `data-pui-theme`) — so in Dark Mode the black glyph is nearly invisible.
+//
+// IMPORTANT: the Premium asset bundle loads BEFORE core bootstrap.css, so a
+// plain `.btn-close` override (equal specificity) LOSES on source order. We beat
+// that by boosting specificity with `html` / the theme attribute and by driving
+// Bootstrap's OWN variables — so BS's `opacity: var(--bs-btn-close-opacity)` and
+// `background: … var(--bs-btn-close-bg)` pick up our values.
+//
+// Dark = a white glyph via `--bs-btn-close-bg` (not `filter: invert()`, which
+// would also invert the hover background into a bright square).
+// =============================================================================
+
+// The backend Bootstrap build paints `.btn-close` with DIRECT `opacity` /
+// `background` (no `--bs-btn-close-*` vars — verified live), so we override the
+// concrete longhands. Both are also var-fed on the frontend build; a direct
+// longhand at this specificity wins in either case.
+html .btn-close {
+    opacity: 0.6;
+    border-radius: var(--pui-radius-md);
+    transition:
+        opacity var(--pui-motion-fast) var(--pui-ease),
+        background-color var(--pui-motion-fast) var(--pui-ease),
+        box-shadow var(--pui-motion-fast) var(--pui-ease);
+
+    &:hover {
+        opacity: 1;
+        background-color: var(--pui-color-surface-sunken);
+    }
+    &:focus,
+    &:focus-visible {
+        opacity: 1;
+        outline: none;
+        box-shadow: var(--pui-focus-ring);
+    }
+    &:active {
+        opacity: 1;
+        background-color: var(--pui-color-hover);
+    }
+}
+
+// Dark Mode: swap the black glyph for a white one. `background-image` longhand
+// at specificity (0,2,1) beats core `.btn-close` (0,1,0), and only replaces the
+// image — Bootstrap's transparent fill / position / size are preserved.
+html[data-pui-theme="dark"] .btn-close {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'%3e%3cpath d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z'/%3e%3c/svg%3e");
+}
