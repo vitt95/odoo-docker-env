@@ -20,6 +20,14 @@ services:
     # Addons writable in dev for scaffolding/tooling that writes back.
     volumes:
       - ./custom_addons:/mnt/extra-addons:rw
+    # Reach the local inference server by container name. Going through
+    # host.docker.internal is ambiguous here: a native ollama listens on
+    # 127.0.0.1:11434 and the container publishes on *:11434, so the same URL can
+    # resolve to a different model depending on who asks. The Docker network name
+    # cannot be mistaken.
+    networks:
+      - odoo_net
+      - inference
 
   db:
     # Expose Postgres on the host for external DB tools during development.
@@ -49,6 +57,13 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+
+networks:
+  # Network of the local LLM stack (docker compose project "qwen25").
+  # External: this file does not own it and must not create or delete it.
+  inference:
+    external: true
+    name: qwen25_default
 
 volumes:
   pgadmin_data:

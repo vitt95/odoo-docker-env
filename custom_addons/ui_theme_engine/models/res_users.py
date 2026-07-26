@@ -10,7 +10,9 @@ class ResUsers(models.Model):
             ("premium", "Premium"),
         ],
         string="UI Skin",
-        default="classic",
+        # The theme is the point of the module: new users get Premium and can
+        # opt back into Classic from the user menu.
+        default="premium",
         required=True,
         help="Active UI skin. Classic = standard Odoo UI. "
         "Premium = redesigned experience. Business logic is identical.",

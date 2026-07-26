@@ -1,11 +1,35 @@
 {
-    "name": "UI Theme Engine",
-    "summary": "Skin switch (Classic/Premium) and Premium asset bundle wiring.",
+    "name": "Premium UI Theme",
+    "summary": "Premium backend theme for Odoo 18: skin switch (Classic/Premium), "
+    "Light/Dark themes, redesigned shell and views.",
+    "description": """
+Premium UI Theme
+================
+
+A complete backend re-skin of Odoo 18. Installing this module installs the whole
+theme: design tokens, component library, app shell (sidebar, navbar, dashboard)
+and redesigned views.
+
+* **Non destructive** — the native Classic skin stays available. Every user can
+  switch back from the user menu at any time (*Skin: Classic / Premium*).
+* **Light & Dark** — Premium ships its own token-driven Light/Dark themes,
+  toggled instantly from the user menu.
+* **No business logic touched** — styling, tokens and additive OWL components
+  only.
+
+Installing this module pulls in *UI Brand Tokens* and *UI Premium Shell*, and
+activates the Premium skin for all internal users.
+""",
     "version": "18.0.1.0.0",
     "category": "Themes/Backend",
     "author": "Vittorio Aiello",
     "license": "LGPL-3",
     "depends": ["web", "ui_brand_tokens", "ui_premium_shell"],
+    # Installing the theme must actually apply the theme: switch existing
+    # internal users over to the Premium skin (new users get it via the field
+    # default on res.users).
+    "post_init_hook": "post_init_hook",
+    "images": ["static/description/banner.png"],
     "data": [
         "data/ir_config_parameter.xml",
         "views/webclient_bootstrap.xml",
@@ -94,5 +118,8 @@
         ],
     },
     "installable": True,
-    "application": False,
+    # Entry point of the theme: listed under Apps so it can be found and
+    # installed from the UI. The two support modules (tokens, shell) stay
+    # application=False and come in as dependencies.
+    "application": True,
 }
