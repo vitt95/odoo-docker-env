@@ -24,6 +24,14 @@
 html[data-pui-theme="dark"] {
     color-scheme: dark;
 
+    .o_form_view.o_form_nosheet, .o_form_view .o_form_nosheet {
+        background-color: unset;
+    }
+
+    .fa:before, .oi:before {
+        color: var(--pui-color-accent);
+    }
+
     // -------------------------------------------------------------------------
     // 1. Base — webclient canvas + default text
     // -------------------------------------------------------------------------
