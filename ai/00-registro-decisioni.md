@@ -6,11 +6,11 @@
 |---|---|
 | **Documento** | `00-registro-decisioni.md` |
 | **Natura** | Documento di governo — vive per tutta la durata del progetto |
-| **Copre** | D1–D53, con l'articolazione D20a–D20f |
-| **Fonti** | `02-visione-prodotto.md` §19 · `03-specifica-dsl.md` §20 · `04-architettura.md` §17 · `05-esecuzione-asincrona.md` §10 · `06-modello-semantico.md` §13 · `07-piano-valutazione-qualita.md` §17 |
+| **Copre** | D1–D86, con l'articolazione D20a–D20f |
+| **Fonti** | `02-visione-prodotto.md` §19 · `03-specifica-dsl.md` §20 · `04-architettura.md` §17 · `05-esecuzione-asincrona.md` §10 · `06-modello-semantico.md` §13 · `07-piano-valutazione-qualita.md` §17 · `08-sicurezza-conformita.md` §13 |
 | **Autorità decisionale** | Architect — delega esercitata in questa sede |
 | **Delibera** | 27 luglio 2026 |
-| **Stato complessivo** | **51 decisioni adottate** (di cui 12 con vincolo), **5 superate**, **3 aperte** |
+| **Stato complessivo** | **85 decisioni adottate** (di cui 12 con vincolo), **5 superate**, **1 aperta** — **D7**, che resta aperta per volontà esplicita: nessun corpus sintetico la soddisfa |
 
 ---
 
@@ -61,9 +61,9 @@ Le decisioni sono state valutate contro quattro obiettivi dichiarati — **sempl
 | **D3** | Assunzione **A6** sui dati verso il modello | ⊡ Con vincolo | Adottata. **Vincolo:** A6 protegge il contenuto dei record, **non l'enunciato dell'utente** — vedi §5.3 |
 | **D4** | Stato di Interrogazione come oggetto centrale | ☑ Adottata | È anche la Leva 2 delle prestazioni (`04` §10.2): contesto costante nelle conversazioni lunghe |
 | **D5** | Soglie dei KPI | ⊡ Con vincolo | Confermate come riferimento iniziale. **Vincolo:** la latenza va scomposta — vedi §6.1 |
-| **D6** | Denominazione del prodotto | ☐ Aperta (parziale) | **Parte tecnica decisa:** prefisso `nli_`. Parte commerciale non tecnica — vedi §7 |
+| **D6** | Denominazione del prodotto | ☑ **Chiusa — «AIDA»** | Deliberata dall'Architect il 27/07/2026. Evita il termine *agent*, come raccomandato da `04` §14.3. **Il prefisso tecnico resta `nli_`**: la denominazione commerciale e quella tecnica sono indipendenti per costruzione, e `nli` descrive la funzione (*Natural Language Interaction*) indipendentemente dal marchio |
 | **D7** | Clienti pilota e attività di riferimento | ☐ Aperta | Non deliberabile tecnicamente. **Requisiti di scelta fissati** in §7 |
-| **D8** | Erogazione per clienti regolamentati | ☐ Aperta | Commerciale. A6 e il confine dell'Adattatore la rendono già praticabile a costo basso |
+| **D8** | Erogazione per clienti regolamentati | ☑ **Chiusa — tutte le modalità** | Deliberata dall'Architect il 27/07/2026 in senso più ampio: non si sceglie una modalità, si supportano tutte e la scelta diventa configurazione. Realizzazione in **D75–D80**, `10-adattatore-modelli.md` |
 
 ### 3.2 Contratto di interpretazione — `03-specifica-dsl.md` §20
 
@@ -137,6 +137,59 @@ Le decisioni sono state valutate contro quattro obiettivi dichiarati — **sempl
 | **D51** | Protocollo di qualificazione di un nuovo modello in otto passi | ☑ Adottata | L'ottavo passo — prova di isolamento — è quello che si dimentica: un modello più lento dimezza la capacità del dispatcher, e la conseguenza è sull'ERP |
 | **D52** | **Misura iniziale sull'interfaccia nativa prima dell'attivazione** | ⊡ Con vincolo | Adottata. **Vincolo:** esecutiva solo alla chiusura di **D7**. È l'unica decisione del progetto la cui finestra si chiude da sola, senza preavviso |
 | **D53** | Origine, provenienza e presenza dell'interpretazione come indicatori propri | ☑ Adottata | La canonicalizzazione le esclude per ragioni corrette: un sistema che infersse tutto bene senza dichiarare mai l'origine risulterebbe conforme violando **P3** |
+
+### 3.7 Sicurezza e conformità — `08-sicurezza-conformita.md` §13
+
+| # | Decisione | Stato | Delibera |
+|---|---|---|---|
+| **D54** | **Pseudonimizzazione degli enunciati all'ingresso**, mappatura separata e cifrata | ☑ Adottata | La pseudonimizzazione retroattiva non esiste: ogni giorno senza produce dati in chiaro che nessuna decisione successiva ripulisce. Cancellare una riga di mappatura è esatto e dimostrabile; cercare un nome in dodici mesi di testo non lo è |
+| **D55** | **Vincolo V8** — nessun artefatto dall'Interprete che non sia una Busta validata | ☑ Adottata | È la formulazione esplicita della proprietà su cui poggia tutta la difesa dall'iniezione. Implicita, la Fase 6 la eroderebbe senza che nessuno debba dichiararlo |
+| **D56** | Requisiti **F-1…F-7** verso il fornitore, verificati prima dell'integrazione | ☑ Adottata | L'Adattatore rende sostituibile il fornitore, non retroattivo il trasferimento già avvenuto. **F-7** — revisione umana dei contenuti — è spesso attiva per impostazione predefinita |
+| **D57** | Il **catalogo è informazione riservata** del cliente | ☑ Adottata | Terminologia, campi personalizzati e valori enumerati descrivono processi, segmentazione e linee di prodotto. *«Sono solo metadati»* è vero e commercialmente pericoloso |
+| **D58** | Modalità di erogazione **A / B / C**, con quella attiva visibile in amministrazione | ☑ Adottata — **chiude la parte tecnica di D8** | L'architettura le ammette tutte senza modifiche (**V5**, **D23**). A6 rende la modalità C un problema di dimensionamento, non di ricerca. Una garanzia non ispezionabile dal cliente vale meno di quanto costa |
+| **D59** | Nessun campo di voce di dizionario è **testo libero** verso il modello | ☑ Adottata | Completa **D30**: il vocabolario dei tipi è chiuso, ora lo è anche la forma del contenuto |
+| **D60** | Divieto di enunciati, cataloghi e credenziali nei registri diagnostici, con verifica automatica | ☑ Adottata | È il vettore più frequente e il meno progettato, e vanifica misure corrette prese altrove |
+| **D61** | Ritenzione della mappatura pari al turno più lungo che vi fa riferimento | ☑ Adottata | Senza cancellazione automatica, una misura di protezione produce un archivio di identità senza finalità. **RG7 non ha segnale anticipatore** |
+| **D62** | Nessun componente persiste decisioni di **autorizzazione** | ☑ Adottata | Generalizza **RA8** e la regola del dizionario: i disallineamenti di autorizzazione non si manifestano come errori, ma come accessi riusciti |
+| **D63** | Le **dichiarazioni ammissibili** di §3.6 vincolano la comunicazione verso i clienti | ☑ Adottata | Insolito per un documento di sicurezza, e necessario: la formulazione commerciale più naturale — *«nessun dato esce»* — è anche quella falsa, e viene smentita durante una valutazione fornitori |
+
+### 3.8 Esperienza utente — `09-esperienza-utente.md` §13
+
+| # | Decisione | Stato | Delibera |
+|---|---|---|---|
+| **D64** | **Interpretazione sempre visibile sopra il risultato**, senza interazione | ☑ Adottata | Un'azione richiesta per verificare qualcosa che di solito è giusto non viene compiuta. Dietro un pannello, **A9 è falsa per costruzione** e la difesa contro R1 resta progettata ma non effettiva |
+| **D65** | **Salienza graduata per origine**, distinzione non dipendente dal colore | ☑ Adottata | Mostrare tutto con lo stesso peso è il modo più efficace per non far leggere nulla. I fraintendimenti vivono nei criteri, non nell'entità: l'attenzione va spesa lì |
+| **D66** | Ogni elemento mostrato è **azionabile** | ☑ Adottata | Ripaga tre volte: esperienza, Leva 1 delle prestazioni, resilienza senza modello. Un elemento visibile e non azionabile insegna che l'interpretazione è decorativa |
+| **D67** | L'interpretazione mostra il **periodo risolto** | ☑ Adottata | *«Questo mese»* conferma sé stesso. Solo il periodo risolto rende verificabile l'esercizio non solare — la forma canonica di R1 sui dati aggregati |
+| **D68** | **Conteggio prima del recupero**, formulazione *«primi 80 di N»* | ☑ Adottata | Ottanta record senza contesto sono letti come tutti. È un fraintendimento plausibile prodotto dall'interfaccia anziché dal modello |
+| **D69** | Messaggi di **rifiuto per carico**: nessun tono di errore, nessuna attribuzione all'utente, sempre un'azione | ☑ Adottata | **D20c** sopravvive o cade con questi messaggi. Scritti come guasti, generano segnalazioni, e le segnalazioni fanno alzare i limiti — ritorno a RA3 |
+| **D70** | La scelta referenziale è **conservata per la sessione** | ☑ Adottata | Riproporre la stessa disambiguazione a ogni turno rende insopportabile una funzione corretta. Lo stato resta invariato: è una proprietà di sessione |
+| **D71** | Requisiti di **accessibilità**, incluso l'annuncio del cambio di stato asincrono | ☑ Adottata | Non è adempimento: un'interpretazione che alcune persone non possono leggere è, per loro, assente — e con essa cade A9. L'annuncio è specifico di **D20a** |
+| **D72** | I **nomi dal dizionario non si traducono** | ☑ Adottata | Il gergo aziendale è un asset dell'organizzazione, non una stringa da localizzare. Due lingue nella stessa schermata sono corrette |
+| **D73** | Validazione di **A9 per iniezione controllata**, ripetuta, con i tre vincoli | ☑ Adottata | Non rafforza la difesa: la rende **verificabile**. È l'unica decisione che può dirci che D64 e D65 non stanno funzionando |
+| **D74** | Progetto della **conferma di Fase 3**, con divieto di scorciatoie sulla confidenza | ☑ Adottata | La qualità dell'esperienza di conferma è una misura di sicurezza: una conferma fastidiosa viene rimossa, ed è il percorso di **RG6** |
+
+### 3.9 Adattatore dei modelli — `10-adattatore-modelli.md` §8
+
+| # | Decisione | Stato | Delibera |
+|---|---|---|---|
+| **D75** | **Profili di modello** gestiti dall'amministrazione, protocollo da insieme chiuso, uno attivo | ☑ Adottata — **chiude D8** | Il requisito non ha richiesto modifiche architetturali: **V5** e l'Adattatore esistevano perché il fornitore fosse sostituibile, e alla prova lo era già |
+| **D76** | I segreti non sono leggibili da un salvataggio della banca dati | ☑ Adottata — **modifica `08` §7.1** | L'intento della regola originale era che una copia non producesse credenziali. Riferimento all'ambiente o cifratura con chiave nell'ambiente lo rispettano; il divieto letterale no |
+| **D77** | **Elenco host ammessi nell'ambiente**, non nel pannello | ☑ Adottata · **bloccante** | Il pannello crea un canale che prima non esisteva: un amministratore compromesso invierebbe ogni enunciato e catalogo altrove, **con accuratezza e latenza normali**. Nessuna metrica di `07` lo rileverebbe |
+| **D78** | Il profilo dichiara generazione vincolata e finestra di contesto | ☑ Adottata | Senza dichiarazione si spegne la diagnosi di `03` §12.3 e un profilo degradato appare come difetto di sistema |
+| **D79** | **Budget del catalogo derivato dalla finestra di contesto**, 60 come massimo | ☑ Adottata · **bloccante** — **modifica D31** | Un modello locale con finestra stretta tronca il contesto in silenzio: copertura alta, accuratezza bassa, causa fuori da ogni tabella diagnostica |
+| **D80** | **Stati del profilo**; divieto strutturale di attivare in produzione un profilo non qualificato | ☑ Adottata | Rende **D51** non aggirabile per distrazione |
+
+### 3.10 Corpus fondativo — `11-corpus-fondativo.md` §10
+
+| # | Decisione | Stato | Delibera |
+|---|---|---|---|
+| **D81** | **Corpus fondativo sintetico** come popolazione distinta e nominata | ☑ Adottata | Mai fuso con sviluppo, regressione o sigillato |
+| **D82** | **Generazione dallo stato alla frase** | ☑ Adottata · **bloccante** | Inverte il procedimento anziché automatizzare l'annotazione: la chiave è corretta per costruzione, che è l'unico modo di averne una senza clienti |
+| **D83** | **Perturbazione dichiarata e registrata** sul caso | ☑ Adottata | Metodologia Spider-Syn / Realistic / DK, pubblicata e validata. La registrazione abilita l'accuratezza per fenomeno |
+| **D84** | **L0 rigenerato dai sorgenti** a ogni aggiornamento | ☑ Adottata | Coerente con `06` §2.4 e con l'evento di regressione di `07` §7.3 |
+| **D85** | **Elicitazione** di ~200 enunciati presso 8–10 persone di mestiere | ☑ Adottata | Non richiede clienti né prodotto attivo. Corregge il **generatore**, non i casi: un'ora vale più di mille casi in più |
+| **D86** | Il corpus fondativo **non soddisfa D42 e non chiude D49** | ☑ Adottata · **bloccante** | Un corpus sintetico non è sigillabile: chi scrive il generatore ne conosce la distribuzione. È la decisione che impedisce di usarlo per ciò che non può fare |
 
 ---
 
@@ -253,9 +306,9 @@ Non sono deliberabili su base tecnica. Per ciascuna è però fissato **ciò che 
 
 | # | Cosa manca | Requisiti fissati qui |
 |---|---|---|
-| **D6** | Nome commerciale | Prefisso tecnico **deciso: `nli_`**. Sul nome commerciale resta la raccomandazione di `04` §14.3: evitare *agent*, che descrive l'opposto di ciò che il prodotto è. Decisione di posizionamento, non di architettura |
+| ~~**D6**~~ | ~~Nome commerciale~~ | **Chiusa il 27/07/2026: «AIDA».** Prefisso tecnico invariato: `nli_` |
 | **D7** | Clienti pilota | **Almeno due clienti, di domini diversi; almeno uno con personalizzazioni rilevanti** — è l'unico modo di mettere sotto sforzo le regole di esposizione di D31; attività di riferimento elencate per iscritto; disponibilità a cedere richieste reali; **misura iniziale sull'interfaccia nativa eseguita prima dell'attivazione**, perché dopo non è più ottenibile |
-| **D8** | Erogazione in ambiente controllato | Nessun ostacolo architetturale: A6 riduce il flusso a metadati ed enunciato, e l'Adattatore è già il solo punto di contatto. Decisione commerciale |
+| ~~**D8**~~ | ~~Erogazione in ambiente controllato~~ | **Chiusa il 27/07/2026 da D75–D80**: tutte le modalità supportate, configurabili dall'amministrazione |
 
 **D7 è il vero collo di bottiglia**: da essa dipendono la taratura di D12, D20e e D31, il corpus di Fase 0 e le soglie di D5. È l'unica delle tre che blocca lavoro tecnico.
 
@@ -333,6 +386,14 @@ Riassunto operativo di ciò che le delibere impongono a chi scriverà il codice.
 | Nessun rapporto espone l'accuratezza senza la copertura | `07` §5.4 | Ispezione degli strumenti |
 | Nessun dato personale entra nel corpus | **D47** | Controllo sull'inserimento |
 | L'esecuzione del corpus gira sul dispatcher differito | `07` §14.2 | Ispezione della configurazione cron |
+| Gli enunciati non sono mai persistiti in chiaro | **D54** | Prova P-7 |
+| Nessun artefatto dall'Interprete oltre la Busta validata | **D55** (**V8**) | Controllo architetturale di D24 |
+| Enunciati e cataloghi non finiscono nei registri diagnostici | **D60** | Prova P-8 |
+| Un turno senza contesto societario è respinto, non eseguito | **D40**, `08` §10 | Prova P-3 |
+| Il traffico verso il fornitore contiene solo enunciato e catalogo | **A6**, **V7** | Prova P-9, osservando il traffico |
+| Nessun risultato è presentato senza la sua interpretazione | **V4**, **D64** | Invariante misurato al 100% (**D53**) |
+| L'inferito è distinguibile senza ricorso al colore | **D65** | Prova con simulazione di daltonismo e alto contrasto |
+| L'interpretazione precede il risultato nell'ordine di lettura | **D71** | Prova con lettore di schermo |
 
 ---
 
@@ -342,7 +403,7 @@ Riassunto operativo di ciò che le delibere impongono a chi scriverà il codice.
 
 **Per superare una decisione**: `⊘ Superata da Dn`. Mai cancellata. Le quattro supersessioni già presenti sono la prova che la disciplina serve.
 
-**Per aggiungere una decisione**: numerazione in continuità da **D54**.
+**Per aggiungere una decisione**: numerazione in continuità da **D87**.
 
 **Vincoli aggiunti in delibera.** Le dodici decisioni marcate ⊡ portano una condizione che è parte della decisione: rimuoverla è modificare la decisione, non semplificarla.
 
@@ -355,6 +416,11 @@ Riassunto operativo di ciò che le delibere impongono a chi scriverà il codice.
 | 2026-07-27 | Creazione del registro. Consolidate D1–D38 e D20a–D20f. Rilevate quattro supersessioni non tracciate. Nessuna decisione approvata. |
 | 2026-07-27 | **Delibera.** 39 decisioni adottate, 11 con vincolo. Fissati i valori di D13 (80 / 500), D31 (budget 60), D5 (latenza scomposta in tre soglie), D26 (ritenzione confermata con esecuzione a lotti), D20e (4 processi cron entro il tetto di connessioni). Corretto il percorso di scala di D20f: N record dispatcher, non N istanze. Qualificata la portata di A6 sotto D3. Introdotte **D39** (impronta dei permessi), **D40** (contesto societario sul turno), **D41** (conservazione deduplicata del catalogo). Restano aperte D6 (parte commerciale), D7, D8. |
 | 2026-07-27 | **Recepito `07-piano-valutazione-qualita.md`.** Adottate **D42–D53** (2 con vincolo). Corretti i conteggi della delibera precedente: le decisioni superate sono **cinque** (D16, D17, D20, D21, D22) in quattro eventi di supersessione, non quattro; le adottate erano 39 e non 38; le decisioni con vincolo 11 e non 9. **D52** è adottata ma non eseguibile finché **D7** resta aperta, ed è l'unica con una finestra che si chiude da sola. |
+| 2026-07-27 | **Recepito `08-sicurezza-conformita.md`.** Adottate **D54–D63**. Introdotto il vincolo permanente **V8** (D55). **D58** chiude la parte tecnica di **D8**: restano aperte solo la scelta commerciale di erogazione, **D6** (nome) e **D7** (pilota). Rilevata una lacuna sul confine interno: il Registro conserva enunciati grezzi per 12 mesi, e l'argomento *«sono domande, non risposte»* di `04` §4.9 e §9.3 vale per i dati aziendali ma non per i dati personali — risolta da **D54**. |
+| 2026-07-27 | **Recepito `09-esperienza-utente.md`.** Adottate **D64–D74**. Il documento realizza la difesa che gli altri avevano progettato: **A9** è un'ipotesi sul comportamento umano, non una scelta di progettazione, e si indebolisce man mano che il sistema migliora. **D69** e **D74** sono decisioni di esperienza con effetto di sicurezza: da esse dipende la sopravvivenza di **D20c** e della conferma di Fase 3. Corpus documentale completo: 00 e 02–09. |
+| 2026-07-27 | **D6 chiusa dall'Architect: il prodotto si chiama «AIDA».** Il prefisso tecnico resta `nli_` per la ragione già dichiarata in `04` §14.3 — marchio e struttura tecnica devono poter evolvere separatamente. Restano aperte **D7** e **D8**. |
+| 2026-07-27 | **D8 chiusa dall'Architect, in senso più ampio del previsto:** modelli locali e remoti configurabili dall'amministrazione. Recepito `10-adattatore-modelli.md`, adottate **D75–D80**. L'architettura non ha richiesto modifiche — è il ritorno dell'investimento fatto su **V5** e sull'Adattatore. Spostare la scelta dall'ambiente al pannello sposta però il confine di fiducia: da qui **D76**, **D77** e **D80**. **D79** modifica **D31**: il budget del catalogo si deriva dalla finestra di contesto. |
+| 2026-07-27 | **Recepito `11-corpus-fondativo.md`.** Adottate **D81–D86**. Estratti dai soli sorgenti Odoo, senza clienti: 813 entità, 12 411 attributi, 2 668 valori enumerati e **1 304 categorie aziendali già tradotte**. Generati 1 200 casi con chiave corretta per costruzione, bilanciamento **D46** rispettato, zero stati incoerenti. **D7 resta aperta per decisione esplicita (D86):** un corpus sintetico non è sigillabile, quindi **D42** e **D49** non sono soddisfatte. |
 
 ---
 
