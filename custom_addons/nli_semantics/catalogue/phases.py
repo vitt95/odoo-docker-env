@@ -133,8 +133,10 @@ def determine_entity(
     """
     matches = index.match(request, entry_types=ENTITY_TERM_TYPES)
 
-    # A span is entity evidence only if no **attribute** term matches that same
-    # span at least as well.
+    # D93, V-D93-1: a span is entity evidence only if no **non-entity** term — an
+    # attribute or a T5 category — matches that same span at least as well. Same span,
+    # never a sentence-wide best: "ordini di vendita raggruppati per cliente" names an
+    # attribute and still names an entity, and a global comparison would lose it.
     #
     # This guard is not a refinement, it is what makes the base-form tier usable at
     # all, and the corpus is what showed it. Italian morphology collapses the

@@ -6,11 +6,11 @@
 |---|---|
 | **Documento** | `00-registro-decisioni.md` |
 | **Natura** | Documento di governo — vive per tutta la durata del progetto |
-| **Copre** | D1–D91, con l'articolazione D20a–D20f; **D93 proposta** in §16 |
+| **Copre** | D1–D93, con l'articolazione D20a–D20f |
 | **Fonti** | `02-visione-prodotto.md` §19 · `03-specifica-dsl.md` §20 · `04-architettura.md` §17 · `05-esecuzione-asincrona.md` §10 · `06-modello-semantico.md` §13 · `07-piano-valutazione-qualita.md` §17 · `08-sicurezza-conformita.md` §13 |
 | **Autorità decisionale** | Architect — delega esercitata in questa sede |
 | **Delibera** | 27 luglio 2026 |
-| **Stato complessivo** | **90 decisioni adottate** (di cui 16 con vincolo), **5 superate**, **1 aperta** — **D7**, che resta aperta per volontà esplicita: nessun corpus sintetico la soddisfa |
+| **Stato complessivo** | **91 decisioni adottate** (di cui 17 con vincolo), **5 superate**, **1 aperta** — **D7**, che resta aperta per volontà esplicita: nessun corpus sintetico la soddisfa |
 
 ---
 
@@ -200,6 +200,7 @@ Le decisioni sono state valutate contro quattro obiettivi dichiarati — **sempl
 | **D89** | Misure con vista `list` sono valide; incoerenti solo **con** un raggruppamento | ⊡ Adottata con vincolo | §15. Delle due letture, quella scartata **rifiuta** una richiesta che la vista lista di Odoo soddisfa nativamente. Una lettura che può negare una risposta perde |
 | **D90** | Il vocabolario delle operazioni conta **ventidue** voci, non diciotto | ☑ Adottata | §15. Le tabelle di §6.2–6.6 sono normative; il conteggio in prosa è stantio |
 | **D91** | `year_to_date` aggiunto; assolute senza anno → chiarimento | ⊡ Adottata con vincolo | §15. Fare nulla avrebbe costretto ad aggiungere una categoria di `scope_note`: modificare comunque un vocabolario chiuso, per dire che non sappiamo dire una cosa esprimibile con un simbolo |
+| **D93** | Guardia attributo/entità in Fase A: una porzione di frase è evidenza di entità solo se nessun termine non di entità la copre altrettanto bene | ⊡ Adottata con vincolo | §16.4. Deliberata su delega dell'Architect il 28/07/2026. **Non tocca il contratto**: è una regola di risoluzione, non di DSL. Misurata: 86,2% di percorso rapido contro 78,4% dell'alternativa, a pari zero determinazioni sbagliate. **V-D93-1** in §16.4 |
 
 ---
 
@@ -413,7 +414,7 @@ Riassunto operativo di ciò che le delibere impongono a chi scriverà il codice.
 
 **Per superare una decisione**: `⊘ Superata da Dn`. Mai cancellata. Le quattro supersessioni già presenti sono la prova che la disciplina serve.
 
-**Per aggiungere una decisione**: numerazione in continuità da **D93**. D87–D91 sono deliberate (§14, §15); D92 è corretta.
+**Per aggiungere una decisione**: numerazione in continuità da **D94**. D87–D91 sono deliberate (§14, §15); D92 è corretta; **D93** è deliberata (§16.4.1).
 
 **Vincoli aggiunti in delibera.** Le dodici decisioni marcate ⊡ portano una condizione che è parte della decisione: rimuoverla è modificare la decisione, non semplificarla.
 
@@ -431,6 +432,7 @@ Riassunto operativo di ciò che le delibere impongono a chi scriverà il codice.
 | 2026-07-27 | **D6 chiusa dall'Architect: il prodotto si chiama «AIDA».** Il prefisso tecnico resta `nli_` per la ragione già dichiarata in `04` §14.3 — marchio e struttura tecnica devono poter evolvere separatamente. Restano aperte **D7** e **D8**. |
 | 2026-07-27 | **D8 chiusa dall'Architect, in senso più ampio del previsto:** modelli locali e remoti configurabili dall'amministrazione. Recepito `10-adattatore-modelli.md`, adottate **D75–D80**. L'architettura non ha richiesto modifiche — è il ritorno dell'investimento fatto su **V5** e sull'Adattatore. Spostare la scelta dall'ambiente al pannello sposta però il confine di fiducia: da qui **D76**, **D77** e **D80**. **D79** modifica **D31**: il budget del catalogo si deriva dalla finestra di contesto. |
 | 2026-07-28 | **Parte 5 implementata; il profilo non qualifica.** Adattatore di fornitore (§8), profili amministrati (**D75**) con host nell'ambiente (**D77**), segreto per nome di variabile (**D76**), capacita' dichiarate (**D78**) e divieto strutturale di attivare un profilo non qualificato (**D80**). Ripristino con un solo tentativo (**D15**). **Prima misura di accuratezza del progetto**, contro un qwen2.5 7B locale su 20 casi di apertura del corpus: **15% complessiva**, tutte le sezioni sotto la soglia di **D44** — `target` 65%, `filter` 35%, `order_by` 55%. Il profilo resta quindi in `qualified: no` e D80 ne rifiuta l'attivazione, che e' il comportamento voluto: la macchina funziona e dice di no. Il primo giro di misura ha corretto due difetti del **prompt**, non del modello: la forma di un'operazione non era mostrata (il modello emetteva `type` e `field`) e nulla vietava di inventare `set_limit` e `set_fields` non richiesti — da 10% a 15%, con `limit` da 40% a 70%. |
+| 2026-07-28 | **D93 deliberata su delega dell'Architect: ⊡ adottata con vincolo** (§16.4.1). Cercata e scartata l'opzione che non aggiunge alcuna regola — tenere il livello della forma base e accettare **2 determinazioni sbagliate su 696** — perche' una determinazione sbagliata di entita' non e' un errore ma un elenco di record veri in risposta a un'altra domanda, cioe' **R1**. La portata e' **piu' larga della proposta**: il confronto e' contro ogni termine **non di entita'**, categorie T5 comprese, perche' l'argomento non e' che gli attributi siano speciali ma che una porzione di frase gia' spiegata non e' evidenza di entita'. **V-D93-1**: il confronto e' sulla stessa porzione, mai globale — una guardia globale perderebbe l'entita' in *«ordini di vendita raggruppati per cliente»*. Quando scatta, Fase A rende `no_candidate` e il turno passa al modello: la regola non puo' produrre un'entita' sbagliata, al massimo rinuncia a una giusta. |
 | 2026-07-28 | **Parte 4 completa.** Risolutore, validazione livelli 3-5, Esecutore con conteggio prima del recupero (**D68**), Presentatore a viste native (**V4**), stato come record (**D19**), contesto societario sul turno (**D40**). Prima interrogazione end-to-end da uno stato scritto a mano: 40 test Odoo, 269 puri. Introdotta nei controlli di D24 la **zona deterministica** — puo' calcolare con le date, non puo' leggere l'orologio — perche' `04` §4.6 distingue l'essere consapevoli del tempo dal leggerlo, e senza la distinzione il Risolutore sarebbe o incapace di aritmetica o non controllato. **La provenienza non e' persistita** finche' D54 non esiste: i frammenti sono parole dell'utente, e scriverli in chiaro per i dodici mesi di D26 e' esattamente cio' che D54 dice non essere sanabile a posteriori. |
 | 2026-07-28 | **Parte 3 completa.** Aggiunta la meta' che richiede Odoo: **L0 per introspezione** dei metadati (D84), **estrazione da `ir.filters`** come proposte T5 inerti in coda L3 (D35, D28), **impronta dei permessi** (D39, D40). Due rilievi dall'esecuzione in **§16.5** e **§16.6**: l'impronta non e' leggibile dalle tabelle delle regole — un utente ordinario non puo' leggere `ir.model.access` e `sudo` e' vietato — e si costruisce sugli **effetti osservabili**, con le regole sui record deliberatamente escluse perche' filtrano record, non riferimenti; e il divieto sui contesti privilegiati e' stato reso *scoped* ai percorsi di interrogazione, come §6.3 dice, perche' altrimenti la proprieta' che protegge non e' testabile. 27 test Odoo, 236 puri. |
 | 2026-07-28 | **Parte 3, nucleo puro.** Dizionario e catalogo in `nli_semantics`, 236 test puri, i tre criteri misurati: copertura **100%** su 948 casi (esatta per costruzione in Fase C, D32), Fase A **86,2%** con **zero** determinazioni sbagliate, budget derivato dalla finestra. I tre vincoli di **D87** sono realizzati **per costruzione**: la condizione di una categoria e' una struttura tipizzata, quindi i campi implicati si derivano — il buco di `sottoscorta` non e' piu' dimenticabile. Quattro rilievi su `06` §5.5 in **§16**, fra cui **D93 proposta** (un attributo batte un'entita' sulla stessa porzione di frase: +8 punti di percorso rapido rispetto all'alternativa, a pari zero errori). Corretti i due difetti nei dati di §14.6. |
@@ -704,7 +706,7 @@ Un raffinamento ha già il proprio `target` nello stato. Farlo passare per il pe
 
 ### 16.4 D93 — Un attributo batte un'entità sulla stessa porzione di frase
 
-**Stato: ☐ proposta.**
+**Stato: ⊡ adottata con vincolo, 28/07/2026**, su delega dell'Architect. La delibera è in §16.4.1; quanto segue è l'analisi che l'ha prodotta.
 
 **Il problema, misurato.** Corretto §16.3, restavano **7 determinazioni sbagliate su 696**, tutte della stessa forma: la testa del sintagma è danneggiata — la perturbazione del corpus abbrevia *"fatture cliente"* in *"fatt. cliente"* (D83) — e resta a corrispondere il solo modificatore *cliente*, che ha forma base identica all'entità *clienti*. Esito: `clienti` invece di `fatture_cliente`, con accuratezza e latenza normali.
 
@@ -725,6 +727,20 @@ Non è una raffinatezza: è ciò che rende usabile il livello della forma base. 
 La guardia è deterministica, si calcola sullo stesso indice, e non richiede nulla che il dizionario non abbia già.
 
 **Realizzata** in `nli_semantics/catalogue/phases.py`, con il test che mostra sia il caso che chiude sia quello che non deve bloccare.
+
+### 16.4.1 Delibera di D93
+
+**Adottata con vincolo.** Prima di adottarla è stata cercata l'opzione che non aggiunge una regola, come impone il metodo di §14 e §15: qui è la riga *«nessuno dei due»* della tabella sopra — si tiene il livello della forma base e si accettano **2 determinazioni sbagliate su 696**. È stata scartata, e la ragione non è la percentuale.
+
+Una determinazione sbagliata di entità non produce un errore: produce `clienti` al posto di `fatture_cliente`, cioè un elenco di record veri, con accuratezza e latenza normali, in risposta a una domanda diversa. È la forma canonica di **R1**, la stessa modalità di guasto per cui sono state deliberate **D29**, **D40** e il vincolo **V-D88-1**. Un prodotto che l'ammette per non aggiungere una regola deterministica di sei righe sta pagando la propria semplicità con la valuta sbagliata. L'altra alternativa — soglia a 1,00 — la elimina, ma eliminando il livello che risolve *«mostrami la fattura»*, dove non si indovina nulla: costa **otto punti** di percorso rapido, cioè chiamate al modello, cioè latenza e budget, per una proprietà ottenibile senza perderli.
+
+**La regola vale, e la sua portata è più larga della formulazione proposta.** La proposta di §16.4 dice *«nessun termine di attributo»*; la realizzazione confronta contro **ogni termine non di entità**, quindi anche le categorie **T5**. È la lettura corretta e va scritta così: l'argomento non è che gli attributi siano speciali, è che una porzione di frase già spiegata da un altro riferimento non è evidenza di entità. Una categoria che copre la stessa porzione è controprova almeno quanto un attributo — anzi di più, perché una categoria è una **definizione** (D29) e nominarla è un atto più deliberato che nominare un campo.
+
+**V-D93-1 — Il confronto è sulla stessa porzione di frase, mai globale.** La guardia scarta un candidato di entità solo se un termine non di entità corrisponde **allo stesso intervallo** (inizio e lunghezza) con punteggio pari o superiore. Una guardia che confrontasse i punteggi migliori a livello di frase — *«c'è un attributo che ha corrisposto meglio da qualche parte»* — sopprimerebbe entità legittime ogni volta che la frase nomina un campo, che è il caso ordinario: *«ordini di vendita raggruppati per cliente»* perderebbe l'entità. La forma per intervallo è ciò che rende la regola una **disambiguazione** anziché una soppressione, ed è la sola misurata. Asserita in `pure_tests/test_catalogue.py` da due test: quello che mostra la guardia scattare e quello che mostra che non blocca un'entità legittima quando l'attributo copre la stessa porzione solo per forma base.
+
+**Direzione del fallimento.** Quando la guardia scatta, l'esito di Fase A è `no_candidate`: il turno prosegue in Fase B o C, cioè con il modello. La regola non può quindi produrre un'entità sbagliata — al massimo rinuncia a una giusta, e la rinuncia costa una chiamata, non un numero credibile e falso. È l'orientamento di **D33**: il margine distingue una corrispondenza da un'ipotesi, e un'ipotesi si scarta.
+
+**Nessuna modifica al contratto**, a `03` né allo schema: D93 vive interamente dentro `06` §5.5, che descrive la risoluzione. `06` §5.5 va integrata con la regola.
 
 ### 16.5 L'impronta dei permessi non e' leggibile dalle tabelle delle regole
 
