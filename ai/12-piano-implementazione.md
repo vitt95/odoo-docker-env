@@ -367,6 +367,46 @@ Da aggiornare a ogni parte completata. È l'unica sezione di questo documento de
 
 ---
 
+## 5.1 Come si verifica
+
+Tutto quello che segue gira senza Odoo tranne l'ultima riga di ciascun blocco. È anche ciò che il **pre-push** esegue (`./scripts/install-hooks.sh`, `core.hooksPath=scripts/hooks`) e ciò che gira in CI (`.github/workflows/boundaries.yml`).
+
+```bash
+./manage.sh check              # tutto il verificabile senza database, in un comando
+./manage.sh test <db>          # quanto sopra, poi la suite Odoo su <db>
+
+python3 tools/arch/run.py                  # i quattro controlli dei confini (D24)
+python3 -m unittest discover -s tools/arch/tests -t .   # i test dei controlli
+python3 tools/pure/run.py [filtro]         # zona pura, ~290 test, ~20 ms
+python3 tools/dsl/emit_schema.py --write   # rigenera lo schema JSON derivato (D11)
+
+python3 ai/corpus/genera_corpus.py         # rigenera il corpus (deterministico, seme 42)
+python3 ai/corpus/verifica_contratto.py    # criteri della parte 2
+python3 ai/corpus/misura_catalogo.py [--taratura]   # criteri della parte 3
+NLI_ALLOWED_HOSTS=localhost:11434 \
+  python3 ai/corpus/misura_accuratezza.py --casi 20  # criterio della parte 5
+```
+
+**Fatti dell'ambiente che servono e non sono deducibili dal codice.**
+
+| | |
+|---|---|
+| Database di prova | `nli_test` (esiste già; `./manage.sh test nli_test`) |
+| Modello locale | `ollama` con `qwen2.5:latest`, container `ollama`, rete `qwen25_default` |
+| Endpoint del modello | `http://localhost:11434/v1` dall'host, `http://ollama:11434/v1` dal container |
+| Variabile obbligatoria | `NLI_ALLOWED_HOSTS` — senza, **nessun** host è ammesso (D77, fallimento chiuso) |
+| Importabilità fuori Odoo | `tools/pure/bootstrap.py` registra pacchetti sintetici `nli_*` e l'alias `odoo.addons`, senza eseguire gli `__init__.py` degli addon |
+
+**Tre generi di zona**, dichiarati in `tools/arch/spec.py` e verificati dal quarto controllo:
+
+| Zona | Può | Non può |
+|---|---|---|
+| **pura** | solo i propri argomenti | `odoo`, date, orologio, caso, ambiente |
+| **deterministica** | calcolare con le date | **leggere** l'orologio (`now`, `today`), `odoo` |
+| nessuna | la piattaforma | SQL diretto, `sudo` (`tests/` escluse dalla sola regola sui privilegi) |
+
+---
+
 ## 6. Regole di Esecuzione
 
 Valgono per tutte le parti, e discendono da decisioni già adottate.
