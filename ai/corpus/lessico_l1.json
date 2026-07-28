@@ -1,237 +1,755 @@
 {
-  "_nota": "Pacchetto base L1 - gergo commerciale e amministrativo italiano. Curato a partire da glossari di settore (datalog.it, teamsystem.com, synalla.it, cosmodca.com) e dalla terminologia ricorrente nei forum Odoo italiani. NON e' linguaggio osservato presso utenti: e' vocabolario di dominio attestato. Cfr. 11-corpus-fondativo.md §3.2.",
-  "_versione": "1.1",
-  "_data": "2026-07-27",
-  "_note_struttura": [
-    "entita.genere serve all'accordo degli aggettivi (m/f).",
-    "categorie distingue termini_m / termini_f / termini_inv: gli aggettivi vanno accordati, le locuzioni preposizionali sono invarianti.",
-    "attributi distingue nominali (usabili dopo 'per' e 'con') da interrogativi (usabili solo come domanda)."
+ "_nota": "Pacchetto base L1 - gergo commerciale e amministrativo italiano. Curato a partire da glossari di settore (datalog.it, teamsystem.com, synalla.it, cosmodca.com) e dalla terminologia ricorrente nei forum Odoo italiani. NON e' linguaggio osservato presso utenti: e' vocabolario di dominio attestato. Cfr. 11-corpus-fondativo.md §3.2.",
+ "_versione": "1.1",
+ "_data": "2026-07-27",
+ "_note_struttura": [
+  "entita.genere serve all'accordo degli aggettivi (m/f).",
+  "categorie distingue termini_m / termini_f / termini_inv: gli aggettivi vanno accordati, le locuzioni preposizionali sono invarianti.",
+  "attributi distingue nominali (usabili dopo 'per' e 'con') da interrogativi (usabili solo come domanda).",
+  "28/07/2026: le categorie portano `condizione_tipizzata` nel linguaggio di `nli_semantics/dictionary/conditions.py`; `campi_implicati` rimosso perche' si deriva dalla condizione (V-D87-1) — la forma dichiarata era gia' incompleta su `sottoscorta`. `fatturato` spostata in `metriche` (T4)."
+ ],
+ "verbi_richiesta": {
+  "neutro": [
+   "mostrami",
+   "visualizza",
+   "elenca",
+   "cerca",
+   "trova",
+   "estrai"
   ],
-
-  "verbi_richiesta": {
-    "neutro": ["mostrami", "visualizza", "elenca", "cerca", "trova", "estrai"],
-    "colloquiale": ["fammi vedere", "dammi", "tirami fuori", "voglio vedere", "vediamo", "guarda un po'", "fammi un po' vedere"],
-    "con_di": ["fammi un elenco", "dammi la lista", "fai una lista"],
-    "interrogativo": ["quali sono", "quante sono", "quanti sono"]
+  "colloquiale": [
+   "fammi vedere",
+   "dammi",
+   "tirami fuori",
+   "voglio vedere",
+   "vediamo",
+   "guarda un po'",
+   "fammi un po' vedere"
+  ],
+  "con_di": [
+   "fammi un elenco",
+   "dammi la lista",
+   "fai una lista"
+  ],
+  "interrogativo": [
+   "quali sono",
+   "quante sono",
+   "quanti sono"
+  ]
+ },
+ "entita": {
+  "sale.order": {
+   "ufficiale": "Ordine di vendita",
+   "genere": "m",
+   "termini": [
+    "ordini",
+    "ordini di vendita",
+    "ordini cliente",
+    "commesse",
+    "commissioni"
+   ],
+   "gergo_ambiguo": [
+    "pratiche",
+    "lavori"
+   ],
+   "singolare": "ordine"
   },
-
-  "entita": {
-    "sale.order": {
-      "ufficiale": "Ordine di vendita",
-      "genere": "m",
-      "termini": ["ordini", "ordini di vendita", "ordini cliente", "commesse", "commissioni"],
-      "gergo_ambiguo": ["pratiche", "lavori"],
-      "singolare": "ordine"
-    },
-    "sale.order.quotation": {
-      "ufficiale": "Preventivo",
-      "genere": "m",
-      "termini": ["preventivi", "offerte", "quotazioni", "proposte"],
-      "singolare": "preventivo"
-    },
-    "account.move.out_invoice": {
-      "ufficiale": "Fattura cliente",
-      "genere": "f",
-      "termini": ["fatture", "fatture cliente", "fatture attive", "fatture di vendita"],
-      "gergo_ambiguo": ["documenti"],
-      "singolare": "fattura"
-    },
-    "account.move.in_invoice": {
-      "ufficiale": "Fattura fornitore",
-      "genere": "f",
-      "termini": ["fatture fornitore", "fatture passive", "fatture di acquisto", "passive"],
-      "singolare": "fattura fornitore"
-    },
-    "account.move.out_refund": {
-      "ufficiale": "Nota di credito",
-      "genere": "f",
-      "termini": ["note di credito", "note di accredito", "note di variazione"],
-      "singolare": "nota di credito"
-    },
-    "res.partner.customer": {
-      "ufficiale": "Cliente",
-      "genere": "m",
-      "termini": ["clienti", "anagrafiche clienti", "contatti", "nominativi"],
-      "singolare": "cliente"
-    },
-    "res.partner.supplier": {
-      "ufficiale": "Fornitore",
-      "genere": "m",
-      "termini": ["fornitori", "anagrafiche fornitori"],
-      "singolare": "fornitore"
-    },
-    "product.template": {
-      "ufficiale": "Prodotto",
-      "genere": "m",
-      "termini": ["prodotti", "articoli", "codici", "item"],
-      "gergo_ambiguo": ["merce", "referenze"],
-      "singolare": "articolo"
-    },
-    "crm.lead": {
-      "ufficiale": "Opportunita",
-      "genere": "f",
-      "termini": ["opportunita", "trattative"],
-      "gergo_ambiguo": ["lead", "deal", "occasioni"],
-      "singolare": "trattativa"
-    },
-    "stock.picking": {
-      "ufficiale": "Trasferimento",
-      "genere": "m",
-      "termini": ["ddt", "documenti di trasporto", "trasferimenti", "prelievi"],
-      "gergo_ambiguo": ["bolle", "spedizioni", "consegne"],
-      "singolare": "ddt"
-    },
-    "purchase.order": {
-      "ufficiale": "Ordine di acquisto",
-      "genere": "m",
-      "termini": ["ordini di acquisto", "ordini fornitore", "acquisti", "approvvigionamenti"],
-      "singolare": "ordine di acquisto"
-    },
-    "stock.quant": {
-      "ufficiale": "Giacenza",
-      "genere": "f",
-      "termini": ["giacenze", "scorte", "rimanenze", "disponibilita"],
-      "gergo_ambiguo": ["magazzino", "stock"],
-      "singolare": "giacenza"
-    },
-    "hr.employee": {
-      "ufficiale": "Dipendente",
-      "genere": "m",
-      "termini": ["dipendenti", "collaboratori", "personale"],
-      "singolare": "dipendente"
-    }
+  "sale.order.quotation": {
+   "ufficiale": "Preventivo",
+   "genere": "m",
+   "termini": [
+    "preventivi",
+    "offerte",
+    "quotazioni",
+    "proposte"
+   ],
+   "singolare": "preventivo"
   },
-
-  "attributi": {
-    "partner_id": {"nominali": ["cliente", "intestatario", "anagrafica"], "interrogativi": ["chi"]},
-    "user_id": {"nominali": ["venditore", "commerciale", "agente", "rappresentante", "referente"], "interrogativi": ["chi lo segue"]},
-    "amount_total": {"nominali": ["importo", "totale", "valore", "ammontare"], "interrogativi": ["quanto vale"]},
-    "amount_untaxed": {"nominali": ["imponibile", "netto", "totale netto"], "interrogativi": []},
-    "amount_tax": {"nominali": ["iva", "imposta", "tasse"], "interrogativi": []},
-    "date_order": {"nominali": ["data", "data ordine", "data documento"], "interrogativi": ["quando"]},
-    "invoice_date": {"nominali": ["data fattura", "data emissione"], "interrogativi": ["quando e' stata emessa"]},
-    "invoice_date_due": {"nominali": ["scadenza", "data scadenza", "termine di pagamento"], "interrogativi": ["quando scade"]},
-    "state": {"nominali": ["stato", "situazione", "fase"], "interrogativi": ["a che punto"]},
-    "commitment_date": {"nominali": ["data consegna", "consegna prevista", "data promessa"], "interrogativi": ["quando arriva"]},
-    "city": {"nominali": ["citta", "comune", "localita"], "interrogativi": ["dove"]},
-    "country_id": {"nominali": ["paese", "nazione"], "interrogativi": []},
-    "phone": {"nominali": ["telefono", "numero", "recapito", "cellulare"], "interrogativi": []},
-    "email": {"nominali": ["email", "mail", "indirizzo mail", "posta elettronica"], "interrogativi": []},
-    "vat": {"nominali": ["partita iva", "piva", "p.iva"], "interrogativi": []},
-    "payment_state": {"nominali": ["stato pagamento", "situazione incassi", "saldo"], "interrogativi": ["se e' pagata"]},
-    "qty_available": {"nominali": ["giacenza", "quantita", "disponibilita", "pezzi"], "interrogativi": ["quanti ne ho"]},
-    "categ_id": {"nominali": ["categoria", "famiglia", "categoria merceologica", "reparto"], "interrogativi": []},
-    "team_id": {"nominali": ["team", "squadra", "canale di vendita"], "interrogativi": []},
-    "expected_revenue": {"nominali": ["valore atteso", "potenziale", "budget"], "interrogativi": ["quanto vale"]},
-    "stage_id": {"nominali": ["fase", "stadio", "step"], "interrogativi": ["a che punto"]}
+  "account.move.out_invoice": {
+   "ufficiale": "Fattura cliente",
+   "genere": "f",
+   "termini": [
+    "fatture",
+    "fatture cliente",
+    "fatture attive",
+    "fatture di vendita"
+   ],
+   "gergo_ambiguo": [
+    "documenti"
+   ],
+   "singolare": "fattura"
   },
-
-  "categorie": {
-    "_nota": "T5 - termini che corrispondono a una condizione, non a un attributo. Classe piu' preziosa e piu' dipendente dall'organizzazione.",
-    "fatture_scadute": {
-      "termini_m": ["scaduti", "arretrati", "non pagati", "morosi"],
-      "termini_f": ["scadute", "arretrate", "non pagate"],
-      "termini_inv": ["insoluti", "da incassare", "in ritardo", "in sofferenza"],
-      "condizione": "payment_state != paid AND invoice_date_due < oggi",
-      "campi_implicati": ["payment_state", "invoice_date_due"]
-    },
-    "partite_aperte": {
-      "termini_m": ["aperti", "pendenti", "scoperti"],
-      "termini_f": ["aperte", "pendenti"],
-      "termini_inv": ["partite aperte", "da saldare", "in sospeso"],
-      "condizione": "payment_state in (not_paid, partial)",
-      "campi_implicati": ["payment_state"]
-    },
-    "da_fatturare": {
-      "termini_m": ["non fatturati"],
-      "termini_f": ["non fatturate"],
-      "termini_inv": ["da fatturare", "ancora da fatturare", "in attesa di fattura"],
-      "condizione": "invoice_status = to_invoice",
-      "campi_implicati": ["invoice_status"]
-    },
-    "da_consegnare": {
-      "termini_m": ["non consegnati", "non evasi"],
-      "termini_f": ["non consegnate", "non evase"],
-      "termini_inv": ["da consegnare", "da evadere", "in attesa di spedizione"],
-      "condizione": "delivery_status != full",
-      "campi_implicati": ["delivery_status"]
-    },
-    "sottoscorta": {
-      "termini_m": ["esauriti", "scarichi"],
-      "termini_f": ["esaurite", "scariche"],
-      "termini_inv": ["sottoscorta", "sotto scorta", "da riordinare", "in esaurimento"],
-      "condizione": "qty_available < reordering_min",
-      "campi_implicati": ["qty_available"]
-    },
-    "confermati": {
-      "termini_m": ["confermati", "acquisiti", "chiusi", "vinti"],
-      "termini_f": ["confermate", "acquisite", "chiuse", "vinte"],
-      "termini_inv": ["andati a buon fine"],
-      "condizione": "state = sale",
-      "campi_implicati": ["state"]
-    },
-    "in_bozza": {
-      "termini_m": ["provvisori", "non confermati"],
-      "termini_f": ["provvisorie", "non confermate"],
-      "termini_inv": ["in bozza", "da confermare"],
-      "condizione": "state = draft",
-      "campi_implicati": ["state"]
-    },
-    "attivi": {
-      "termini_m": ["attivi", "validi", "operativi"],
-      "termini_f": ["attive", "valide", "operative"],
-      "termini_inv": ["in essere", "non archiviati"],
-      "condizione": "active = true",
-      "campi_implicati": ["active"]
-    },
-    "clienti_importanti": {
-      "termini_m": ["importanti", "grossi", "strategici", "principali"],
-      "termini_f": ["importanti", "grosse", "strategiche", "principali"],
-      "termini_inv": ["di peso", "top"],
-      "condizione": "DIPENDE DALL'ORGANIZZAZIONE - richiede definizione L2",
-      "richiede_definizione": true
-    },
-    "fatturato": {
-      "termini_m": [],
-      "termini_f": [],
-      "termini_inv": ["fatturato", "giro d'affari", "volume d'affari", "venduto"],
-      "condizione": "somma di amount_untaxed su fatture confermate",
-      "richiede_definizione": true
-    }
+  "account.move.in_invoice": {
+   "ufficiale": "Fattura fornitore",
+   "genere": "f",
+   "termini": [
+    "fatture fornitore",
+    "fatture passive",
+    "fatture di acquisto",
+    "passive"
+   ],
+   "singolare": "fattura fornitore"
   },
-
-  "temporali": {
-    "puntuali": ["oggi", "ieri", "l'altro ieri"],
-    "correnti": ["questa settimana", "sta settimana", "questo mese", "sto mese", "questo trimestre", "quest'anno"],
-    "precedenti": ["la settimana scorsa", "il mese scorso", "lo scorso mese", "l'anno scorso", "il trimestre scorso"],
-    "relativi": ["negli ultimi 30 giorni", "negli ultimi tre mesi", "nell'ultimo anno", "da inizio anno"],
-    "assoluti": ["a gennaio", "nel 2025", "a marzo 2026", "nel primo trimestre", "a settembre"],
-    "vaghi": ["di recente", "ultimamente", "da un po'", "da tempo"]
+  "account.move.out_refund": {
+   "ufficiale": "Nota di credito",
+   "genere": "f",
+   "termini": [
+    "note di credito",
+    "note di accredito",
+    "note di variazione"
+   ],
+   "singolare": "nota di credito"
   },
-
-  "vaghezza": {
-    "approssimazione": ["circa", "piu' o meno", "intorno a", "sui", "all'incirca"],
-    "confronto_sopra": ["sopra i", "oltre", "almeno", "da ... in su", "piu' di"],
-    "confronto_sotto": ["sotto i", "meno di", "non piu' di", "entro i"]
+  "res.partner.customer": {
+   "ufficiale": "Cliente",
+   "genere": "m",
+   "termini": [
+    "clienti",
+    "anagrafiche clienti",
+    "contatti",
+    "nominativi"
+   ],
+   "singolare": "cliente"
   },
-
-  "fenomeni_linguistici": {
-    "_nota": "Trasformazioni applicate in perturbazione. Ciascuna e' dichiarata e non altera l'interpretazione attesa. Cfr. 11-corpus-fondativo.md §4.3.",
-    "abbreviazioni": {
-      "ordini": "ord.", "fatture": "fatt.", "cliente": "cl.", "gennaio": "gen",
-      "settembre": "set", "documenti": "doc.", "numero": "n.",
-      "quantita": "qta", "articoli": "art.", "categoria": "cat."
-    },
-    "refusi_frequenti": {
-      "fatture": "fatuere", "ordini": "ordni", "clienti": "cleinti",
-      "scadute": "scadutte", "mostrami": "mostrmai", "giacenze": "giacenzee",
-      "fornitori": "fornitroi", "prodotti": "prodtoti", "trattative": "tratative"
-    },
-    "code_switching": {
-      "opportunita": "deal", "fase": "stage", "cliente": "customer",
-      "magazzino": "warehouse", "sconto": "discount", "team": "team"
-    },
-    "ellissi": ["solo quelli", "solo quelle", "anche", "e pure", "togli", "leva"],
-    "deissi": ["il primo", "l'ultimo", "questi", "il secondo", "gli ultimi due"]
+  "res.partner.supplier": {
+   "ufficiale": "Fornitore",
+   "genere": "m",
+   "termini": [
+    "fornitori",
+    "anagrafiche fornitori"
+   ],
+   "singolare": "fornitore"
+  },
+  "product.template": {
+   "ufficiale": "Prodotto",
+   "genere": "m",
+   "termini": [
+    "prodotti",
+    "articoli",
+    "codici",
+    "item"
+   ],
+   "gergo_ambiguo": [
+    "merce",
+    "referenze"
+   ],
+   "singolare": "articolo"
+  },
+  "crm.lead": {
+   "ufficiale": "Opportunita",
+   "genere": "f",
+   "termini": [
+    "opportunita",
+    "trattative"
+   ],
+   "gergo_ambiguo": [
+    "lead",
+    "deal",
+    "occasioni"
+   ],
+   "singolare": "trattativa"
+  },
+  "stock.picking": {
+   "ufficiale": "Trasferimento",
+   "genere": "m",
+   "termini": [
+    "ddt",
+    "documenti di trasporto",
+    "trasferimenti",
+    "prelievi"
+   ],
+   "gergo_ambiguo": [
+    "bolle",
+    "spedizioni",
+    "consegne"
+   ],
+   "singolare": "ddt"
+  },
+  "purchase.order": {
+   "ufficiale": "Ordine di acquisto",
+   "genere": "m",
+   "termini": [
+    "ordini di acquisto",
+    "ordini fornitore",
+    "acquisti",
+    "approvvigionamenti"
+   ],
+   "singolare": "ordine di acquisto"
+  },
+  "stock.quant": {
+   "ufficiale": "Giacenza",
+   "genere": "f",
+   "termini": [
+    "giacenze",
+    "scorte",
+    "rimanenze",
+    "disponibilita"
+   ],
+   "gergo_ambiguo": [
+    "magazzino",
+    "stock"
+   ],
+   "singolare": "giacenza"
+  },
+  "hr.employee": {
+   "ufficiale": "Dipendente",
+   "genere": "m",
+   "termini": [
+    "dipendenti",
+    "collaboratori",
+    "personale"
+   ],
+   "singolare": "dipendente"
   }
+ },
+ "attributi": {
+  "partner_id": {
+   "nominali": [
+    "cliente",
+    "intestatario",
+    "anagrafica"
+   ],
+   "interrogativi": [
+    "chi"
+   ]
+  },
+  "user_id": {
+   "nominali": [
+    "venditore",
+    "commerciale",
+    "agente",
+    "rappresentante",
+    "referente"
+   ],
+   "interrogativi": [
+    "chi lo segue"
+   ]
+  },
+  "amount_total": {
+   "nominali": [
+    "importo",
+    "totale",
+    "valore",
+    "ammontare"
+   ],
+   "interrogativi": [
+    "quanto vale"
+   ]
+  },
+  "amount_untaxed": {
+   "nominali": [
+    "imponibile",
+    "netto",
+    "totale netto"
+   ],
+   "interrogativi": []
+  },
+  "amount_tax": {
+   "nominali": [
+    "iva",
+    "imposta",
+    "tasse"
+   ],
+   "interrogativi": []
+  },
+  "date_order": {
+   "nominali": [
+    "data",
+    "data ordine",
+    "data documento"
+   ],
+   "interrogativi": [
+    "quando"
+   ]
+  },
+  "invoice_date": {
+   "nominali": [
+    "data fattura",
+    "data emissione"
+   ],
+   "interrogativi": [
+    "quando e' stata emessa"
+   ]
+  },
+  "invoice_date_due": {
+   "nominali": [
+    "scadenza",
+    "data scadenza",
+    "termine di pagamento"
+   ],
+   "interrogativi": [
+    "quando scade"
+   ]
+  },
+  "state": {
+   "nominali": [
+    "stato",
+    "situazione",
+    "fase"
+   ],
+   "interrogativi": [
+    "a che punto"
+   ]
+  },
+  "commitment_date": {
+   "nominali": [
+    "data consegna",
+    "consegna prevista",
+    "data promessa"
+   ],
+   "interrogativi": [
+    "quando arriva"
+   ]
+  },
+  "city": {
+   "nominali": [
+    "citta",
+    "comune",
+    "localita"
+   ],
+   "interrogativi": [
+    "dove"
+   ]
+  },
+  "country_id": {
+   "nominali": [
+    "paese",
+    "nazione"
+   ],
+   "interrogativi": []
+  },
+  "phone": {
+   "nominali": [
+    "telefono",
+    "numero",
+    "recapito",
+    "cellulare"
+   ],
+   "interrogativi": []
+  },
+  "email": {
+   "nominali": [
+    "email",
+    "mail",
+    "indirizzo mail",
+    "posta elettronica"
+   ],
+   "interrogativi": []
+  },
+  "vat": {
+   "nominali": [
+    "partita iva",
+    "piva",
+    "p.iva"
+   ],
+   "interrogativi": []
+  },
+  "payment_state": {
+   "nominali": [
+    "stato pagamento",
+    "situazione incassi",
+    "saldo"
+   ],
+   "interrogativi": [
+    "se e' pagata"
+   ]
+  },
+  "qty_available": {
+   "nominali": [
+    "giacenza",
+    "quantita",
+    "disponibilita",
+    "pezzi"
+   ],
+   "interrogativi": [
+    "quanti ne ho"
+   ]
+  },
+  "categ_id": {
+   "nominali": [
+    "categoria",
+    "famiglia",
+    "categoria merceologica",
+    "reparto"
+   ],
+   "interrogativi": []
+  },
+  "team_id": {
+   "nominali": [
+    "team",
+    "squadra",
+    "canale di vendita"
+   ],
+   "interrogativi": []
+  },
+  "expected_revenue": {
+   "nominali": [
+    "valore atteso",
+    "potenziale",
+    "budget"
+   ],
+   "interrogativi": [
+    "quanto vale"
+   ]
+  },
+  "stage_id": {
+   "nominali": [
+    "fase",
+    "stadio",
+    "step"
+   ],
+   "interrogativi": [
+    "a che punto"
+   ]
+  }
+ },
+ "categorie": {
+  "_nota": "T5 - termini che corrispondono a una condizione, non a un attributo. Classe piu' preziosa e piu' dipendente dall'organizzazione.",
+  "fatture_scadute": {
+   "termini_m": [
+    "scaduti",
+    "arretrati",
+    "non pagati",
+    "morosi"
+   ],
+   "termini_f": [
+    "scadute",
+    "arretrate",
+    "non pagate"
+   ],
+   "termini_inv": [
+    "insoluti",
+    "da incassare",
+    "in ritardo",
+    "in sofferenza"
+   ],
+   "condizione": "payment_state != paid AND invoice_date_due < oggi",
+   "condizione_tipizzata": {
+    "kind": "all",
+    "conditions": [
+     {
+      "kind": "not_in",
+      "field": "payment_state",
+      "values": [
+       "paid"
+      ]
+     },
+     {
+      "kind": "compare_now",
+      "field": "invoice_date_due",
+      "operator": "lt"
+     }
+    ]
+   }
+  },
+  "partite_aperte": {
+   "termini_m": [
+    "aperti",
+    "pendenti",
+    "scoperti"
+   ],
+   "termini_f": [
+    "aperte",
+    "pendenti"
+   ],
+   "termini_inv": [
+    "partite aperte",
+    "da saldare",
+    "in sospeso"
+   ],
+   "condizione": "payment_state in (not_paid, partial)",
+   "condizione_tipizzata": {
+    "kind": "in",
+    "field": "payment_state",
+    "values": [
+     "not_paid",
+     "partial"
+    ]
+   }
+  },
+  "da_fatturare": {
+   "termini_m": [
+    "non fatturati"
+   ],
+   "termini_f": [
+    "non fatturate"
+   ],
+   "termini_inv": [
+    "da fatturare",
+    "ancora da fatturare",
+    "in attesa di fattura"
+   ],
+   "condizione": "invoice_status = to_invoice",
+   "condizione_tipizzata": {
+    "kind": "in",
+    "field": "invoice_status",
+    "values": [
+     "to invoice"
+    ]
+   }
+  },
+  "da_consegnare": {
+   "termini_m": [
+    "non consegnati",
+    "non evasi"
+   ],
+   "termini_f": [
+    "non consegnate",
+    "non evase"
+   ],
+   "termini_inv": [
+    "da consegnare",
+    "da evadere",
+    "in attesa di spedizione"
+   ],
+   "condizione": "delivery_status != full",
+   "condizione_tipizzata": {
+    "kind": "not_in",
+    "field": "delivery_status",
+    "values": [
+     "full"
+    ]
+   }
+  },
+  "sottoscorta": {
+   "termini_m": [
+    "esauriti",
+    "scarichi"
+   ],
+   "termini_f": [
+    "esaurite",
+    "scariche"
+   ],
+   "termini_inv": [
+    "sottoscorta",
+    "sotto scorta",
+    "da riordinare",
+    "in esaurimento"
+   ],
+   "condizione": "qty_available < reordering_min",
+   "condizione_tipizzata": {
+    "kind": "compare_field",
+    "field": "qty_available",
+    "operator": "lt",
+    "other_field": "reordering_min"
+   }
+  },
+  "confermati": {
+   "termini_m": [
+    "confermati",
+    "acquisiti",
+    "chiusi",
+    "vinti"
+   ],
+   "termini_f": [
+    "confermate",
+    "acquisite",
+    "chiuse",
+    "vinte"
+   ],
+   "termini_inv": [
+    "andati a buon fine"
+   ],
+   "condizione": "state = sale",
+   "condizione_tipizzata": {
+    "kind": "in",
+    "field": "state",
+    "values": [
+     "sale"
+    ]
+   }
+  },
+  "in_bozza": {
+   "termini_m": [
+    "provvisori",
+    "non confermati"
+   ],
+   "termini_f": [
+    "provvisorie",
+    "non confermate"
+   ],
+   "termini_inv": [
+    "in bozza",
+    "da confermare"
+   ],
+   "condizione": "state = draft",
+   "condizione_tipizzata": {
+    "kind": "in",
+    "field": "state",
+    "values": [
+     "draft"
+    ]
+   }
+  },
+  "attivi": {
+   "termini_m": [
+    "attivi",
+    "validi",
+    "operativi"
+   ],
+   "termini_f": [
+    "attive",
+    "valide",
+    "operative"
+   ],
+   "termini_inv": [
+    "in essere",
+    "non archiviati"
+   ],
+   "condizione": "active = true",
+   "condizione_tipizzata": {
+    "kind": "compare",
+    "field": "active",
+    "operator": "eq",
+    "value": true
+   }
+  },
+  "clienti_importanti": {
+   "termini_m": [
+    "importanti",
+    "grossi",
+    "strategici",
+    "principali"
+   ],
+   "termini_f": [
+    "importanti",
+    "grosse",
+    "strategiche",
+    "principali"
+   ],
+   "termini_inv": [
+    "di peso",
+    "top"
+   ],
+   "condizione": "DIPENDE DALL'ORGANIZZAZIONE - richiede definizione L2",
+   "richiede_definizione": true
+  }
+ },
+ "temporali": {
+  "puntuali": [
+   "oggi",
+   "ieri",
+   "l'altro ieri"
+  ],
+  "correnti": [
+   "questa settimana",
+   "sta settimana",
+   "questo mese",
+   "sto mese",
+   "questo trimestre",
+   "quest'anno"
+  ],
+  "precedenti": [
+   "la settimana scorsa",
+   "il mese scorso",
+   "lo scorso mese",
+   "l'anno scorso",
+   "il trimestre scorso"
+  ],
+  "relativi": [
+   "negli ultimi 30 giorni",
+   "negli ultimi tre mesi",
+   "nell'ultimo anno",
+   "da inizio anno"
+  ],
+  "assoluti": [
+   "a gennaio",
+   "nel 2025",
+   "a marzo 2026",
+   "nel primo trimestre",
+   "a settembre"
+  ],
+  "vaghi": [
+   "di recente",
+   "ultimamente",
+   "da un po'",
+   "da tempo"
+  ]
+ },
+ "vaghezza": {
+  "approssimazione": [
+   "circa",
+   "piu' o meno",
+   "intorno a",
+   "sui",
+   "all'incirca"
+  ],
+  "confronto_sopra": [
+   "sopra i",
+   "oltre",
+   "almeno",
+   "da ... in su",
+   "piu' di"
+  ],
+  "confronto_sotto": [
+   "sotto i",
+   "meno di",
+   "non piu' di",
+   "entro i"
+  ]
+ },
+ "fenomeni_linguistici": {
+  "_nota": "Trasformazioni applicate in perturbazione. Ciascuna e' dichiarata e non altera l'interpretazione attesa. Cfr. 11-corpus-fondativo.md §4.3.",
+  "abbreviazioni": {
+   "ordini": "ord.",
+   "fatture": "fatt.",
+   "cliente": "cl.",
+   "gennaio": "gen",
+   "settembre": "set",
+   "documenti": "doc.",
+   "numero": "n.",
+   "quantita": "qta",
+   "articoli": "art.",
+   "categoria": "cat."
+  },
+  "refusi_frequenti": {
+   "fatture": "fatuere",
+   "ordini": "ordni",
+   "clienti": "cleinti",
+   "scadute": "scadutte",
+   "mostrami": "mostrmai",
+   "giacenze": "giacenzee",
+   "fornitori": "fornitroi",
+   "prodotti": "prodtoti",
+   "trattative": "tratative"
+  },
+  "code_switching": {
+   "opportunita": "deal",
+   "fase": "stage",
+   "cliente": "customer",
+   "magazzino": "warehouse",
+   "sconto": "discount",
+   "team": "team"
+  },
+  "ellissi": [
+   "solo quelli",
+   "solo quelle",
+   "anche",
+   "e pure",
+   "togli",
+   "leva"
+  ],
+  "deissi": [
+   "il primo",
+   "l'ultimo",
+   "questi",
+   "il secondo",
+   "gli ultimi due"
+  ]
+ },
+ "metriche": {
+  "_nota": "T4 - grandezze calcolate che l'azienda nomina come concetto unico. Non servono in Fase 1 (registro §6.5) e non sono categorie: una categoria e' una condizione, una metrica e' un numero. Spostata qui il 28/07/2026, rilievo di `00` §14.6.",
+  "fatturato": {
+   "termini_m": [],
+   "termini_f": [],
+   "termini_inv": [
+    "fatturato",
+    "giro d'affari",
+    "volume d'affari",
+    "venduto"
+   ],
+   "condizione": "somma di amount_untaxed su fatture confermate",
+   "richiede_definizione": true
+  }
+ }
 }

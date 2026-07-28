@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_nli_interrogation_user,nli.interrogation user,model_nli_interrogation,base.group_user,1,1,1,1
+access_nli_turn_user,nli.turn user,model_nli_turn,base.group_user,1,1,1,1

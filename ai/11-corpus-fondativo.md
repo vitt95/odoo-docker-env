@@ -211,10 +211,29 @@ L'ultima riga soddisfa il requisito di **D46** — almeno il 40% di turni di raf
 | Chiarimenti | 11,0% *(D46: ≥ 10%)* |
 | Fuori ambito | 6,0% *(D46: ≥ 5%)* |
 | Incompresi | 4,0% *(D46: ≥ 3%)* |
-| Entità più frequente | 14,2% *(D46: ≤ 30%)* |
+| Entità più frequente | 13,8% *(D46: ≤ 30%)* |
 | Stati incoerenti | **0** |
+| Casi scartati perché degeneri | **0** |
 
 Il bilanciamento di **D46** è soddisfatto per costruzione, perché è il piano di generazione a imporlo anziché una verifica successiva.
+
+### 4.6 Revisione del 28 luglio 2026 — allineamento al contratto
+
+Eseguire il corpus contro il contratto della parte 2 ha rivelato quattro difetti del generatore, tutti sistematici e nessuno visibile leggendo i casi. Sono registrati come **D92** in `00` §13 e corretti alla fonte, secondo il principio già fissato da **D85**: *si corregge il generatore, non i suoi prodotti*.
+
+| Difetto | Correzione | Perché contava |
+|---|---|---|
+| Lo stato atteso usava un **dialetto proprio** — chiavi italiane, filtro come lista piatta, `order`/`verso`, nessun `origin` | Forma normativa di `03` §5: filtro ad albero, `order_by`/`direction`, `origin` su ogni elemento, identificativo su ogni condizione | Leggere il corpus richiedeva un adattatore, e un adattatore fra corpus e contratto è un secondo contratto da tenere allineato per dieci anni |
+| Le espressioni temporali erano **frasi italiane** nello stato (*"nel primo trimestre"*) | Il generatore sceglie il **simbolo** di §9.2 e poi una frase che lo esprime | È la condizione perché un'interrogazione salvata a luglio mostri agosto in agosto. La direzione di D82 applicata anche al tempo |
+| I riferimenti erano **nomi tecnici Odoo** (`sale.order.amount_total`) | Riferimenti semantici da `riferimenti.py`, con il `binding_tecnico` conservato a parte | C2 e §5.10 escludono i nomi di modelli e campi dallo stato. Il binding è ciò che la parte 3 confronterà con la risoluzione del dizionario |
+| L'11,3% dei raffinamenti **non raffinava**: *"raggruppa per venditore"* su uno stato già raggruppato per venditore | Il generatore verifica che l'operazione cambi lo stato di partenza; se per quell'entità non ne esiste una, scarta il caso | Il contratto si comportava correttamente, ma il caso non misurava nulla: un modello che emettesse qualunque operazione idempotente lo supererebbe |
+
+**Due espressioni temporali sono uscite dagli stati**, e la ragione non è tecnica:
+
+- *"a gennaio"*, *"nel primo trimestre"*, *"a settembre"* — assolute senza anno. Risolverle richiede l'istante di riferimento, che §5.10 esclude dallo stato, e ammettono più letture. Sono diventate **casi di chiarimento**, che è l'esito corretto (§11.4): il contratto non va esteso, va usato;
+- *"da inizio anno"* — l'anno parziale, che §9.2 non ha (`current_year` è l'anno intero). Non entra nel corpus finché **D91** non è deliberata. Toglierla è preferibile a mapparla su un periodo diverso, che sarebbe una chiave sbagliata su casi apparentemente corretti.
+
+**I raffinamenti portano ora anche lo stato atteso**, e questa è la modifica con il valore più alto. Prima portavano solo stato di partenza e operazioni, quindi il criterio *«i casi producono lo stato atteso»* non era verificabile sui 504 raffinamenti — la metà del corpus utile. L'atteso è calcolato **trasformando l'intento del generatore**, non applicando l'Applicatore del prodotto: sono due implementazioni indipendenti della stessa semantica, e il confronto fra loro è un test. Fosse l'Applicatore a produrre la chiave, il confronto sarebbe una tautologia con l'aspetto di 504 verifiche.
 
 ---
 
@@ -273,9 +292,15 @@ Un corpus generato va verificato, perché un difetto del generatore è un difett
 |---|---|---|
 | Nessuno stato incoerente | 0 | ✅ verificato su 1 200 casi |
 | Bilanciamento di **D46** | Tutte le quote | ✅ |
-| Riferimenti necessari non vuoti sui casi `operations` | 100% | Da automatizzare |
-| Nessun duplicato esatto di frase | < 2% | Da automatizzare |
+| Riferimenti necessari non vuoti sui casi `operations` | 100% | ✅ automatizzato — 3 529 riferimenti controllati |
+| Riferimenti in forma **semantica**, non tecnica | 100% | ✅ automatizzato (C2, §5.10) |
+| Ogni riferimento ha un binding tecnico dichiarato | 100% | ✅ automatizzato — è il dato che la parte 3 confronterà |
+| Nessun duplicato esatto di frase | < 2% | ✅ **1,0%** — era **29,6%** e nessuno l'aveva misurato |
+| Lo stato atteso passa i livelli 1, 2, 4 e 5 | 100% | ✅ 1 452 stati validati |
+| L'Applicatore riproduce lo stato atteso | 100% | ✅ 948 casi su 948 |
 | Ispezione umana a campione | 100 casi per revisione | **Non sostituibile** |
+
+**La riga dei duplicati merita una nota**, perché è la più istruttiva. Era marcata *«da automatizzare»*, quindi nessuno l'aveva misurata: il primo corpus aveva il **29,6%** di frasi duplicate, con `fuori_ambito` all'85% e `incompreso` al 90% — settantadue casi che erano undici frasi, quarantotto che erano cinque. La dimensione del corpus è ciò su cui poggia la soglia di rumore di **D48**: un corpus di 1 200 righe e 845 frasi non è un corpus di 1 200 casi. Corretto alla fonte con testi composti anziché liste fisse, e una deduplicazione nel ciclo di generazione che dichiara la saturazione invece di subirla.
 
 **L'ultima riga resta indispensabile**, e non contraddice §4.1. La generazione elimina l'annotazione — stabilire l'interpretazione corretta — non l'ispezione, che verifica una cosa diversa: che la frase generata sia italiano che qualcuno direbbe.
 
