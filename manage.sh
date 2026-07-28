@@ -108,7 +108,7 @@ cmd_check() {
 
 cmd_test() {
   local db="${1:?Usage: ./manage.sh test <db> [test-tags]}"
-  local mods="nli_core,nli_semantics,nli_engine,nli_web,nli_observability"
+  local mods="nli_core,nli_semantics,nli_engine,nli_dispatch,nli_web,nli_observability"
   # Default: every test of every product module. Derived from the module list so
   # a module that gains tests is covered without editing two places — a tag list
   # that silently stops matching is a suite that silently stops running.

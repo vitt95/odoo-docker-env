@@ -141,7 +141,19 @@ def fingerprint(env, model_names) -> str:
     """
     try:
         material = {
-            "user": env.user.id,
+            # **The user's identity is deliberately absent**, and part 6 is what
+            # made the omission necessary rather than merely defensible. D39's
+            # delibera states the property the fingerprint is supposed to buy:
+            # *"two users share a catalogue fingerprint only if they have the same
+            # permissions, so reuse between them does not violate V2"*. With the uid
+            # in the material no two users ever share one, and the dictionary is
+            # rebuilt per user — on an installation with two hundred users, two
+            # hundred builds of the same thing.
+            #
+            # The uid adds nothing about what a user may *name*: that is decided by
+            # groups, companies, language and the observable access state below. Two
+            # users identical in all four can name exactly the same references, which
+            # is the whole content of the catalogue.
             "groups": sorted(env.user.groups_id.ids),
             # D40. `env.companies` is the set of **active** companies, which is what
             # governs the perimeter — not `env.company`, which is only the current

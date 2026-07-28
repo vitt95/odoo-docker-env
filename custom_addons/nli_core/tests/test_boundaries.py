@@ -23,6 +23,7 @@ PRODUCT_MODULES = (
     "nli_core",
     "nli_semantics",
     "nli_engine",
+    "nli_dispatch",
     "nli_web",
     "nli_observability",
 )

@@ -9,7 +9,7 @@
     # `ui_brand_tokens` is deliberately NOT a dependency: D25 requires the
     # tokens to be used when present and the interface to degrade gracefully
     # when they are not.
-    "depends": ["nli_semantics", "web"],
+    "depends": ["nli_dispatch", "web"],
     "installable": True,
     "application": False,
 }

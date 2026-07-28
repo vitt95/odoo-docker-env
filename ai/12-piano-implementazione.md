@@ -354,8 +354,8 @@ Da aggiornare a ogni parte completata. È l'unica sezione di questo documento de
 | 3 — `nli_semantics` | ✅ **Completa** (28/07/2026) | Dizionario, catalogo, tre fasi, copertura (236 test puri) più L0 per introspezione, `ir.filters`, impronta dei permessi (27 test Odoo). I tre criteri misurati: copertura 100%, Fase A 86,2% con zero errori, budget derivato |
 | 4 — Esecuzione deterministica | ✅ **Completa** (28/07/2026) | Risolutore (zona deterministica), livelli 3–5, Esecutore con conteggio prima del recupero, Presentatore, stato come record, contesto societario sul turno. 40 test Odoo, 269 puri. Prima interrogazione end-to-end da stato scritto a mano |
 | 5 — `nli_engine` | ◐ **Implementata, profilo non qualificato** (28/07/2026) | Adattatore, profili con D76/D77/D80, generazione vincolata, ripristino singolo. 52 test Odoo, 289 puri. **Prima misura di accuratezza reale: 15%** su qwen2.5 7B locale — sotto la soglia di D44 su ogni sezione, quindi D80 rifiuta l'attivazione |
-| 6 — Asincrono | ☐ | **Prossima** |
-| 7 — `nli_web` | ☐ | |
+| 6 — Asincrono | ◐ **Implementata, D27 non superata** (28/07/2026) | Sesto modulo `nli_dispatch` (**D94**): accettazione, coda, dispatcher con pool derivato da `db_maxconn`, corsia differita separata, recupero degli orfani, interruttore, notifica su bus. La catena composta per la prima volta e girata su metadati introspettivi. 79 test Odoo, 314 puri, 47 dei controlli. **D27 non e' superata**: lo strumento esiste e dichiara su che cosa ha misurato — vedi `00` §17.6 |
+| 7 — `nli_web` | ☐ | **Prossima.** Primo bersaglio di taratura: l'accettazione a P95 205 ms contro i 50 ms di `00` §6.1 |
 
 | Attività parallela | Stato |
 |---|---|
@@ -385,6 +385,10 @@ python3 ai/corpus/verifica_contratto.py    # criteri della parte 2
 python3 ai/corpus/misura_catalogo.py [--taratura]   # criteri della parte 3
 NLI_ALLOWED_HOSTS=localhost:11434 \
   python3 ai/corpus/misura_accuratezza.py --casi 20  # criterio della parte 5
+
+./manage.sh start                                  # lo stack, per le prove di carico
+python3 tools/load/prova_isolamento.py \
+  --db nli_test --utenti 20 --secondi 20           # strumento di D27 (parte 6)
 ```
 
 **Fatti dell'ambiente che servono e non sono deducibili dal codice.**
@@ -394,7 +398,9 @@ NLI_ALLOWED_HOSTS=localhost:11434 \
 | Database di prova | `nli_test` (esiste già; `./manage.sh test nli_test`) |
 | Modello locale | `ollama` con `qwen2.5:latest`, container `ollama`, rete `qwen25_default` |
 | Endpoint del modello | `http://localhost:11434/v1` dall'host, `http://ollama:11434/v1` dal container |
-| Variabile obbligatoria | `NLI_ALLOWED_HOSTS` — senza, **nessun** host è ammesso (D77, fallimento chiuso) |
+| Variabili obbligatorie | `NLI_ALLOWED_HOSTS` — senza, **nessun** host è ammesso (D77). `NLI_UTTERANCE_KEY` — senza, **nessuna richiesta è accettata** (D96). Entrambe fallimenti chiusi, entrambe passate al container da `docker-compose.yml` e definite in `.env` |
+| Chiave degli enunciati | `python3 -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())'` |
+| Prove di carico | Lo stack `dev` gira **senza `--workers`**: il pool prefork la cui saturazione è RA3 non esiste, e nessuna misura fatta lì è la prova di D27 |
 | Importabilità fuori Odoo | `tools/pure/bootstrap.py` registra pacchetti sintetici `nli_*` e l'alias `odoo.addons`, senza eseguire gli `__init__.py` degli addon |
 
 **Tre generi di zona**, dichiarati in `tools/arch/spec.py` e verificati dal quarto controllo:

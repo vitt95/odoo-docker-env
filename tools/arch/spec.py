@@ -77,10 +77,23 @@ MODULES: dict[str, ModuleSpec] = {
         platform_depends=frozenset(),
         odoo_packages=frozenset({"models"}),
     ),
+    # The composition root (D94, registry §17). The chain of `05` §3.3 needs the
+    # module that builds the catalogue and the module that talks to the model, and
+    # §6.3 forbids either of them from depending on the other. Somebody has to be
+    # allowed to know both; making that somebody a named module keeps the edge
+    # visible to this check, which is what a runtime seam inside the core would not
+    # have been.
+    "nli_dispatch": ModuleSpec(
+        name="nli_dispatch",
+        responsibility="acceptance, queue, dispatcher, load control, notification",
+        nli_depends=frozenset({"nli_semantics", "nli_engine"}),
+        platform_depends=frozenset({"bus"}),
+        odoo_packages=frozenset({"models"}),
+    ),
     "nli_web": ModuleSpec(
         name="nli_web",
         responsibility="chat channel, presentation",
-        nli_depends=frozenset({"nli_semantics"}),
+        nli_depends=frozenset({"nli_dispatch"}),
         platform_depends=frozenset({"web"}),
         odoo_packages=frozenset({"models"}),
     ),
@@ -152,6 +165,18 @@ NON_DEPENDENCIES: tuple[NonDependency, ...] = (
         target="nli_observability",
         protects="D18",
         rationale="dependencies point towards the core, never away from it",
+    ),
+    NonDependency(
+        source="nli_core",
+        target="nli_dispatch",
+        protects="D18",
+        rationale="the chain must not know it is being dispatched — part 2's rule",
+    ),
+    NonDependency(
+        source="nli_dispatch",
+        target="nli_web",
+        protects="P5",
+        rationale="interpretation is independent of the channel that requested it",
     ),
 )
 
@@ -240,6 +265,12 @@ FORBIDDEN_PATTERNS: tuple[ForbiddenPattern, ...] = (
             "_cr.copy_expert",
             "cursor.execute",
             "cursor.executemany",
+            # Bare `cursor`, not only `registry.cursor`: `odoo.registry(db).cursor()`
+            # has a call in the middle of the chain, so only the tail is readable —
+            # and a rule that a pair of parentheses evades is not a rule. Found while
+            # writing the dispatcher, which is the one place that legitimately opens
+            # a cursor (D95).
+            "cursor",
             "registry.cursor",
             "sql_db.db_connect",
             "sql_db.connect",
@@ -253,6 +284,78 @@ FORBIDDEN_PATTERNS: tuple[ForbiddenPattern, ...] = (
         names=frozenset({"SUPERUSER_ID"}),
         keywords=frozenset({("su", "True")}),
         excluded_directories=frozenset({"tests", "pure_tests"}),
+    ),
+)
+
+
+# ---------------------------------------------------------------------------
+# V2, second form — an environment built on a constant identity
+# ---------------------------------------------------------------------------
+
+#: How an environment is constructed outside a request. The dispatcher has to build
+#: one per thread (`05` §3.4), and that is the moment when elevating stops being a
+#: temptation and becomes one line of code: `Environment(cr, 1, {})` is `sudo` with
+#: a different spelling, and neither `sudo` nor `SUPERUSER_ID` appears in it.
+#:
+#: The rule is therefore about the **uid**: it must be a value — read from the turn,
+#: from a record, from an argument — and never a literal. A literal uid cannot have
+#: come from the request it is supposed to represent.
+ENVIRONMENT_CONSTRUCTORS: frozenset[str] = frozenset({"Environment", "api.Environment"})
+
+ENVIRONMENT_UID_RULE = ForbiddenPattern(
+    label="environment built on a literal identity",
+    protects="V2",
+    excluded_directories=frozenset({"tests", "pure_tests"}),
+)
+
+
+# ---------------------------------------------------------------------------
+# D95 — the two named derogations, scoped by file and by statement
+# ---------------------------------------------------------------------------
+
+@dataclass(frozen=True)
+class Derogation:
+    """One file, one set of calls, and — for SQL — one statement shape.
+
+    A derogation that admitted a *file* would admit every statement in it, and the
+    next statement is written by somebody who reads the exemption and not the
+    argument behind it. So the shape is part of the derogation: the claim may say
+    `FOR UPDATE SKIP LOCKED` on the queue table and nothing else, and the check
+    fails on any other statement in the same file.
+    """
+
+    path: str
+    calls: frozenset[str]
+    #: Every fragment the statement must contain, matched case-sensitively.
+    statement_must_contain: tuple[str, ...] = ()
+    #: Fragments that must not appear — other tables, joins, writes.
+    statement_must_not_contain: tuple[str, ...] = ()
+    decision: str = "D95"
+    rationale: str = ""
+
+
+DEROGATIONS: tuple[Derogation, ...] = (
+    Derogation(
+        path="nli_dispatch/runtime/claim.py",
+        calls=frozenset({"cr.execute"}),
+        statement_must_contain=("SELECT id FROM nli_queue_item", "FOR UPDATE SKIP LOCKED"),
+        statement_must_not_contain=("JOIN", "DELETE", "INSERT", " SET ", ";"),
+        rationale=(
+            "the batch claim of 05 §3.3. The ORM cannot express SKIP LOCKED, and "
+            "D20f's scale path — N dispatcher records — rests on it. The statement "
+            "returns identifiers of the product's own queue table; every read that "
+            "follows goes through the ORM with the requesting user's identity"
+        ),
+    ),
+    Derogation(
+        path="nli_dispatch/runtime/worker.py",
+        calls=frozenset({"cursor", "registry.cursor"}),
+        rationale=(
+            "one cursor per turn (05 §3.4): the failure of one turn must not roll "
+            "back the others in the batch, so the cron's cursor cannot be reused. "
+            "Opening a cursor is not bypassing the ORM — every query on it is an "
+            "ORM query, and no `execute` is admitted in this file"
+        ),
     ),
 )
 
@@ -356,6 +459,21 @@ PURE_ZONES: tuple[PureZone, ...] = (
                "reproducible without a database, or the fast path of phase A "
                "becomes a second unmeasured probabilistic component (D32, RC3)",
         protects="D32, D33, D34, D79",
+    ),
+    PureZone(
+        path="nli_dispatch/pure_tests",
+        reason="the boundaries of the five limits are asserted without a clock and "
+               "without a database: a test that read the clock to check that a turn "
+               "expires at thirty seconds would be a test that sleeps",
+        protects="D20c",
+    ),
+    PureZone(
+        path="nli_dispatch/queue",
+        reason="the five limits, the pool size and the refusal messages are "
+               "functions of numbers; RE2 says these limits get loosened under "
+               "pressure, and a limit whose boundary is asserted in a test without "
+               "a database is much harder to loosen by accident (D20c, D69)",
+        protects="D20b, D20c, D69",
     ),
     PureZone(
         path="nli_core/validation/contextual.py",

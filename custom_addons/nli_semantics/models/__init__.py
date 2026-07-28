@@ -5,3 +5,5 @@ entry types, four of them implemented in phase 1 (D30); catalogue budget derived
 from the model's context window, 60 as the ceiling (D79); permission fingerprint
 computed and failing safe (D39); catalogue stored deduplicated (D41).
 """
+
+from . import nli_semantics

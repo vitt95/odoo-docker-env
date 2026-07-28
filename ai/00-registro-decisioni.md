@@ -6,11 +6,11 @@
 |---|---|
 | **Documento** | `00-registro-decisioni.md` |
 | **Natura** | Documento di governo — vive per tutta la durata del progetto |
-| **Copre** | D1–D93, con l'articolazione D20a–D20f |
+| **Copre** | D1–D96, con l'articolazione D20a–D20f |
 | **Fonti** | `02-visione-prodotto.md` §19 · `03-specifica-dsl.md` §20 · `04-architettura.md` §17 · `05-esecuzione-asincrona.md` §10 · `06-modello-semantico.md` §13 · `07-piano-valutazione-qualita.md` §17 · `08-sicurezza-conformita.md` §13 |
 | **Autorità decisionale** | Architect — delega esercitata in questa sede |
 | **Delibera** | 27 luglio 2026 |
-| **Stato complessivo** | **91 decisioni adottate** (di cui 17 con vincolo), **5 superate**, **1 aperta** — **D7**, che resta aperta per volontà esplicita: nessun corpus sintetico la soddisfa |
+| **Stato complessivo** | **94 decisioni adottate** (di cui 20 con vincolo), **5 superate**, **1 aperta** — **D7**, che resta aperta per volontà esplicita: nessun corpus sintetico la soddisfa |
 
 ---
 
@@ -201,6 +201,9 @@ Le decisioni sono state valutate contro quattro obiettivi dichiarati — **sempl
 | **D90** | Il vocabolario delle operazioni conta **ventidue** voci, non diciotto | ☑ Adottata | §15. Le tabelle di §6.2–6.6 sono normative; il conteggio in prosa è stantio |
 | **D91** | `year_to_date` aggiunto; assolute senza anno → chiarimento | ⊡ Adottata con vincolo | §15. Fare nulla avrebbe costretto ad aggiungere una categoria di `scope_note`: modificare comunque un vocabolario chiuso, per dire che non sappiamo dire una cosa esprimibile con un simbolo |
 | **D93** | Guardia attributo/entità in Fase A: una porzione di frase è evidenza di entità solo se nessun termine non di entità la copre altrettanto bene | ⊡ Adottata con vincolo | §16.4. Deliberata su delega dell'Architect il 28/07/2026. **Non tocca il contratto**: è una regola di risoluzione, non di DSL. Misurata: 86,2% di percorso rapido contro 78,4% dell'alternativa, a pari zero determinazioni sbagliate. **V-D93-1** in §16.4 |
+| **D94** | `nli_dispatch`, il modulo che compone la catena | ⊡ Adottata con vincolo | §17.1. Scartate `nli_web` (P5) e il nucleo con composizione tardiva: quell'arco il controllo di D24 non lo vedrebbe. **V-D94-1** |
+| **D95** | Due deroghe a V3 ristrette per file, chiamata e forma dell'enunciato | ⊡ Adottata con vincolo | §17.2. `FOR UPDATE SKIP LOCKED` sulla coda e un cursore per thread. Scartate la claim ORM (insicura al secondo dispatcher) e lo sharding per `id % N` (una partizione senza esecutore, in silenzio). **V-D95-1** |
+| **D96** | L'enunciato in coda è transitorio e cifrato, mai in chiaro | ⊡ Adottata con vincolo | §17.3. Non è pseudonimizzazione e non pretende di esserlo: nulla è conservato. Fallimento chiuso senza chiave, come D77. **V-D96-1** |
 
 ---
 
@@ -414,7 +417,7 @@ Riassunto operativo di ciò che le delibere impongono a chi scriverà il codice.
 
 **Per superare una decisione**: `⊘ Superata da Dn`. Mai cancellata. Le quattro supersessioni già presenti sono la prova che la disciplina serve.
 
-**Per aggiungere una decisione**: numerazione in continuità da **D94**. D87–D91 sono deliberate (§14, §15); D92 è corretta; **D93** è deliberata (§16.4.1).
+**Per aggiungere una decisione**: numerazione in continuità da **D97**. D87–D91 sono deliberate (§14, §15); D92 è corretta; **D93** è deliberata (§16.4.1); **D94–D96** sono deliberate in §17.
 
 **Vincoli aggiunti in delibera.** Le dodici decisioni marcate ⊡ portano una condizione che è parte della decisione: rimuoverla è modificare la decisione, non semplificarla.
 
@@ -432,6 +435,7 @@ Riassunto operativo di ciò che le delibere impongono a chi scriverà il codice.
 | 2026-07-27 | **D6 chiusa dall'Architect: il prodotto si chiama «AIDA».** Il prefisso tecnico resta `nli_` per la ragione già dichiarata in `04` §14.3 — marchio e struttura tecnica devono poter evolvere separatamente. Restano aperte **D7** e **D8**. |
 | 2026-07-27 | **D8 chiusa dall'Architect, in senso più ampio del previsto:** modelli locali e remoti configurabili dall'amministrazione. Recepito `10-adattatore-modelli.md`, adottate **D75–D80**. L'architettura non ha richiesto modifiche — è il ritorno dell'investimento fatto su **V5** e sull'Adattatore. Spostare la scelta dall'ambiente al pannello sposta però il confine di fiducia: da qui **D76**, **D77** e **D80**. **D79** modifica **D31**: il budget del catalogo si deriva dalla finestra di contesto. |
 | 2026-07-28 | **Parte 5 implementata; il profilo non qualifica.** Adattatore di fornitore (§8), profili amministrati (**D75**) con host nell'ambiente (**D77**), segreto per nome di variabile (**D76**), capacita' dichiarate (**D78**) e divieto strutturale di attivare un profilo non qualificato (**D80**). Ripristino con un solo tentativo (**D15**). **Prima misura di accuratezza del progetto**, contro un qwen2.5 7B locale su 20 casi di apertura del corpus: **15% complessiva**, tutte le sezioni sotto la soglia di **D44** — `target` 65%, `filter` 35%, `order_by` 55%. Il profilo resta quindi in `qualified: no` e D80 ne rifiuta l'attivazione, che e' il comportamento voluto: la macchina funziona e dice di no. Il primo giro di misura ha corretto due difetti del **prompt**, non del modello: la forma di un'operazione non era mostrata (il modello emetteva `type` e `field`) e nulla vietava di inventare `set_limit` e `set_fields` non richiesti — da 10% a 15%, con `limit` da 40% a 70%. |
+| 2026-07-28 | **Parte 6 completa — esecuzione asincrona.** Tre delibere in §17, tutte con l'opzione conservativa cercata per prima e scartata con argomento: **D94** (il modulo `nli_dispatch` che compone la catena — il nucleo con composizione tardiva avrebbe comprato il grafo rendendolo non verificabile), **D95** (due deroghe a V3 ristrette per file, chiamata e **forma dell'enunciato**, con sei test che le mostrano ammettere e rifiutare), **D96** (l'enunciato in coda transitorio e cifrato, con la coda separata dal turno perche' non abbia un campo in cui una domanda possa finire — C3). Due irrigidimenti dei controlli trovati scrivendo D95: `cursor` da solo (una chiamata in mezzo alla catena evadeva la regola) e l'uid letterale in `Environment(cr, 1, {})`, che e' `sudo` scritto diversamente. Due rilievi: l'impronta dei permessi era **per utente** contro la lettera di D39 (§17.4), e i tipi di `fields_get` non sono i tipi di §8.1 (§17.5). **D27 non e' superata e lo strumento lo dichiara**: 20 utenti conversazionali, ERP P95 da 21,8 a 14,7 ms — cioe' rumore — su uno stack senza `--workers`, senza profilo attivo e con 37 partner. Il numero informativo e' l'accettazione a **P95 205 ms** contro i 50 ms di §6.1. |
 | 2026-07-28 | **D93 deliberata su delega dell'Architect: ⊡ adottata con vincolo** (§16.4.1). Cercata e scartata l'opzione che non aggiunge alcuna regola — tenere il livello della forma base e accettare **2 determinazioni sbagliate su 696** — perche' una determinazione sbagliata di entita' non e' un errore ma un elenco di record veri in risposta a un'altra domanda, cioe' **R1**. La portata e' **piu' larga della proposta**: il confronto e' contro ogni termine **non di entita'**, categorie T5 comprese, perche' l'argomento non e' che gli attributi siano speciali ma che una porzione di frase gia' spiegata non e' evidenza di entita'. **V-D93-1**: il confronto e' sulla stessa porzione, mai globale — una guardia globale perderebbe l'entita' in *«ordini di vendita raggruppati per cliente»*. Quando scatta, Fase A rende `no_candidate` e il turno passa al modello: la regola non puo' produrre un'entita' sbagliata, al massimo rinuncia a una giusta. |
 | 2026-07-28 | **Parte 4 completa.** Risolutore, validazione livelli 3-5, Esecutore con conteggio prima del recupero (**D68**), Presentatore a viste native (**V4**), stato come record (**D19**), contesto societario sul turno (**D40**). Prima interrogazione end-to-end da uno stato scritto a mano: 40 test Odoo, 269 puri. Introdotta nei controlli di D24 la **zona deterministica** — puo' calcolare con le date, non puo' leggere l'orologio — perche' `04` §4.6 distingue l'essere consapevoli del tempo dal leggerlo, e senza la distinzione il Risolutore sarebbe o incapace di aritmetica o non controllato. **La provenienza non e' persistita** finche' D54 non esiste: i frammenti sono parole dell'utente, e scriverli in chiaro per i dodici mesi di D26 e' esattamente cio' che D54 dice non essere sanabile a posteriori. |
 | 2026-07-28 | **Parte 3 completa.** Aggiunta la meta' che richiede Odoo: **L0 per introspezione** dei metadati (D84), **estrazione da `ir.filters`** come proposte T5 inerti in coda L3 (D35, D28), **impronta dei permessi** (D39, D40). Due rilievi dall'esecuzione in **§16.5** e **§16.6**: l'impronta non e' leggibile dalle tabelle delle regole — un utente ordinario non puo' leggere `ir.model.access` e `sudo` e' vietato — e si costruisce sugli **effetti osservabili**, con le regole sui record deliberatamente escluse perche' filtrano record, non riferimenti; e il divieto sui contesti privilegiati e' stato reso *scoped* ai percorsi di interrogazione, come §6.3 dice, perche' altrimenti la proprieta' che protegge non e' testabile. 27 test Odoo, 236 puri. |
@@ -772,3 +776,82 @@ Le regole continuano ovviamente ad applicarsi, in esecuzione, dove i record ci s
 Il controllo sintattico di D24 vietava `sudo` e `with_user` in **ogni** file dei moduli `nli_*`. `04` §6.3 dice invece *"nessun uso di contesti privilegiati **nei percorsi di interrogazione**"*, e l'applicazione estesa aveva una conseguenza che si e' vista scrivendo i test: **un test che verifica che cosa un altro utente puo' vedere deve costruire l'ambiente di quell'utente.** Vietarlo rende non verificabile la proprieta' che il divieto protegge, e una proprieta' di sicurezza che nessuno puo' testare e' peggio di una che nessuno puo' aggirare.
 
 Il controllo ora esclude `tests/` e `pure_tests/` dalla sola regola sull'elevazione di privilegio. **Nessuna esclusione per l'SQL diretto**: un cursore grezzo in un test resta un cursore grezzo, e V3 non ha percorsi. Entrambe le proprieta' sono asserite in `tools/arch/tests/`.
+
+---
+
+## 17. Questioni emerse dall'implementazione — parte 6
+
+L'esecuzione asincrona non ha aggiunto una funzione al prodotto: ha fatto girare per la prima volta la catena **fuori da una richiesta HTTP**, ed e' li' che le tre questioni che seguono sono diventate visibili. Tutte e tre sono state deliberate cercando prima l'opzione che non modifica nulla, come §14.2, e tutte e tre sono state scartate con un argomento.
+
+### 17.1 D94 — Il modulo che compone la catena
+
+**⊡ Adottata con vincolo, 28/07/2026.**
+
+Il ciclo di `05` §3.3 e' *catalogo → interprete → validatore → applicatore → risolutore → esecutore*: ha bisogno del modulo che costruisce il catalogo (`nli_semantics`) e di quello che parla al modello (`nli_engine`), e `04` §6.3 vieta a ciascuno dei due di dipendere dall'altro — e' la separazione fra chi conosce i dati e chi conosce il fornitore, e regge V5. Fino alla parte 5 la catena non era mai stata composta: nella parte 4 i pezzi erano assemblati a mano dentro un test.
+
+**L'opzione che non aggiunge un modulo, cercata per prima.** Il grafo di §6.2 gia' contiene un modulo che sta sopra tutti, `nli_web`. Metterci il dispatcher non richiederebbe alcuna decisione. E' stata scartata per **P5**: l'interpretazione e' indipendente dal canale che l'ha richiesta, e un'installazione che usasse solo un'API dovrebbe installare il canale di chat per poter eseguire un turno. La responsabilita' dichiarata di `nli_web` in §6.2 e' *«canale chat, presentazione»*, e un pool di thread con controllo di carico non e' nessuna delle due.
+
+**La seconda opzione, piu' tentante, e' quella che si e' dovuto argomentare.** Il dispatcher poteva stare in `nli_core`, che gia' possiede il turno, con interprete e dizionario risolti a tempo di esecuzione attraverso il registro dei modelli di Odoo (`env["nli.semantics"]`, `env["nli.interpreter"]`) invece che per import. Nessun modulo nuovo, grafo invariato, e la composizione tardiva e' il meccanismo idiomatico della piattaforma.
+
+E' stata scartata per una ragione sola, e vale la pena scriverla: **quell'arco il controllo di D24 non lo vede.** Il primo controllo legge i manifest e gli import; una dipendenza espressa come stringa dentro `env[...]` non e' ne' l'uno ne' l'altro. Si sarebbe comprata la proprieta' «le dipendenze puntano verso il nucleo» rendendola non verificabile — cioe' esattamente il modo in cui, in questo progetto, una regola smette di funzionare senza dirlo. Un modulo dichiarato costa una riga in `spec.py` e mantiene l'arco sotto controllo.
+
+**`nli_dispatch`**, responsabilita' *«accettazione, coda, dispatcher, controllo di carico, notifica»*, dipende da `nli_semantics`, `nli_engine` e dalla piattaforma `bus`. `nli_web` dipende ora da `nli_dispatch` anziche' da `nli_semantics`: il canale chiede l'accettazione, non costruisce cataloghi.
+
+**V-D94-1 — Il nucleo non sa di essere dispatchato.** `nli_core → nli_dispatch` entra fra le non-dipendenze nominate: e' la regola della parte 2 (*«la catena non presuppone mai di girare dentro una richiesta HTTP»*) vista dall'altro lato, ed e' cio' che ha permesso a questa parte di essere un involucro invece di una riscrittura. Verificata dal primo controllo.
+
+### 17.2 D95 — Le due deroghe a V3, ristrette per file e per forma
+
+**⊡ Adottata con vincolo, 28/07/2026.**
+
+`05` §3.3 specifica l'acquisizione del lotto come `SELECT … FOR UPDATE SKIP LOCKED`, e su di essa poggia il percorso di scala di D20f (*«la capacita' si aggiunge con N record dispatcher»*): due dispatcher possono estrarre insieme solo perche' una riga bloccata viene **saltata** anziche' attesa. L'ORM di Odoo non sa esprimerlo, e Odoo stesso scrive quella riga a mano (`ir_cron.py:140`). Servono inoltre **un cursore per thread**: il fallimento di un turno non deve annullare gli altri del lotto (§3.4), quindi il cursore del cron non e' riusabile.
+
+**Le due opzioni che non toccano V3, cercate e scartate.** La prima: acquisire con l'ORM (`search` poi `write`). E' sicura **oggi**, perche' V-A da' a un record `ir.cron` una sola esecuzione concorrente in tutto il cluster; smette di esserlo il giorno in cui qualcuno aggiunge il secondo dispatcher, cioe' quando nessuno sta guardando, e D20f dichiara quel passaggio *senza modifiche al codice*. La seconda: partizionare la coda per `id % N`, che non richiede alcun blocco. Scartata perche' introduce un guasto silenzioso: se N smette di corrispondere al numero di dispatcher, un'intera partizione resta senza esecutore — turni che nessuno prende, nessun errore da nessuna parte. Fra un enunciato SQL ristretto e una configurazione che esegue silenziosamente nulla, il rischio minore e' l'enunciato.
+
+**V-D95-1 — La deroga e' per file, per chiamata e per forma dell'enunciato.** Una deroga che ammettesse un *file* ammetterebbe ogni enunciato che qualcuno vi scrivera' poi leggendo l'esenzione e non l'argomento. `spec.py` dichiara quindi: in `nli_dispatch/runtime/claim.py` e' ammesso `cr.execute` **solo** con un enunciato che contiene `SELECT id FROM nli_queue_item` e `FOR UPDATE SKIP LOCKED` e non contiene join, scritture o punti e virgola; in `nli_dispatch/runtime/worker.py` e' ammessa **solo** l'apertura del cursore, e nessun `execute`. Un enunciato costruito a tempo di esecuzione non e' ammesso: e' il modo ovvio di aggirare una forma. Sei test in `tools/arch/tests/` mostrano la deroga ammettere e rifiutare.
+
+**Due irrigidimenti trovati mentre la si scriveva**, entrambi difetti preesistenti del controllo:
+
+- `odoo.registry(db).cursor()` ha una **chiamata in mezzo alla catena**, quindi il controllo leggeva solo la coda `cursor` e la regola, scritta su `registry.cursor`, non scattava. Una regola che un paio di parentesi evade non e' una regola: ora `cursor` e' vietato da solo;
+- **V2 aveva una seconda forma non coperta.** `Environment(cr, 1, {})` e' `sudo` scritto diversamente, e non contiene ne' `sudo` ne' `SUPERUSER_ID`. La regola nuova non riguarda il costruttore ma **l'uid**: dev'essere un valore letto dal turno, mai un letterale. Un uid scritto a mano non puo' venire dalla richiesta che dovrebbe rappresentare.
+
+### 17.3 D96 — L'enunciato attraversa un confine di processo, e non in chiaro
+
+**⊡ Adottata con vincolo, 28/07/2026.**
+
+L'accettazione gira su un worker HTTP, l'interpretazione su un processo cron, e l'unico canale fra i due e' la banca dati: la parte 6 e' il primo punto del prodotto in cui la frase dell'utente deve **sopravvivere alla richiesta che l'ha portata**. Fino a qui non aveva mai toccato lo storage — la parte 4 arriva a rimuovere `provenance` dallo stato proprio per questo. La regola vincolante e' una riga di §9: *«nessun enunciato persistito in chiaro»* (**D54**), e il meccanismo di D54 — pseudonimizzazione all'ingresso con mappa cifrata separata — non esiste ancora.
+
+**L'opzione che non decide nulla e' impraticabile, non scomoda.** Non c'e' un modo di passare la frase al processo cron che non sia la banca dati; il bus non e' un canale di dati e il cron non eredita nulla. Restava scrivere in chiaro per trenta secondi, che e' esattamente cio' che D54 dice non essere riparabile dopo: *«ogni giorno senza produce dati in chiaro che nessuna decisione successiva ripulisce»*.
+
+**Quello che D96 stabilisce e' piu' stretto e disponibile ora.** L'enunciato e' **transitorio, non conservato**: vive nella riga di coda fra accettazione e interpretazione, limitato da L4 a trenta secondi, ed e' **cancellato nella stessa scrittura** che porta il turno a uno stato finale — riuscito, fallito, scaduto o sostituito. Finche' e' li' e' **cifrato con una chiave che sta nell'ambiente** (`NLI_UTTERANCE_KEY`), quindi una copia della banca dati non contiene frasi: e' l'argomento di D76 applicato a un altro segreto. Senza la chiave l'accettazione **rifiuta**, come `NLI_ALLOWED_HOSTS` sotto D77 — una protezione che degrada in silenzio a nulla e' peggio di una mai promessa.
+
+**Non e' pseudonimizzazione e non da' la cancellazione per interessato.** Non ne ha bisogno: non conserva niente. Quando D54 arriva, la mappa sostituisce questo e la questione della ritenzione si sposta con lei, nello stesso cambiamento.
+
+**V-D96-1 — La coda non ha un campo che possa contenere una domanda.** L3 (profondita' della coda) va valutata **all'accettazione**, con l'identita' di chi chiede, e quindi contando le righe **di tutti**; ma `nli.turn` porta `state_json`, che e' la domanda, ed e' protetto da una regola di record che lo limita al proprietario. La via d'uscita non e' allargare quella regola ma separare la coda dal turno: `nli.queue.item` porta una corsia, uno stato, due date e l'enunciato **cifrato**, e non ha alcun campo in cui una domanda possa finire. E' il criterio **C3** — impossibilita' strutturale invece di divieto da ricordare. Le righe sono quindi leggibili da ogni utente interno e scrivibili solo dal proprietario, e senza questa asimmetria L3 coinciderebbe con L1 e non esisterebbe.
+
+### 17.4 L'impronta dei permessi era per utente, e D39 dice il contrario
+
+Rilievo, non decisione: la delibera di **D39** enuncia la proprieta' che l'impronta compra — *«due utenti condividono l'impronta del catalogo solo se hanno gli stessi permessi, quindi il riutilizzo fra utenti non viola V2»* — e la realizzazione della parte 3 includeva nel materiale anche `env.user.id`. Con l'uid dentro, **due utenti non condividono mai un'impronta**: il dizionario e il catalogo si ricostruiscono per ogni collega che fa lo stesso genere di domanda, e su un'installazione da duecento utenti sono duecento costruzioni della stessa cosa. Fino alla parte 6 la cosa non si vedeva, perche' nessuno riusava niente.
+
+L'uid non dice nulla su cio' che un utente puo' **nominare**: lo decidono i gruppi, le societa' attive, la lingua e lo stato di accesso osservabile — e due utenti identici in tutti e quattro possono nominare esattamente gli stessi riferimenti, che sono l'intero contenuto del catalogo. L'uid e' stato rimosso e la proprieta' e' ora asserita da un test.
+
+### 17.5 I tipi di Odoo non sono i tipi del contratto
+
+`fields_get` dice `char`, `many2one`, `monetary`; `03` §8.1 enumera i predicati su `text`, `relation`, `number`. I due non si erano mai incontrati: il pacchetto lessicale del corpus parla gia' la lingua del contratto, e il dizionario introspettivo e' arrivato solo qui. Un catalogo che pubblicizza `char` fa emettere al modello predicati che il livello 4 poi rifiuta, per una ragione che nessuna diagnostica nomina.
+
+La mappa vive in `nli_semantics/introspection/runtime.py` — e' conoscenza di piattaforma — ed e' **passata** alla zona pura come argomento (`type_map`), assente il quale i tipi passano invariati. La regola di §5.9 non cambia: la zona che decide l'esposizione non acquisisce conoscenza della piattaforma.
+
+### 17.6 Il criterio di completamento della parte 6, misurato per quello che e'
+
+D27 chiede la prova di isolamento: con N utenti conversazionali continui, la latenza di Odoo per un utente ordinario non peggiora in modo misurabile. Lo **strumento** esiste (`tools/load/prova_isolamento.py`) e misura tre distribuzioni via HTTP: utente ordinario a vuoto, utente ordinario sotto carico, e percorso di accettazione.
+
+**La prova non e' superata, ed e' una constatazione, non una cautela.** L'esecuzione del 28/07/2026 su questo portatile, con 20 utenti conversazionali a ritmo di una frase ogni tre secondi:
+
+| Misura | P50 | P95 |
+|---|---|---|
+| Utente ordinario, a vuoto | 9,9 ms | 21,8 ms |
+| Utente ordinario, sotto carico | 6,6 ms | 14,7 ms |
+| Accettazione (§3.2) | 127,6 ms | **205,2 ms** |
+
+Tre ragioni per cui la prima riga di questa tabella non e' la prova di D27, tutte dichiarate dallo strumento a ogni esecuzione: lo stack di sviluppo gira **senza `--workers`**, quindi il pool prefork la cui saturazione *e'* RA3 non esiste; non c'e' profilo attivo, quindi la fase che domina il tempo — l'interpretazione — non viene esercitata affatto; e la banca dati ha 37 partner. Il degrado misurato dell'ERP e' negativo, cioe' rumore.
+
+**Il numero che invece e' informativo e' il terzo, e non e' buono.** §6.1 fissa l'accettazione a **P95 ≤ 50 ms**; qui e' 205 ms. L'accettazione fa oggi sei viaggi verso la banca dati — tre conteggi per i limiti, due creazioni, la riga di trigger del cron — sotto un server di sviluppo con log a livello debug. E' il primo bersaglio della taratura della parte 7, ed e' registrato qui perche' un numero misurato e brutto vale piu' di un numero asserito e bello.

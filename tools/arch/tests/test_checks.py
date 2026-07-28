@@ -516,5 +516,154 @@ class TestRepository(unittest.TestCase):
                 )
 
 
+DISPATCH = ModuleSpec(
+    name="nli_dispatch",
+    responsibility="dispatch",
+    nli_depends=frozenset({"nli_semantics", "nli_engine"}),
+    platform_depends=frozenset(),
+    odoo_packages=frozenset({"models"}),
+)
+DEROGATION_SPEC = spec_of(CORE, ENGINE, SEMANTICS, DISPATCH)
+
+
+class TestDerogations(FixtureCase):
+    """D95 — the two named derogations, shown admitting and shown refusing.
+
+    A derogation nobody has seen refuse is indistinguishable from an exemption. Each
+    test below writes the code the derogation exists for, then writes something the
+    same file must not be allowed to contain, and asserts the difference.
+    """
+
+    def setUp(self):
+        super().setUp()
+        self.write_clean_tree()
+        write_module(self.addons, "nli_dispatch", ["nli_semantics", "nli_engine"],
+                     packages=("models", "runtime"))
+
+    def run_check(self) -> CheckResult:
+        return check_syntax.run(
+            addons_dir=self.addons, modules=DEROGATION_SPEC,
+            repo_root=self.addons.parent,
+        )
+
+    def write_runtime(self, name: str, body: str) -> None:
+        (self.addons / "nli_dispatch" / "runtime" / name).write_text(
+            textwrap.dedent(body), encoding="utf-8")
+
+    def test_the_claim_is_admitted(self):
+        self.write_runtime("claim.py", '''
+            CLAIM_STATEMENT = (
+                "SELECT id FROM nli_queue_item "
+                "WHERE lane = %s AND state = 'pending' "
+                "ORDER BY id LIMIT %s "
+                "FOR UPDATE SKIP LOCKED"
+            )
+
+            def claim(env, lane, size):
+                env.cr.execute(CLAIM_STATEMENT, (lane, size))
+                return env.cr.fetchall()
+        ''')
+        self.assertEqual(self.run_check().violations, [])
+
+    def test_another_statement_in_the_same_file_is_refused(self):
+        self.write_runtime("claim.py", '''
+            def claim(env):
+                env.cr.execute("SELECT id FROM sale_order")
+        ''')
+        result = self.run_check()
+        self.assertIn("direct PostgreSQL access", self.rules(result))
+        self.assertIn("outside the shape D95 admits", str(result.violations[0]))
+
+    def test_a_statement_built_at_runtime_is_refused(self):
+        """The way around a shape is to stop writing it down. Not admitted."""
+        self.write_runtime("claim.py", '''
+            def claim(env, table):
+                env.cr.execute("SELECT id FROM " + table + " FOR UPDATE SKIP LOCKED")
+        ''')
+        result = self.run_check()
+        self.assertIn("direct PostgreSQL access", self.rules(result))
+
+    def test_the_same_claim_in_another_file_is_refused(self):
+        self.write_runtime("pool.py", '''
+            CLAIM_STATEMENT = (
+                "SELECT id FROM nli_queue_item FOR UPDATE SKIP LOCKED"
+            )
+
+            def claim(env):
+                env.cr.execute(CLAIM_STATEMENT)
+        ''')
+        result = self.run_check()
+        self.assertIn("direct PostgreSQL access", self.rules(result))
+
+    def test_the_worker_may_open_a_cursor(self):
+        self.write_runtime("worker.py", '''
+            import odoo
+
+            def execute(dbname, uid):
+                with odoo.registry(dbname).cursor() as cr:
+                    return cr
+        ''')
+        self.assertEqual(self.run_check().violations, [])
+
+    def test_the_worker_may_not_execute(self):
+        self.write_runtime("worker.py", '''
+            import odoo
+
+            def execute(dbname):
+                with odoo.registry(dbname).cursor() as cr:
+                    cr.execute("SELECT 1")
+        ''')
+        result = self.run_check()
+        self.assertIn("direct PostgreSQL access", self.rules(result))
+
+    def test_a_cursor_opened_elsewhere_is_refused(self):
+        """`odoo.registry(db).cursor()` has a call mid-chain: only the tail reads."""
+        (self.addons / "nli_core" / "models" / "probe.py").write_text(
+            textwrap.dedent('''
+                import odoo
+
+                def peek(dbname):
+                    return odoo.registry(dbname).cursor()
+            '''), encoding="utf-8")
+        result = self.run_check()
+        self.assertIn("direct PostgreSQL access", self.rules(result))
+
+
+class TestEnvironmentIdentity(FixtureCase):
+    """V2's second form: `Environment(cr, 1, {})` is `sudo` with another spelling."""
+
+    def run_check(self) -> CheckResult:
+        return check_syntax.run(
+            addons_dir=self.addons, modules=FIXTURE_SPEC,
+            repo_root=self.addons.parent,
+        )
+
+    def write_source(self, body: str) -> None:
+        (self.addons / "nli_core" / "models" / "probe.py").write_text(
+            textwrap.dedent(body), encoding="utf-8")
+
+    def test_a_literal_identity_is_reported(self):
+        self.write_clean_tree()
+        self.write_source('''
+            from odoo import api
+
+            def build(cr):
+                return api.Environment(cr, 1, {})
+        ''')
+        result = self.run_check()
+        self.assertIn("environment built on a literal identity", self.rules(result))
+        self.assertIn("V2", str(result.violations[0]))
+
+    def test_an_identity_read_from_a_record_is_admitted(self):
+        self.write_clean_tree()
+        self.write_source('''
+            from odoo import api
+
+            def build(cr, turn, context):
+                return api.Environment(cr, turn.user_id.id, context)
+        ''')
+        self.assertEqual(self.run_check().violations, [])
+
+
 if __name__ == "__main__":
     unittest.main()

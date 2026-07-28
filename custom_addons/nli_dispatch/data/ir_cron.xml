@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+      Three cron records, and the fact that there are three is the design.
+
+      The interactive dispatcher is woken by `_trigger()` at acceptance (F1) and
+      wakes in milliseconds; its `interval` is the safety net for a lost
+      notification, not the mechanism. The deferred one never has a latency
+      requirement and must never share the interactive pool (D20d, §4.3): giving it
+      its own record is what makes the separation structural instead of a promise.
+      The recovery one runs rarely and exists for a case that must not be silent —
+      a process killed mid-batch (§5.3).
+    -->
+    <record id="cron_dispatcher" model="ir.cron">
+        <field name="name">AIDA: interpretation dispatcher</field>
+        <field name="model_id" ref="model_nli_dispatcher"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_dispatch()</field>
+        <field name="user_id" ref="base.user_root"/>
+        <field name="interval_number">5</field>
+        <field name="interval_type">minutes</field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <record id="cron_dispatcher_deferred" model="ir.cron">
+        <field name="name">AIDA: deferred dispatcher</field>
+        <field name="model_id" ref="model_nli_dispatcher"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_dispatch_deferred()</field>
+        <field name="user_id" ref="base.user_root"/>
+        <field name="interval_number">30</field>
+        <field name="interval_type">minutes</field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <record id="cron_recover" model="ir.cron">
+        <field name="name">AIDA: recover orphaned turns</field>
+        <field name="model_id" ref="model_nli_dispatcher"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_recover()</field>
+        <field name="user_id" ref="base.user_root"/>
+        <field name="interval_number">10</field>
+        <field name="interval_type">minutes</field>
+        <field name="active" eval="True"/>
+    </record>
+</odoo>

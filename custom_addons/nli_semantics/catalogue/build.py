@@ -99,6 +99,7 @@ def build(
     context_window: int,
     entity_refs: frozenset[str] = frozenset(),
     hop_attributes: list[Attribute] | None = None,
+    type_map: dict[str, str] | None = None,
 ) -> Catalogue:
     """Assemble the phase C catalogue.
 
@@ -107,7 +108,14 @@ def build(
     context (D39, D40). It is passed in rather than computed: a pure function cannot
     read an ACL, and a catalogue that guessed at permissions would be worse than one
     that admits it needs to be told.
+
+    `type_map` translates the descriptor's type into the type vocabulary of `03`
+    §8.1. It is an argument for the same reason: the mapping from `many2one` to
+    `relation` is platform knowledge, and the zone that decides exposure must not
+    acquire any. Absent, types pass through unchanged — which is what the corpus
+    needs, since its pack already speaks the contract's language.
     """
+    type_map = type_map or {}
     # --- 1. permissions, first (§5.9) --------------------------------------
     candidates = list(attributes) + list(hop_attributes or [])
     permitted: list[Attribute] = []
@@ -128,7 +136,7 @@ def build(
         CatalogueAttribute(
             ref=_ref_of(entity, decision.attribute),
             terms=tuple(dictionary.terms_of(_ref_of(entity, decision.attribute))),
-            type=decision.attribute.type,
+            type=type_map.get(decision.attribute.type, decision.attribute.type),
             values=_enum_values(dictionary, _ref_of(entity, decision.attribute)),
         )
         for decision in kept

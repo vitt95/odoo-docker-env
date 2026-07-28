@@ -123,6 +123,18 @@ class TestPermissions(TransactionCase):
         theirs = permissions.fingerprint(self.env(user=other), [MODEL])
         self.assertNotEqual(mine, theirs)
 
+    def test_two_users_with_the_same_rights_do_share_a_fingerprint(self):
+        """The other half of §10.4, and the half the first implementation lost.
+
+        Without it the key is per user: the dictionary and the catalogue are rebuilt
+        for every colleague who asks the same kind of question, and D39 buys nothing
+        it was adopted for. The uid says nothing about what a user may **name**.
+        """
+        twin = new_test_user(self.env, login="nli_twin", groups="base.group_user")
+        mine = permissions.fingerprint(self.env(user=self.internal), [MODEL])
+        theirs = permissions.fingerprint(self.env(user=twin), [MODEL])
+        self.assertEqual(mine, theirs)
+
     def test_revoking_access_changes_the_fingerprint(self):
         """The failure D39 exists to prevent: a catalogue memoised before a
         revocation would keep exposing references the user may no longer name, and
