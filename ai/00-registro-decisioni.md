@@ -204,6 +204,13 @@ Le decisioni sono state valutate contro quattro obiettivi dichiarati — **sempl
 | **D94** | `nli_dispatch`, il modulo che compone la catena | ⊡ Adottata con vincolo | §17.1. Scartate `nli_web` (P5) e il nucleo con composizione tardiva: quell'arco il controllo di D24 non lo vedrebbe. **V-D94-1** |
 | **D95** | Due deroghe a V3 ristrette per file, chiamata e forma dell'enunciato | ⊡ Adottata con vincolo | §17.2. `FOR UPDATE SKIP LOCKED` sulla coda e un cursore per thread. Scartate la claim ORM (insicura al secondo dispatcher) e lo sharding per `id % N` (una partizione senza esecutore, in silenzio). **V-D95-1** |
 | **D96** | L'enunciato in coda è transitorio e cifrato, mai in chiaro | ⊡ Adottata con vincolo | §17.3. Non è pseudonimizzazione e non pretende di esserlo: nulla è conservato. Fallimento chiuso senza chiave, come D77. **V-D96-1** |
+| **D97** | Adattatore sintetico per il solo banco di carico, dietro variabile d'ambiente | ⊡ Adottata con vincolo | §18.1. Non è un profilo, non è in `PROTOCOLS`, non passa da D75 né da D80. Fallimento chiuso senza la variabile, busta costante, `warning` a ogni ciclo. **V-D97-1** |
+| **D98** | Il profilo dichiara lo **sforzo di ragionamento**, e la chiave viaggia solo se nominata | ☑ Adottata | §18.2. Misurato: ragionamento acceso, 2397 gettoni contro una finestra di 4096 e **busta vuota**; a `none`, 179 gettoni e busta valida. `reasoning_effort` è campo standard del protocollo: D75 non si allarga |
+| **D99** | La **direzione dell'ordinamento** è derivata dal tipo prima dell'applicazione, mai chiesta al modello | ☑ Adottata — **adempie D88** | §18.3. D88 aveva assegnato la derivazione al Risolutore, che non l'ha mai fatta. La regola è dichiarata dallo stato e derivata dalla direzione inferita, perché §15.3 vieta chiavi ignote in un'operazione |
+| **D100** | I comparativi **inclusivi** sono distinti da quelli stretti nel lessico e nel generatore | ☑ Adottata | §18.4. *«almeno»*, *«da … in su»*, *«non più di»*, *«entro i»* comprendono l'estremo. L'atteso chiedeva `greater_than` dove la frase diceva `greater_or_equal`: il metro penalizzava la lettura corretta |
+| **D101** | I **riferimenti** sono un insieme chiuso nello schema del turno | ☑ Adottata | §18.5. C1 da prosa a struttura. Misurato: riparazioni dal 25% al 5%, rese da 2 a 0, `order_by` da 70% a 97,5%. Senza catalogo lo schema resta quello generale, che è ciò che `emit_schema.py` scrive |
+| **D102** | I riferimenti hanno **tre generi** — entità, attributi, categorie — e ogni operazione ammette solo il proprio | ☑ Adottata | §18.5. D101 aveva chiuso l'insieme lasciandolo piatto, e il modello ha chiesto un'entità come colonna. Una categoria è solo la condizione: dietro non c'è un campo da mostrare |
+| **D103** | Il **predicato** e' vincolato dal tipo dell'attributo gia' nello schema del turno | ☑ Adottata | §18.7. §8.1 accoppiava tipo e predicati e solo il livello 3 lo leggeva: *«clienti sopra i 1000»* era scrivibile. Misurato: +5 casi su `filter`, riparazioni dal 3,6% al 2,9%. Un tipo non dichiarato conserva l'insieme intero |
 
 ---
 
@@ -417,7 +424,7 @@ Riassunto operativo di ciò che le delibere impongono a chi scriverà il codice.
 
 **Per superare una decisione**: `⊘ Superata da Dn`. Mai cancellata. Le quattro supersessioni già presenti sono la prova che la disciplina serve.
 
-**Per aggiungere una decisione**: numerazione in continuità da **D97**. D87–D91 sono deliberate (§14, §15); D92 è corretta; **D93** è deliberata (§16.4.1); **D94–D96** sono deliberate in §17.
+**Per aggiungere una decisione**: numerazione in continuità da **D104**. D87–D91 sono deliberate (§14, §15); D92 è corretta; **D93** è deliberata (§16.4.1); **D94–D96** sono deliberate in §17; **D97–D103** in §18.
 
 **Vincoli aggiunti in delibera.** Le dodici decisioni marcate ⊡ portano una condizione che è parte della decisione: rimuoverla è modificare la decisione, non semplificarla.
 
@@ -436,6 +443,7 @@ Riassunto operativo di ciò che le delibere impongono a chi scriverà il codice.
 | 2026-07-27 | **D8 chiusa dall'Architect, in senso più ampio del previsto:** modelli locali e remoti configurabili dall'amministrazione. Recepito `10-adattatore-modelli.md`, adottate **D75–D80**. L'architettura non ha richiesto modifiche — è il ritorno dell'investimento fatto su **V5** e sull'Adattatore. Spostare la scelta dall'ambiente al pannello sposta però il confine di fiducia: da qui **D76**, **D77** e **D80**. **D79** modifica **D31**: il budget del catalogo si deriva dalla finestra di contesto. |
 | 2026-07-28 | **Parte 5 implementata; il profilo non qualifica.** Adattatore di fornitore (§8), profili amministrati (**D75**) con host nell'ambiente (**D77**), segreto per nome di variabile (**D76**), capacita' dichiarate (**D78**) e divieto strutturale di attivare un profilo non qualificato (**D80**). Ripristino con un solo tentativo (**D15**). **Prima misura di accuratezza del progetto**, contro un qwen2.5 7B locale su 20 casi di apertura del corpus: **15% complessiva**, tutte le sezioni sotto la soglia di **D44** — `target` 65%, `filter` 35%, `order_by` 55%. Il profilo resta quindi in `qualified: no` e D80 ne rifiuta l'attivazione, che e' il comportamento voluto: la macchina funziona e dice di no. Il primo giro di misura ha corretto due difetti del **prompt**, non del modello: la forma di un'operazione non era mostrata (il modello emetteva `type` e `field`) e nulla vietava di inventare `set_limit` e `set_fields` non richiesti — da 10% a 15%, con `limit` da 40% a 70%. |
 | 2026-07-28 | **Parte 6 completa — esecuzione asincrona.** Tre delibere in §17, tutte con l'opzione conservativa cercata per prima e scartata con argomento: **D94** (il modulo `nli_dispatch` che compone la catena — il nucleo con composizione tardiva avrebbe comprato il grafo rendendolo non verificabile), **D95** (due deroghe a V3 ristrette per file, chiamata e **forma dell'enunciato**, con sei test che le mostrano ammettere e rifiutare), **D96** (l'enunciato in coda transitorio e cifrato, con la coda separata dal turno perche' non abbia un campo in cui una domanda possa finire — C3). Due irrigidimenti dei controlli trovati scrivendo D95: `cursor` da solo (una chiamata in mezzo alla catena evadeva la regola) e l'uid letterale in `Environment(cr, 1, {})`, che e' `sudo` scritto diversamente. Due rilievi: l'impronta dei permessi era **per utente** contro la lettera di D39 (§17.4), e i tipi di `fields_get` non sono i tipi di §8.1 (§17.5). **D27 non e' superata e lo strumento lo dichiara**: 20 utenti conversazionali, ERP P95 da 21,8 a 14,7 ms — cioe' rumore — su uno stack senza `--workers`, senza profilo attivo e con 37 partner. Il numero informativo e' l'accettazione a **P95 205 ms** contro i 50 ms di §6.1. |
+| 2026-07-28 | **Prima qualificazione di un profilo, e cinque delibere in §18.** Fornitore spostato su `ollama` nativo con Metal (il container non ha GPU) e modello di riferimento **`qwen3.5:9b`** — Apache 2.0, denso, 256K, la taglia piu' capace che entra in 16 GB. Tre guasti di configurazione trovati misurando, nessuno dei pesi: finestra servita a 4096 contro 262144 dichiarati, ragionamento acceso che spende il contesto prima di rispondere (**D98**), `presence_penalty 1.5` cotto nel tag che lavora contro una busta ripetitiva. Poi **tre difetti del metro**, non del modello: la direzione dell'ordinamento fissata a `desc` anche su cio' che data non e' (**D99**, che adempie l'obbligazione lasciata aperta da D88), i comparativi inclusivi contati come stretti (**D100**), e soprattutto `ref` come stringa libera nello schema (**D101**): C1 era prosa, ora e' struttura, e con essa le riparazioni passano dal 25% al 5% e `order_by` da 70% a 97,5%. **D97** registra l'adattatore sintetico del banco di carico. **Misura finale su tutte le 444 aperture**: accuratezza complessiva **63,5%** (era 15% su 20 casi), `target` 98,0%, `fields` **87,2%**, `group_by` 93,0%, `order_by` 93,0%, `limit` 93,5%, `measures` e `presentation` 98,0%. **Sette sezioni su otto sopra la soglia di D44**; resta sotto `filter` a **72,5%**, che e' il prossimo bersaglio e ha gia' la sua leva strutturale — i predicati vincolati dal tipo dell'attributo, la stessa mossa di D101 e D102. Il profilo resta quindi `draft` e **D80 continua a rifiutarne l'attivazione**, che e' il comportamento voluto. Riparazioni 3,6%, latenza media 8511 ms contro i ~2,5 s che D5 lascia all'interpretazione: **la latenza non si qualifica su questo portatile**, come D27. Due misure in §18.6 che non sono decisioni ma cambiano cosa si puo' affermare: la **confidenza dichiarata dal modello discrimina** — ma solo dopo aver tolto dal prompt il `0.9` che il modello copiava: 0 esatti su 5 sotto 0,95 contro 23 su 33 sopra, cioe' la proposta dell'Architect e' sostenuta dalla misura corretta e smentita da quella viziata e la **soglia di rumore di D48 e' zero** (sigma 0,0% su cinque esecuzioni identiche), il che rende esatti i confronti sullo stesso campione e lascia intatta l'incerteza campionaria di +/-13 punti su 40 casi. |
 | 2026-07-28 | **D93 deliberata su delega dell'Architect: ⊡ adottata con vincolo** (§16.4.1). Cercata e scartata l'opzione che non aggiunge alcuna regola — tenere il livello della forma base e accettare **2 determinazioni sbagliate su 696** — perche' una determinazione sbagliata di entita' non e' un errore ma un elenco di record veri in risposta a un'altra domanda, cioe' **R1**. La portata e' **piu' larga della proposta**: il confronto e' contro ogni termine **non di entita'**, categorie T5 comprese, perche' l'argomento non e' che gli attributi siano speciali ma che una porzione di frase gia' spiegata non e' evidenza di entita'. **V-D93-1**: il confronto e' sulla stessa porzione, mai globale — una guardia globale perderebbe l'entita' in *«ordini di vendita raggruppati per cliente»*. Quando scatta, Fase A rende `no_candidate` e il turno passa al modello: la regola non puo' produrre un'entita' sbagliata, al massimo rinuncia a una giusta. |
 | 2026-07-28 | **Parte 4 completa.** Risolutore, validazione livelli 3-5, Esecutore con conteggio prima del recupero (**D68**), Presentatore a viste native (**V4**), stato come record (**D19**), contesto societario sul turno (**D40**). Prima interrogazione end-to-end da uno stato scritto a mano: 40 test Odoo, 269 puri. Introdotta nei controlli di D24 la **zona deterministica** — puo' calcolare con le date, non puo' leggere l'orologio — perche' `04` §4.6 distingue l'essere consapevoli del tempo dal leggerlo, e senza la distinzione il Risolutore sarebbe o incapace di aritmetica o non controllato. **La provenienza non e' persistita** finche' D54 non esiste: i frammenti sono parole dell'utente, e scriverli in chiaro per i dodici mesi di D26 e' esattamente cio' che D54 dice non essere sanabile a posteriori. |
 | 2026-07-28 | **Parte 3 completa.** Aggiunta la meta' che richiede Odoo: **L0 per introspezione** dei metadati (D84), **estrazione da `ir.filters`** come proposte T5 inerti in coda L3 (D35, D28), **impronta dei permessi** (D39, D40). Due rilievi dall'esecuzione in **§16.5** e **§16.6**: l'impronta non e' leggibile dalle tabelle delle regole — un utente ordinario non puo' leggere `ir.model.access` e `sudo` e' vietato — e si costruisce sugli **effetti osservabili**, con le regole sui record deliberatamente escluse perche' filtrano record, non riferimenti; e il divieto sui contesti privilegiati e' stato reso *scoped* ai percorsi di interrogazione, come §6.3 dice, perche' altrimenti la proprieta' che protegge non e' testabile. 27 test Odoo, 236 puri. |
@@ -855,3 +863,106 @@ D27 chiede la prova di isolamento: con N utenti conversazionali continui, la lat
 Tre ragioni per cui la prima riga di questa tabella non e' la prova di D27, tutte dichiarate dallo strumento a ogni esecuzione: lo stack di sviluppo gira **senza `--workers`**, quindi il pool prefork la cui saturazione *e'* RA3 non esiste; non c'e' profilo attivo, quindi la fase che domina il tempo — l'interpretazione — non viene esercitata affatto; e la banca dati ha 37 partner. Il degrado misurato dell'ERP e' negativo, cioe' rumore.
 
 **Il numero che invece e' informativo e' il terzo, e non e' buono.** §6.1 fissa l'accettazione a **P95 ≤ 50 ms**; qui e' 205 ms. L'accettazione fa oggi sei viaggi verso la banca dati — tre conteggi per i limiti, due creazioni, la riga di trigger del cron — sotto un server di sviluppo con log a livello debug. E' il primo bersaglio della taratura della parte 7, ed e' registrato qui perche' un numero misurato e brutto vale piu' di un numero asserito e bello.
+
+---
+
+## 18. Le delibere della qualificazione del profilo (28–29 luglio 2026)
+
+Sette decisioni nate misurando un modello vero invece di ragionare su come si sarebbe comportato. Tre di esse correggono un difetto **nostro** che la misura attribuiva al modello, ed e' la ragione per cui questa sezione esiste: la prima misura di un fornitore non misura solo il fornitore.
+
+### 18.1 D97 — Un fornitore finto con latenza vera, e perche' non e' una porta di servizio
+
+La prova di isolamento di **D27** misura l'effetto del prodotto su chi non lo sta usando. Cio' che produce quell'effetto non e' l'accuratezza: e' il fatto che ogni turno tiene occupato un thread del pool e una connessione per un tempo dominato dall'attesa di rete. Senza un fornitore che risponda in quel tempo, la coda si svuota istantaneamente e la prova misura una coda vuota.
+
+**L'opzione conservativa era usare il modello locale, e l'ho scartata con un argomento.** D80 rifiuta l'attivazione di un profilo non qualificato, e la regola e' giusta: un profilo lento dimezza la capacita' del dispatcher e la conseguenza cade sull'ERP. Aggirarla per fare una misura significherebbe rompere il presidio proprio nel momento in cui lo si sta verificando.
+
+**V-D97-1 — Tre proprieta', tutte verificabili leggendo un file.** L'adattatore **non e' un profilo**: non e' in `PROTOCOLS`, non e' costruibile da una riga di `nli.profile`, non passa dalla macchina a stati. Vive dietro `NLI_LOAD_HARNESS` e **fallisce chiuso** senza di essa, come `NLI_ALLOWED_HOSTS` sotto D77. **Non amplia nulla**: la busta e' una costante del file, sempre valida secondo il contratto; non legge dati, non chiama nessuno, non ha credenziali — chi puo' impostare una variabile d'ambiente sul processo Odoo possiede gia' il processo. **Non passa inosservato**: ogni ciclo che lo usa emette un `warning` e ogni turno lo dichiara nel proprio esito. Un banco di prova dimenticato acceso si riconosce dai log, non dal comportamento.
+
+### 18.2 D98 — Un modello che ragiona non e' un modello piu' lento
+
+`qwen3.5:9b`, prima misura, prompt reale con il catalogo di `sale.order`:
+
+| | prompt | completamento | contenuto |
+|---|---|---|---|
+| Ragionamento acceso (default del tag) | 1699 | 2397 | **vuoto** |
+| `reasoning_effort: "none"` | 1701 | 179 | busta valida, 20,6 s |
+
+`1699 + 2397 = 4096`, cioe' la finestra esatta. **Il modello ha speso l'intero contesto dentro il pensiero e non e' mai arrivato a rispondere.** Non e' latenza: e' assenza di risposta, e il turno sarebbe scaduto sul `timeout` di 60 s senza che nessuna metrica dicesse perche'.
+
+**Cercata prima l'opzione che non tocca il contratto, e c'era.** Le alternative scartate: l'API nativa di ollama (`think: false`) funziona ma introdurrebbe un secondo protocollo, e **D75** chiude l'insieme; `chat_template_kwargs` e' stato **ignorato** dal server (misurato: 95,9 s e 7603 caratteri di pensiero); cuocere il parametro in un modello derivato sposterebbe una dichiarazione rilevante per la qualificazione in un artefatto fuori dal repository. `reasoning_effort` e' un campo **standard del protocollo OpenAI**: il profilo lo dichiara, e la chiave viaggia **solo se nominata**, perche' un fornitore che non la conosce risponde 400. E' la stessa forma di D78.
+
+**Un secondo difetto trovato leggendo il Modelfile del tag**, e registrato perche' vale per ogni profilo locale: `PARAMETER presence_penalty 1.5`. La penalita' scoraggia i gettoni gia' usati, e la busta ripete `"ref"`, `"provenance"`, `"op"` a ogni operazione. E' un parametro che lavora **contro** il compito, e l'adattatore ne sovrascrive uno solo, `temperature`.
+
+### 18.3 D99 — Un'obbligazione che D88 aveva assegnato e nessuno aveva adempiuto
+
+**D88** rifiuta una direzione assente invece di metterla a `asc`, perche' crescente su una data trasforma *«gli ultimi cinque ordini»* nei cinque piu' vecchi — una risposta che sembra giusta ed e' esattamente rovesciata. E assegna la derivazione a chi conosce il tipo, il Risolutore. Il Risolutore legge `entry["direction"]` e non ne ha mai scritta una: **la direzione la dava il modello**, cioe' proprio cio' che P4 vieta e che §5.9 argomenta per la vista.
+
+Il corpus, dal canto suo, fissava `desc` e `latest_implies_desc_by_date` su **ogni** attributo, `stato` e `team` compresi — una regola che nel nome dice *«per data»*, applicata a cio' che data non e'. Erano due delle sei perdite di `order_by` nella misura del 28/07.
+
+**Il vocabolario chiuso conteneva gia' `text_attribute_implies_asc`**, aggiunto da D88 e mai emesso da nessuno. La verifica del contratto ha respinto al primo tentativo l'identificativo che avevo inventato — ed e' la dimostrazione che l'insieme chiuso funziona come presidio e non come formalita'.
+
+Due vincoli di forma, entrambi imposti dal contratto e non scelti: l'operazione **non porta** `rule`, perche' §15.3 respinge le chiavi ignote in un'operazione e un'operazione e' una richiesta, non una spiegazione; lo stato **deve** portarla, perche' §10.2 vuole che un'inferenza dichiari cio' che l'ha prodotta, altrimenti l'utente non puo' contraddirla. L'Applicatore la deriva quindi dalla direzione inferita: stessa informazione, detta una volta sola.
+
+### 18.4 D100 — Il metro premiava la lettura sbagliata
+
+Il lessico aveva un gruppo per verso: `confronto_sopra` conteneva *«sopra i»*, *«oltre»*, *«piu' di»* insieme ad *«almeno»* e *«da … in su»*, tutti mappati a `greater_than`. Ma *«almeno 100»* e *«da 100 in su»* **comprendono** il 100, e i predicati `greater_or_equal` e `less_or_equal` erano gia' nel vocabolario numerico.
+
+Misurato su F00648, *«budget da 100 in su»*: il modello ha risposto `greater_or_equal` ed e' stato contato **sbagliato**. Quattro gruppi ora, con scelta congiunta di frase e predicato, perche' nessuna combinazione possa dissociarli.
+
+### 18.5 D101 — C1 smette di essere una frase nel prompt
+
+`prompt.py` dichiara *«il modello sceglie, non inventa mai»*. Fino a questa decisione lo dichiarava soltanto: nello schema `ref` era `{"type":"string","minLength":1}`, quindi la generazione vincolata **non poteva** rifiutare un riferimento inventato, e i livelli 1–2 nemmeno — conoscono la forma di un riferimento, non il catalogo. Su quaranta casi il modello ha emesso `oppurtunita.fase`, `oppurtunaita.cliente` e un `importo_totale` senza entita': tutti passati, tutti finiti nello stato.
+
+Dato il catalogo del turno, i riferimenti ammessi sono un insieme chiuso. Un riferimento fuori da quell'insieme **smette di essere esprimibile** invece di essere rimproverato: e' il criterio **C3**, quello che il progetto preferisce a ogni regola da ricordare.
+
+Effetti misurati sugli stessi 40 casi, una variabile per volta:
+
+| | prima | dopo |
+|---|---|---|
+| Riparazioni (D15) | 25% | **5%** |
+| Rese (`out_of_scope` su frasi interpretabili) | 2 | **0** |
+| `order_by` | 70% | **97,5%** |
+| `limit` | 80% | **95%** |
+| Latenza media | 11 049 ms | **9 472 ms** |
+
+La latenza **scende** malgrado lo schema piu' grande (da 13 470 a 15 126 caratteri con 7 riferimenti), perche' il modello smette di sbagliare e di riparare.
+
+
+**D102 — e cio' che D101 aveva lasciato aperto.** Chiuso l'insieme, restava piatto: il catalogo elenca anche **le altre entita'**, perche' la Fase A ne ha bisogno per risolvere il soggetto, e un insieme unico non distingue una colonna da un'entita'. Misurato: `set_fields` con `["fatture_cliente", ...]` due volte su quaranta, cioe' un'entita' chiesta come colonna — ammessa dallo schema, priva di senso nel contratto.
+
+I riferimenti hanno quindi **tre generi**, e ogni operazione ammette solo il proprio: `set_target` prende un'entita'; `set_fields`, `add_group`, `add_order`, `add_measure` prendono un attributo; una condizione prende un attributo **o una categoria** (T5, D87). Scritto come dato — una tabella verbo → genere — e non come sequenza di rami, perche' la decisione e' la tabella.
+
+Due direzioni, entrambe con un test: un'entita' non e' una colonna, e **un attributo non e' il bersaglio** — un'interrogazione il cui soggetto e' una colonna ha perso il soggetto. E una terza proprieta' trovata scrivendo la tabella invece che misurando: **una categoria non e' mai una colonna**, perche' dietro non c'e' un campo da mostrare.
+
+L'entita' in corso viaggia insieme alle altre fra quelle ammesse: `set_target` deve poter cambiare soggetto, e un catalogo che ammettesse solo l'entita' corrente renderebbe il cambio inesprimibile.
+
+Tre limiti dichiarati. L'identificativo di condizione (`c1`) resta libero: non e' un riferimento, e chiuderlo renderebbe `remove_condition` inesprimibile. Senza `refs` lo schema e' quello generale — un file su disco non puo' portare l'enumerazione di un turno, e `emit_schema.py` continua a scrivere quello. E un profilo **senza** generazione vincolata non ne beneficia affatto: per lui restano i livelli 3–5, che e' esattamente la degradazione prevista da `10` §5.1.
+
+### 18.6 Due misure che non sono decisioni, e vanno registrate lo stesso
+
+**La confidenza dichiarata dal modello discrimina, ma solo dopo che abbiamo smesso di dettargliela.** La prima misura diceva il contrario: su 40 casi `qwen3.5:9b` ha dichiarato `0.9` **quaranta volte su quaranta**, con 22 stati esatti e 18 sbagliati — nessuna soglia separa alcunche'. La causa era nostra: la forma della busta nel prompt conteneva `"confidence":0.9` come esempio, e il modello **copiava la costante**. Sostituita con un segnaposto, la stessa misura sugli stessi 40 casi:
+
+| Fascia | Casi | Esatti |
+|---|---|---|
+| `[0,95 – 1,00]` | 33 | 23 = **70%** |
+| `[0,90 – 0,95)` | 5 | 0 = **0%** |
+
+Zero su cinque nella fascia bassa. Il numero porta informazione, e la proposta di un cancello sulla confidenza — avanzata dall'Architect e respinta dalla prima misura — **e' sostenuta dalla seconda**. Con due riserve che ne governano l'uso: cinque casi sono pochi per fissare una soglia, e il 70% nella fascia alta dice che `>= 0,95` **non garantisce** la correttezza. Un cancello li' trasformerebbe in richiesta di riformulazione circa il 12% dei turni, evitando altrettante risposte sbagliate e lasciandone passare comunque delle errate. La cautela di §10.5 — *«un segnale di ordinamento, non una probabilita'»* — resta esatta: e' ordinabile, non calibrata. La taratura e' il lavoro di **RC6**, e va fatta sulle 444 aperture prima che qualunque cancello di prodotto vi poggi sopra.
+
+**La lezione di metodo, che vale piu' del risultato:** la prima misura non misurava il modello, misurava un nostro difetto. E' la terza volta in questa sezione — dopo D99 e D100 — e giustifica una regola: *prima di attribuire un esito al fornitore, verificare che non sia stato il prompt a dettarlo*.
+
+**La soglia di rumore di D48 vale zero.** Cinque esecuzioni identiche sugli stessi 40 casi, temperatura 0 e generazione vincolata: `sigma = 0,0%` su **tutte** le sezioni, complessiva compresa. La stabilita' K=5 di D48 e' quindi al **100%**, non al 98%, e un confronto fra due versioni del prompt sullo stesso campione e' esatto: una differenza di un caso e' un risultato, non rumore.
+
+Il limite di questa misura va detto con la stessa precisione, perche' e' quello che si confonde: `sigma = 0` misura la **ripetibilita'**, non la rappresentativita'. Quaranta casi su 444 aperture portano un'incertezza campionaria di circa **±13 punti** al 95%, e **nessuna soglia di D44 puo' essere dichiarata raggiunta su quaranta casi**.
+
+### 18.7 D103 — Il predicato segue il tipo, e la tabella esisteva gia'
+
+`03` §8.1 accoppia da sempre ogni tipo con i confronti che su di esso significano qualcosa, e il livello 3 la legge. Lo **schema** no: la condizione ammetteva qualunque predicato su qualunque riferimento, quindi un profilo con generazione vincolata poteva scrivere `less_than` su un nome o `contains` su un importo. Il rifiuto arrivava un livello dopo — come riparazione quando la coppia era impossibile, come **risposta sbagliata** quando era soltanto errata.
+
+Con il catalogo la condizione diventa un ramo per tipo: i riferimenti di quel tipo, e solo i predicati che §8.1 gli concede. *«clienti sopra i 1000»* smette di essere scrivibile — un cliente non sta su una scala. E' la mossa di D101 e D102 applicata a cio' che si dice **a proposito** del riferimento invece che al riferimento.
+
+Un attributo di tipo non dichiarato conserva l'insieme intero: indovinare quali confronti convengano a un tipo ignoto significherebbe inventare la tabella che §8.1 possiede.
+
+**Guadagno misurato, e piu' piccolo del previsto**: `filter` da 72,5% a 73,6% su 444 aperture, cioe' cinque casi; riparazioni dal 3,6% al 2,9%. La previsione era «la stessa mossa di D101 e D102», che ne avevano spostati venti. L'errore di previsione ha una spiegazione utile: D101 e D102 rimuovevano l'**impossibile** — un riferimento inesistente, un'entita' chiesta come colonna — e quella era la classe dominante. I fallimenti residui di `filter` sono predicati **possibili e sbagliati**, che nessuna grammatica distingue.
+
+**Un difetto di misura chiuso di conseguenza.** §17.5 aveva rilevato che i tipi di `fields_get` non sono i tipi di §8.1, e `build()` accetta per questo un `type_map`; lo strumento di misura del corpus non lo passava, quindi esercitava un catalogo con i tipi di Odoo (`many2one`, `selection`) che nessuna installazione produce. Finche' i tipi servivano solo a scrivere il catalogo era cosmetico; con D103, che ne deriva i predicati, diventa sostanziale. Ora `misura_accuratezza.py` passa `CONTRACT_TYPE_BY_ODOO_TYPE`, la stessa mappa dell'introspezione.
