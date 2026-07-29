@@ -28,6 +28,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 
 from odoo import api, fields, models
+from odoo.addons.nli_engine.adapters import synthetic
 from odoo.tools import config
 
 from ..queue import breaker as breaker_module
@@ -221,7 +222,27 @@ class NliDispatcher(models.AbstractModel):
         Passed as a factory rather than as an adapter because the profile is read
         with the user's rights on the worker's cursor: a shared object built here
         would carry the cron's environment into a thread that must not have it.
+
+        **The one branch, and why it is here** (D97). The isolation proof of D27
+        needs turns that occupy a pool thread and a database connection for the time
+        a provider takes — without that, the queue drains instantly and the
+        measurement is of nothing. The local model would give a real latency, but
+        D80 refuses to activate a profile that has not been qualified, and that rule
+        is right. So the bench does not go through a profile at all: it is an
+        environment variable, absent by default, that never widens anything and
+        announces itself in the log every cycle.
         """
+        if synthetic.enabled():
+            _logger.warning(
+                "AIDA: %s is set — turns are answered by the load bench, not by a "
+                "model (D97). Unset it to return to the active profile.",
+                synthetic.VARIABLE)
+
+            def bench(env):
+                return synthetic.SyntheticAdapter.from_environment()
+
+            return bench
+
         def factory(env):
             return env["nli.profile"].active_profile().adapter()
 

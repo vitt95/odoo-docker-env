@@ -12,9 +12,10 @@ properties verifiable by reading one directory.
 | `http.py` | the only socket in the product: allowed hosts from the environment (D77), secret from the environment (D76) |
 | `openai_compatible.py` | the chat protocol both a local Ollama and a hosted provider speak (D75) |
 | `recorded.py` | answers from a recording: the Interpreter tested without a model, and the regression corpus replayed without its variance (D48) |
+| `synthetic.py` | a fake provider with a real latency, for the load bench of D27 only. Deliberately **not** in `PROTOCOLS`: it is not a profile and does not pass through D80 (D97) |
 """
 
-from . import base, http, openai_compatible, recorded
+from . import base, http, openai_compatible, recorded, synthetic
 
 #: Protocols from a **closed set** (D75). Adding one is a change to the code, not a
 #: field somebody types: an endpoint speaking an unknown protocol is an endpoint

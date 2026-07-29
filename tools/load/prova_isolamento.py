@@ -184,6 +184,78 @@ def provision_users(observer: Session, count: int) -> list[str]:
     return logins
 
 
+
+class QueueWatcher:
+    """Campiona la profondita' della coda mentre il carico gira.
+
+    §7.3: *«una coda che non torna a zero fra un picco e l'altro e' un sistema
+    sottodimensionato»*. E' il primo indicatore, quello che anticipa tutti gli altri,
+    e senza campionarlo durante la corsa lo si puo' solo dedurre dalla fine.
+    """
+
+    def __init__(self, session: Session, interval: float = 0.5):
+        self.session = session
+        self.interval = interval
+        self.stop = threading.Event()
+        self.depths: list[int] = []
+
+    def _loop(self):
+        while not self.stop.is_set():
+            try:
+                self.depths.append(self.session.call_kw(
+                    "nli.queue.item", "search_count",
+                    [[["state", "in", ["pending", "running"]]]]))
+            except Exception:  # noqa: BLE001
+                pass
+            self.stop.wait(self.interval)
+
+    def start(self):
+        self.thread = threading.Thread(target=self._loop, daemon=True)
+        self.thread.start()
+        return self
+
+
+BUSINESS_CRON_PARAMETER = "nli.load.business_cron"
+BUSINESS_CRON_XMLID_NAME = "nli_load_business_cron"
+
+
+def install_business_cron(observer: Session) -> int:
+    """Un cron del cliente, per la prova che §7.2 dice che verra' dimenticata.
+
+    *«Un dispatcher che monopolizza i processi cron non fa fallire il prodotto: fa
+    fallire le fatture elettroniche del cliente, e la causa non sara' evidente.»*
+    Questo cron scrive un istante ogni minuto; il ritardo con cui lo fa **durante il
+    carico** e' l'unica misura di V-B che esista.
+    """
+    existing = observer.call_kw("ir.cron", "search",
+                                [[["name", "=", "AIDA load: business cron"]]])
+    values = {
+        "name": "AIDA load: business cron",
+        "model_id": observer.call_kw("ir.model", "search",
+                                     [[["model", "=", "ir.config_parameter"]]])[0],
+        "state": "code",
+        "code": ("model.set_param('%s', str(__import__('time').time()))"
+                 % BUSINESS_CRON_PARAMETER),
+        "interval_number": 1,
+        "interval_type": "minutes",
+        "active": True,
+        "nextcall": "2020-01-01 00:00:00",
+    }
+    if existing:
+        observer.call_kw("ir.cron", "write", [existing, values])
+        return existing[0]
+    return observer.call_kw("ir.cron", "create", [values])
+
+
+def business_cron_heartbeat(observer: Session) -> float | None:
+    raw = observer.call_kw("ir.config_parameter", "get_param",
+                           [BUSINESS_CRON_PARAMETER, ""])
+    try:
+        return float(raw)
+    except (TypeError, ValueError):
+        return None
+
+
 def environment_lines() -> list[str]:
     """La modalita' di esecuzione, letta dalla configurazione dello stack.
 
@@ -249,6 +321,9 @@ def main() -> int:
           + ("   <- l'interpretazione non viene esercitata" if not profiles else ""))
     print()
 
+    cron_id = install_business_cron(observer)
+    heartbeat_before = business_cron_heartbeat(observer)
+
     baseline = [erp_probe(observer) for _ in range(40)]
 
     logins = provision_users(observer, arguments.utenti)
@@ -258,6 +333,7 @@ def main() -> int:
         for login in logins
     ]
     load = Load(sessions, arguments.frase, pause=arguments.pausa)
+    watcher = QueueWatcher(observer).start()
     threads = load.run(arguments.secondi)
 
     time.sleep(1.0)  # il carico entra a regime prima di misurare l'ERP
@@ -268,9 +344,23 @@ def main() -> int:
     load.stop.set()
     for thread in threads:
         thread.join(timeout=30)
+    watcher.stop.set()
 
+    # La coda va osservata mentre si svuota, non a caldo: il criterio di §7.3 e' che
+    # **torni a zero**, e leggerla subito dopo il carico misura solo il momento in
+    # cui il carico e' finito.
+    drained_at = None
+    deadline = time.monotonic() + 60
+    while time.monotonic() < deadline:
+        depth = observer.call_kw("nli.queue.item", "search_count",
+                                 [[["state", "in", ["pending", "running"]]]])
+        if depth == 0:
+            drained_at = time.monotonic()
+            break
+        time.sleep(1.0)
     depth = observer.call_kw("nli.queue.item", "search_count",
-                            [[["state", "=", "pending"]]])
+                             [[["state", "in", ["pending", "running"]]]])
+    heartbeat_after = business_cron_heartbeat(observer)
 
     print("  latenza dell'utente ordinario")
     print(report("riferimento", baseline))
@@ -282,7 +372,21 @@ def main() -> int:
         print("    rifiuti: " + ", ".join(
             f"{reason} x{count}" for reason, count in sorted(load.refusals.items())))
     print()
-    print(f"  coda residua (pending)   {depth}")
+    print("  coda")
+    print(f"    profondita' massima    {max(watcher.depths or [0])}")
+    print(f"    campioni               {len(watcher.depths)}")
+    print(f"    residua a fine corsa   {depth}"
+          + ("   <- non torna a zero: sottodimensionato (§7.3)" if depth else ""))
+    print()
+
+    print("  cron di business (V-B, RE1 — la prova che si dimentica)")
+    if heartbeat_after is None:
+        print("    non eseguito: il worker cron non lo ha mai raggiunto")
+    else:
+        age = time.time() - heartbeat_after
+        moved = heartbeat_before is None or heartbeat_after > heartbeat_before
+        print(f"    ultima esecuzione      {age:.1f} s fa")
+        print(f"    eseguito durante il carico  {'si' if moved else 'NO — starvation'}")
     print()
 
     base_p95 = percentile(baseline, 0.95)
@@ -290,11 +394,79 @@ def main() -> int:
     if base_p95 > 0:
         print(f"  degrado P95 dell'ERP     {(load_p95 / base_p95 - 1) * 100:+.1f}%")
     print()
-    print("  Questa esecuzione NON e' la prova di D27. La fase di interpretazione")
-    print("  e' esercitata solo se esiste un profilo attivo, e l'installazione")
-    print("  dev di questo repository gira senza pool prefork: la saturazione dei")
-    print("  worker, che e' il meccanismo di RA3, non e' riproducibile qui.")
+    print(verdict(observer, partners, base_p95, load_p95))
     return 0
+
+
+#: Quanto un turno deve durare perche' si possa dire che l'interpretazione e' stata
+#: esercitata. `04` §10.1 dichiara l'intervallo 0,6–2,5 s; sotto tre decimi di
+#: secondo la coda si sta svuotando senza che nessuno abbia interpretato niente.
+SERVICE_FLOOR = 0.3
+
+#: Sotto questo volume la sonda dell'utente ordinario non fa lavoro misurabile.
+VOLUME_FLOOR = 10_000
+
+
+def mean_service_seconds(observer: Session) -> float:
+    """Quanto e' durato in media un turno servito, dalle righe di coda stesse."""
+    rows = observer.call_kw("nli.queue.item", "search_read", [
+        [["finished_at", "!=", False], ["started_at", "!=", False]],
+        ["started_at", "finished_at"]], {"limit": 200, "order": "id desc"})
+    if not rows:
+        return 0.0
+    from datetime import datetime
+
+    def parse(value):
+        return datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
+
+    spans = [(parse(row["finished_at"]) - parse(row["started_at"])).total_seconds()
+             for row in rows]
+    return statistics.fmean(spans)
+
+
+def verdict(observer: Session, partners: int, base_p95: float,
+            load_p95: float) -> str:
+    """Le tre condizioni di validita', verificate anziche' dichiarate a memoria.
+
+    Uno strumento che stampasse sempre lo stesso avvertimento sarebbe rumore, e uno
+    che non lo stampasse mai sarebbe peggio. Le condizioni si osservano: la modalita'
+    di esecuzione dalla configurazione dello stack, l'interpretazione dalla durata
+    reale dei turni, il volume dal conteggio. Cio' che nessuna osservazione puo'
+    correggere — generatore e server sulla stessa macchina — resta scritto sempre.
+    """
+    flags = " ".join(environment_lines())
+    prefork = "--workers=" in flags and "--workers=0" not in flags
+    service = mean_service_seconds(observer)
+    interpreted = service >= SERVICE_FLOOR
+    volume = partners >= VOLUME_FLOOR
+
+    lines = ["  condizioni di validita' della prova (05 §7.1)"]
+    for met, text in (
+        (prefork, "pool prefork attivo — senza, la saturazione dei worker che *e'* "
+                  "RA3 non esiste"),
+        (interpreted, f"interpretazione esercitata — turno medio {service:.2f} s "
+                      f"(soglia {SERVICE_FLOOR} s)"),
+        (volume, f"volume dei dati — {partners} partner (soglia {VOLUME_FLOOR})"),
+    ):
+        lines.append(f"    [{'x' if met else ' '}] {text}")
+    lines.append("    [ ] generatore di carico su una macchina distinta dal server "
+                 "— non ottenibile qui, e contende la stessa CPU")
+    lines.append("")
+
+    if not (prefork and interpreted and volume):
+        lines.append("  Mancando una condizione, questa esecuzione NON dice nulla su D27.")
+        return "\n".join(lines)
+
+    degraded = base_p95 > 0 and (load_p95 / base_p95 - 1) > 0.10
+    if degraded:
+        lines.append("  Il criterio di D27 NON e' soddisfatto: la latenza dell'utente")
+        lines.append("  ordinario peggiora oltre il margine di misura.")
+    else:
+        lines.append("  Il criterio di D27 e' soddisfatto **in queste condizioni**, che")
+        lines.append("  non sono un'installazione reale: generatore e server condividono")
+        lines.append("  la CPU, i dati sono sintetici e il fornitore e' simulato (D97).")
+        lines.append("  E' un risultato che vale come regressione, non come collaudo.")
+    return "\n".join(lines)
 
 
 if __name__ == "__main__":

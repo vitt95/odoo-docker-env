@@ -46,6 +46,7 @@ Usage: ./manage.sh <command> [args]
   ${C_BOLD}test${C_RESET} <db> [tags]       Boundary checks, then Odoo tests on <db>
   ${C_BOLD}update${C_RESET}                 Pull/rebuild images and recreate containers
   ${C_BOLD}upgrade${C_RESET} <db> [mods]    Upgrade modules (default: all) on <db>
+  ${C_BOLD}loadtest${C_RESET} <db> [n] [s]   Isolation proof of D27 on prefork workers
   ${C_BOLD}backup${C_RESET}                 Dump all databases + filestore to ./backups
   ${C_BOLD}restore${C_RESET} <timestamp>    Restore a backup (DESTRUCTIVE)
   ${C_BOLD}cleanup${C_RESET} [--all]        Remove containers/networks (--all also volumes)
@@ -148,6 +149,33 @@ cmd_upgrade() {
   ok "Upgrade finished."
 }
 
+# Load bench for the isolation proof of D27 (05 §7.1).
+#
+# Brings the stack up on the prefork override — the only configuration in which
+# the proof means anything, because RA3 *is* the saturation of the worker pool
+# and the dev stack has no pool. Seeds a representative volume, then runs the
+# harness. Returning to dev is `./manage.sh start`.
+cmd_loadtest() {
+  local db="${1:?Usage: ./manage.sh loadtest <db> [users] [seconds]}"
+  local users="${2:-20}"
+  local seconds="${3:-30}"
+
+  log "Bringing the stack up with prefork workers (docker-compose.load.yml)..."
+  docker compose --project-name odoo --env-file "$ENV_FILE" \
+    -f "${PROJECT_ROOT}/docker-compose.yml" \
+    -f "${PROJECT_ROOT}/docker-compose.load.yml" up -d
+  wait_healthy odoo || true
+
+  log "Seeding a representative volume on '${db}'..."
+  python3 "${PROJECT_ROOT}/tools/load/popola.py" --db "$db"
+
+  log "Running the isolation harness (${users} users, ${seconds}s)..."
+  python3 "${PROJECT_ROOT}/tools/load/prova_isolamento.py" \
+    --db "$db" --utenti "$users" --secondi "$seconds"
+
+  warn "The stack is still on the load override. './manage.sh start' returns to ${MODE}."
+}
+
 cmd_backup() {
   local ts dir
   ts="$(date +%Y%m%d_%H%M%S)"
@@ -206,6 +234,7 @@ case "$cmd" in
   test)              cmd_test "$@" ;;
   update)            cmd_update "$@" ;;
   upgrade)           cmd_upgrade "$@" ;;
+  loadtest)          cmd_loadtest "$@" ;;
   backup)            cmd_backup "$@" ;;
   restore)           cmd_restore "$@" ;;
   cleanup)           cmd_cleanup "$@" ;;

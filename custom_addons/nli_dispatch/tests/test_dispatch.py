@@ -22,6 +22,8 @@ from odoo import fields
 from odoo.exceptions import AccessError
 from odoo.tests.common import TransactionCase, new_test_user, tagged
 
+from odoo.addons.nli_engine.adapters import synthetic
+from odoo.addons.nli_engine.adapters.base import AdapterError
 from odoo.addons.nli_engine.adapters.recorded import RecordedAdapter
 
 from .. import secrecy
@@ -394,3 +396,43 @@ class TestTheChain(DispatchCase):
         item.complete()
         self.assertEqual(item.state, DONE)
         self.assertFalse(item.utterance_sealed)
+
+
+@tagged("post_install", "-at_install", "nli_dispatch")
+class TestTheLoadBench(DispatchCase):
+    """D97 — il banco di prova esiste solo se qualcuno lo accende, e si vede."""
+
+    def set_bench(self, value):
+        if value is None:
+            os.environ.pop(synthetic.VARIABLE, None)
+        else:
+            os.environ[synthetic.VARIABLE] = value
+        self.addCleanup(os.environ.pop, synthetic.VARIABLE, None)
+
+    def test_it_is_off_unless_the_variable_is_set(self):
+        self.set_bench(None)
+        self.assertFalse(synthetic.enabled())
+        with self.assertRaises(AdapterError):
+            synthetic.SyntheticAdapter.from_environment()
+
+    def test_off_the_dispatcher_asks_the_active_profile(self):
+        """Il ramo non deve poter deviare l'esecuzione ordinaria."""
+        self.set_bench(None)
+        factory = self.env["nli.dispatcher"]._adapter_factory()
+        with self.assertRaises(Exception):
+            # Nessun profilo attivo su questa base: l'errore che arriva e' quello
+            # del profilo mancante, non un adattatore sintetico silenzioso.
+            factory(self.env)
+
+    def test_on_it_answers_after_the_declared_latency(self):
+        self.set_bench("0.05")
+        adapter = self.env["nli.dispatcher"]._adapter_factory()(self.env)
+        self.assertIsInstance(adapter, synthetic.SyntheticAdapter)
+        self.assertEqual(adapter.latency, 0.05)
+
+    def test_the_failure_mode_of_the_bench_is_a_provider_failure(self):
+        """La prova §7.2 sul fornitore irraggiungibile ha bisogno di questo."""
+        self.set_bench("0:fail")
+        adapter = synthetic.SyntheticAdapter.from_environment()
+        with self.assertRaises(AdapterError):
+            adapter.complete(None)
