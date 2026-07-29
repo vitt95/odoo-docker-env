@@ -59,12 +59,15 @@ install_odoo_alias()
 from misura_catalogo import (  # noqa: E402
     ENTITA_DEL_CORPUS, costruisci_dizionario, descrittori, _tutto_leggibile,
 )
-from nli_core.application import applicator  # noqa: E402
+from nli_core.application import applicator, completion  # noqa: E402
 from nli_core.contract import canonical, state as state_module  # noqa: E402
 from nli_engine.adapters.base import Capabilities  # noqa: E402
 from nli_engine.adapters.openai_compatible import OpenAICompatibleAdapter  # noqa: E402
 from nli_engine.interpreter import interpret  # noqa: E402
 from nli_semantics.catalogue import build as build_module  # noqa: E402
+from nli_semantics.introspection.runtime import (  # noqa: E402
+    CONTRACT_TYPE_BY_ODOO_TYPE,
+)
 from riferimenti import ENTITA, riferimento_entita  # noqa: E402
 
 CORPUS = QUI / "corpus_fondativo.jsonl"
@@ -100,6 +103,12 @@ def _catalogo(dizionario, modello: str):
         attributes=descrittori(modello),
         readable_refs=_tutto_leggibile(modello),
         context_window=32_000, entity_refs=ENTITA_DEL_CORPUS,
+        # `17.5` del registro l'aveva rilevato e nessuno l'aveva applicato qui: senza
+        # la traduzione, il catalogo del corpus porta i tipi di Odoo (`many2one`,
+        # `selection`) invece di quelli di §8.1, e la misura eserciterebbe un catalogo
+        # che l'installazione vera non produce. Con **D103** la differenza smette di
+        # essere cosmetica: i predicati ammessi si derivano dal tipo.
+        type_map=CONTRACT_TYPE_BY_ODOO_TYPE,
     )
 
 
@@ -145,10 +154,15 @@ def misura(casi: list[dict], dizionario, adapter, *, verboso: bool) -> Accuratez
             continue
 
         try:
-            prodotto = applicator.apply(
-                state_module.empty_state(),
+            # D99: la direzione che l'utente non ha nominato la deriva il sistema dal
+            # tipo dell'attributo, non il modello (P4). Senza questo passo la misura
+            # confronterebbe uno stato *prima* del completamento con un atteso che lo
+            # ha gia' subito, e penalizzerebbe il modello per una nostra omissione.
+            operazioni = completion.fill_inferred_directions(
                 interpretazione.envelope["operations"],
-            ).state
+                {attributo.ref: attributo.type for attributo in catalogo.attributes})
+            prodotto = applicator.apply(
+                state_module.empty_state(), operazioni).state
         except applicator.ApplicationError as errore:
             esito.errori.append(f"{caso['id']}: {errore}")
             continue
@@ -205,6 +219,15 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--finestra", type=int, default=32_000)
     parser.add_argument("--vincolata", action="store_true",
                         help="il profilo dichiara la generazione vincolata (D78)")
+    parser.add_argument("--ragionamento", default=None,
+                        choices=("none", "minimal", "low", "medium", "high"),
+                        help="sforzo di ragionamento dichiarato (D98). Assente, la "
+                             "chiave non viaggia: un fornitore che non la conosce "
+                             "risponde 400")
+    parser.add_argument("--attesa", type=int, default=60,
+                        help="secondi concessi a una risposta. Il valore d'esercizio "
+                             "e' 60 (D5); su un portatile un modello locale lo supera "
+                             "e la misura vuole dirlo, non fallire")
     parser.add_argument("--verboso", action="store_true")
     argomenti = parser.parse_args(argv)
 
@@ -216,7 +239,9 @@ def main(argv: list[str]) -> int:
     adapter = OpenAICompatibleAdapter(
         endpoint=argomenti.endpoint, model=argomenti.profilo,
         capabilities=Capabilities(context_window=argomenti.finestra,
-                                  constrained_generation=argomenti.vincolata),
+                                  constrained_generation=argomenti.vincolata,
+                                  reasoning_effort=argomenti.ragionamento),
+        timeout=argomenti.attesa,
     )
 
     print(f"interrogo {argomenti.profilo} su {len(campione)} casi di apertura...")

@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import json
 
+from odoo.addons.nli_core.contract import schema as schema_module
 from odoo.addons.nli_core.contract import vocabulary
 
 from .adapters.base import Request
@@ -34,7 +35,7 @@ after the closing brace.
 
 ENVELOPE SHAPE — every key spelled exactly as shown:
 
-{"dsl_version":"1.0","outcome":"operations","confidence":0.9,"operations":[
+{"dsl_version":"1.0","outcome":"operations","confidence":<0 to 1, your own>,"operations":[
   {"op":"set_target","ref":"<entity ref>","provenance":{"text":"<user words>"}},
   {"op":"add_condition","combine":"all","condition":{
       "ref":"<attribute ref>","predicate":"is_one_of",
@@ -44,8 +45,7 @@ ENVELOPE SHAPE — every key spelled exactly as shown:
    "provenance":{"text":"<user words>"}},
   {"op":"add_group","ref":"<attribute ref>","provenance":{"text":"<user words>"}},
   {"op":"set_fields","refs":["<attribute ref>"],"provenance":{"text":"<user words>"}},
-  {"op":"add_order","ref":"<attribute ref>","direction":"desc",
-   "provenance":{"text":"<user words>"}},
+  {"op":"add_order","ref":"<attribute ref>","provenance":{"text":"<user words>"}},
   {"op":"set_limit","value":5,"provenance":{"text":"<user words>"}}]}
 
 Rules, all of them absolute:
@@ -60,20 +60,63 @@ Rules, all of them absolute:
   produced it;
 - never resolve a date. "this month" is
   {"kind":"temporal","expression":"current_month"};
+- never choose a direction for an ordering. "ordinati per data" names no direction:
+  add_order carries only the ref, and the system derives the direction from the type
+  of the attribute. Add "direction" ONLY when the user said which way: "dal piu'
+  recente" is "desc", "crescente" is "asc";
+- a term in the catalogue may be several words, and the longest match wins. "fatture
+  attive" is the name of an entity, not "fatture" plus a condition about being
+  active; "in attesa di fattura" is one category, not two;
+- when the sentence names two categories, EACH one is its own add_condition:
+  "in attesa di spedizione da confermare" is two conditions, not one;
 - never decide a tolerance. "about 100000" is
   {"kind":"number","value":100000,"resolver":"approx_relative"};
 - never choose the view unless the user asked for one;
 - EMIT ONLY WHAT THE WORDS REQUIRE. Do not add set_fields, set_limit, add_order or
-  set_view that the user did not ask for. No number in the sentence means no
-  set_limit; no list of columns means no set_fields. Silence is not a request;
+  set_view that the user did not ask for. Silence is not a request;
+- COLUMNS. set_fields answers ONE thing: an explicit list of attribute terms after
+  "con". No such list, NO set_fields — the system already has its default columns and
+  you never choose them. "vediamo ordini con totale oltre 5000" has no list: the words
+  after "con" are an attribute, a comparison and a number, so that is a condition and
+  there are no columns;
+- the list runs to the end of the sentence and every term in it is a column, in the
+  order named. Abbreviations count: "con cl., stato" is two columns. Never turn the
+  first term of the list into a grouping;
+- a term in the list stays a column EVEN IF the same attribute is already the
+  ordering or the grouping. "ordinati per intestatario con anagrafica, situazione" is
+  add_order on the customer AND set_fields with [customer, state]. Repeat the ref, do
+  not deduplicate;
+- "ordinati per X con A, B" orders by X alone. What follows "con" is never more
+  ordering;
+- "i primi 20" is set_limit with value 20. No number in the sentence, no set_limit;
 - a reference listed under "categories" in the catalogue is a named condition: use it
   as {"op":"add_condition","condition":{"ref":"<category ref>","predicate":"is_category"}}
   with no value. Never as an enum, never as a field;
+- out_of_scope is about the OPERATIONS, never about a word. Answer it only when the
+  request needs something these operations cannot do — a forecast, a write, a
+  computation over time. A word you do not recognise is not out of scope: it is
+  misspelled, abbreviated, foreign or trade jargon, and the catalogue holds the term
+  it belongs to. Match it to the nearest one and go on;
 - if the request is understandable but cannot be expressed with these operations,
   answer {"dsl_version":"1.0","outcome":"out_of_scope","scope_note":"<category>"};
 - if two readings are plausible, answer with outcome "clarification" and a
   "clarification" object holding "question" and 2 to 4 "options", each with a "label"
   and the "operations" it would produce.
+
+WORKED EXAMPLE — "cerca ordini da evadere ordinati per intestatario con anagrafica, stato"
+
+{"dsl_version":"1.0","outcome":"operations","confidence":0.82,"operations":[
+ {"op":"set_target","ref":"ordini","provenance":{"text":"cerca ordini"}},
+ {"op":"add_condition","condition":{"ref":"ordini.da_evadere","predicate":"is_category"},
+  "provenance":{"text":"da evadere"}},
+ {"op":"add_order","ref":"ordini.cliente","provenance":{"text":"ordinati per intestatario"}},
+ {"op":"set_fields","refs":["ordini.cliente","ordini.stato"],
+  "provenance":{"text":"con anagrafica, stato"}}]}
+
+"ordini.cliente" appears TWICE on purpose: once as the ordering, once as a column,
+because the sentence names it in both places. The list after "con" is columns and did
+not continue the ordering. Had the sentence stopped at "ordinati per intestatario",
+there would be no set_fields at all.
 """
 
 
@@ -117,6 +160,31 @@ def user_message(request: Request) -> str:
         )
     parts.append(f"Request:\n{request.utterance}")
     return "\n\n".join(parts)
+
+
+def catalogue_references(payload: dict) -> schema_module.References:
+    """The references this catalogue admits, kept apart by genus (D101, D102).
+
+    Read from the payload rather than from the catalogue object because the payload is
+    exactly what the model was shown: a reference admitted by the schema and absent
+    from the message would be a reference the model is allowed to emit and has no way
+    to know, which is worse than either.
+
+    The entity of the turn travels with the other entities: `set_target` may change
+    the subject, and a catalogue that admitted only the current one would make the
+    change unexpressible.
+    """
+    entities = {payload["entity"], *(entity["ref"] for entity in payload["entities"])}
+    return schema_module.References(
+        entities=tuple(sorted(ref for ref in entities if ref)),
+        attributes=tuple(sorted(attribute["ref"] for attribute in payload["attributes"])),
+        categories=tuple(sorted(category["ref"] for category in payload["categories"])),
+        # D103: the type each attribute carries in the catalogue is the one §8.1 pairs
+        # with its predicates. An attribute whose type the catalogue does not declare
+        # is simply absent here, and keeps the whole predicate set.
+        types={attribute["ref"]: attribute["type"]
+               for attribute in payload["attributes"] if attribute.get("type")},
+    )
 
 
 def catalogue_payload(catalogue) -> dict:

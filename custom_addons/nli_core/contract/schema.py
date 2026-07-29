@@ -27,6 +27,8 @@ asserts the file matches this generator, so the two cannot part company.
 
 from __future__ import annotations
 
+from dataclasses import dataclass, field
+
 from . import envelope as envelope_module
 from .vocabulary import (
     AGGREGATIONS,
@@ -40,6 +42,7 @@ from .vocabulary import (
     OUTCOME_PAYLOAD,
     OUTCOMES,
     PREDICATES,
+    PREDICATES_BY_TYPE,
     SCOPE_NOTES,
     SELECTORS,
     TEMPORAL_EXPRESSIONS,
@@ -117,10 +120,96 @@ def _value_property(kind: str, key: str) -> dict:
     return {"type": "number"}
 
 
-def _condition(*, in_state: bool) -> dict:
+@dataclass(frozen=True)
+class References:
+    """The references of one catalogue, kept apart by **genus** (D102).
+
+    D101 closed `ref` on the catalogue and stopped there, and the measurement showed
+    what the omission costs: `set_fields` with `["fatture_cliente", ...]` — an
+    **entity** asked for as a column. It was admitted because the catalogue lists the
+    other entities too, for the entity resolution of phase A, and one flat set cannot
+    tell a column from an entity.
+
+    Three genera, and every operation admits only the one that belongs to it: an
+    entity is the target, an attribute is a column, a grouping, an ordering or a
+    measure, and a category is only ever the reference of a condition.
+    """
+
+    entities: tuple[str, ...] = ()
+    attributes: tuple[str, ...] = ()
+    categories: tuple[str, ...] = ()
+    #: Attribute reference → type of §8.1, for the predicates of **D103**. An
+    #: attribute missing from here keeps the whole predicate set: a type nobody
+    #: declared is not a licence to guess which comparisons make sense on it.
+    types: dict[str, str] = field(default_factory=dict)
+
+    @property
+    def conditionable(self) -> tuple[str, ...]:
+        """What a condition may name: an attribute, or a category (T5, D87)."""
+        return tuple(sorted({*self.attributes, *self.categories}))
+
+    def by_type(self) -> dict[str | None, tuple[str, ...]]:
+        """Attributes grouped by declared type; `None` collects the undeclared."""
+        grouped: dict[str | None, list[str]] = {}
+        for ref in self.attributes:
+            grouped.setdefault(self.types.get(ref), []).append(ref)
+        return {tipo: tuple(sorted(refs)) for tipo, refs in grouped.items()}
+
+    def __bool__(self) -> bool:
+        return bool(self.entities or self.attributes or self.categories)
+
+
+#: Which genus each verb's `ref`/`refs` belongs to. A verb absent from here carries no
+#: reference; a verb present carries exactly one genus, and the mapping is the whole
+#: decision of D102 written as data instead of as branches.
+REFERENCE_GENUS = {
+    "set_target": "entities",
+    "set_fields": "attributes",
+    "add_field": "attributes",
+    "remove_field": "attributes",
+    "add_group": "attributes",
+    "remove_group": "attributes",
+    "add_order": "attributes",
+    "set_order": "attributes",
+    "add_measure": "attributes",
+    "remove_measure": "attributes",
+    # A condition addressed by reference rather than by identifier: same genus as the
+    # condition it removes.
+    "remove_condition": "conditionable",
+}
+
+
+def _genus(refs: References | None, genus: str):
+    return getattr(refs, genus) if refs else None
+
+
+def _reference(refs) -> dict:
+    """The schema of a single `ref`.
+
+    **C1 made structural** (D101). `prompt.py` says *«the model chooses, it never
+    invents»* and, until this function, said it only in prose: `ref` was any non-empty
+    string, so constrained generation could not refuse an invented one. It did not
+    refuse `oppurtunita.fase` — the entity is spelled `opportunita` — and nothing
+    downstream of the envelope caught it either, because levels 1 and 2 know the shape
+    of a reference and not the catalogue.
+
+    Given the catalogue of the turn, the admitted references are a closed set, and a
+    reference outside it stops being expressible instead of being reprimanded. That is
+    C3, the criterion this project prefers to every rule somebody has to remember.
+
+    Without `refs` the schema is the general one, which is what `emit_schema.py` writes
+    and what a profile without constrained generation gets: the enumeration depends on
+    the turn and a file on disk cannot carry it.
+    """
+    if not refs:
+        return {"type": "string", "minLength": 1}
+    return {"enum": _sorted(refs)}
+
+
+def _condition_shape(*, in_state: bool, ref_schema: dict, predicates) -> dict:
     properties: dict = {
-        "ref": {"type": "string", "minLength": 1},
-        "predicate": {"enum": _sorted(PREDICATES)},
+        "ref": ref_schema,
+        "predicate": {"enum": _sorted(predicates)},
         "value": {"$ref": "#/$defs/value"},
         "origin": {"enum": _sorted(ORIGINS)},
         "provenance": {"$ref": "#/$defs/provenance"},
@@ -140,15 +229,55 @@ def _condition(*, in_state: bool) -> dict:
     }
 
 
-def _operation_schema(verb: str, signature: envelope_module.Signature) -> dict:
+def _condition(*, in_state: bool, refs: References | None = None) -> dict:
+    """One condition, with the predicate tied to the type of what it names (**D103**).
+
+    §8.1 already pairs each type with the predicates that mean something on it: the
+    validator reads that table at level 2 and refuses the rest. Until this function
+    the **schema** did not, so a profile with constrained generation could still write
+    `less_than` on a name or `contains` on an amount, and the refusal arrived one
+    level later — as a repair, or as a wrong answer when the pair happened to be
+    admissible and wrong.
+
+    With a catalogue the condition becomes one branch per type: the references of that
+    type, and only the predicates §8.1 grants it. A comparison that means nothing on
+    an attribute stops being writable, which is the same move D101 and D102 made on
+    the reference, applied to what is said **about** it.
+
+    An attribute whose type nobody declared keeps the whole set. Guessing which
+    comparisons suit an unknown type would be inventing the table §8.1 already owns.
+    """
+    if not refs or not refs.conditionable:
+        return _condition_shape(in_state=in_state,
+                                ref_schema=_reference(_genus(refs, "conditionable")),
+                                predicates=PREDICATES)
+
+    branches = []
+    for tipo, attributes in sorted(refs.by_type().items(), key=lambda pair: pair[0] or ""):
+        predicates = PREDICATES_BY_TYPE.get(tipo or "", PREDICATES)
+        branches.append(_condition_shape(in_state=in_state,
+                                         ref_schema=_reference(attributes),
+                                         predicates=predicates))
+    if refs.categories:
+        # T5 under D87: a named condition takes `is_category` and nothing else —
+        # there is no value to compare, the definition is in the dictionary.
+        branches.append(_condition_shape(
+            in_state=in_state, ref_schema=_reference(refs.categories),
+            predicates=PREDICATES_BY_TYPE.get("category", ("is_category",))))
+    return {"oneOf": branches} if len(branches) > 1 else branches[0]
+
+
+def _operation_schema(verb: str, signature: envelope_module.Signature,
+                      refs: References | None = None) -> dict:
     properties: dict = {
         "op": {"const": verb},
         "provenance": {"$ref": "#/$defs/provenance"},
         "confidence": {"$ref": "#/$defs/confidence"},
         "origin": {"enum": _sorted(ORIGINS)},
     }
+    admitted = _genus(refs, REFERENCE_GENUS[verb]) if verb in REFERENCE_GENUS else None
     for key in sorted(signature.allowed - envelope_module.COMMON_OPERATION_KEYS):
-        properties[key] = _parameter_schema(key)
+        properties[key] = _parameter_schema(key, admitted)
     schema: dict = {
         "type": "object",
         "properties": properties,
@@ -164,12 +293,16 @@ def _operation_schema(verb: str, signature: envelope_module.Signature) -> dict:
     return schema
 
 
-def _parameter_schema(key: str) -> dict:
+def _parameter_schema(key: str, refs=None) -> dict:
     if key == "condition":
         return {"$ref": "#/$defs/operation_condition"}
     if key == "refs":
-        return {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1}
-    if key == "ref" or key == "id":
+        return {"type": "array", "items": _reference(refs), "minItems": 1}
+    if key == "ref":
+        return _reference(refs)
+    if key == "id":
+        # Not a reference: `c1` is the identifier of a condition inside the state, and
+        # the catalogue has nothing to say about it.
         return {"type": "string", "minLength": 1}
     if key == "view":
         return {"enum": _sorted(VIEWS)}
@@ -219,8 +352,18 @@ def _selector() -> dict:
     }
 
 
-def build_envelope_schema() -> dict:
-    """The schema of the Interpretation Envelope (§4.4)."""
+def build_envelope_schema(*, refs: References | None = None) -> dict:
+    """The schema of the Interpretation Envelope (§4.4).
+
+    With `refs` — the references of the catalogue sent this turn, kept apart by genus
+    — every `ref` becomes an enumeration instead of a string (**D101**), and the
+    enumeration is the one that belongs to the operation (**D102**). The envelope
+    remains the same envelope: nothing is added and nothing is relaxed, open sets are
+    narrowed to the closed ones the catalogue already defines. A profile that
+    constrains generation therefore cannot emit a reference nobody has, nor ask for an
+    entity as a column; a profile that cannot is unaffected, and levels 3 to 5 keep
+    rejecting what reaches them.
+    """
     outcome_branches = []
     payload_keys = _sorted({key for key in OUTCOME_PAYLOAD.values() if key})
     for outcome in _sorted(OUTCOMES):
@@ -277,11 +420,12 @@ def build_envelope_schema() -> dict:
             },
             "provenance": _provenance(),
             "value": _value(),
-            "operation_condition": _condition(in_state=False),
+            "operation_condition": _condition(in_state=False, refs=refs),
             "selector": _selector(),
             "operation": {
                 "oneOf": [
-                    _operation_schema(verb, envelope_module.OPERATION_SIGNATURES[verb])
+                    _operation_schema(verb, envelope_module.OPERATION_SIGNATURES[verb],
+                                      refs)
                     for verb in _sorted(OPERATIONS)
                 ]
             },

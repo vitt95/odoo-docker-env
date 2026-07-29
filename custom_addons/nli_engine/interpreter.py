@@ -35,7 +35,7 @@ from odoo.addons.nli_core.contract import schema as schema_module
 from odoo.addons.nli_core.validation import coherence, structural
 
 from .adapters.base import AdapterError, Request
-from .prompt import catalogue_payload
+from .prompt import catalogue_payload, catalogue_references
 
 
 @dataclass
@@ -75,7 +75,11 @@ def interpret(adapter, *, utterance: str, catalogue, state: dict | None = None,
     D15 says they must; production uses the default. It is not configuration.
     """
     payload = catalogue_payload(catalogue)
-    envelope_schema = schema_module.build_envelope_schema()
+    # D101: the references of this catalogue close the `ref` of every operation. The
+    # prompt says the model chooses and never invents; here that stops depending on
+    # the model having read the sentence.
+    envelope_schema = schema_module.build_envelope_schema(
+        refs=catalogue_references(payload))
     outcome = Interpretation()
     repair = None
 
