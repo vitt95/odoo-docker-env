@@ -24,7 +24,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from odoo import fields as odoo_fields
-from odoo.addons.nli_core.application import applicator
+from odoo.addons.nli_core.application import applicator, completion
 from odoo.addons.nli_core.execution import executor
 from odoo.addons.nli_core.presentation import presenter
 from odoo.addons.nli_core.resolution import calendar as calendar_module
@@ -92,11 +92,16 @@ def run(env, item, *, adapter, scope, context_window: int) -> Outcome:
         return outcome
 
     # --- application: pure, and the same code the corpus runs ----------------
-    applied = applicator.apply(state, envelope.get("operations") or [])
+    # The types come first because the completion of D99 needs them: a direction the
+    # user did not name is derived from the attribute's type here, not asked of the
+    # model (P4) and not defaulted inside the Applicator (D88).
+    types = {ref: binding.type for ref, binding in semantics.bindings.items()}
+    operations = completion.fill_inferred_directions(
+        envelope.get("operations") or [], types)
+    applied = applicator.apply(state, operations)
     new_state = applied.state
 
     # --- levels 3-5, with the dictionary this user actually has --------------
-    types = {ref: binding.type for ref, binding in semantics.bindings.items()}
     failures = contextual.validate(
         new_state, known_refs=frozenset(semantics.bindings), types=types)
     if failures:

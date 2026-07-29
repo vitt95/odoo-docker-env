@@ -49,6 +49,8 @@ from typing import Sequence
 from ..contract import state as state_module
 from ..contract.vocabulary import (
     DEFAULT_LIMITS,
+    RULE_LATEST_DESC,
+    RULE_TEXT_ASC,
     VIEW_DERIVATION_RULES,
     Limits,
 )
@@ -380,7 +382,15 @@ def _order_entry(operation: dict, index: int) -> dict:
             "by date — and the type lives in the Semantic Dictionary, not here "
             "(D88). Resolve it before applying"
         )
-    return {"ref": operation["ref"], "direction": direction, **_metadata(operation)}
+    entry = {"ref": operation["ref"], "direction": direction, **_metadata(operation)}
+    if entry["origin"] == "inferred":
+        # §10.2: an inference declares the rule that produced it, or the user cannot
+        # contradict it. The rule is **not** carried by the operation — §15.3 rejects
+        # unknown keys there, and an operation is a request, not an explanation — so
+        # it is derived from what the direction already says: descending was inferred
+        # because the attribute is a date, ascending because it is not (D88, D99).
+        entry["rule"] = RULE_LATEST_DESC if direction == "desc" else RULE_TEXT_ASC
+    return entry
 
 
 def _set_order(result: Result, operation: dict, limits: Limits, defaults, index: int) -> None:

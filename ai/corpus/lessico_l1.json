@@ -1,7 +1,7 @@
 {
  "_nota": "Pacchetto base L1 - gergo commerciale e amministrativo italiano. Curato a partire da glossari di settore (datalog.it, teamsystem.com, synalla.it, cosmodca.com) e dalla terminologia ricorrente nei forum Odoo italiani. NON e' linguaggio osservato presso utenti: e' vocabolario di dominio attestato. Cfr. 11-corpus-fondativo.md §3.2.",
- "_versione": "1.1",
- "_data": "2026-07-27",
+ "_versione": "1.2",
+ "_data": "2026-07-28",
  "_note_struttura": [
   "entita.genere serve all'accordo degli aggettivi (m/f).",
   "categorie distingue termini_m / termini_f / termini_inv: gli aggettivi vanno accordati, le locuzioni preposizionali sono invarianti.",
@@ -677,15 +677,21 @@
   "confronto_sopra": [
    "sopra i",
    "oltre",
+   "piu' di"
+  ],
+  "confronto_sopra_incluso": [
    "almeno",
    "da ... in su",
-   "piu' di"
+   "a partire da"
   ],
   "confronto_sotto": [
    "sotto i",
-   "meno di",
+   "meno di"
+  ],
+  "confronto_sotto_incluso": [
    "non piu' di",
-   "entro i"
+   "entro i",
+   "fino a"
   ]
  },
  "fenomeni_linguistici": {

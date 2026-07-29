@@ -97,6 +97,12 @@ class TestConversationalSequence(unittest.TestCase):
             provenance={"text": "per città"},
         ))
 
+        # The worked example of §17.1 shows the envelope and says *«`asc` è inferito
+        # ... registrato con origin: inferred»* without showing the state it produces.
+        # §10.2 requires an inference to declare the rule that produced it, and §5.1's
+        # own state example carries one on `order_by`. The example was incomplete, not
+        # the rule optional — D88 had already named the identifier and nothing emitted
+        # it. **D99** makes the Applicator derive it from the inferred direction.
         self.assertEqual(
             self.state["order_by"],
             [{
@@ -104,6 +110,7 @@ class TestConversationalSequence(unittest.TestCase):
                 "direction": "asc",
                 "origin": "inferred",
                 "provenance": {"text": "per città"},
+                "rule": "text_attribute_implies_asc",
             }],
         )
 

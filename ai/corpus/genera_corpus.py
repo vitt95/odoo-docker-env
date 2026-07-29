@@ -129,7 +129,30 @@ TEMPORALI_AMBIGUE = ["a gennaio", "nel primo trimestre", "a settembre", "a giugn
 #: dice di estendere quando i dati lo chiedono, e un solo termine non lo chiede.
 TEMPORALI_NON_ESPRIMIBILI = ["l'altro ieri"]
 
-VERSO_PREDICATO = {"sopra": "greater_than", "sotto": "less_than"}
+#: Il verso di un confronto **e la sua inclusivita'**, che sono due cose e non una.
+#: *«almeno 100»* e *«da 100 in su»* comprendono il 100; *«oltre 100»* no. Finche' i
+#: due gruppi erano uno solo, l'atteso chiedeva `greater_than` anche dove la frase
+#: diceva `greater_or_equal`: la misura penalizzava la lettura corretta e premiava
+#: quella sbagliata, ed e' cosi' che un difetto del metro diventa un difetto del
+#: modello nella tabella. Misurato il 28/07/2026 su F00648, *«budget da 100 in su»*.
+VERSO_PREDICATO = {
+    "sopra": "greater_than",
+    "sopra_incluso": "greater_or_equal",
+    "sotto": "less_than",
+    "sotto_incluso": "less_or_equal",
+}
+
+#: I versi possibili, uno per gruppo del lessico. La scelta e' congiunta: il gruppo
+#: decide insieme la frase e il predicato, e nessuna combinazione puo' dissociarli.
+VERSI = tuple(VERSO_PREDICATO)
+
+#: Attributi di data: l'ordinamento non nominato su una data significa *«i piu'
+#: recenti prima»*, su tutto il resto significa crescente (`03` §5.7, **D88**).
+#: Entrambe stanno gia' nell'insieme chiuso di `contract/vocabulary.py`: **D88 aveva
+#: nominato la seconda** e il generatore non l'aveva mai usata. La verifica del
+#: contratto l'ha detto al primo tentativo, respingendo l'identificativo inventato.
+ORDINE_REGOLA_DATA = "latest_implies_desc_by_date"
+ORDINE_REGOLA_ALTRO = "text_attribute_implies_asc"
 
 
 # --- Verbalizzazione ---------------------------------------------------------
@@ -223,8 +246,7 @@ class Verbalizzatore:
         if c["tipo"] == "temporale":
             return c["frase"]
         if c["tipo"] == "confronto":
-            gruppo = ("confronto_sopra" if c["verso"] == "sopra"
-                      else "confronto_sotto")
+            gruppo = f"confronto_{c['verso']}"
             op = self.rng.choice(self.l1["vaghezza"][gruppo])
             attr = self._termine_attributo(c["campo"])
             if "..." in op:                       # circonfisso: "da ... in su"
@@ -462,11 +484,20 @@ def stato_normativo(intento: dict) -> dict:
             for campo in intento["gruppi"]
         ]
     if intento["ordine"]:
+        # La verbalizzazione non nomina mai la direzione ("ordinati per data"):
+        # e' un'inferenza del sistema, e §10.2 impone di dichiarare la regola. Ma
+        # **quale** inferenza dipende dal tipo dell'attributo, non dal caso: D88 dice
+        # crescente per il testo e decrescente per le date, e una regola che si chiama
+        # `latest_implies_desc_by_date` applicata a `stato` chiedeva l'ordine
+        # inverso su un campo che non e' una data. Erano due delle sei perdite di
+        # `order_by` nella misura del 28/07/2026, e non erano del modello.
+        temporali = CATALOGO[target]["temporali"]
         stato["order_by"] = [
-            # La verbalizzazione non nomina la direzione ("ordinati per data"):
-            # `desc` e' un'inferenza del sistema, e §10.2 impone di dichiararlo.
-            {"ref": riferimento_attributo(target, campo), "direction": "desc",
-             "origin": "inferred", "rule": "latest_implies_desc_by_date"}
+            {"ref": riferimento_attributo(target, campo),
+             "direction": "desc" if campo in temporali else "asc",
+             "origin": "inferred",
+             "rule": (ORDINE_REGOLA_DATA if campo in temporali
+                      else ORDINE_REGOLA_ALTRO)}
             for campo in intento["ordine"]
         ]
 
@@ -552,7 +583,7 @@ class Generatore:
                 campo = self.rng.choice(liberi)
                 intento["condizioni"].append({
                     "tipo": "confronto", "campo": campo,
-                    "verso": self.rng.choice(["sopra", "sotto"]),
+                    "verso": self.rng.choice(VERSI),
                     "valore": self.rng.choice([100, 500, 1000, 5000, 10000]),
                 })
                 campi_usati.add(campo)
@@ -684,9 +715,16 @@ class Generatore:
             return {"op": "set_limit", "value": scelta["valore"],
                     "provenance": provenienza}
         if op == "add_order":
+            # La direzione e la regola sono derivate dal tipo (D88, D99), non fisse:
+            # `desc` su un campo che non e' una data chiedeva l'ordine inverso.
+            # L'operazione porta la direzione e non la regola: §15.3 respinge le
+            # chiavi sconosciute in una operazione, e l'identificativo della regola
+            # e' dello stato. Lo deriva l'Applicatore dalla direzione inferita.
+            temporale = scelta["campo"] in CATALOGO[target]["temporali"]
             return {"op": "add_order",
                     "ref": riferimento_attributo(target, scelta["campo"]),
-                    "direction": "desc", "origin": "inferred",
+                    "direction": "desc" if temporale else "asc",
+                    "origin": "inferred",
                     "provenance": provenienza}
         return {"op": op, "ref": riferimento_attributo(target, scelta["campo"]),
                 "provenance": provenienza}

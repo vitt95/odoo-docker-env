@@ -376,18 +376,18 @@ VIEW_DERIVATION_RULES: tuple[tuple[str, str], ...] = (
 #:
 #: The installation defaults for `limit` and `presentation` carry no rule: their
 #: origin is `default`, which already says everything there is to say (§5.8).
+#: "the latest five orders" implies a descending order by date that the user did not
+#: name but without which "latest" has no meaning (§5.1, §5.7).
+RULE_LATEST_DESC = "latest_implies_desc_by_date"
+
+#: Ascending is the natural reading for a text attribute (§17.1 turn 3, where the rule
+#: is described and left unnamed). Named here because rule identifiers are a closed
+#: set: an inference the interface cannot name is one the user cannot contradict. D88.
+RULE_TEXT_ASC = "text_attribute_implies_asc"
+
 INFERENCE_RULES = frozenset(
     {identifier for identifier, _ in VIEW_DERIVATION_RULES}
-    | {
-        # "the latest five orders" implies a descending order by date that the
-        # user did not name but without which "latest" has no meaning (§5.1, §5.7).
-        "latest_implies_desc_by_date",
-        # Ascending is the natural reading for a text attribute (§17.1 turn 3,
-        # where the rule is described and left unnamed). Named here because rule
-        # identifiers are a closed set: an inference the interface cannot name is
-        # one the user cannot contradict. D88.
-        "text_attribute_implies_asc",
-    }
+    | {RULE_LATEST_DESC, RULE_TEXT_ASC}
 )
 
 
