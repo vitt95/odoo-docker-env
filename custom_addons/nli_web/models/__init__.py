@@ -7,4 +7,5 @@ carried by colour alone (D65), every element shown is actionable (D66), the
 resolved period is shown rather than the expression (D67), and the asynchronous
 state change is announced to assistive technology (D71).
 """
+from . import nli_interpretation
 from . import nli_perimeter

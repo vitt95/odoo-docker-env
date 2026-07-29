@@ -71,16 +71,34 @@ def interpretation_of(state: dict, plan: Plan, result) -> dict:
     because *"this month"* confirms itself (D67); and the count is the phrase of D68.
     """
     return {
-        "target": (state.get("target") or {}).get("ref"),
+        "target": _element(state.get("target") or {}),
         "conditions": [
             {
                 "id": condition.get("id"),
                 "ref": condition.get("ref"),
                 "predicate": condition.get("predicate"),
-                "origin": condition.get("origin", "user"),
+                "value": condition.get("value"),
+                **_element(condition),
             }
             for condition in _conditions(state.get("filter"))
         ],
+        # §3.1 lists what must always be visible, and the three sections below were
+        # missing from it. The ordering above all: *«è la sede del fraintendimento di
+        # "ultimi"»* — the one element the document names as the place where
+        # misunderstandings live, and the interpretation did not carry it.
+        "groups": [
+            {"granularity": entry.get("granularity"), **_element(entry)}
+            for entry in state.get("group_by") or ()
+        ],
+        "order": [
+            {"direction": entry.get("direction"), **_element(entry)}
+            for entry in state.get("order_by") or ()
+        ],
+        "measures": [
+            {"function": entry.get("function"), **_element(entry)}
+            for entry in state.get("measures") or ()
+        ],
+        "fields": [_element(entry) for entry in state.get("fields") or ()],
         "periods": [
             {"ref": reference, "resolved": rendered}
             for reference, rendered in plan.resolved_periods
@@ -90,6 +108,27 @@ def interpretation_of(state: dict, plan: Plan, result) -> dict:
         "records": result.describe(),
         "truncated": result.truncated,
     }
+
+
+def _element(entry: dict) -> dict:
+    """Reference, origin, rule and provenance — what every visible element carries.
+
+    **Origin** because D65 grades salience by it and the distinction must not depend
+    on colour. **Rule** because an inference the user cannot see the reason for is one
+    they cannot contradict (§10.2). **Provenance** because §3.4 builds the cross
+    highlighting on it, which is *«l'interazione più efficace dell'intero prodotto»*
+    for recognising a misunderstanding — and it cannot be reconstructed later: only
+    the operation that produced the element knew which words it came from.
+    """
+    element = {
+        "ref": entry.get("ref"),
+        "origin": entry.get("origin", "user"),
+    }
+    if entry.get("rule"):
+        element["rule"] = entry["rule"]
+    if (entry.get("provenance") or {}).get("text"):
+        element["provenance"] = entry["provenance"]["text"]
+    return element
 
 
 def _conditions(node):

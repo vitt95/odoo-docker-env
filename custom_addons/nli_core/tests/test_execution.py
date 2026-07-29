@@ -123,7 +123,9 @@ class TestEndToEnd(TransactionCase):
             presenter.Presentation(result=result)  # pylint: disable=missing-kwoa
 
         shown = presenter.present(state=state, plan=outcome.plan, result=result)
-        self.assertEqual(shown.interpretation["target"], "clienti")
+        # The target carries its origin like every other element: §3.1 of `09` lists
+        # what must always be visible, and D65 grades the salience by `origin`.
+        self.assertEqual(shown.interpretation["target"]["ref"], "clienti")
         self.assertEqual(len(shown.interpretation["conditions"]), 2)
 
     def test_the_interpretation_declares_the_origin_of_every_element(self):
