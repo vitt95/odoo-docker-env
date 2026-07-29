@@ -9,6 +9,7 @@
     # (D57: the catalogue is confidential information) and never talks to a
     # model provider — that separation is the point of `04` §6.3.
     "depends": ["nli_core"],
+    "data": ["security/ir.model.access.csv"],
     "installable": True,
     "application": False,
 }

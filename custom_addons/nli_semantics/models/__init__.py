@@ -6,4 +6,4 @@ from the model's context window, 60 as the ceiling (D79); permission fingerprint
 computed and failing safe (D39); catalogue stored deduplicated (D41).
 """
 
-from . import nli_semantics
+from . import nli_dictionary_entry, nli_semantics

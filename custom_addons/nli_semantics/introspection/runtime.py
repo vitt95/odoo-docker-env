@@ -34,8 +34,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from odoo import fields as odoo_fields
+
 from ..catalogue import build as build_module
 from ..catalogue import exposure, phases
+from ..dictionary import domains
 from ..dictionary.store import Dictionary
 from . import l0, permissions
 
@@ -148,6 +151,14 @@ def semantics(env, scope) -> Semantics:
         entry for entry in l0.generate(env, scope)
         if entry["ref"] in readable
     ]
+    # D108: the entries somebody approved, on top of what introspection reads. Kept
+    # only when the entity they belong to is readable by this user — the row being
+    # visible is not what protects a catalogue, this filter is.
+    approved = [
+        entry for entry in env["nli.dictionary.entry"].approved_entries()
+        if (entry.get("entity") or entry["ref"]) in readable
+    ]
+    entries.extend(approved)
 
     models_by_ref = {}
     bindings = {}
@@ -169,6 +180,21 @@ def semantics(env, scope) -> Semantics:
                 continue
             bindings[ref] = _binding(kind="attribute", field=name, type_=contract_type)
 
+    # A named condition has no field: its binding carries the domain its typed
+    # condition produces (V-D87-3), computed at every build and never stored. An entry
+    # whose condition cannot be executed as a domain — an aggregate, level 5's
+    # business — is left unbound, and level 3 refuses it by name instead of letting it
+    # fail late at execution.
+    for entry in approved:
+        if entry["type"] != "T5" or entry["ref"] in bindings:
+            continue
+        try:
+            domain = domains.domain_of(entry.get("condition") or {},
+                                       instant=odoo_fields.Date.context_today(env.user))
+        except domains.UntranslatableCondition:
+            continue
+        bindings[entry["ref"]] = _category_binding(domain)
+
     return Semantics(
         dictionary=Dictionary.build(entries),
         entity_refs=frozenset(models_by_ref),
@@ -176,6 +202,15 @@ def semantics(env, scope) -> Semantics:
         models_by_ref=models_by_ref,
         readable_refs=readable,
     )
+
+
+def _category_binding(domain):
+    """The binding of a named condition: a domain fragment, never a field (V-D87-3)."""
+    from odoo.addons.nli_core.resolution.plan import Binding
+
+    return Binding(kind="category", field="", type="category",
+                   domain=tuple(tuple(part) if isinstance(part, (list, tuple)) else part
+                                for part in domain))
 
 
 def _binding(*, kind: str, field: str, type_: str):

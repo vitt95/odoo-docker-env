@@ -213,6 +213,7 @@ Le decisioni sono state valutate contro quattro obiettivi dichiarati — **sempl
 | **D103** | Il **predicato** e' vincolato dal tipo dell'attributo gia' nello schema del turno | ☑ Adottata | §18.7. §8.1 accoppiava tipo e predicati e solo il livello 3 lo leggeva: *«clienti sopra i 1000»* era scrivibile. Misurato: +5 casi su `filter`, riparazioni dal 3,6% al 2,9%. Un tipo non dichiarato conserva l'insieme intero |
 | **D105** | Una **condizione nominata** non fondata nel proprio frammento e' rifiutata al livello 3 | ☑ Adottata | §19.1. Misurato su 80 aperture: **11 filtri sbagliati diventati rifiuti, 0 filtri corretti rifiutati**. Il confronto e' con la provenienza, non con l'enunciato, perche' un raffinamento porta avanti le condizioni dei turni precedenti. Riconoscitore condiviso con la Fase A |
 | **D106** | Il rifiuto di D105 **propone**: `clarification` con letture derivate dal catalogo | ☑ Adottata | §19.2. Le opzioni sono derivate, mai chieste al modello (P4): chi ha appena inventato una condizione e' l'ultimo a cui chiedere le alternative. Meno di due letture, nessuna domanda |
+| **D108** | Le voci di dizionario **approvate** hanno un registro, e la condizione tipizzata si traduce in dominio | ☑ Adottata | §19.4. Senza, il dizionario vivo era **solo L0**: le proposte di D35 restavano nella coda L3 e nessuna installazione aveva una condizione nominata. La traduzione va dalla condizione tipizzata al dominio — meccanica — mai al contrario, che sarebbe una supposizione (`06` §7) |
 | **D107** | Modello di riferimento: **`qwen3.5:9b`** | ☑ Adottata — **dall'Architect** | §18.8. Deliberata il 29/07/2026 su basi architetturali, con il confronto empirico contro `granite4.1:8b` **interrotto prima di produrre un numero**. Le ragioni sono in §18.8, e cosi' e' il limite della delibera |
 
 ---
@@ -427,7 +428,7 @@ Riassunto operativo di ciò che le delibere impongono a chi scriverà il codice.
 
 **Per superare una decisione**: `⊘ Superata da Dn`. Mai cancellata. Le quattro supersessioni già presenti sono la prova che la disciplina serve.
 
-**Per aggiungere una decisione**: numerazione in continuità da **D108**. **D104** resta riservata alla proposta di `13-perimetro-guidato.md`; **D105** e **D106** sono deliberate in §19. D87–D91 sono deliberate (§14, §15); D92 è corretta; **D93** è deliberata (§16.4.1); **D94–D96** sono deliberate in §17; **D97–D103** e **D107** in §18.
+**Per aggiungere una decisione**: numerazione in continuità da **D109**. **D104** resta riservata alla proposta di `13-perimetro-guidato.md`; **D105** e **D106** sono deliberate in §19. D87–D91 sono deliberate (§14, §15); D92 è corretta; **D93** è deliberata (§16.4.1); **D94–D96** sono deliberate in §17; **D97–D103** e **D107** in §18.
 
 **Vincoli aggiunti in delibera.** Le dodici decisioni marcate ⊡ portano una condizione che è parte della decisione: rimuoverla è modificare la decisione, non semplificarla.
 
@@ -1054,3 +1055,19 @@ Quattro vincoli, ognuno con il suo argomento:
 Tre test Odoo sono falliti dopo D106, e nessuno per causa sua: `nli_test` contiene **50 004 partner**, di cui 49 943 seminati dal popolatore del banco di carico (D97). I tre test asserivano conteggi esatti su `res.partner` e usavano *«Milano»* come citta' di prova — la stessa che il popolatore distribuisce.
 
 **Un test che passa solo su una banca dati vuota non e' un test**, ed e' esattamente la situazione che ogni cliente reale presenta il primo giorno. Corretto alla radice: le prove usano ora una citta' che nessun popolatore produce, e restano deterministiche su qualunque volume. Tutti gli 83 test Odoo passano su una base con cinquantamila record.
+
+### 19.4 D108 — Il percorso di approvazione, e il buco che ha chiuso
+
+**Il buco, trovato verificando D106.** In un'installazione viva il dizionario era **solo L0**: quello che l'introspezione legge dalla piattaforma. Le proposte di categoria di **D35** entravano nella coda **L3**, che `store.py` ignora e che `validate_entry` rifiuta a priori — e non esisteva alcun luogo in cui approvarle. Conseguenza misurabile: nessuna installazione reale aveva una sola condizione nominata, il modello non poteva emettere `is_category`, e **D105 e D106 non avevano nulla su cui agire**. Erano corrette e inerti.
+
+**Tre pezzi mancanti, non uno.** Il registro delle voci approvate (`nli.dictionary.entry`); la traduzione dalla condizione tipizzata al **dominio** che la esegue (`dictionary/domains.py`); e il collegamento nel runtime, che le carica accanto a L0 e costruisce per ogni categoria il proprio `Binding` con il dominio dentro. Nessuno dei tre esisteva, e l'assenza del terzo spiega perche' l'unico `kind="category"` del progetto vivesse in un test puro.
+
+**La direzione della traduzione e' la decisione.** `06` §7 vieta di tradurre automaticamente il **dominio di un filtro salvato in una condizione tipizzata**: significherebbe analizzare un'espressione Odoo arbitraria e sbagliarla di poco, producendo una categoria che vuol dire qualcosa di *vicino* a cio' che si intendeva — il guasto che una categoria esiste per togliere. Quel divieto resta intatto. La traduzione **inversa** — dalla condizione tipizzata al dominio — e' meccanica: una condizione validata ha una lettura sola e non c'e' nulla da indovinare. La persona scrive la condizione in approvazione, la macchina la esegue sempre allo stesso modo.
+
+**Il tempo entra come argomento.** *«Scadute»* e' *scadenza prima di oggi*, e un dominio congelato all'approvazione sarebbe sbagliato il mattino dopo: `compare_now` si risolve a ogni costruzione contro l'istante passato, che e' la ragione per cui **V-D87-3** vieta all'Applicatore di espandere una categoria.
+
+**Cio' che non si puo' scrivere.** Il vincolo esegue il validatore del dizionario **al momento della scrittura**: una voce che `Dictionary.build` scarterebbe viene rifiutata prima di esistere. Una definizione presente in una tabella e assente dal dizionario e' una divergenza che nessuno nota finche' un risultato non cambia. Un aggregato viene invece **memorizzato e lasciato senza binding**: e' materia del livello 5 (**V-D87-2**), e lasciarlo irrisolto fa sì che il livello 3 lo rifiuti per nome invece di farlo fallire tardi in esecuzione.
+
+**Chi legge e chi scrive.** Lettura a ogni utente interno, scrittura al solo amministratore. La lettura non e' una cortesia: il percorso di interrogazione ha il divieto di elevare i privilegi (§6.3), quindi il runtime legge queste righe con i diritti di chi chiede. Cio' che protegge il catalogo non e' l'invisibilita' della riga — e' il filtro che tiene solo le voci la cui entita' quell'utente puo' leggere, e c'e' un test che lo mostra.
+
+**13 test puri** sulla traduzione e **13 test Odoo** sull'approvazione, fra cui quello che conta piu' di tutti: un filtro salvato **non diventa una categoria da solo** (D28). 94 test Odoo verdi.
