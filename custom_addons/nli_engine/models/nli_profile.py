@@ -70,6 +70,13 @@ class NliProfile(models.Model):
         help="Whether the provider can constrain output to a JSON schema (§12.3). "
              "Without the declaration a degraded profile looks like a system defect.")
     system_role = fields.Boolean(default=True)
+    reasoning_effort = fields.Selection(
+        [("none", "None"), ("minimal", "Minimal"), ("low", "Low"),
+         ("medium", "Medium"), ("high", "High")],
+        help="How much the model may reason before answering (D98). Left empty the "
+             "field is not sent, for providers that do not have the feature. A model "
+             "whose reasoning mode is on by default spends the window before reaching "
+             "the envelope and answers nothing at all — measured, not feared.")
 
     # --- D80: the state machine -------------------------------------------
     state = fields.Selection(STATES, required=True, default="draft", index=True)
@@ -166,6 +173,7 @@ class NliProfile(models.Model):
             context_window=self.context_window,
             constrained_generation=self.constrained_generation,
             system_role=self.system_role,
+            reasoning_effort=self.reasoning_effort or None,
         )
 
     def adapter(self):

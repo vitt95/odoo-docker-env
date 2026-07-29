@@ -47,6 +47,11 @@ class OpenAICompatibleAdapter(Adapter):
             "temperature": self.temperature,
             "stream": False,
         }
+        if self._capabilities.reasoning_effort:
+            # D98. A standard field of the protocol, sent only when the profile names
+            # a value: the closed set of D75 is not widened, and a provider without a
+            # reasoning mode never sees a key it would refuse.
+            payload["reasoning_effort"] = self._capabilities.reasoning_effort
         if schema and self._capabilities.constrained_generation:
             payload["response_format"] = {
                 "type": "json_schema",

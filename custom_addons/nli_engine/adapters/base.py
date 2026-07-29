@@ -60,6 +60,17 @@ class Capabilities:
     constrained_generation: bool
     #: Whether the provider accepts a system message distinct from the user's.
     system_role: bool = True
+    #: How much the model may reason before answering, when it has a reasoning mode
+    #: (**D98**). Empty means the field is not sent at all, because a provider that
+    #: does not know it answers 400 — a declaration that breaks the providers without
+    #: the feature would not be a declaration, it would be a requirement.
+    #:
+    #: Not a tuning knob. A model that reasons at length is not a slower model: it is
+    #: a model that spends the context window before reaching the envelope, and the
+    #: turn ends with no answer at all. Measured on qwen3.5:9b, catalogue of
+    #: `sale.order`: reasoning left on, 2397 tokens of thought against a 4096 window
+    #: and **empty content**; reasoning at `none`, 179 tokens and a valid envelope.
+    reasoning_effort: str | None = None
 
 
 @dataclass
