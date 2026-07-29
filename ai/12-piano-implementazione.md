@@ -396,7 +396,8 @@ Da aggiornare a ogni parte completata. È l'unica sezione di questo documento de
 | 8a — Fondatezza della condizione nominata (**D105**) | ✅ **Completa** (29/07/2026) | Livello 3, riconoscitore condiviso con la Fase A. Misurato su 80 aperture: **11 filtri sbagliati diventati rifiuti, 0 corretti rifiutati**. 18 test |
 | 8b — Il rifiuto propone (**D106**) | ✅ **Completa** (29/07/2026) | `clarification` con letture derivate dal catalogo, mai chieste al modello. Meno di due letture, nessuna domanda. 9 test |
 | 8d — Approvazione delle voci di dizionario (**D108**) | ✅ **Completa** (29/07/2026) | Il buco trovato verificando 8b: il dizionario vivo era **solo L0** e le proposte di D35 non avevano dove essere approvate, quindi D105 e D106 erano inerti sul campo. Registro delle voci, traduzione condizione→dominio, binding di categoria. 26 test |
-| 7 — `nli_web` (+ **D104**, vocabolario visibile) | ☐ | Primo bersaglio di taratura: l'accettazione a P95 205 ms contro i 50 ms di `00` §6.1 |
+| 8c — Perimetro: i dati dei suggerimenti (**D104**) | ✅ **Completa** (29/07/2026) | Struttura nella zona pura, parole in `nli_web`, derivato dal catalogo di chi chiede. Resta all'interfaccia la resa visiva. 16 test |
+| 7 — `nli_web` | ☐ | Primo bersaglio di taratura: l'accettazione a P95 205 ms contro i 50 ms di `00` §6.1 |
 
 | Attività parallela | Stato |
 |---|---|

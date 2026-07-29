@@ -211,6 +211,7 @@ Le decisioni sono state valutate contro quattro obiettivi dichiarati — **sempl
 | **D101** | I **riferimenti** sono un insieme chiuso nello schema del turno | ☑ Adottata | §18.5. C1 da prosa a struttura. Misurato: riparazioni dal 25% al 5%, rese da 2 a 0, `order_by` da 70% a 97,5%. Senza catalogo lo schema resta quello generale, che è ciò che `emit_schema.py` scrive |
 | **D102** | I riferimenti hanno **tre generi** — entità, attributi, categorie — e ogni operazione ammette solo il proprio | ☑ Adottata | §18.5. D101 aveva chiuso l'insieme lasciandolo piatto, e il modello ha chiesto un'entità come colonna. Una categoria è solo la condizione: dietro non c'è un campo da mostrare |
 | **D103** | Il **predicato** e' vincolato dal tipo dell'attributo gia' nello schema del turno | ☑ Adottata | §18.7. §8.1 accoppiava tipo e predicati e solo il livello 3 lo leggeva: *«clienti sopra i 1000»* era scrivibile. Misurato: +5 casi su `filter`, riparazioni dal 3,6% al 2,9%. Un tipo non dichiarato conserva l'insieme intero |
+| **D104** | Il vocabolario del catalogo e' **mostrato all'utente**, suggerito e mai imposto | ☑ Adottata | §19.5. Scartato il perimetro obbligatorio con tre argomenti (`13` §3). La struttura la deriva la zona pura dal catalogo dell'utente che chiede, le parole del prodotto le mette lo strato che ha una lingua |
 | **D105** | Una **condizione nominata** non fondata nel proprio frammento e' rifiutata al livello 3 | ☑ Adottata | §19.1. Misurato su 80 aperture: **11 filtri sbagliati diventati rifiuti, 0 filtri corretti rifiutati**. Il confronto e' con la provenienza, non con l'enunciato, perche' un raffinamento porta avanti le condizioni dei turni precedenti. Riconoscitore condiviso con la Fase A |
 | **D106** | Il rifiuto di D105 **propone**: `clarification` con letture derivate dal catalogo | ☑ Adottata | §19.2. Le opzioni sono derivate, mai chieste al modello (P4): chi ha appena inventato una condizione e' l'ultimo a cui chiedere le alternative. Meno di due letture, nessuna domanda |
 | **D108** | Le voci di dizionario **approvate** hanno un registro, e la condizione tipizzata si traduce in dominio | ☑ Adottata | §19.4. Senza, il dizionario vivo era **solo L0**: le proposte di D35 restavano nella coda L3 e nessuna installazione aveva una condizione nominata. La traduzione va dalla condizione tipizzata al dominio — meccanica — mai al contrario, che sarebbe una supposizione (`06` §7) |
@@ -428,7 +429,7 @@ Riassunto operativo di ciò che le delibere impongono a chi scriverà il codice.
 
 **Per superare una decisione**: `⊘ Superata da Dn`. Mai cancellata. Le quattro supersessioni già presenti sono la prova che la disciplina serve.
 
-**Per aggiungere una decisione**: numerazione in continuità da **D109**. **D104** resta riservata alla proposta di `13-perimetro-guidato.md`; **D105** e **D106** sono deliberate in §19. D87–D91 sono deliberate (§14, §15); D92 è corretta; **D93** è deliberata (§16.4.1); **D94–D96** sono deliberate in §17; **D97–D103** e **D107** in §18.
+**Per aggiungere una decisione**: numerazione in continuità da **D109**. **D104**, **D105** e **D106** sono deliberate in §19, insieme a **D108** che ne era il presupposto mancante. D87–D91 sono deliberate (§14, §15); D92 è corretta; **D93** è deliberata (§16.4.1); **D94–D96** sono deliberate in §17; **D97–D103** e **D107** in §18.
 
 **Vincoli aggiunti in delibera.** Le dodici decisioni marcate ⊡ portano una condizione che è parte della decisione: rimuoverla è modificare la decisione, non semplificarla.
 
@@ -1071,3 +1072,21 @@ Tre test Odoo sono falliti dopo D106, e nessuno per causa sua: `nli_test` contie
 **Chi legge e chi scrive.** Lettura a ogni utente interno, scrittura al solo amministratore. La lettura non e' una cortesia: il percorso di interrogazione ha il divieto di elevare i privilegi (§6.3), quindi il runtime legge queste righe con i diritti di chi chiede. Cio' che protegge il catalogo non e' l'invisibilita' della riga — e' il filtro che tiene solo le voci la cui entita' quell'utente puo' leggere, e c'e' un test che lo mostra.
 
 **13 test puri** sulla traduzione e **13 test Odoo** sull'approvazione, fra cui quello che conta piu' di tutti: un filtro salvato **non diventa una categoria da solo** (D28). 94 test Odoo verdi.
+
+### 19.5 D104 — Il vocabolario visibile, e chi possiede quali parole
+
+**Il difetto non e' del modello.** `13` §1.2: l'utente ha davanti una casella vuota e nessun indizio su cosa il sistema sappia fare, deve indovinare, e quando sbaglia il rifiuto non gli dice cosa scrivere di diverso. Nel frattempo il sistema **possiede gia'** l'elenco delle parole che riconosce, e lo mostra soltanto al modello.
+
+**Suggerito, mai imposto.** L'opzione del perimetro obbligatorio e' stata cercata per prima e scartata con tre argomenti (`13` §3): il prodotto sparirebbe — sarebbe un modulo a tendine con una casella davanti, e Odoo le tendine le ha gia'; i numeri diventerebbero falsi, perche' l'accuratezza salirebbe togliendo i casi difficili; e le persone non parlano per sostantivi, scrivono *«chi mi deve dei soldi»*.
+
+**Due generi di parola, e uno solo e' nostro.** I termini del cliente — *«scadute»*, il nome di una colonna — vengono dal catalogo e si mostrano **come li ha scritti il cliente**: tradurli sostituirebbe il vocabolario dell'azienda con quello del fornitore, che e' l'opposto di cio' per cui un dizionario si costruisce dall'installazione. Le formulazioni del prodotto — i periodi, la forma di un confronto — sono nostre, chiuse, uguali per ogni installazione, e passano dalla traduzione come ogni altra stringa.
+
+Da qui la divisione: la **struttura** la deriva la zona pura di `catalogue/perimeter.py`, che e' una funzione dei suoi argomenti e non ha lingua; le **parole** le mette `nli_web`, che ha un utente. I periodi viaggiano con il proprio simbolo accanto alla parola, perche' una parola e' cio' che l'utente dice e un simbolo e' cio' che il contratto ammette.
+
+**Tre esclusioni, ognuna con la sua ragione.** Un periodo che richiede un argomento — *«ultimi N giorni»* — non e' un suggerimento: offrirlo senza la N produce una frase che l'utente deve finire. Le date assolute sono dell'utente. Un confronto si offre solo su cio' su cui significa qualcosa: proporlo su un cliente o su uno stato insegnerebbe l'errore che **D103** ha reso inesprimibile.
+
+**La garanzia che rende sicuro un suggerimento**: il perimetro nasce dallo **stesso catalogo che vede il modello**, costruito con i diritti di chi chiede. Le regole di esposizione e il budget di D31/D79 sono gia' stati applicati, quindi un utente che non puo' leggere gli importi non se li vede proporre, e nessun suggerimento puo' contenere qualcosa che il sistema non sa fare. Un perimetro assemblato altrove sarebbe una seconda via alla stessa informazione, senza le stesse guardie.
+
+**Resta all'interfaccia** la parte visiva: dove compaiono i suggerimenti, come si scelgono, come si compongono con il testo gia' scritto. E' parte 7, e questa decisione le consegna i dati gia' filtrati.
+
+7 test puri sulla struttura, 9 Odoo sulle parole e sulla derivazione. 101 test Odoo verdi.
