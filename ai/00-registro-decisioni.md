@@ -211,6 +211,7 @@ Le decisioni sono state valutate contro quattro obiettivi dichiarati — **sempl
 | **D101** | I **riferimenti** sono un insieme chiuso nello schema del turno | ☑ Adottata | §18.5. C1 da prosa a struttura. Misurato: riparazioni dal 25% al 5%, rese da 2 a 0, `order_by` da 70% a 97,5%. Senza catalogo lo schema resta quello generale, che è ciò che `emit_schema.py` scrive |
 | **D102** | I riferimenti hanno **tre generi** — entità, attributi, categorie — e ogni operazione ammette solo il proprio | ☑ Adottata | §18.5. D101 aveva chiuso l'insieme lasciandolo piatto, e il modello ha chiesto un'entità come colonna. Una categoria è solo la condizione: dietro non c'è un campo da mostrare |
 | **D103** | Il **predicato** e' vincolato dal tipo dell'attributo gia' nello schema del turno | ☑ Adottata | §18.7. §8.1 accoppiava tipo e predicati e solo il livello 3 lo leggeva: *«clienti sopra i 1000»* era scrivibile. Misurato: +5 casi su `filter`, riparazioni dal 3,6% al 2,9%. Un tipo non dichiarato conserva l'insieme intero |
+| **D107** | Modello di riferimento: **`qwen3.5:9b`** | ☑ Adottata — **dall'Architect** | §18.8. Deliberata il 29/07/2026 su basi architetturali, con il confronto empirico contro `granite4.1:8b` **interrotto prima di produrre un numero**. Le ragioni sono in §18.8, e cosi' e' il limite della delibera |
 
 ---
 
@@ -424,7 +425,7 @@ Riassunto operativo di ciò che le delibere impongono a chi scriverà il codice.
 
 **Per superare una decisione**: `⊘ Superata da Dn`. Mai cancellata. Le quattro supersessioni già presenti sono la prova che la disciplina serve.
 
-**Per aggiungere una decisione**: numerazione in continuità da **D104**. D87–D91 sono deliberate (§14, §15); D92 è corretta; **D93** è deliberata (§16.4.1); **D94–D96** sono deliberate in §17; **D97–D103** in §18.
+**Per aggiungere una decisione**: numerazione in continuità da **D108**. **D104–D106 sono riservate** alla proposta di `13-perimetro-guidato.md`, non ancora deliberata. D87–D91 sono deliberate (§14, §15); D92 è corretta; **D93** è deliberata (§16.4.1); **D94–D96** sono deliberate in §17; **D97–D103** e **D107** in §18.
 
 **Vincoli aggiunti in delibera.** Le dodici decisioni marcate ⊡ portano una condizione che è parte della decisione: rimuoverla è modificare la decisione, non semplificarla.
 
@@ -868,7 +869,7 @@ Tre ragioni per cui la prima riga di questa tabella non e' la prova di D27, tutt
 
 ## 18. Le delibere della qualificazione del profilo (28–29 luglio 2026)
 
-Sette decisioni nate misurando un modello vero invece di ragionare su come si sarebbe comportato. Tre di esse correggono un difetto **nostro** che la misura attribuiva al modello, ed e' la ragione per cui questa sezione esiste: la prima misura di un fornitore non misura solo il fornitore.
+Otto decisioni nate misurando un modello vero invece di ragionare su come si sarebbe comportato. Tre di esse correggono un difetto **nostro** che la misura attribuiva al modello, ed e' la ragione per cui questa sezione esiste: la prima misura di un fornitore non misura solo il fornitore.
 
 ### 18.1 D97 — Un fornitore finto con latenza vera, e perche' non e' una porta di servizio
 
@@ -966,3 +967,24 @@ Un attributo di tipo non dichiarato conserva l'insieme intero: indovinare quali 
 **Guadagno misurato, e piu' piccolo del previsto**: `filter` da 72,5% a 73,6% su 444 aperture, cioe' cinque casi; riparazioni dal 3,6% al 2,9%. La previsione era «la stessa mossa di D101 e D102», che ne avevano spostati venti. L'errore di previsione ha una spiegazione utile: D101 e D102 rimuovevano l'**impossibile** — un riferimento inesistente, un'entita' chiesta come colonna — e quella era la classe dominante. I fallimenti residui di `filter` sono predicati **possibili e sbagliati**, che nessuna grammatica distingue.
 
 **Un difetto di misura chiuso di conseguenza.** §17.5 aveva rilevato che i tipi di `fields_get` non sono i tipi di §8.1, e `build()` accetta per questo un `type_map`; lo strumento di misura del corpus non lo passava, quindi esercitava un catalogo con i tipi di Odoo (`many2one`, `selection`) che nessuna installazione produce. Finche' i tipi servivano solo a scrivere il catalogo era cosmetico; con D103, che ne deriva i predicati, diventa sostanziale. Ora `misura_accuratezza.py` passa `CONTRACT_TYPE_BY_ODOO_TYPE`, la stessa mappa dell'introspezione.
+
+### 18.8 D107 — Il modello di riferimento, e cosa non sappiamo di lui
+
+**Deliberata dall'Architect il 29/07/2026: `qwen3.5:9b`.** La registro con il suo limite in evidenza, perche' e' l'unica forma onesta.
+
+**Cosa e' misurato.** Su tutte le 444 aperture del corpus, `qwen3.5:9b` con generazione vincolata e ragionamento spento porta sette sezioni su otto sopra la soglia di D44: `target` 98,4%, `fields` 88,1%, `group_by` e `order_by` 93%, `limit` 94,4%, `measures` e `presentation` 98,4%. Resta `filter` a 73,6%.
+
+**Cosa non e' misurato, e va detto per primo.** Il confronto testa a testa con `granite4.1:8b` — Apache 2.0, 8,8 miliardi di parametri, 5,3 GB — e' stato **avviato e interrotto** su decisione dell'Architect prima di produrre un numero. Esiste una sola sonda su un caso: su `F00145` (*«voglio vedere ordini lo scorso mese i primi 5 ordinati per data documento»*), dove `qwen3.5:9b` produce una condizione nominata senza rapporto con la frase, `granite4.1:8b` produce la condizione temporale corretta nella forma sbagliata (`last_n_months` con `n=1` invece di `previous_month`) e prende anche il limite, che qwen perde. **Un caso non e' una misura**, e questa riga esiste perche' fra sei mesi nessuno possa credere che il confronto sia stato fatto.
+
+**Le ragioni architetturali della scelta, che non dipendono dalla misura mancante.**
+
+| | |
+|---|---|
+| **Multimodalita' nativa** | `qwen3.5:9b` dichiara `vision` fra le proprie capacita': testo e immagini nello stesso modello. `granite4.1:8b` e' solo testo, e IBM tratta le immagini con un modello separato della stessa famiglia |
+| **Un modello invece di due** | La **Fase 6** di `02` §15 (voce e comprensione documentale) con granite richiederebbe un secondo modello, quindi un secondo protocollo di qualificazione **D51** — otto passi, prova di isolamento inclusa — per sempre, a ogni aggiornamento |
+| **Copertura linguistica** | Oltre 200 lingue dichiarate contro la dozzina di granite. Ogni enunciato e ogni termine del dizionario sono italiani |
+| **Licenza** | Apache 2.0 entrambi: nessuna differenza, e nessun vincolo su **D8** (tutte le modalita' di erogazione supportate) |
+
+**Un rilievo a favore di granite, registrato perche' e' vero e perche' ha gia' fatto danno una volta.** Il pacchetto di `granite4.1:8b` **non porta parametri precotti**; quello di `qwen3.5:9b` ne porta tre, fra cui `presence_penalty 1.5`, che scoraggia i gettoni gia' emessi mentre la busta del contratto ripete `"op"`, `"ref"` e `"provenance"` a ogni operazione. E' un parametro che lavora contro il compito, l'adattatore ne sovrascrive uno solo (`temperature`), ed e' uno dei tre guasti di configurazione trovati in §18.2. **Chi mantiene questo profilo deve saperlo.**
+
+**Cosa rimane aperto.** Se `filter` non salira' con le decisioni del perimetro guidato (D104–D106, proposte in `13`), la domanda *«e' del compito o del modello?»* tornera' senza risposta, e l'unico modo di risponderle e' rifare la misura interrotta. Il modello e' scaricato, il comando e' quello di §5.1 con `--profilo granite4.1:8b`, e la riga di comando e' identica: verificato che `reasoning_effort` su un modello senza modalita' di ragionamento e' inerte, risposta identica con e senza.
