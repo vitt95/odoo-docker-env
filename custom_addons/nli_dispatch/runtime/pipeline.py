@@ -30,6 +30,7 @@ from odoo.addons.nli_core.presentation import presenter
 from odoo.addons.nli_core.resolution import calendar as calendar_module
 from odoo.addons.nli_core.resolution import resolver as resolver_module
 from odoo.addons.nli_core.validation import contextual
+from odoo.addons.nli_semantics.dictionary import grounding
 from odoo.addons.nli_engine import interpreter as interpreter_module
 
 #: Outcomes that end the turn without an execution. None of them is a failure of the
@@ -103,7 +104,11 @@ def run(env, item, *, adapter, scope, context_window: int) -> Outcome:
 
     # --- levels 3-5, with the dictionary this user actually has --------------
     failures = contextual.validate(
-        new_state, known_refs=frozenset(semantics.bindings), types=types)
+        new_state, known_refs=frozenset(semantics.bindings), types=types,
+        # D105: the dictionary decides what counts as mentioning a term, because it
+        # is the only component that knows the accents, the typos and the
+        # abbreviations. `nli_core` receives the answer, never the vocabulary.
+        mentions=grounding.mentions_of(semantics.dictionary))
     if failures:
         # A validated envelope that produces an invalid state is a defect of ours,
         # not of the request: the user is told we did not understand (§12.7), and the

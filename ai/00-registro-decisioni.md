@@ -211,6 +211,7 @@ Le decisioni sono state valutate contro quattro obiettivi dichiarati — **sempl
 | **D101** | I **riferimenti** sono un insieme chiuso nello schema del turno | ☑ Adottata | §18.5. C1 da prosa a struttura. Misurato: riparazioni dal 25% al 5%, rese da 2 a 0, `order_by` da 70% a 97,5%. Senza catalogo lo schema resta quello generale, che è ciò che `emit_schema.py` scrive |
 | **D102** | I riferimenti hanno **tre generi** — entità, attributi, categorie — e ogni operazione ammette solo il proprio | ☑ Adottata | §18.5. D101 aveva chiuso l'insieme lasciandolo piatto, e il modello ha chiesto un'entità come colonna. Una categoria è solo la condizione: dietro non c'è un campo da mostrare |
 | **D103** | Il **predicato** e' vincolato dal tipo dell'attributo gia' nello schema del turno | ☑ Adottata | §18.7. §8.1 accoppiava tipo e predicati e solo il livello 3 lo leggeva: *«clienti sopra i 1000»* era scrivibile. Misurato: +5 casi su `filter`, riparazioni dal 3,6% al 2,9%. Un tipo non dichiarato conserva l'insieme intero |
+| **D105** | Una **condizione nominata** non fondata nel proprio frammento e' rifiutata al livello 3 | ☑ Adottata | §19.1. Misurato su 80 aperture: **11 filtri sbagliati diventati rifiuti, 0 filtri corretti rifiutati**. Il confronto e' con la provenienza, non con l'enunciato, perche' un raffinamento porta avanti le condizioni dei turni precedenti. Riconoscitore condiviso con la Fase A |
 | **D107** | Modello di riferimento: **`qwen3.5:9b`** | ☑ Adottata — **dall'Architect** | §18.8. Deliberata il 29/07/2026 su basi architetturali, con il confronto empirico contro `granite4.1:8b` **interrotto prima di produrre un numero**. Le ragioni sono in §18.8, e cosi' e' il limite della delibera |
 
 ---
@@ -425,7 +426,7 @@ Riassunto operativo di ciò che le delibere impongono a chi scriverà il codice.
 
 **Per superare una decisione**: `⊘ Superata da Dn`. Mai cancellata. Le quattro supersessioni già presenti sono la prova che la disciplina serve.
 
-**Per aggiungere una decisione**: numerazione in continuità da **D108**. **D104–D106 sono riservate** alla proposta di `13-perimetro-guidato.md`, non ancora deliberata. D87–D91 sono deliberate (§14, §15); D92 è corretta; **D93** è deliberata (§16.4.1); **D94–D96** sono deliberate in §17; **D97–D103** e **D107** in §18.
+**Per aggiungere una decisione**: numerazione in continuità da **D108**. **D104 e D106** restano riservate alla proposta di `13-perimetro-guidato.md`; **D105** e' deliberata in §19.1. D87–D91 sono deliberate (§14, §15); D92 è corretta; **D93** è deliberata (§16.4.1); **D94–D96** sono deliberate in §17; **D97–D103** e **D107** in §18.
 
 **Vincoli aggiunti in delibera.** Le dodici decisioni marcate ⊡ portano una condizione che è parte della decisione: rimuoverla è modificare la decisione, non semplificarla.
 
@@ -988,3 +989,44 @@ Un attributo di tipo non dichiarato conserva l'insieme intero: indovinare quali 
 **Un rilievo a favore di granite, registrato perche' e' vero e perche' ha gia' fatto danno una volta.** Il pacchetto di `granite4.1:8b` **non porta parametri precotti**; quello di `qwen3.5:9b` ne porta tre, fra cui `presence_penalty 1.5`, che scoraggia i gettoni gia' emessi mentre la busta del contratto ripete `"op"`, `"ref"` e `"provenance"` a ogni operazione. E' un parametro che lavora contro il compito, l'adattatore ne sovrascrive uno solo (`temperature`), ed e' uno dei tre guasti di configurazione trovati in §18.2. **Chi mantiene questo profilo deve saperlo.**
 
 **Cosa rimane aperto.** Se `filter` non salira' con le decisioni del perimetro guidato (D104–D106, proposte in `13`), la domanda *«e' del compito o del modello?»* tornera' senza risposta, e l'unico modo di risponderle e' rifare la misura interrotta. Il modello e' scaricato, il comando e' quello di §5.1 con `--profilo granite4.1:8b`, e la riga di comando e' identica: verificato che `reasoning_effort` su un modello senza modalita' di ragionamento e' inerte, risposta identica con e senza.
+
+
+---
+
+## 19. Le delibere del perimetro guidato (29 luglio 2026)
+
+Proposte in `13-perimetro-guidato.md` su iniziativa dell'Architect. Deliberate una per volta, misurando.
+
+### 19.1 D105 — La condizione nominata dev'essere fondata
+
+**Il difetto, misurato.** Diagnosi su 80 aperture con `qwen3.5:9b`: dodici fallimenti su ventuno di `filter` erano lo stesso — un frammento che non nomina alcuna condizione trasformato in condizione nominata, perche' e' la piu' economica da scrivere: nessun valore, nessun `kind`, nessuna espressione.
+
+```
+'voglio vedere ordini lo scorso mese i primi 5'
+  -> is_category(ordini_vendita.in_bozza)  provenance: "lo scorso mese"
+```
+
+La provenienza e' la confessione. §10.3 la definisce come *il frammento della frase che ha prodotto l'operazione*, quindi una condizione nominata il cui frammento non contiene alcuno dei suoi termini e' infondata **per la definizione stessa del contratto** — e accorgersene richiede di confrontare due elenchi, non di capire l'italiano.
+
+**Tre scelte di costruzione, ognuna con la sua ragione.**
+
+Il confronto e' con la **provenienza** e non con l'enunciato: un turno di raffinamento porta avanti le condizioni dei turni precedenti, i cui frammenti appartengono a frasi che nessuno sta piu' dicendo. Confrontarle con l'enunciato corrente rifiuterebbe l'intera conversazione al secondo turno.
+
+Il riconoscitore e' **quello della Fase A**, iniettato come funzione perche' `nli_core` non dipende da nulla (`tools/arch/spec.py`). Il corpus perturba le proprie frasi con refusi, accenti mancanti, abbreviazioni e minuscole di proposito (D83), e gli utenti fanno lo stesso senza che nessuno glielo chieda: un confronto letterale rifiuterebbe risposte corrette, trasformando una protezione in un difetto. Due nozioni diverse di *stessa parola* sarebbero un guasto peggiore di quello che si corregge.
+
+Sono giudicate **solo le condizioni nominate**. Un confronto porta un valore che l'utente ha detto: non esiste un vocabolario contro cui verificarlo, e inventarne uno rifiuterebbe filtri legittimi.
+
+**Misura sul campo, 80 aperture:**
+
+| | filtro sbagliato | filtro corretto |
+|---|---|---|
+| **il controllo scatta** | **11** | **0** |
+| il controllo non scatta | 9 | 59 |
+
+Undici risposte sbagliate diventate rifiuti, **zero risposte corrette rifiutate**. Fra i casi presi, `F00752` — *«voglio vedere prelievi»*, una frase senza alcun filtro a cui il modello ne attaccava uno.
+
+**Il limite dello zero, dichiarato.** Il denominatore non e' 80: il controllo puo' sbagliare solo dove una condizione nominata c'e' e il filtro era corretto, che e' una frazione dei 59. Su un numero piccolo uno zero significa *raro*, non *impossibile*, e la misura va rifatta sulle 444.
+
+**Il segno dell'effetto.** L'accuratezza **non sale**: quelle undici passano da sbagliate a rifiutate e restano fuori dalla colonna degli esatti. Era previsto in `12` §Parte 8a prima di misurare, ed e' il compromesso che **D2** chiede — un filtro inventato mostra *meno* record con sicurezza, e chi guarda non ha modo di accorgersene. Un rifiuto e' un errore che si vede.
+
+**Cosa non copre.** I nove fallimenti residui sono di altre famiglie — una condizione dimenticata, un predicato possibile e sbagliato, un valore preso male — e nessun controllo di fondatezza li tocca.

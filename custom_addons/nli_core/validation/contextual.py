@@ -69,6 +69,57 @@ def validate_resolution(state: dict, *, known_refs: frozenset[str]) -> list[Fail
     return failures
 
 
+def validate_grounding(state: dict, *, mentions) -> list[Failure]:
+    """Level 3 — a named condition must be grounded in what the user said (**D105**).
+
+    **The failure this exists for.** Measured on 80 openings with `qwen3.5:9b`: twelve
+    failures out of twenty-one were the same one — a fragment naming no condition at
+    all turned into a named condition, because a named condition is the cheapest thing
+    to write. No value, no `kind`, no expression.
+
+        'voglio vedere ordini lo scorso mese'
+          -> is_category(ordini_vendita.in_bozza), provenance "lo scorso mese"
+
+    The provenance is the confession: §10.3 defines it as *the fragment of the sentence
+    that produced this operation*, so a named condition whose fragment contains none of
+    its terms is unfounded **by the contract's own definition** — and noticing it takes
+    comparing two lists, not understanding Italian.
+
+    **Why it compares against the provenance and not against the utterance.** A
+    refinement turn carries forward the conditions of the previous turns, whose
+    fragments belong to sentences nobody is saying any more. Checking them against the
+    current utterance would reject the whole conversation at the second turn. The
+    provenance travels with the condition, so the check is self-contained.
+
+    **What this changes, said with the right sign.** It does not make the answer right:
+    it makes the wrong one refused. Repairs go up, silently wrong filters go down, and
+    accuracy may not move at all. That is the trade **D2** asks for — a wrong filter
+    shows *fewer* records with confidence, and the user has no way to see it.
+
+    `mentions(ref, text)` is injected because deciding what counts as *mentioning* a
+    term belongs to the dictionary, which knows about accents, typos and abbreviations,
+    and `nli_core` depends on nothing (`tools/arch/spec.py`).
+    """
+    failures: list[Failure] = []
+    for condition in state_module.conditions(state.get("filter")):
+        if condition.get("predicate") != "is_category":
+            continue
+        reference = condition.get("ref", "")
+        text = ((condition.get("provenance") or {}).get("text") or "").strip()
+        if text and mentions(reference, text):
+            continue
+        failures.append(_failure(
+            3, "ungrounded_category", reference,
+            f"the named condition {reference!r} is not mentioned by the fragment it "
+            f"claims to come from ({text!r}); §10.3 defines the provenance as the "
+            "fragment that produced the operation, so this condition was not asked "
+            "for" if text else
+            f"the named condition {reference!r} carries no provenance, so there is "
+            "nothing that shows the user asked for it (§10.3)",
+        ))
+    return failures
+
+
 def validate_types(state: dict, *, types: dict[str, str]) -> list[Failure]:
     """Level 4 — the half that needs the attribute's type (§12.5).
 
@@ -162,6 +213,7 @@ def validate(
     known_refs: frozenset[str],
     types: dict[str, str],
     category_costs: dict[str, str] | None = None,
+    mentions=None,
     limits: Limits = DEFAULT_LIMITS,
 ) -> list[Failure]:
     """Levels 3, 4 and 5 in sequence; the first that fails stops the chain (§12.2).
@@ -169,10 +221,22 @@ def validate(
     Level 4 is not run on references level 3 could not resolve: a type read from a
     reference that does not exist is not a type, and reporting both would bury the
     one failure that carries a remedy under one that does not.
+
+    `mentions` omitted means the grounding of D105 is **not checked**. It is optional
+    only because a caller with no dictionary at hand — a test on the contract alone —
+    has nothing to check it with; every caller that has one passes it, and the
+    pipeline is the one that matters.
     """
     level3 = validate_resolution(state, known_refs=known_refs)
     if level3:
         return level3
+    if mentions is not None:
+        # Same level: both ask whether what the state names exists in the user's
+        # world. One asks whether the reference exists, the other whether the user
+        # asked for it.
+        grounding = validate_grounding(state, mentions=mentions)
+        if grounding:
+            return grounding
     level4 = validate_types(state, types=types)
     if level4:
         return level4
