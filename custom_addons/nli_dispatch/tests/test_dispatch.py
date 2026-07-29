@@ -35,7 +35,7 @@ from ..queue import limits as limits_module
 from ..runtime import claim as claim_module
 from ..runtime import pipeline as pipeline_module
 
-UTTERANCE = "mostrami le aziende di Milano"
+UTTERANCE = "mostrami le aziende di Cittaprova"
 
 
 def set_key(value):
@@ -122,7 +122,7 @@ class TestAcceptance(DispatchCase):
     def test_the_utterance_is_never_stored_in_clear(self):
         """D96, and the reason part 4 stripped provenance in the first place."""
         item = self.accept()
-        self.assertNotIn("Milano", item.utterance_sealed)
+        self.assertNotIn("Cittaprova", item.utterance_sealed)
         self.assertNotIn(UTTERANCE, item.utterance_sealed)
         self.assertEqual(item.utterance(), UTTERANCE)
 
@@ -309,7 +309,7 @@ class TestTheChain(DispatchCase):
     def setUp(self):
         super().setUp()
         self.env["res.partner"].create([
-            {"name": "Alfa SpA", "city": "Milano", "is_company": True},
+            {"name": "Alfa SpA", "city": "Cittaprova", "is_company": True},
             {"name": "Gamma Srl", "city": "Roma", "is_company": True},
         ])
         self.scope = ("res.partner",)
@@ -321,7 +321,7 @@ class TestTheChain(DispatchCase):
             context_window=32_000)
 
     def test_a_turn_runs_end_to_end_and_persists_its_state(self):
-        item = self.accept("le aziende di Milano")
+        item = self.accept("le aziende di Cittaprova")
         outcome = self.run_pipeline(item, [
             # Phase B: which entity? Then phase C: the whole request.
             envelope(target("res_partner")),
@@ -329,8 +329,8 @@ class TestTheChain(DispatchCase):
                 target("res_partner"),
                 {"op": "add_condition", "combine": "all",
                  "condition": {"ref": "res_partner.city", "predicate": "equals",
-                               "value": {"kind": "text", "text": "Milano"}},
-                 "provenance": {"text": "di Milano"}},
+                               "value": {"kind": "text", "text": "Cittaprova"}},
+                 "provenance": {"text": "di Cittaprova"}},
             ),
         ])
         self.assertEqual(outcome.outcome, "operations", outcome.failures)
@@ -387,7 +387,7 @@ class TestTheChain(DispatchCase):
         self.assertIs(first, second)
 
     def test_the_utterance_is_erased_when_the_turn_completes(self):
-        item = self.accept("le aziende di Milano")
+        item = self.accept("le aziende di Cittaprova")
         outcome = self.run_pipeline(item, [
             envelope(target("res_partner")),
             envelope(target("res_partner")),

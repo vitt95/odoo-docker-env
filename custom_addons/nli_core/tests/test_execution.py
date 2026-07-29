@@ -42,7 +42,7 @@ TYPES = {
 
 
 def hand_written_state(**sections) -> dict:
-    """*"Le aziende di Milano, con nome e città, le prime 5."*"""
+    """*"Le aziende di Cittaprova, con nome e città, le prime 5."*"""
     state = {
         "dsl_version": "1.0",
         "target": {"ref": "clienti", "origin": "user"},
@@ -50,7 +50,7 @@ def hand_written_state(**sections) -> dict:
             {"id": "c1", "ref": "clienti.e_azienda", "predicate": "is_true",
              "origin": "user"},
             {"id": "c2", "ref": "clienti.citta", "predicate": "equals",
-             "value": {"kind": "text", "text": "Milano"}, "origin": "user"},
+             "value": {"kind": "text", "text": "Cittaprova"}, "origin": "user"},
         ]},
         "fields": [
             {"ref": "clienti.nome", "origin": "user"},
@@ -72,10 +72,10 @@ class TestEndToEnd(TransactionCase):
     def setUp(self):
         super().setUp()
         self.env["res.partner"].create([
-            {"name": "Alfa SpA", "city": "Milano", "is_company": True},
-            {"name": "Beta Srl", "city": "Milano", "is_company": True},
+            {"name": "Alfa SpA", "city": "Cittaprova", "is_company": True},
+            {"name": "Beta Srl", "city": "Cittaprova", "is_company": True},
             {"name": "Gamma", "city": "Roma", "is_company": True},
-            {"name": "Mario Rossi", "city": "Milano", "is_company": False},
+            {"name": "Mario Rossi", "city": "Cittaprova", "is_company": False},
         ])
 
     def resolve(self, state):
@@ -103,7 +103,7 @@ class TestEndToEnd(TransactionCase):
         action = shown.action()
         self.assertEqual(action["res_model"], "res.partner")
         self.assertEqual(action["view_mode"], "list")
-        self.assertIn(("city", "=", "Milano"), action["domain"])
+        self.assertIn(("city", "=", "Cittaprova"), action["domain"])
 
     def test_the_count_precedes_the_retrieval(self):
         """D68 — eighty records with no context are read as **all of them**."""

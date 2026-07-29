@@ -212,6 +212,7 @@ Le decisioni sono state valutate contro quattro obiettivi dichiarati — **sempl
 | **D102** | I riferimenti hanno **tre generi** — entità, attributi, categorie — e ogni operazione ammette solo il proprio | ☑ Adottata | §18.5. D101 aveva chiuso l'insieme lasciandolo piatto, e il modello ha chiesto un'entità come colonna. Una categoria è solo la condizione: dietro non c'è un campo da mostrare |
 | **D103** | Il **predicato** e' vincolato dal tipo dell'attributo gia' nello schema del turno | ☑ Adottata | §18.7. §8.1 accoppiava tipo e predicati e solo il livello 3 lo leggeva: *«clienti sopra i 1000»* era scrivibile. Misurato: +5 casi su `filter`, riparazioni dal 3,6% al 2,9%. Un tipo non dichiarato conserva l'insieme intero |
 | **D105** | Una **condizione nominata** non fondata nel proprio frammento e' rifiutata al livello 3 | ☑ Adottata | §19.1. Misurato su 80 aperture: **11 filtri sbagliati diventati rifiuti, 0 filtri corretti rifiutati**. Il confronto e' con la provenienza, non con l'enunciato, perche' un raffinamento porta avanti le condizioni dei turni precedenti. Riconoscitore condiviso con la Fase A |
+| **D106** | Il rifiuto di D105 **propone**: `clarification` con letture derivate dal catalogo | ☑ Adottata | §19.2. Le opzioni sono derivate, mai chieste al modello (P4): chi ha appena inventato una condizione e' l'ultimo a cui chiedere le alternative. Meno di due letture, nessuna domanda |
 | **D107** | Modello di riferimento: **`qwen3.5:9b`** | ☑ Adottata — **dall'Architect** | §18.8. Deliberata il 29/07/2026 su basi architetturali, con il confronto empirico contro `granite4.1:8b` **interrotto prima di produrre un numero**. Le ragioni sono in §18.8, e cosi' e' il limite della delibera |
 
 ---
@@ -426,7 +427,7 @@ Riassunto operativo di ciò che le delibere impongono a chi scriverà il codice.
 
 **Per superare una decisione**: `⊘ Superata da Dn`. Mai cancellata. Le quattro supersessioni già presenti sono la prova che la disciplina serve.
 
-**Per aggiungere una decisione**: numerazione in continuità da **D108**. **D104 e D106** restano riservate alla proposta di `13-perimetro-guidato.md`; **D105** e' deliberata in §19.1. D87–D91 sono deliberate (§14, §15); D92 è corretta; **D93** è deliberata (§16.4.1); **D94–D96** sono deliberate in §17; **D97–D103** e **D107** in §18.
+**Per aggiungere una decisione**: numerazione in continuità da **D108**. **D104** resta riservata alla proposta di `13-perimetro-guidato.md`; **D105** e **D106** sono deliberate in §19. D87–D91 sono deliberate (§14, §15); D92 è corretta; **D93** è deliberata (§16.4.1); **D94–D96** sono deliberate in §17; **D97–D103** e **D107** in §18.
 
 **Vincoli aggiunti in delibera.** Le dodici decisioni marcate ⊡ portano una condizione che è parte della decisione: rimuoverla è modificare la decisione, non semplificarla.
 
@@ -1030,3 +1031,26 @@ Undici risposte sbagliate diventate rifiuti, **zero risposte corrette rifiutate*
 **Il segno dell'effetto.** L'accuratezza **non sale**: quelle undici passano da sbagliate a rifiutate e restano fuori dalla colonna degli esatti. Era previsto in `12` §Parte 8a prima di misurare, ed e' il compromesso che **D2** chiede — un filtro inventato mostra *meno* record con sicurezza, e chi guarda non ha modo di accorgersene. Un rifiuto e' un errore che si vede.
 
 **Cosa non copre.** I nove fallimenti residui sono di altre famiglie — una condizione dimenticata, un predicato possibile e sbagliato, un valore preso male — e nessun controllo di fondatezza li tocca.
+
+### 19.2 D106 — Un rifiuto che propone
+
+D105 trasforma un filtro inventato in un rifiuto, che e' gia' il compromesso chiesto da **D2**. Ma un *«non ho capito»* nudo lascia l'utente dov'era, senza sapere cosa scrivere di diverso. Le opzioni sono anche il punto in cui il perimetro di `13` **insegna**: si imparano tre modi di dire una cosa scegliendone uno.
+
+**Derivate, mai chieste al modello.** §5.9 fissa il principio per la vista — *«chiedere al modello di scegliere la vista violerebbe C2/P4: e' una decisione derivabile»* — e qui vale identico. Stabilito che una condizione nominata non e' fondata, le letture plausibili sono derivabili: o la condizione non e' stata chiesta, o l'utente intendeva una delle condizioni nominate che quell'entita' possiede. **Un modello che ha appena inventato una condizione e' l'ultimo a cui chiedere le sue alternative.**
+
+Quattro vincoli, ognuno con il suo argomento:
+
+* **una domanda per volta.** Con due condizioni infondate la domanda porterebbe due assi insieme e un'opzione dovrebbe combinare una scelta su ciascuno; §4.4 ammette una lista da due a quattro, non una matrice;
+* **la prima lettura e' sempre *senza la condizione***, ed e' l'unica sempre disponibile: se l'utente non ha detto nulla che nomini una condizione, non filtrare e' una lettura fedele;
+* **non si propone una condizione che la frase gia' porta**: offrire all'utente un filtro sotto cui e' gia' non e' una scelta;
+* **meno di due letture, nessuna domanda.** Un'opzione sola non e' una domanda, e un rifiuto che finge di offrire una scelta e' peggio di uno che ammette di non averla. In quel caso l'esito resta `not_understood`.
+
+**La divisione del lavoro fra le zone.** Le operazioni di ogni lettura sono costruite nella zona pura, che non ha lingua; le parole della domanda e delle etichette nella catena, che ha quella dell'utente. Un modulo puro che producesse testo per l'utente sarebbe un modulo puro con dentro una lingua.
+
+**Un limite che vale per entrambe le decisioni, e non e' piccolo.** In un'installazione viva le condizioni nominate nascono dai filtri salvati di Odoo ed entrano nella **coda L3**, che `store.py` ignora finche' qualcuno non le approva. Oggi quindi un'installazione reale **non ha alcuna condizione nominata attiva**: il modello non puo' emettere `is_category`, D105 non ha nulla da controllare e D106 nulla da proporre. Il corpus le ha (L1), quindi la misura esercita lo stato **futuro** del prodotto — quello in cui i filtri sono stati approvati. Le due decisioni sono corrette e necessarie; il loro effetto sul campo comincia con la prima approvazione.
+
+### 19.3 Un difetto trovato eseguendo la suite, che non era del codice
+
+Tre test Odoo sono falliti dopo D106, e nessuno per causa sua: `nli_test` contiene **50 004 partner**, di cui 49 943 seminati dal popolatore del banco di carico (D97). I tre test asserivano conteggi esatti su `res.partner` e usavano *«Milano»* come citta' di prova — la stessa che il popolatore distribuisce.
+
+**Un test che passa solo su una banca dati vuota non e' un test**, ed e' esattamente la situazione che ogni cliente reale presenta il primo giorno. Corretto alla radice: le prove usano ora una citta' che nessun popolatore produce, e restano deterministiche su qualunque volume. Tutti gli 83 test Odoo passano su una base con cinquantamila record.

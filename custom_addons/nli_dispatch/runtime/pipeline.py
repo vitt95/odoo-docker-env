@@ -23,8 +23,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from odoo import fields as odoo_fields
-from odoo.addons.nli_core.application import applicator, completion
+from odoo import _, fields as odoo_fields
+from odoo.addons.nli_core.application import alternatives, applicator, completion
+from odoo.addons.nli_core.contract.vocabulary import DSL_VERSION
 from odoo.addons.nli_core.execution import executor
 from odoo.addons.nli_core.presentation import presenter
 from odoo.addons.nli_core.resolution import calendar as calendar_module
@@ -37,6 +38,58 @@ from odoo.addons.nli_engine import interpreter as interpreter_module
 #: system: a clarification is the contract working (§4.4), and `out_of_scope` is the
 #: product declining honestly rather than answering something adjacent.
 TERMINAL_OUTCOMES = ("clarification", "out_of_scope", "not_understood")
+
+
+def _clarification_for(failures, operations, catalogue) -> dict | None:
+    """The envelope of a question, when the refusal has a remedy the user can act on.
+
+    **D106.** Only ungrounded named conditions qualify, and only when they are the
+    *whole* of what went wrong: a state that also fails on a type or a cost is not one
+    reading away from being right, and offering a choice there would hide a defect
+    behind a question.
+
+    The options come from the catalogue, never from the model (P4): a model that has
+    just invented a condition is the last thing to ask for its alternatives. The
+    wording is built here, in the module that has the user's language, while the
+    operations are built in the pure zone that has none.
+    """
+    ungrounded = [failure.path for failure in failures
+                  if failure.code == "ungrounded_category"]
+    if not ungrounded or len(ungrounded) != len(failures):
+        return None
+
+    labels = {category.ref: (category.terms[0] if category.terms else category.ref)
+              for category in catalogue.categories}
+    readings = alternatives.for_ungrounded(
+        operations, ungrounded=ungrounded, candidates=list(labels))
+    if not readings:
+        return None
+
+    fragment = ""
+    for operation in operations:
+        if (operation.get("condition") or {}).get("ref") == ungrounded[0]:
+            fragment = (operation.get("provenance") or {}).get("text") or ""
+            break
+
+    options = []
+    for reading in readings:
+        if reading.kind == "without":
+            label = (_("without filtering by “%s”") % fragment if fragment
+                     else _("without that filter"))
+        else:
+            label = labels.get(reading.ref, reading.ref)
+        options.append({"label": label, "operations": reading.operations})
+
+    return {
+        "dsl_version": DSL_VERSION,
+        "outcome": "clarification",
+        "clarification": {
+            "question": (_("I am not sure I understood “%s” as a filter. Did you mean:")
+                         % fragment if fragment
+                         else _("I am not sure which filter you meant. Did you mean:")),
+            "options": options,
+        },
+    }
 
 
 @dataclass
@@ -110,9 +163,16 @@ def run(env, item, *, adapter, scope, context_window: int) -> Outcome:
         # abbreviations. `nli_core` receives the answer, never the vocabulary.
         mentions=grounding.mentions_of(semantics.dictionary))
     if failures:
-        # A validated envelope that produces an invalid state is a defect of ours,
-        # not of the request: the user is told we did not understand (§12.7), and the
-        # detail goes to the register — never to the user, and never with the words.
+        # D106: an ungrounded named condition is the one failure with a remedy the
+        # user can act on, and the remedy is derivable. Every other failure stays what
+        # it was — a defect of ours, told as "we did not understand" (§12.7), with the
+        # detail going to the register and never to the user.
+        question = _clarification_for(failures, operations, catalogue)
+        if question is not None:
+            outcome.outcome = "clarification"
+            outcome.interpretation = question
+            outcome.failures = [str(failure) for failure in failures]
+            return outcome
         outcome.outcome = "not_understood"
         outcome.failures = [str(failure) for failure in failures]
         return outcome
