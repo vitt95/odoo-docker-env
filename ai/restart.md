@@ -1,83 +1,138 @@
 Progetto AIDA — NLIL per Odoo 18. Repo ~/Learning/odoo, branch ai-agent.
 
-Prima di qualunque cosa leggi questi due file, sono il punto di ripresa dichiarato:
+# Da leggere per primo
+
 - ai/00-registro-decisioni.md — cosa è deciso. Il changelog in fondo è la cronologia
-  reale; §18 sono le sette delibere della qualificazione del profilo (D97–D103) e
-  §18.6 due misure che non sono decisioni ma cambiano cosa si può affermare.
-- ai/12-piano-implementazione.md — §5 tabella di avanzamento, §5.1 come si verifica
-  (comandi, fatti d'ambiente, i tre generi di zona architetturale).
+  reale; §18 sono le sette delibere della qualificazione del profilo (D97–D103) e §19
+  le cinque del perimetro guidato (D104–D108). §18.6 contiene due misure che non sono
+  decisioni ma cambiano cosa si può affermare.
+- ai/12-piano-implementazione.md — §2 le parti, §3 il percorso critico, §5 la tabella
+  di avanzamento, §5.1 come si verifica.
+- ai/13-perimetro-guidato.md — la proposta da cui nascono D104–D106, deliberate.
 
-Poi esegui ./manage.sh check per confermare che parti da verde.
+Poi: `./manage.sh check` deve essere verde prima di toccare qualunque cosa.
 
-Stato: parti 1–6 implementate. Il profilo di riferimento è qwen3.5:9b su ollama
-nativo dell'host, con Metal. Sull'intera popolazione di prova (444 aperture) sette
-sezioni su otto superano la soglia di D44; resta filter al 73,6%, quindi il profilo è
-in stato bozza e D80 ne rifiuta l'attivazione — comportamento voluto. D27 non è
-superata: lo strumento e il banco di prova esistono (D97) ma non sono mai stati
-eseguiti sulla configurazione con i worker prefork.
+# Stato al 29 luglio 2026
 
-Come lavoriamo:
+Parti 1–6 complete. Parte 8 (perimetro guidato) completa lato motore. Parte 7
+(`nli_web`) **avviata**: fatta l'interpretazione scritta per una persona, resta il
+resto.
+
+Misura del profilo `qwen3.5:9b` su tutte le 444 aperture del corpus:
+
+    complessiva 64,0%   target 98,4%   fields 88,1%   group_by 93,2%
+    measures 98,4%      order_by 93,9%  limit 94,4%    presentation 98,4%
+    filter 73,6%  <-- unica sezione sotto la soglia di D44 (85%)
+
+Il profilo resta `draft` e D80 ne rifiuta l'attivazione: è il comportamento voluto,
+non un residuo da sistemare in fretta.
+
+Verifiche: 395 test in zona pura, 114 test Odoo, confini e contratto (948/948) verdi.
+
+# Come lavoriamo
+
 - sei il Senior Staff Engineer, io l'Architect. Ti ho delegato l'autorità decisionale
-  caso per caso: quando trovi una lacuna o una contraddizione nei documenti, analizzala,
-  delibera e registrala in ai/00 con la sua argomentazione. Niente domande bloccanti;
-  decidi e vai, tranne per le azioni distruttive.
+  caso per caso: quando trovi una lacuna o una contraddizione nei documenti,
+  analizzala, delibera e registrala in ai/00 con la sua argomentazione. Niente domande
+  bloccanti; decidi e vai, tranne per le azioni distruttive.
 - **spiegami le cose in un linguaggio poco tecnico, con esempi concreti, e quando citi
   una sigla o un punto della documentazione metti fra parentesi di cosa tratta.** Non
   «D2 lo impedisce» ma «D2 (la decisione che vieta di dare risposte sbagliate con
   l'aria di essere giuste) lo impedisce». Vale per le spiegazioni in chat, non per il
   codice e i documenti del progetto.
 - cerca sempre prima l'opzione che NON modifica il contratto, e scartala solo con un
-  argomento. È così che sono state deliberate D87, D98 e D101.
+  argomento. Così sono nate D87, D98, D101 e D106.
 - **prima di attribuire un esito al fornitore, verifica che non sia stato il prompt a
   dettarlo.** Tre delle sette delibere di §18 correggono il metro e non il modello, e
   la misura sulla confidenza diceva l'opposto della verità finché il prompt conteneva
   il valore d'esempio che il modello copiava.
 - nessun controllo può passare a vuoto: ogni verifica dichiara quanto ha ispezionato e
-  l'ispezione vuota è un fallimento. Ogni controllo ha un test che lo mostra scattare.
+  l'ispezione vuota è un fallimento. Ogni controllo ha un test che lo mostra scattare
+  **e** uno che lo mostra non scattare.
 - niente deroghe inline: allentare una regola richiede una decisione numerata in ai/00.
 - riporta gli esiti come sono, con i numeri. Un numero brutto misurato vale più di un
-  numero bello asserito.
+  numero bello asserito. Se una previsione si rivela sbagliata, dillo esplicitamente.
 
-Fatti d'ambiente che una sessione fredda perde e che servono subito:
-- il modello gira su ollama **nativo dell'host**, 127.0.0.1:11434, con Metal. Il
-  container `ollama` è spento e non va riacceso: dentro Docker non c'è GPU.
-- ogni misura vuole NLI_ALLOWED_HOSTS=127.0.0.1:11434 nell'ambiente (D77, fallimento
-  chiuso: senza, tutte le chiamate sono rifiutate e l'esito è not_understood).
-- il comando della misura, con i flag che contano:
-  NLI_ALLOWED_HOSTS=127.0.0.1:11434 python3 ai/corpus/misura_accuratezza.py \
-    --endpoint http://127.0.0.1:11434/v1 --profilo qwen3.5:9b \
-    --vincolata --ragionamento none --finestra 4096 --casi 444
-  Senza --vincolata la generazione vincolata è spenta e la misura non vale niente;
-  senza --ragionamento none il modello spende la finestra dentro il pensiero e non
-  risponde. La finestra dichiarata è 4096 perché è quella che il server serve davvero.
-- σ della misura è **zero** (D48 verificata con K=5): due esecuzioni sullo stesso
-  campione danno lo stesso identico numero, quindi un caso che si muove è un risultato
-  e non rumore. Resta l'incertezza campionaria: su 40 casi ±13 punti, su 444 ±3.
-- la misura completa su 444 aperture dura circa 65 minuti; su 40 circa 6.
+# Fatti d'ambiente che una sessione fredda perde per primi
 
-Aperto, in ordine di quanto sblocca:
-1. D7 (due clienti pilota) e D85 (~200 enunciati elicitati da 8–10 persone di
-   mestiere, non richiede né clienti né prodotto attivo). Sono le due cose che
-   bloccano davvero, e nessun giro di misura le sposta.
-2. ai/13-perimetro-guidato.md — proposta non deliberata, tre decisioni da approvare:
-   D104 il vocabolario del catalogo mostrato all'utente, D105 la condizione nominata
-   non fondata nel frammento rifiutata al livello 3, D106 il rifiuto che propone.
-3. filter al 73,6%. Diagnosticato: dodici fallimenti su ventuno sono lo stesso errore,
-   un frammento che non nomina alcuna condizione nominata mappato su una condizione
-   nominata perché è la più economica da scrivere. D105 lo rende visibile; non lo
-   corregge.
-4. la prova con granite-4.1-8b, una variabile sola, leggibile perché σ=0. Risponde
-   alla domanda che nessuna nostra correzione risolve: quel 73,6% è del compito o del
-   modello?
-5. D27: eseguire il banco di prova sui worker prefork (./manage.sh loadtest) e
-   riportare i numeri per quello che sono.
+**Il modello.** Gira su `ollama` **nativo dell'host**, 127.0.0.1:11434, con Metal. Il
+container `ollama` è spento e non va riacceso: dentro Docker non c'è GPU e si va dieci
+volte più piano. `granite4.1:8b` è scaricato ma il confronto con qwen non è mai stato
+completato (D107 lo dichiara).
 
-Quello che NON va fatto: continuare a limare il prompt contro il corpus sintetico. Il
-corpus non è sigillabile (D86) e negli ultimi giri ha prodotto frasi genuinamente
-ambigue e attese sbagliate. Ogni punto strappato da qui in avanti rischia di essere
-prompt adattato al generatore, che è la degradazione descritta da D42.
+**Il comando della misura**, con i flag senza i quali il numero non vale niente:
 
-Se invece vuoi solo che continui senza rileggere tutto, basta questo:
+    NLI_ALLOWED_HOSTS=127.0.0.1:11434 python3 ai/corpus/misura_accuratezza.py \
+      --endpoint http://127.0.0.1:11434/v1 --profilo qwen3.5:9b \
+      --vincolata --ragionamento none --finestra 4096 --casi 444
+
+Senza `--vincolata` la generazione vincolata è spenta e si misura il vuoto; senza
+`--ragionamento none` il modello spende la finestra dentro il pensiero e non risponde;
+`NLI_ALLOWED_HOSTS` è obbligatoria (D77, fallimento chiuso: senza, ogni chiamata è
+rifiutata e l'esito è `not_understood`). La finestra dichiarata è 4096 perché è quella
+che il server serve davvero.
+
+**Durate e affidabilità.** 444 aperture ≈ 65 minuti, 80 ≈ 12, 40 ≈ 6. σ della misura è
+**zero** (D48 verificata con K=5): due esecuzioni sullo stesso campione danno lo stesso
+identico numero, quindi un caso che si muove è un risultato. Resta l'incertezza
+campionaria: ±13 punti su 40 casi, ±3 su 444.
+
+**La banca dati di prova.** `nli_test` contiene **50 004 partner**, seminati dal
+popolatore del banco di carico. I test non devono presumere una base vuota: usano una
+città che nessun popolatore produce. Un test che passa solo su un database vuoto non è
+un test.
+
+**Trappole trovate sul campo.** `_fields` e `_order` sono attributi riservati di ogni
+modello Odoo: definirli come metodi rompe l'ORM al caricamento. Le zone pure di
+`nli_semantics/catalogue` e `nli_semantics/dictionary` non possono importare **nemmeno**
+da `nli_core`: sono funzioni dei loro argomenti, e ciò che serve si passa.
+
+# Cosa è stato deciso il 28–29 luglio
+
+| | |
+|---|---|
+| D97 | Adattatore sintetico per il solo banco di carico, dietro variabile d'ambiente |
+| D98 | Il profilo dichiara lo sforzo di ragionamento; senza, il modello non risponde |
+| D99 | La direzione dell'ordinamento è derivata dal tipo, non chiesta al modello |
+| D100 | I comparativi inclusivi distinti da quelli stretti nel lessico e nel corpus |
+| D101 | I riferimenti sono un insieme chiuso nello schema del turno |
+| D102 | I riferimenti hanno tre generi: entità, attributi, categorie |
+| D103 | Il predicato è vincolato dal tipo dell'attributo |
+| D104 | Il vocabolario del catalogo è mostrato all'utente, suggerito e mai imposto |
+| D105 | Una condizione nominata non fondata nel proprio frammento è rifiutata |
+| D106 | Il rifiuto propone: `clarification` con letture derivate dal catalogo |
+| D107 | Modello di riferimento `qwen3.5:9b`, con il confronto interrotto dichiarato |
+| D108 | Registro delle voci approvate + traduzione condizione tipizzata → dominio |
+
+# Aperto, in ordine di quanto sblocca
+
+1. **D7** (due clienti pilota) e **D85** (~200 enunciati elicitati da 8–10 persone di
+   mestiere, non richiede né clienti né prodotto attivo). Sono le due cose che bloccano
+   davvero, e nessun giro di misura le sposta. **D52** — la misura di quanto costa oggi
+   la stessa informazione sull'interfaccia nativa — ha una scadenza che non dipende da
+   noi: va fatta prima di attivare il primo utente, dopo non è più ottenibile.
+2. **Parte 7**, il resto: il canale di chat, gli stati dell'attesa (`09` §5.2), i
+   messaggi di rifiuto per carico (D69), i token di `ui_brand_tokens` con degradazione
+   (D25), l'accessibilità (D71), l'aggregato nel piede di colonna (D89), e la resa
+   visiva dei suggerimenti di 8c. Primo bersaglio di taratura: l'accettazione a **P95
+   205 ms** contro i 50 ms di `00` §6.1.
+3. **`filter` al 73,6%.** Diagnosticato su 80 aperture: dodici fallimenti su ventuno
+   erano un frammento senza condizione nominata mappato su una condizione nominata.
+   D105 li rende visibili, non li corregge. I nove restanti sono di altre famiglie —
+   condizione dimenticata, predicato possibile e sbagliato, valore preso male.
+4. **D27**: eseguire il banco di prova sui worker prefork (`./manage.sh loadtest <db>`,
+   **non su `nli_test`**) e riportare i numeri per quello che sono.
+5. Il confronto con `granite4.1:8b`, se serve rispondere a *«il 73,6% è del compito o
+   del modello?»*. Riga di comando identica, cambia solo `--profilo`.
+
+# Cosa NON va fatto
+
+Continuare a limare il prompt contro il corpus sintetico. Il corpus non è sigillabile
+(D86) e negli ultimi giri ha prodotto frasi genuinamente ambigue e attese sbagliate.
+Ogni punto strappato da qui in avanti rischia di essere prompt adattato al generatore,
+che è la degradazione descritta da D42.
+
+# Se vuoi solo ripartire senza rileggere tutto
 
 Riprendi il progetto AIDA: leggi ai/00-registro-decisioni.md e
 ai/12-piano-implementazione.md, verifica con ./manage.sh check, poi vai con il punto
