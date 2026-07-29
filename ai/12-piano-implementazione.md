@@ -310,6 +310,39 @@ La seconda: **il Presentatore non ha un costruttore che accetti il solo risultat
 
 ---
 
+### Parte 8 — Il perimetro guidato
+
+Proposta in `13-perimetro-guidato.md`, **non ancora deliberata**. Tre decisioni, e l'ordine di esecuzione non segue la numerazione: **8a precede la parte 7**, perche' protegge l'utente su qualunque canale e non richiede interfaccia.
+
+#### 8a — La condizione nominata dev'essere fondata (**D105**)
+
+| Contenuto | Nota |
+|---|---|
+| Il livello 3 riceve i **termini** di ogni condizione nominata, oltre a tipi e riferimenti | oggi riceve solo `types` e `known_refs` |
+| Una condizione nominata la cui provenienza non contiene alcun termine della categoria e' **rifiutata** | `03` §10.3: la provenienza *e'* il frammento che l'ha prodotta |
+| Il confronto usa **lo stesso riconoscitore di termini della Fase A**, non una nuova implementazione | refusi, abbreviazioni, accenti mancanti e maiuscole sono nel corpus di proposito |
+| Un test che lo mostra **scattare** e uno che lo mostra **tollerare** una frase perturbata | D24: nessun controllo passa a vuoto |
+
+**Misurato prima e dopo**: riparazioni (D15), rese, e le tre classi di `00` §18 sul filtro. **Attenzione al segno**: questo controllo *alza* i rifiuti e *abbassa* le risposte sbagliate. Se le riparazioni non salgono, il controllo non sta scattando; se sale l'accuratezza, e' un effetto collaterale e non l'obiettivo.
+
+#### 8b — Il rifiuto propone (**D106**)
+
+| Contenuto | Nota |
+|---|---|
+| Quando 8a rifiuta, o quando la Fase A e' sotto margine, l'esito e' `clarification` con da 2 a 4 opzioni | `03` §4.4, gia' nel contratto e oggi quasi mai emesso |
+| Le opzioni sono **derivate dal catalogo**, non chieste al modello | **P4**: e' informazione deterministica, come la vista di §5.9 |
+| Ogni opzione porta le operazioni che produrrebbe, quindi e' eseguibile con un clic | gia' previsto dalla forma della busta |
+
+**Completamento 8a+8b:** una frase che oggi produce un filtro inventato produce invece una domanda con le letture plausibili, e il caso e' nel corpus di regressione.
+
+#### 8c — Il vocabolario visibile (**D104**)
+
+Vive dentro la parte 7 perche' e' interfaccia. Le voci escono dal catalogo — condizioni nominate con i loro termini, periodi dal vocabolario temporale, confronti dagli attributi numerici, colonne dagli attributi esposti entro il budget di **D31/D79**. **Nessuna lista scritta a mano**: un cliente con campi personalizzati ottiene il proprio perimetro senza che nessuno scriva nulla.
+
+**Completamento:** il perimetro non contiene nulla che il sistema non sappia fare, perche' nasce dalla stessa fonte che il modello riceve.
+
+---
+
 ## 3. Il Percorso Critico
 
 ```
@@ -318,8 +351,13 @@ La seconda: **il Presentatore non ha un costruttore che accetti il solo risultat
                                           6 asincrono ◀───────────────┘
                                                │
                                                ▼
-                                          7 web ──▶ Fase 1
+                            8a fondatezza ──▶ 8b il rifiuto propone
+                                               │
+                                               ▼
+                                  7 web  (+ 8c vocabolario visibile) ──▶ Fase 1
 ```
+
+**La numerazione delle parti non e' l'ordine di esecuzione.** 8a e 8b precedono la parte 7 perche' non richiedono interfaccia e proteggono l'utente su qualunque canale; 8c e' interfaccia e vive dentro la parte 7.
 
 **Le parti 2 e 3 sono parzialmente parallelizzabili**: il contratto non dipende dal dizionario. Le altre no.
 
@@ -355,7 +393,9 @@ Da aggiornare a ogni parte completata. È l'unica sezione di questo documento de
 | 4 — Esecuzione deterministica | ✅ **Completa** (28/07/2026) | Risolutore (zona deterministica), livelli 3–5, Esecutore con conteggio prima del recupero, Presentatore, stato come record, contesto societario sul turno. 40 test Odoo, 269 puri. Prima interrogazione end-to-end da stato scritto a mano |
 | 5 — `nli_engine` | ◐ **Implementata, profilo non qualificato** (29/07/2026) | Adattatore, profili con D76/D77/D80, generazione vincolata, ripristino singolo. 52 test Odoo, 347 puri. Profilo di riferimento **`qwen3.5:9b`** su `ollama` nativo (Metal). Misura su **tutte le 444 aperture**: complessiva 63,5%, `target` 98,0%, `fields` 87,2%, `group_by` e `order_by` 93,0%, `limit` 93,5%, `measures` e `presentation` 98,0% — **sette sezioni su otto sopra D44**. Resta `filter` a **72,5%**: D80 rifiuta ancora l'attivazione, ed è il comportamento voluto. Cinque delibere in `00` §18 (**D97–D102**), di cui tre correggono il **metro** e non il modello |
 | 6 — Asincrono | ◐ **Implementata, D27 non superata** (28/07/2026) | Sesto modulo `nli_dispatch` (**D94**): accettazione, coda, dispatcher con pool derivato da `db_maxconn`, corsia differita separata, recupero degli orfani, interruttore, notifica su bus. La catena composta per la prima volta e girata su metadati introspettivi. 79 test Odoo, 314 puri, 47 dei controlli. **D27 non e' superata**: lo strumento esiste e dichiara su che cosa ha misurato — vedi `00` §17.6 |
-| 7 — `nli_web` | ☐ | **Prossima.** Primo bersaglio di taratura: l'accettazione a P95 205 ms contro i 50 ms di `00` §6.1 |
+| 8a — Fondatezza della condizione nominata (**D105**) | ☐ | **Prossima**, e precede la parte 7: non richiede interfaccia. Alza i rifiuti e abbassa le risposte sbagliate; l'accuratezza non e' l'obiettivo |
+| 8b — Il rifiuto propone (**D106**) | ☐ | `clarification` con opzioni derivate dal catalogo, non chieste al modello (P4). La funzione esiste nel contratto e oggi non viene usata |
+| 7 — `nli_web` (+ **D104**, vocabolario visibile) | ☐ | Primo bersaglio di taratura: l'accettazione a P95 205 ms contro i 50 ms di `00` §6.1 |
 
 | Attività parallela | Stato |
 |---|---|
