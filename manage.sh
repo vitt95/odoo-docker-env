@@ -20,6 +20,11 @@ MODE="$(current_mode)"
 [[ "$MODE" == "dev" || "$MODE" == "prod" ]] || die "No valid DEPLOY_MODE in .env. Run ./install.sh <dev|prod> first."
 export MODE
 load_env
+preflight
+
+# Odoo is executed from the ./core bind-mount, not from the image's packaged
+# copy — every one-off invocation below has to use the same entry point.
+ODOO_BIN=(python3 /opt/odoo/core/odoo-bin -c /etc/odoo/odoo.conf)
 
 # Ask for an explicit 'yes' before a destructive action.
 confirm() {
@@ -46,6 +51,7 @@ Usage: ./manage.sh <command> [args]
   ${C_BOLD}upgrade${C_RESET} <db> [mods]    Upgrade modules (default: all) on <db>
   ${C_BOLD}backup${C_RESET}                 Dump all databases + filestore to ./backups
   ${C_BOLD}restore${C_RESET} <timestamp>    Restore a backup (DESTRUCTIVE)
+  ${C_BOLD}rotate-secrets${C_RESET}         Regenerate all passwords and apply them live
   ${C_BOLD}cleanup${C_RESET} [--all]        Remove containers/networks (--all also volumes)
   ${C_BOLD}help${C_RESET}                   Show this help
 EOF
@@ -79,7 +85,7 @@ cmd_shell() {
 
 cmd_odoo_shell() {
   local db="${1:?Usage: ./manage.sh odoo-shell <db>}"
-  dc exec odoo odoo shell -c /etc/odoo/odoo.conf -d "$db"
+  dc exec odoo python3 /opt/odoo/core/odoo-bin shell -c /etc/odoo/odoo.conf -d "$db"
 }
 
 cmd_psql() {
@@ -102,7 +108,7 @@ cmd_upgrade() {
   local db="${1:?Usage: ./manage.sh upgrade <db> [modules|all]}"
   local mods="${2:-all}"
   log "Upgrading modules '${mods}' on database '${db}'..."
-  dc run --rm odoo odoo -c /etc/odoo/odoo.conf -d "$db" -u "$mods" --stop-after-init
+  dc run --rm odoo "${ODOO_BIN[@]}" -d "$db" -u "$mods" --stop-after-init
   dc up -d odoo
   ok "Upgrade finished."
 }
@@ -137,6 +143,43 @@ cmd_restore() {
   ok "Restore complete."
 }
 
+# Rotating POSTGRES_PASSWORD in .env is not enough: the postgres entrypoint only
+# applies it when it initialises an empty PGDATA, so an existing db_data volume
+# keeps the old password and Odoo would simply fail to authenticate. Apply the
+# change inside the running cluster with ALTER ROLE.
+cmd_rotate_secrets() {
+  confirm "This regenerates POSTGRES_PASSWORD, ODOO_ADMIN_PASSWD and PGADMIN_PASSWORD, and restarts the stack."
+
+  local new_pg new_admin new_pgadmin
+  new_pg="$(gen_password)"
+  new_admin="$(gen_password)"
+  new_pgadmin="$(gen_password)"
+
+  log "Applying the new password to the running PostgreSQL role..."
+  dc up -d db >/dev/null
+  wait_healthy db 120
+  # Passed via stdin, not argv: psql arguments are visible in `ps` output.
+  printf "ALTER ROLE %s WITH PASSWORD '%s';\n" "${POSTGRES_USER:-odoo}" "$new_pg" \
+    | dc exec -T db psql -v ON_ERROR_STOP=1 -U "${POSTGRES_USER:-odoo}" -d "${POSTGRES_DB:-postgres}" -q \
+    || die "ALTER ROLE failed — nothing was rotated, the stack is untouched."
+
+  log "Updating .env, secrets/ and config/odoo.conf..."
+  env_set POSTGRES_PASSWORD  "$new_pg"
+  env_set ODOO_ADMIN_PASSWD  "$new_admin"
+  env_set PGADMIN_PASSWORD   "$new_pgadmin"
+  write_secret_file "$PG_PASSWORD_FILE"               "$new_pg"
+  write_secret_file "${SECRETS_DIR}/pgadmin_password" "$new_pgadmin"
+  render_odoo_conf "$new_admin" "${POSTGRES_USER:-odoo}" "$new_pg"
+
+  log "Recreating containers with the new credentials..."
+  dc up -d --force-recreate odoo $( [[ "$MODE" == "dev" ]] && echo pgadmin )
+  wait_healthy odoo 240
+
+  ok "Secrets rotated. Values are in .env (mode 600) — not printed here."
+  warn "pgAdmin keeps the old login until its data volume is reset:"
+  warn "  docker volume rm $(project_name)_pgadmin_data"
+}
+
 cmd_cleanup() {
   if [[ "${1:-}" == "--all" ]]; then
     confirm "This will remove containers, networks AND volumes (ALL data: DB + filestore lost)."
@@ -165,6 +208,7 @@ case "$cmd" in
   upgrade)           cmd_upgrade "$@" ;;
   backup)            cmd_backup "$@" ;;
   restore)           cmd_restore "$@" ;;
+  rotate-secrets)    cmd_rotate_secrets "$@" ;;
   cleanup)           cmd_cleanup "$@" ;;
   help|-h|--help)    usage ;;
   *)                 err "Unknown command: '$cmd'"; usage; exit 1 ;;

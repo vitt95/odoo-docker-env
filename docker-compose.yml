@@ -3,6 +3,12 @@
 #   docker compose -f docker-compose.yml -f docker-compose.dev.yml  ...
 #   docker compose -f docker-compose.yml -f docker-compose.prod.yml ...
 # No `version:` key — obsolete in Compose v2.
+#
+# Secrets: nothing sensitive is passed as an environment variable. The DB
+# password reaches Postgres as a file-backed Docker secret, and Odoo reads its
+# credentials from config/odoo.conf (chmod 600, gitignored, rendered by
+# install.sh). This keeps credentials out of `docker inspect`,
+# `docker compose config` and /proc/<pid>/environ.
 # =============================================================================
 
 services:
@@ -11,9 +17,12 @@ services:
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-postgres}
       POSTGRES_USER: ${POSTGRES_USER:-odoo}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      # The official entrypoint reads any POSTGRES_* var from a *_FILE variant.
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
       # Keep PGDATA in a subdir so the volume root stays clean.
       PGDATA: /var/lib/postgresql/data/pgdata
+    secrets:
+      - postgres_password
     volumes:
       - db_data:/var/lib/postgresql/data
     networks:
@@ -25,6 +34,8 @@ services:
       retries: 5
       start_period: 10s
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
     logging:
       driver: json-file
       options:
@@ -42,34 +53,49 @@ services:
       db:
         condition: service_healthy
     environment:
-      # Consumed by the official Odoo entrypoint -> injected as db_host/user/pass.
-      HOST: db
-      PORT: 5432
-      USER: ${POSTGRES_USER:-odoo}
-      PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      # /opt/odoo/core is a read-only mount: stop Python from trying to write
+      # bytecode next to the sources.
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONUNBUFFERED: "1"
     volumes:
       - odoo_filestore:/var/lib/odoo
       - ./config/odoo.conf:/etc/odoo/odoo.conf:ro
-      # Odoo 18 core source: stack runs from this bind-mount (see command in
-      # the dev/prod override). Read-only: edits happen on the host, the
-      # container only reads — hot-reload in dev still picks them up.
+      # Odoo 18 core source: the stack runs from this bind-mount (see command in
+      # the dev/prod override). Cloned by install.sh. Read-only: edits happen on
+      # the host, the container only reads — hot-reload in dev still picks
+      # them up.
       - ./core:/opt/odoo/core:ro
       - ./custom_addons:/mnt/extra-addons:ro
       - ./enterprise:/mnt/enterprise:ro
     networks:
       - odoo_net
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://localhost:8069/web/health || exit 1"]
+      # Uses the interpreter already present in the image — no extra apt layer,
+      # identical behaviour on amd64 and arm64.
+      test:
+        - CMD
+        - python3
+        - -c
+        - |
+          import sys, urllib.request
+          sys.exit(0 if urllib.request.urlopen(
+              "http://localhost:8069/web/health", timeout=5).status == 200 else 1)
       interval: 15s
       timeout: 10s
       retries: 5
-      start_period: 40s
+      start_period: 60s
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
     logging:
       driver: json-file
       options:
         max-size: "10m"
         max-file: "3"
+
+secrets:
+  postgres_password:
+    file: ./secrets/postgres_password
 
 volumes:
   db_data:

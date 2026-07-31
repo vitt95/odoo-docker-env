@@ -1,5 +1,11 @@
 # --- Secrets & generated config (NEVER commit) ---
+# NOTE: listing a path here does NOT untrack a file that is already committed.
+# config/odoo.conf was tracked until the history purge — verify with
+# `git ls-files | grep odoo.conf` before adding anything to this section.
 .env
+.env.*
+!.env.example
+/secrets/
 config/odoo.conf
 *.pem
 

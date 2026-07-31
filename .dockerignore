@@ -1,0 +1,8 @@
+# Everything here is excluded from the build context sent to the Docker daemon.
+# Without this file the whole checkout — including .env, secrets/ and the full
+# git history — is uploaded on every build, and ./core alone is ~1.2 GB.
+# The Dockerfile only needs config/requirements.txt.
+
+*
+
+!config/requirements.txt

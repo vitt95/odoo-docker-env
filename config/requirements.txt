@@ -2,3 +2,5 @@
 # Installed into the Odoo image at build time. Keep empty if none are needed.
 openpyxl
 requests
+# Required by --dev=reload; without it hot-reload silently degrades to nothing.
+watchdog

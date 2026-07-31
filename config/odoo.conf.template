@@ -27,6 +27,7 @@ addons_path = /opt/odoo/core/odoo/addons,/opt/odoo/core/addons,/mnt/extra-addons
 ; Persistent filestore (attachments) and sessions.
 data_dir = /var/lib/odoo
 
-; Log to stdout so Docker captures it (12-factor). Rotation handled by the
-; json-file logging driver in compose.
-logfile = None
+; No `logfile` key: Odoo's config parser only special-cases True/False, so
+; `logfile = None` is read as the literal string "None" and logs end up in a
+; file with that name. Omitting it keeps the default — stdout, captured by
+; Docker and rotated by the json-file logging driver in compose.
