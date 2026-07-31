@@ -44,15 +44,34 @@ services:
       PGADMIN_DEFAULT_PASSWORD_FILE: /run/secrets/pgadmin_password
       PGADMIN_CONFIG_SERVER_MODE: "False"
       PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+      # Explicit: under `no-new-privileges` the entrypoint cannot bind a
+      # privileged port and silently falls back to 8080, which leaves a :80
+      # mapping pointing at nothing.
+      PGADMIN_LISTEN_PORT: "8080"
     secrets:
       - pgadmin_password
     ports:
-      - "127.0.0.1:${PGADMIN_PORT:-5050}:80"
+      - "127.0.0.1:${PGADMIN_PORT:-5050}:8080"
     volumes:
       - pgadmin_data:/var/lib/pgadmin
       - ./config/pgadmin/servers.json:/pgadmin4/servers.json:ro
     networks:
       - odoo_net
+    healthcheck:
+      # Without this pgAdmin reports "Up" even when it is listening on a port
+      # nothing is mapped to.
+      test:
+        - CMD
+        - python3
+        - -c
+        - |
+          import sys, urllib.request
+          sys.exit(0 if urllib.request.urlopen(
+              "http://localhost:8080/misc/ping", timeout=5).status == 200 else 1)
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
