@@ -196,7 +196,7 @@ printf '%sOdoo source%s   : %s\n'  "$C_BOLD" "$C_RESET" "${CORE_DIR} (branch ${S
 printf '%sPostgres%s      : %s\n'  "$C_BOLD" "$C_RESET" "$PG_VER"
 printf '%sCustom addons%s : %s\n'  "$C_BOLD" "$C_RESET" "${PROJECT_ROOT}/custom_addons"
 printf '%sEnterprise%s    : %s\n'  "$C_BOLD" "$C_RESET" "${PROJECT_ROOT}/enterprise (optional)"
-printf '%sFilestore%s     : %s\n'  "$C_BOLD" "$C_RESET" "docker volume 'odoo_filestore' -> /var/lib/odoo"
+printf '%sFilestore%s     : %s\n'  "$C_BOLD" "$C_RESET" "docker volume '$(project_name)_odoo_filestore' -> /var/lib/odoo"
 printf '%sLogs%s          : %s\n'  "$C_BOLD" "$C_RESET" "./manage.sh logs  (docker json-file, rotated)"
 printf '%sBackups%s       : %s\n'  "$C_BOLD" "$C_RESET" "${PROJECT_ROOT}/backups  (./manage.sh backup)"
 if [[ "$MODE" == "dev" ]]; then
