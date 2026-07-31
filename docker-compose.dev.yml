@@ -26,14 +26,17 @@ services:
     # Addons writable in dev for scaffolding/tooling that writes back.
     volumes:
       - ./custom_addons:/mnt/extra-addons:rw
-    # Reach the local inference server by container name. Going through
-    # host.docker.internal is ambiguous here: a native ollama listens on
-    # 127.0.0.1:11434 and the container publishes on *:11434, so the same URL can
-    # resolve to a different model depending on who asks. The Docker network name
-    # cannot be mistaken.
-    networks:
-      - odoo_net
-      - inference
+    # Local inference server (ollama) runs natively on the host, not in a
+    # container, so there is no container name to address — reach it through the
+    # host gateway at http://host.docker.internal:11434.
+    # The extra_hosts entry is a no-op on Docker Desktop/OrbStack and required on
+    # Linux, where that hostname does not exist by default.
+    #
+    # If ollama is ever containerised, prefer addressing it by service name on a
+    # shared network: a host-gateway URL is ambiguous once a native instance and
+    # a published container both answer on 11434.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   db:
     # Expose Postgres to the host (loopback only) for external DB tools.
