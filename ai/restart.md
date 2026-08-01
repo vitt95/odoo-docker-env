@@ -1,4 +1,7 @@
-Progetto AIDA — NLIL per Odoo 18. Repo ~/Learning/odoo, branch ai-agent.
+Progetto AIDA — NLIL per Odoo 18. Repo ~/Learning/odoo-docker-env, branch **new-ai-agent**.
+
+Il branch `ai-agent` è il ramo storico e si ferma al 29 luglio: `new-ai-agent` lo
+riprende sopra la base UI corrente (`master`). Il lavoro continua qui.
 
 # Da leggere per primo
 
@@ -28,6 +31,13 @@ Il profilo resta `draft` e D80 ne rifiuta l'attivazione: è il comportamento vol
 non un residuo da sistemare in fretta.
 
 Verifiche: 395 test in zona pura, 114 test Odoo, confini e contratto (948/948) verdi.
+
+**Ripresa del 1 agosto 2026.** Il lavoro è stato riportato su `new-ai-agent` sopra la
+base UI corrente. Niente è cambiato nel motore: `./manage.sh check` verde (948/948,
+copertura 100%, 0 determinazioni sbagliate) e `./manage.sh test nli_test` verde (114 su
+114). Sono cambiati solo due fatti d'ambiente, entrambi descritti sotto: il modello si
+raggiunge via host gateway, e `nli_test` ha già i sei moduli installati con i 50 004
+partner del popolatore.
 
 # Come lavoriamo
 
@@ -59,6 +69,16 @@ Verifiche: 395 test in zona pura, 114 test Odoo, confini e contratto (948/948) v
 container `ollama` è spento e non va riacceso: dentro Docker non c'è GPU e si va dieci
 volte più piano. `granite4.1:8b` è scaricato ma il confronto con qwen non è mai stato
 completato (D107 lo dichiara).
+
+**Come lo si raggiunge, e perché è cambiato.** Dall'host: `http://127.0.0.1:11434/v1`.
+Dal container: `http://host.docker.internal:11434/v1`, risolto dalla voce `extra_hosts`
+di `docker-compose.dev.yml`. La vecchia via — il nome di container `ollama` sulla rete
+esterna `qwen25_default` — è caduta insieme al container: quella rete la creava il
+compose del modello, e con `ollama` nativo non esiste più. Di conseguenza
+`NLI_ALLOWED_HOSTS` vale `host.docker.internal:11434,localhost:11434` in `.env` (è ciò
+che vede il container), mentre lo script di misura gira **sull'host** e vuole
+`127.0.0.1:11434` come nella riga di comando qui sopra: sono due punti di vista sulla
+stessa porta, non due configurazioni in conflitto.
 
 **Il comando della misura**, con i flag senza i quali il numero non vale niente:
 
@@ -116,6 +136,21 @@ da `nli_core`: sono funzioni dei loro argomenti, e ciò che serve si passa.
    (D25), l'accessibilità (D71), l'aggregato nel piede di colonna (D89), e la resa
    visiva dei suggerimenti di 8c. Primo bersaglio di taratura: l'accettazione a **P95
    205 ms** contro i 50 ms di `00` §6.1.
+
+   **Da decidere per primo, perché tocca ogni stringa che scriveremo dopo.** Le parole
+   di `nli_web` passano da `_()` chiamata in due posti dove Odoo 18 non riesce a
+   dedurre la lingua: le lambda a livello di modulo di `nli_interpretation.py` (21
+   delle 33 righe con `_()` del file) e la funzione annidata `rendered` di
+   `nli_perimeter.py` §99. `_()` deduce la lingua ispezionando lo stack: dentro una
+   richiesta HTTP trova `request.env.lang` e funziona, ma **il turno si interpreta sul
+   cron** (parte 6), e lì non c'è richiesta — restano `cr` e `uid` letti dal frame
+   chiamante, che in una lambda di modulo non ci sono. Esito: la stringa esce **non
+   tradotta**, in silenzio, con uno stack trace di avviso nei log. Oggi non fa danno
+   perché `in_words` non ha ancora chiamanti fuori dai test; lo farà appena il canale
+   di chat la collega. Le opzioni sono `self.env._()` (esplicita, ma va portato `self`
+   dentro le lambda), `LazyGettext` (`odoo.tools.translate._lt`, risolta al momento
+   dell'uso) o un dizionario di forme costruito nel metodo. La scelta va deliberata e
+   registrata in `ai/00`: è la forma dello strato delle parole, non un ritocco.
 3. **`filter` al 73,6%.** Diagnosticato su 80 aperture: dodici fallimenti su ventuno
    erano un frammento senza condizione nominata mappato su una condizione nominata.
    D105 li rende visibili, non li corregge. I nove restanti sono di altre famiglie —

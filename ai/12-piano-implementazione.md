@@ -438,8 +438,8 @@ python3 tools/load/prova_isolamento.py \
 | | |
 |---|---|
 | Database di prova | `nli_test` (esiste già; `./manage.sh test nli_test`) |
-| Modello locale | `ollama` con `qwen2.5:latest`, container `ollama`, rete `qwen25_default` |
-| Endpoint del modello | `http://localhost:11434/v1` dall'host, `http://ollama:11434/v1` dal container |
+| Modello locale | `ollama` **nativo dell'host** su 127.0.0.1:11434, con Metal. Modello di riferimento `qwen3.5:9b` (D107). Il container `ollama` è spento e non va riacceso: dentro Docker non c'è GPU |
+| Endpoint del modello | `http://127.0.0.1:11434/v1` dall'host, `http://host.docker.internal:11434/v1` dal container (voce `extra_hosts` in `docker-compose.dev.yml`). Non più per nome di container su rete esterna: quella rete esisteva solo finché `ollama` girava in Docker |
 | Variabili obbligatorie | `NLI_ALLOWED_HOSTS` — senza, **nessun** host è ammesso (D77). `NLI_UTTERANCE_KEY` — senza, **nessuna richiesta è accettata** (D96). Entrambe fallimenti chiusi, entrambe passate al container da `docker-compose.yml` e definite in `.env` |
 | Chiave degli enunciati | `python3 -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())'` |
 | Prove di carico | Lo stack `dev` gira **senza `--workers`**: il pool prefork la cui saturazione è RA3 non esiste, e nessuna misura fatta lì è la prova di D27 |
