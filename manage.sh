@@ -47,8 +47,11 @@ Usage: ./manage.sh <command> [args]
   ${C_BOLD}shell${C_RESET} [svc]            Open a bash shell in a container (default: odoo)
   ${C_BOLD}odoo-shell${C_RESET} <db>        Open an Odoo interactive python shell on <db>
   ${C_BOLD}psql${C_RESET} [db]              Open psql (default db: \$POSTGRES_DB)
+  ${C_BOLD}check${C_RESET}                  Boundary checks (D24), pure-zone tests, corpus
+  ${C_BOLD}test${C_RESET} <db> [tags]       Boundary checks, then Odoo tests on <db>
   ${C_BOLD}update${C_RESET}                 Pull/rebuild images and recreate containers
   ${C_BOLD}upgrade${C_RESET} <db> [mods]    Upgrade modules (default: all) on <db>
+  ${C_BOLD}loadtest${C_RESET} <db> [n] [s]   Isolation proof of D27 on prefork workers
   ${C_BOLD}backup${C_RESET}                 Dump all databases + filestore to ./backups
   ${C_BOLD}restore${C_RESET} <timestamp>    Restore a backup (DESTRUCTIVE)
   ${C_BOLD}rotate-secrets${C_RESET}         Regenerate all passwords and apply them live
@@ -93,6 +96,45 @@ cmd_psql() {
   dc exec db psql -U "${POSTGRES_USER}" -d "$db"
 }
 
+# The four checks of D24 are static: no stack, no database, stdlib only. They
+# run here, in CI (.github/workflows/boundaries.yml) and on pre-push, so a
+# boundary violation is caught by whichever of the three comes first.
+cmd_check() {
+  log "Architecture boundaries (D24)..."
+  python3 "${PROJECT_ROOT}/tools/arch/run.py"
+  log "Tests of the checks themselves..."
+  python3 -m unittest discover -s "${PROJECT_ROOT}/tools/arch/tests" -t "${PROJECT_ROOT}"
+  log "Contract, pure zone (no Odoo, no database)..."
+  python3 "${PROJECT_ROOT}/tools/pure/run.py"
+  log "Foundational corpus against the contract..."
+  python3 "${PROJECT_ROOT}/ai/corpus/verifica_contratto.py"
+  log "Dictionary and catalogue against the corpus..."
+  python3 "${PROJECT_ROOT}/ai/corpus/misura_catalogo.py"
+  ok "Boundaries, contract and catalogue verified."
+}
+
+cmd_test() {
+  local db="${1:?Usage: ./manage.sh test <db> [test-tags]}"
+  local mods="nli_core,nli_semantics,nli_engine,nli_dispatch,nli_web,nli_observability"
+  # Default: every test of every product module. Derived from the module list so
+  # a module that gains tests is covered without editing two places — a tag list
+  # that silently stops matching is a suite that silently stops running.
+  local tags="${2:-/${mods//,/,/}}"
+
+  # Static first: it is faster, and a broken boundary makes a green test suite
+  # misleading rather than reassuring.
+  cmd_check
+
+  log "Installing/updating '${mods}' and running tests (tags: ${tags}) on '${db}'..."
+  # Same interpreter and same source tree as the dev override: the image also
+  # ships an Odoo, and running the tests against a different copy than the one
+  # serving requests is a way to get a green suite for the wrong build.
+  dc run --rm odoo python3 /opt/odoo/core/odoo-bin -c /etc/odoo/odoo.conf -d "$db" \
+    -i "$mods" -u "$mods" \
+    --test-enable --test-tags "$tags" --stop-after-init --log-level=test
+  ok "Tests finished."
+}
+
 cmd_update() {
   log "Pulling base images and rebuilding Odoo image..."
   dc pull db >/dev/null 2>&1 || true
@@ -111,6 +153,33 @@ cmd_upgrade() {
   dc run --rm odoo "${ODOO_BIN[@]}" -d "$db" -u "$mods" --stop-after-init
   dc up -d odoo
   ok "Upgrade finished."
+}
+
+# Load bench for the isolation proof of D27 (05 §7.1).
+#
+# Brings the stack up on the prefork override — the only configuration in which
+# the proof means anything, because RA3 *is* the saturation of the worker pool
+# and the dev stack has no pool. Seeds a representative volume, then runs the
+# harness. Returning to dev is `./manage.sh start`.
+cmd_loadtest() {
+  local db="${1:?Usage: ./manage.sh loadtest <db> [users] [seconds]}"
+  local users="${2:-20}"
+  local seconds="${3:-30}"
+
+  log "Bringing the stack up with prefork workers (docker-compose.load.yml)..."
+  docker compose --project-name odoo --env-file "$ENV_FILE" \
+    -f "${PROJECT_ROOT}/docker-compose.yml" \
+    -f "${PROJECT_ROOT}/docker-compose.load.yml" up -d
+  wait_healthy odoo || true
+
+  log "Seeding a representative volume on '${db}'..."
+  python3 "${PROJECT_ROOT}/tools/load/popola.py" --db "$db"
+
+  log "Running the isolation harness (${users} users, ${seconds}s)..."
+  python3 "${PROJECT_ROOT}/tools/load/prova_isolamento.py" \
+    --db "$db" --utenti "$users" --secondi "$seconds"
+
+  warn "The stack is still on the load override. './manage.sh start' returns to ${MODE}."
 }
 
 cmd_backup() {
@@ -204,8 +273,11 @@ case "$cmd" in
   shell)             cmd_shell "$@" ;;
   odoo-shell)        cmd_odoo_shell "$@" ;;
   psql)              cmd_psql "$@" ;;
+  check)             cmd_check "$@" ;;
+  test)              cmd_test "$@" ;;
   update)            cmd_update "$@" ;;
   upgrade)           cmd_upgrade "$@" ;;
+  loadtest)          cmd_loadtest "$@" ;;
   backup)            cmd_backup "$@" ;;
   restore)           cmd_restore "$@" ;;
   rotate-secrets)    cmd_rotate_secrets "$@" ;;

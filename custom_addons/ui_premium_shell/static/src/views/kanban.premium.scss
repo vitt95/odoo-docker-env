@@ -10,6 +10,11 @@
 
 // --- Cards: compact, small-radius, subtle — both grouped & ungrouped ---------
 // Matches core specificity (0,4,0) so the token surface wins over core white.
+.o_kanban_renderer {
+    background-color: #fefefe !important;
+    width: fit-content;
+}
+
 .o_kanban_view .o_kanban_renderer {
     // Denser rhythm, closer to the reference cards.
     --KanbanRecord-padding-v: 10px;
