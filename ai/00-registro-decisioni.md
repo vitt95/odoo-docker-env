@@ -215,7 +215,7 @@ Le decisioni sono state valutate contro quattro obiettivi dichiarati — **sempl
 | **D105** | Una **condizione nominata** non fondata nel proprio frammento e' rifiutata al livello 3 | ☑ Adottata | §19.1. Misurato su 80 aperture: **11 filtri sbagliati diventati rifiuti, 0 filtri corretti rifiutati**. Il confronto e' con la provenienza, non con l'enunciato, perche' un raffinamento porta avanti le condizioni dei turni precedenti. Riconoscitore condiviso con la Fase A |
 | **D106** | Il rifiuto di D105 **propone**: `clarification` con letture derivate dal catalogo | ☑ Adottata | §19.2. Le opzioni sono derivate, mai chieste al modello (P4): chi ha appena inventato una condizione e' l'ultimo a cui chiedere le alternative. Meno di due letture, nessuna domanda |
 | **D108** | Le voci di dizionario **approvate** hanno un registro, e la condizione tipizzata si traduce in dominio | ☑ Adottata | §19.4. Senza, il dizionario vivo era **solo L0**: le proposte di D35 restavano nella coda L3 e nessuna installazione aveva una condizione nominata. La traduzione va dalla condizione tipizzata al dominio — meccanica — mai al contrario, che sarebbe una supposizione (`06` §7) |
-| **D109** | La mappa dei tipi della piattaforma e' una **zona pura**, fuori dall'introspezione | ☑ Adottata | §20.1. Dodici coppie uguali in ogni installazione: un fatto, non una lettura di un registro vivo. Chiusa nel modulo che importa l'ORM, rendeva il catalogo non costruibile fuori dalla piattaforma — e la misura di accuratezza non partiva affatto |
+| **D109** | La mappa dei tipi di campo (`char`→`text`, `monetary`→`number`) è una **zona pura**, fuori dall'introspezione | ☑ Adottata | §20.1. Dodici coppie uguali in ogni installazione: un fatto, non una domanda a un sistema vivo. Chiusa dentro il file che importa l'ORM di Odoo, impediva di costruire il catalogo fuori dalla piattaforma — e il comando che misura l'accuratezza non partiva affatto |
 | **D107** | Modello di riferimento: **`qwen3.5:9b`** | ☑ Adottata — **dall'Architect** | §18.8. Deliberata il 29/07/2026 su basi architetturali, con il confronto empirico contro `granite4.1:8b` **interrotto prima di produrre un numero**. Le ragioni sono in §18.8, e cosi' e' il limite della delibera |
 
 ---
@@ -1094,67 +1094,89 @@ Da qui la divisione: la **struttura** la deriva la zona pura di `catalogue/perim
 
 ---
 
+
 ## 20. Le delibere della ripresa (1 agosto 2026)
 
-Il lavoro e' stato riportato dal ramo `ai-agent` al ramo `new-ai-agent`, sopra la base
-dell'interfaccia corrente. Nulla del motore e' cambiato nel trasporto: `./manage.sh
-check` verde (948 casi, 0 errori) e i test Odoo verdi prima e dopo. Le due voci che
-seguono nascono **dalla verifica della ripresa**, non da una richiesta: una e' una
-decisione, l'altra e' un difetto che la disciplina del progetto aveva gia' previsto e
-che nessuno stava guardando.
+Il lavoro è stato spostato dal ramo `ai-agent` al ramo `new-ai-agent`, sopra la base
+dell'interfaccia corrente. Nel trasporto il motore non è cambiato: i controlli dei
+confini sono verdi (948 casi, 0 errori) e i test Odoo passano prima e dopo.
 
-### 20.1 D109 — La mappa dei tipi e' un fatto, non una lettura
+Le due voci che seguono non nascono da una richiesta. Sono venute fuori **verificando
+che la ripresa funzionasse**: una è una decisione, l'altra è un difetto che una regola
+del progetto avrebbe dovuto intercettare e che nessuno stava guardando.
 
-**Il sintomo.** Il comando di misura dell'accuratezza — quello di §5.1 di `12`, che e'
-l'unico modo di sapere quanto capisce il modello — non partiva piu':
+### 20.1 D109 — La mappa dei tipi è un fatto, non una lettura
+
+**Cosa non funzionava.** Il comando che misura quanto il modello capisce — quello di
+`12` §5.1 (il documento del piano, paragrafo con i comandi di verifica) — non partiva
+più:
 
     ImportError: cannot import name 'fields' from 'odoo'
 
-Non un guasto del modello ne' del corpus: lo strumento importava
-`CONTRACT_TYPE_BY_ODOO_TYPE` da `nli_semantics/introspection/runtime.py`, e quel modulo
-importa l'ORM. Sull'host l'ORM non c'e', e non deve esserci: `tools/pure/bootstrap.py`
-installa pacchetti sintetici proprio perche' `from odoo import fields` **fallisca**, che
-e' la garanzia su cui poggia tutta la zona pura.
+Non era rotto il modello e non era rotto il corpus. Lo strumento aveva bisogno di una
+tabellina, `CONTRACT_TYPE_BY_ODOO_TYPE`, che traduce i tipi di campo di Odoo nei tipi
+del nostro contratto: `char` diventa `text`, `monetary` diventa `number`, e così per
+dodici righe. Quella tabellina stava dentro `introspection/runtime.py`, un file che
+importa l'ORM di Odoo.
 
-**La domanda giusta non era come dare l'ORM allo strumento.** Era perche' una tabella di
-dodici coppie fosse chiusa dietro l'ORM. Il resto dell'introspezione interroga un
-registro vivo — modelli, campi, diritti, un orologio — e senza piattaforma non ha senso.
-Questa mappa non interroga nulla: `char` e' `text` in ogni installazione, su ogni
-database, a ogni ora. E' un **fatto**, e i fatti non hanno bisogno di una piattaforma
-per essere veri.
+Lo strumento di misura, però, gira **fuori da Odoo**, sul portatile, senza database. E
+lì l'ORM non c'è di proposito: `tools/pure/bootstrap.py` è scritto apposta perché
+`from odoo import fields` fallisca. Quel fallimento è la garanzia che tiene in piedi
+tutte le zone pure — se passasse, non sapremmo più quali pezzi funzionano davvero
+senza piattaforma.
 
-**La delibera.** La tabella si sposta in `nli_semantics/platform_types.py`, dichiarata
-zona pura in `tools/arch/spec.py` con la sua ragione, e `introspection/runtime.py` la
-importa e continua a esporla: nessun chiamante sotto Odoo cambia una riga. Cio' che
-cambia e' che il catalogo si costruisce **fuori dalla piattaforma**, che e' il
-presupposto di ogni misura fatta sul corpus.
+**La domanda giusta.** Non era *«come faccio ad avere l'ORM anche sul portatile»*. Era
+*«perché una tabella di dodici coppie è chiusa dietro l'ORM»*.
 
-L'opzione che non toccava l'architettura — rendere l'ORM importabile sull'host — e'
-stata cercata per prima, come vuole il metodo, e scartata con un argomento: avrebbe
-messo l'ORM nel percorso di uno strumento puro per leggere una costante, cioe' avrebbe
-piegato D24 (la decisione per cui ogni zona dichiara cosa puo' importare, e il
-controllore lo verifica) per non spostare dodici righe.
+Il resto dell'introspezione interroga un sistema vivo: quali modelli esistono, quali
+campi hanno, cosa può vedere questo utente, che ore sono. Senza Odoo non ha senso.
+Questa tabella invece non interroga niente. `char` è `text` in ogni installazione, su
+ogni database, a ogni ora. È un **fatto**, e un fatto non ha bisogno di una piattaforma
+accesa per essere vero.
 
-Verifica: 54 file in zone pure, 0 violazioni. La misura riparte e produce un numero.
+**La decisione.** La tabella si sposta in `nli_semantics/platform_types.py`, dichiarato
+zona pura in `tools/arch/spec.py` con scritto il perché. Il vecchio file la importa e
+continua a offrirla con lo stesso nome: sotto Odoo non cambia una riga per nessuno.
+Quello che cambia è che ora il catalogo si può costruire fuori dalla piattaforma — ed è
+il presupposto di qualsiasi misura fatta sul corpus.
 
-### 20.2 Un vincolo che non e' mai esistito in nessun database
+**L'alternativa scartata, e perché.** Rendere l'ORM importabile sul portatile era la
+strada che non toccava l'architettura, quindi è stata cercata per prima, come vuole il
+metodo. Scartata con un argomento: avrebbe messo l'ORM sul percorso di uno strumento
+puro solo per leggere una costante. Cioè avrebbe piegato **D24** (la decisione per cui
+ogni zona dichiara cosa può importare, e un controllo automatico lo verifica) pur di
+non spostare dodici righe.
 
-`nli_profile` dichiara `CHECK (context_window > 0)` a difesa di D78 (il profilo dichiara
-la propria finestra di contesto), che e' il divisore da cui D79 deriva il budget del
-catalogo. La riga era scritta cosi':
+Verifica: 54 file nelle zone pure, 0 violazioni. La misura riparte e produce un numero
+— 65,0% su 40 aperture, contro il 64,0% misurato a luglio su 444: stessa fotografia,
+dentro l'incertezza del campione.
+
+### 20.2 Un vincolo che non è mai esistito in nessun database
+
+Il profilo del modello dichiara `CHECK (context_window > 0)`: la finestra di contesto
+non può essere zero o negativa. Serve a difendere **D78** (il profilo deve dichiarare
+quanto testo il modello regge), che a sua volta è il numero da cui **D79** (il budget
+del catalogo si ricava dalla finestra dichiarata) fa una divisione. Con una finestra a
+zero, il catalogo calcolerebbe un budget partendo dal nulla.
+
+La riga era scritta così:
 
     ("context_window_positive", "CHECK (context_window > 0),", ...)
 
-con la **virgola dentro la stringa SQL**. Odoo emette l'`ALTER TABLE`, PostgreSQL lo
-rifiuta per errore di sintassi, Odoo registra un `ERROR` nel giornale e prosegue: il
-modulo si installa, i test passano, e il vincolo **non esiste in nessun database**.
-Verificato su `nli_test`: `pg_constraint` non ne aveva traccia.
+Con la **virgola dentro la stringa SQL**. Ecco cosa succedeva, in ordine: Odoo manda a
+PostgreSQL il comando che crea il vincolo; PostgreSQL lo rifiuta perché quella virgola
+finale non è sintassi valida; Odoo scrive un `ERROR` nel giornale e tira dritto; il
+modulo si installa lo stesso e i test passano lo stesso.
 
-Nessuna suite se n'e' accorta perche' non c'era un test che lo mostrasse scattare — che
-e' esattamente la regola del progetto: *nessun controllo puo' passare a vuoto, e ogni
-controllo ha un test che lo mostra scattare e uno che lo mostra non scattare*. La regola
-era scritta e disattesa nel punto in cui serviva.
+Risultato: **il vincolo non esisteva in nessun database.** Verificato guardando
+direttamente la tabella di sistema `pg_constraint` su `nli_test`: non ce n'era traccia.
 
-Corretta la virgola, aggiunti i due test, il vincolo ora esiste e rifiuta. L'errore e'
-riconosciuto **per nome del vincolo**, cosi' che un vincolo caduto di nuovo non possa
-passare per un rifiuto qualsiasi. 116 test Odoo verdi (erano 114).
+Nessuna suite se n'era accorta perché non c'era un test che lo mostrasse rifiutare
+qualcosa. Ed è esattamente la regola che il progetto si è dato: *nessun controllo può
+passare a vuoto, e ogni controllo ha un test che lo mostra scattare e uno che lo mostra
+non scattare*. La regola era scritta, e disattesa proprio dove serviva.
+
+Corretta la virgola, aggiunti i due test, il vincolo ora esiste e rifiuta davvero. Il
+test riconosce l'errore **dal nome del vincolo**, non da un messaggio generico: così, se
+un domani il vincolo sparisse di nuovo, un rifiuto qualsiasi non potrebbe passare per
+quello giusto. 116 test Odoo verdi, erano 114.

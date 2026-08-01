@@ -273,6 +273,28 @@ Ogni scelta deve ridurre:
 
 ---
 
+# Documenti e sigle
+
+I documenti del progetto si citano a vicenda con delle sigle: `D46` è una decisione,
+`V3` un vincolo, `RC3` un requisito, `L1` un livello, `03 §8.1` un paragrafo di un altro
+documento. Sono più di cento e nessuno le ricorda a memoria.
+
+**Regola: ogni sigla porta fra parentesi un promemoria di cosa tratta.** Sempre. Non
+«D2 lo impedisce» ma «D2 (la decisione che vieta di dare risposte sbagliate con l'aria
+di essere giuste) lo impedisce». Basta la prima volta in una sezione, non a ogni
+ripetizione ravvicinata.
+
+**Vale ovunque**: nelle spiegazioni in chat, nei documenti di `ai/`, nei commenti del
+codice, nei messaggi di commit. Prima era limitata alla chat; dal 1 agosto 2026 no.
+
+**E il linguaggio dei documenti dev'essere semplice.** Frasi corte. Il termine tecnico
+esatto resta — `CHECK`, cursore, zona pura non si annacquano — ma la frase che lo
+contiene si capisce alla prima lettura. Se una spiegazione va riletta per essere
+capita, è scritta male, non è profonda.
+
+Un documento tecnico non è meno rigoroso perché è comprensibile. È meno utile quando
+non lo è.
+
 # Communication
 
 Quando spieghi una soluzione:

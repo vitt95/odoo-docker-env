@@ -39,13 +39,23 @@ cambiati due fatti d'ambiente, entrambi descritti sotto: il modello si raggiunge
 host gateway, e `nli_test` ha già i sei moduli installati con i 50 004 partner del
 popolatore.
 
-La verifica della ripresa ha trovato due cose, deliberate in `00` §20. **D109**: la
-mappa dei tipi della piattaforma è ora la zona pura `nli_semantics/platform_types.py`
-— chiusa dentro `introspection/runtime.py` teneva l'ORM sul percorso della misura, e
-il comando di §5.1 non partiva affatto. **§20.2**: il `CHECK (context_window > 0)` di
-`nli_profile` aveva una virgola dentro la stringa SQL e **non è mai esistito in
-nessun database**; corretto, con i due test che lo mostrano scattare e non scattare.
-Test Odoo ora **116**.
+La verifica della ripresa ha trovato due cose, deliberate in `00` §20 (il registro
+delle decisioni, sezione della ripresa).
+
+**D109** — la tabella che traduce i tipi di campo di Odoo nei tipi del contratto
+(`char` → `text`, e altre undici righe) è ora la zona pura
+`nli_semantics/platform_types.py`. Prima stava dentro `introspection/runtime.py`, che
+importa l'ORM: chi la leggeva si tirava dietro l'ORM, e sul portatile l'ORM non c'è di
+proposito. Conseguenza: il comando che misura l'accuratezza non partiva affatto.
+
+**§20.2** — il `CHECK (context_window > 0)` di `nli_profile` aveva una virgola dentro
+la stringa SQL. PostgreSQL rifiutava il comando, Odoo scriveva `ERROR` e proseguiva, e
+il vincolo **non è mai esistito in nessun database**. Corretto, con i due test che lo
+mostrano rifiutare e accettare. Test Odoo ora **116**.
+
+Misura di controllo dopo lo spostamento: **65,0% su 40 aperture**, contro il 64,0%
+misurato a luglio su 444. Stessa fotografia — 40 casi portano ±13 punti di incertezza,
+quindi il numero conferma che nulla si è rotto, non che qualcosa sia migliorato.
 
 # Come lavoriamo
 
@@ -145,20 +155,28 @@ da `nli_core`: sono funzioni dei loro argomenti, e ciò che serve si passa.
    visiva dei suggerimenti di 8c. Primo bersaglio di taratura: l'accettazione a **P95
    205 ms** contro i 50 ms di `00` §6.1.
 
-   **Da decidere per primo, perché tocca ogni stringa che scriveremo dopo.** Le parole
-   di `nli_web` passano da `_()` chiamata in due posti dove Odoo 18 non riesce a
-   dedurre la lingua: le lambda a livello di modulo di `nli_interpretation.py` (21
-   delle 33 righe con `_()` del file) e la funzione annidata `rendered` di
-   `nli_perimeter.py` §99. `_()` deduce la lingua ispezionando lo stack: dentro una
-   richiesta HTTP trova `request.env.lang` e funziona, ma **il turno si interpreta sul
-   cron** (parte 6), e lì non c'è richiesta — restano `cr` e `uid` letti dal frame
-   chiamante, che in una lambda di modulo non ci sono. Esito: la stringa esce **non
-   tradotta**, in silenzio, con uno stack trace di avviso nei log. Oggi non fa danno
-   perché `in_words` non ha ancora chiamanti fuori dai test; lo farà appena il canale
-   di chat la collega. Le opzioni sono `self.env._()` (esplicita, ma va portato `self`
-   dentro le lambda), `LazyGettext` (`odoo.tools.translate._lt`, risolta al momento
-   dell'uso) o un dizionario di forme costruito nel metodo. La scelta va deliberata e
-   registrata in `ai/00`: è la forma dello strato delle parole, non un ritocco.
+   **Da decidere per primo, perché tocca ogni frase che scriveremo dopo.** Le parole
+   che l'utente legge — «contenente Milano», «sopra 1000» — passano dalla funzione di
+   traduzione di Odoo, `_()`. Quella funzione capisce in che lingua tradurre
+   **guardando chi l'ha chiamata**: risale la pila delle chiamate e cerca la richiesta
+   web in corso, o in mancanza di quella l'utente collegato.
+
+   In `nli_web` viene chiamata da due posti dove non trova né l'una né l'altro: le
+   lambda scritte a livello di modulo in `nli_interpretation.py` (21 righe delle 33 che
+   usano `_()` in quel file) e la funzione annidata `rendered` in `nli_perimeter.py`
+   riga 99. Dentro una richiesta web funziona lo stesso, perché la richiesta la trova.
+   Ma **la frase dell'utente si interpreta sul cron** — è la parte 6, l'esecuzione
+   asincrona: chi scrive accetta e se ne va, l'interpretazione la fa un processo
+   separato più tardi. Lì la richiesta web non c'è. Esito: la frase esce **non
+   tradotta**, in silenzio, lasciando solo un avviso nei log.
+
+   Oggi non fa danno perché `in_words` non ha ancora chiamanti fuori dai test; lo farà
+   appena il canale di chat la collega. Le tre strade: `self.env._()` (dice
+   esplicitamente in che lingua, ma bisogna portare `self` dentro le lambda);
+   `LazyGettext` (`odoo.tools.translate._lt`, che rimanda la traduzione al momento in
+   cui la stringa si usa davvero); oppure costruire le formule dentro il metodo, dove
+   il contesto c'è già. Va deliberata e registrata in `ai/00`: è la forma dello strato
+   delle parole, non un ritocco.
 3. **`filter` al 73,6%.** Diagnosticato su 80 aperture: dodici fallimenti su ventuno
    erano un frammento senza condizione nominata mappato su una condizione nominata.
    D105 li rende visibili, non li corregge. I nove restanti sono di altre famiglie —
