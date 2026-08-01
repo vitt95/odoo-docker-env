@@ -99,8 +99,19 @@ class TestTimeAnchorInThePrompt(unittest.TestCase):
         self.assertIsNone(payload["time_anchor"])
 
     def test_the_instructions_say_where_a_period_attaches(self):
-        message = system_message(Request(utterance="x", catalogue={}))
+        """Non basta che la parola compaia: la regola deve ancora **dire** cosa
+        fare quando l'ancora non e' unica, che e' il caso per cui D110 esiste.
+
+        Il confronto e' su una forma a spazi normalizzati perche' mandare a capo
+        una riga del prompt non ne cambia il senso, e un test che si rompesse per
+        quello verrebbe aggiornato senza leggerlo.
+        """
+        message = " ".join(
+            system_message(Request(utterance="x", catalogue={})).split())
         self.assertIn("time_anchor", message)
+        self.assertIn('If it declares "choices", the sentence does not say which '
+                      "date it means: answer with a clarification whose options are "
+                      "those dates.", message)
 
     def test_the_instructions_forbid_dropping_a_period(self):
         """La regola che conta: oggi lasciar cadere un pezzo di frase non costa
