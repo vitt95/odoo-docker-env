@@ -23,6 +23,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+from . import anchor as anchor_module
 from ..dictionary import entries as entries_module
 from .exposure import Attribute, Budget, Decision, attribute_budget, exposed, within_budget
 
@@ -75,6 +76,11 @@ class Catalogue:
     excluded_categories: tuple[tuple[str, str], ...] = ()
     #: The rule that exposed each attribute, for the diagnosis of §6.3.
     exposure_rules: tuple[tuple[str, str], ...] = ()
+    #: Dove si attacca un'espressione temporale che non nomina un campo (**D110**).
+    #: Calcolata dagli attributi sopravvissuti a diritti e budget, mai da quelli in
+    #: ingresso: un'ancora che nominasse una data non leggibile sarebbe una seconda
+    #: via alla stessa informazione, senza le stesse guardie.
+    time_anchor: dict | None = None
 
     @property
     def refs(self) -> frozenset[str]:
@@ -142,6 +148,10 @@ def build(
         for decision in kept
     )
 
+    # --- 2b. l'ancora del tempo, dagli attributi rimasti (D110) --------
+    time_anchor = anchor_module.time_anchor(
+        anchor_module.date_refs(catalogue_attributes))
+
     # --- 3. categories, subject to V-D87-1 ---------------------------------
     categories, excluded_categories = _categories(dictionary, entity, readable_refs)
 
@@ -159,6 +169,7 @@ def build(
         exposure_rules=tuple(
             (_ref_of(entity, decision.attribute), decision.rule) for decision in kept
         ),
+        time_anchor=time_anchor,
     )
 
 

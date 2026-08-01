@@ -480,5 +480,67 @@ class TestCoverage(unittest.TestCase):
         self.assertFalse(report.meets(1.0))
 
 
+
+# ---------------------------------------------------------------------------
+# Time anchor (D110)
+# ---------------------------------------------------------------------------
+
+class TestTimeAnchor(unittest.TestCase):
+    """L'ancora nasce dagli attributi che sono sopravvissuti ai diritti (D110)."""
+
+    def _dictionary(self):
+        return Dictionary.build([
+            naming("ordini_vendita.data_ordine", ["data ordine", "data"]),
+            naming("ordini_vendita.data_consegna", ["data consegna"]),
+            naming("ordini_vendita.importo_totale", ["totale", "importo"]),
+        ])
+
+    def _attributes(self):
+        return [
+            Attribute(name="data_ordine", label="Data ordine", type="date",
+                      in_default_views=True),
+            Attribute(name="data_consegna", label="Data consegna", type="date",
+                      in_default_views=True),
+            Attribute(name="importo_totale", label="Totale", type="number",
+                      in_default_views=True),
+        ]
+
+    def test_two_dates_make_the_anchor_a_question(self):
+        catalogue = build.build(
+            self._dictionary(), entity="ordini_vendita",
+            attributes=self._attributes(),
+            readable_refs=frozenset({"ordini_vendita.data_ordine",
+                                     "ordini_vendita.data_consegna",
+                                     "ordini_vendita.importo_totale"}),
+            context_window=32_000)
+        self.assertEqual(
+            catalogue.time_anchor,
+            {"choices": ["ordini_vendita.data_consegna",
+                         "ordini_vendita.data_ordine"]})
+
+    def test_a_date_the_user_cannot_read_is_not_offered(self):
+        """La garanzia che rende sicuro il suggerimento: l'ancora nasce dopo il
+        filtro dei permessi (§5.9), quindi non puo' nominare cio' che l'utente non
+        vede. Senza questo test la regola potrebbe leggere gli attributi in ingresso,
+        invece di quelli sopravvissuti, e nessuno se ne accorgerebbe."""
+        catalogue = build.build(
+            self._dictionary(), entity="ordini_vendita",
+            attributes=self._attributes(),
+            readable_refs=frozenset({"ordini_vendita.data_ordine",
+                                     "ordini_vendita.importo_totale"}),
+            context_window=32_000)
+        self.assertEqual(catalogue.time_anchor,
+                         {"ref": "ordini_vendita.data_ordine"})
+
+    def test_no_date_exposed_is_no_anchor(self):
+        catalogue = build.build(
+            self._dictionary(), entity="ordini_vendita",
+            attributes=[Attribute(name="importo_totale", label="Totale",
+                                  type="number", in_default_views=True)],
+            readable_refs=frozenset({"ordini_vendita.importo_totale"}),
+            context_window=32_000)
+        self.assertIsNone(catalogue.time_anchor)
+
+
 if __name__ == "__main__":
     unittest.main()
