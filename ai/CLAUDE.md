@@ -280,9 +280,16 @@ I documenti del progetto si citano a vicenda con delle sigle: `D46` è una decis
 documento. Sono più di cento e nessuno le ricorda a memoria.
 
 **Regola: ogni sigla porta fra parentesi un promemoria di cosa tratta.** Sempre. Non
-«D2 lo impedisce» ma «D2 (la decisione che vieta di dare risposte sbagliate con l'aria
-di essere giuste) lo impedisce». Basta la prima volta in una sezione, non a ogni
-ripetizione ravvicinata.
+«D2 lo impedisce» ma «D2 (la decisione che vieta qualunque scrittura sui dati finché
+la Fase 2 non è misurata e superata) lo impedisce». Basta la prima volta in una
+sezione, non a ogni ripetizione ravvicinata.
+
+**La glossa si verifica sul registro, non si ricorda.** Una glossa sbagliata è peggio
+di nessuna glossa: chi legge si fida e non controlla. L'esempio qui sopra è nato
+proprio così — diceva che D2 vieta «risposte sbagliate con l'aria di essere giuste»,
+che è un argomento che il registro porta *accanto* a D2, non ciò che D2 stabilisce.
+Prima di scrivere una parentesi, si apre `ai/00-registro-decisioni.md` e si legge la
+riga.
 
 **Vale ovunque**: nelle spiegazioni in chat, nei documenti di `ai/`, nei commenti del
 codice, nei messaggi di commit. Prima era limitata alla chat; dal 1 agosto 2026 no.
