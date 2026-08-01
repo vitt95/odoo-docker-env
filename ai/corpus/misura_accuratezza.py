@@ -65,7 +65,7 @@ from nli_engine.adapters.base import Capabilities  # noqa: E402
 from nli_engine.adapters.openai_compatible import OpenAICompatibleAdapter  # noqa: E402
 from nli_engine.interpreter import interpret  # noqa: E402
 from nli_semantics.catalogue import build as build_module  # noqa: E402
-from nli_semantics.introspection.runtime import (  # noqa: E402
+from nli_semantics.platform_types import (  # noqa: E402
     CONTRACT_TYPE_BY_ODOO_TYPE,
 )
 from riferimenti import ENTITA, riferimento_entita  # noqa: E402

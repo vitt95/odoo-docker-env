@@ -123,6 +123,26 @@ class TestProfile(TransactionCase):
         self.assertEqual(capabilities.context_window, 8192)
         self.assertTrue(capabilities.constrained_generation)
 
+    def test_a_window_that_is_not_positive_is_refused(self):
+        """The declared window is the divisor of D79's budget: at zero the catalogue
+        would derive a budget from nothing, and the panel would be a way to break the
+        thing that reads it one table away.
+
+        The guard is a `CHECK`, and for a while it was written with a stray comma
+        inside the SQL: Odoo logged the failed `ALTER TABLE`, carried on, and **no
+        database ever had the constraint**. Nothing failed, because nothing was
+        watching it fail. Hence this test, and the error is matched by name so that a
+        constraint dropped again cannot pass as some other refusal.
+        """
+        with self.assertRaises(Exception) as refusal:
+            self.profile(context_window=0)
+            self.env.flush_all()
+        self.assertIn("context_window_positive", str(refusal.exception))
+
+    def test_a_positive_window_passes_the_same_guard(self):
+        """The other half: a check that refuses everything is not a check either."""
+        self.assertEqual(self.profile(context_window=1).context_window, 1)
+
     # The obvious next assertion — that the declared window drives the catalogue
     # budget (D79) — is **not** here, and the boundary check is what said so: it
     # would import `nli_semantics` from `nli_engine`, and §6.3 forbids that edge.

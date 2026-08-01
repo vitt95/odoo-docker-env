@@ -86,7 +86,7 @@ class NliProfile(models.Model):
              "qualification nobody can reconstruct is not one (D51).")
 
     _sql_constraints = [
-        ("context_window_positive", "CHECK (context_window > 0),",
+        ("context_window_positive", "CHECK (context_window > 0)",
          "A profile declares its context window (D78)."),
     ]
 

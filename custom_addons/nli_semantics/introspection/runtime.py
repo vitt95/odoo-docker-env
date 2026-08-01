@@ -40,28 +40,13 @@ from ..catalogue import build as build_module
 from ..catalogue import exposure, phases
 from ..dictionary import domains
 from ..dictionary.store import Dictionary
+from ..platform_types import CONTRACT_TYPE_BY_ODOO_TYPE
 from . import l0, permissions
 
-#: `fields_get` type -> the type vocabulary of `03` §8.1.
-#:
-#: `monetary` and `float` collapse into `number` on purpose: a predicate that is
-#: valid on an amount is valid on a quantity, and the currency is a presentation
-#: concern the Presenter handles from the field, not a semantic distinction the model
-#: should have to reason about.
-CONTRACT_TYPE_BY_ODOO_TYPE: dict[str, str] = {
-    "char": "text",
-    "text": "text",
-    "selection": "enum",
-    "boolean": "boolean",
-    "integer": "number",
-    "float": "number",
-    "monetary": "number",
-    "date": "date",
-    "datetime": "datetime",
-    "many2one": "relation",
-    "one2many": "relation",
-    "many2many": "relation",
-}
+#: `CONTRACT_TYPE_BY_ODOO_TYPE` is imported above and used twice below; it also stays
+#: readable as `runtime.CONTRACT_TYPE_BY_ODOO_TYPE` for the callers written before it
+#: moved. It lives in the pure `platform_types` because it is a platform fact that
+#: needs no ORM, and the tools that build a catalogue without a database need it.
 
 #: The entities of the phase 1 scope, when nothing is configured.
 #:

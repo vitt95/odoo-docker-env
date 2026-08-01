@@ -34,10 +34,18 @@ Verifiche: 395 test in zona pura, 114 test Odoo, confini e contratto (948/948) v
 
 **Ripresa del 1 agosto 2026.** Il lavoro è stato riportato su `new-ai-agent` sopra la
 base UI corrente. Niente è cambiato nel motore: `./manage.sh check` verde (948/948,
-copertura 100%, 0 determinazioni sbagliate) e `./manage.sh test nli_test` verde (114 su
-114). Sono cambiati solo due fatti d'ambiente, entrambi descritti sotto: il modello si
-raggiunge via host gateway, e `nli_test` ha già i sei moduli installati con i 50 004
-partner del popolatore.
+copertura 100%, 0 determinazioni sbagliate) e `./manage.sh test nli_test` verde. Sono
+cambiati due fatti d'ambiente, entrambi descritti sotto: il modello si raggiunge via
+host gateway, e `nli_test` ha già i sei moduli installati con i 50 004 partner del
+popolatore.
+
+La verifica della ripresa ha trovato due cose, deliberate in `00` §20. **D109**: la
+mappa dei tipi della piattaforma è ora la zona pura `nli_semantics/platform_types.py`
+— chiusa dentro `introspection/runtime.py` teneva l'ORM sul percorso della misura, e
+il comando di §5.1 non partiva affatto. **§20.2**: il `CHECK (context_window > 0)` di
+`nli_profile` aveva una virgola dentro la stringa SQL e **non è mai esistito in
+nessun database**; corretto, con i due test che lo mostrano scattare e non scattare.
+Test Odoo ora **116**.
 
 # Come lavoriamo
 

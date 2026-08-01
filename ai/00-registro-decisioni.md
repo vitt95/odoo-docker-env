@@ -215,6 +215,7 @@ Le decisioni sono state valutate contro quattro obiettivi dichiarati — **sempl
 | **D105** | Una **condizione nominata** non fondata nel proprio frammento e' rifiutata al livello 3 | ☑ Adottata | §19.1. Misurato su 80 aperture: **11 filtri sbagliati diventati rifiuti, 0 filtri corretti rifiutati**. Il confronto e' con la provenienza, non con l'enunciato, perche' un raffinamento porta avanti le condizioni dei turni precedenti. Riconoscitore condiviso con la Fase A |
 | **D106** | Il rifiuto di D105 **propone**: `clarification` con letture derivate dal catalogo | ☑ Adottata | §19.2. Le opzioni sono derivate, mai chieste al modello (P4): chi ha appena inventato una condizione e' l'ultimo a cui chiedere le alternative. Meno di due letture, nessuna domanda |
 | **D108** | Le voci di dizionario **approvate** hanno un registro, e la condizione tipizzata si traduce in dominio | ☑ Adottata | §19.4. Senza, il dizionario vivo era **solo L0**: le proposte di D35 restavano nella coda L3 e nessuna installazione aveva una condizione nominata. La traduzione va dalla condizione tipizzata al dominio — meccanica — mai al contrario, che sarebbe una supposizione (`06` §7) |
+| **D109** | La mappa dei tipi della piattaforma e' una **zona pura**, fuori dall'introspezione | ☑ Adottata | §20.1. Dodici coppie uguali in ogni installazione: un fatto, non una lettura di un registro vivo. Chiusa nel modulo che importa l'ORM, rendeva il catalogo non costruibile fuori dalla piattaforma — e la misura di accuratezza non partiva affatto |
 | **D107** | Modello di riferimento: **`qwen3.5:9b`** | ☑ Adottata — **dall'Architect** | §18.8. Deliberata il 29/07/2026 su basi architetturali, con il confronto empirico contro `granite4.1:8b` **interrotto prima di produrre un numero**. Le ragioni sono in §18.8, e cosi' e' il limite della delibera |
 
 ---
@@ -429,7 +430,7 @@ Riassunto operativo di ciò che le delibere impongono a chi scriverà il codice.
 
 **Per superare una decisione**: `⊘ Superata da Dn`. Mai cancellata. Le quattro supersessioni già presenti sono la prova che la disciplina serve.
 
-**Per aggiungere una decisione**: numerazione in continuità da **D109**. **D104**, **D105** e **D106** sono deliberate in §19, insieme a **D108** che ne era il presupposto mancante. D87–D91 sono deliberate (§14, §15); D92 è corretta; **D93** è deliberata (§16.4.1); **D94–D96** sono deliberate in §17; **D97–D103** e **D107** in §18.
+**Per aggiungere una decisione**: numerazione in continuità da **D110**. **D109** è deliberata in §20. **D104**, **D105** e **D106** sono deliberate in §19, insieme a **D108** che ne era il presupposto mancante. D87–D91 sono deliberate (§14, §15); D92 è corretta; **D93** è deliberata (§16.4.1); **D94–D96** sono deliberate in §17; **D97–D103** e **D107** in §18.
 
 **Vincoli aggiunti in delibera.** Le dodici decisioni marcate ⊡ portano una condizione che è parte della decisione: rimuoverla è modificare la decisione, non semplificarla.
 
@@ -1090,3 +1091,70 @@ Da qui la divisione: la **struttura** la deriva la zona pura di `catalogue/perim
 **Resta all'interfaccia** la parte visiva: dove compaiono i suggerimenti, come si scelgono, come si compongono con il testo gia' scritto. E' parte 7, e questa decisione le consegna i dati gia' filtrati.
 
 7 test puri sulla struttura, 9 Odoo sulle parole e sulla derivazione. 101 test Odoo verdi.
+
+---
+
+## 20. Le delibere della ripresa (1 agosto 2026)
+
+Il lavoro e' stato riportato dal ramo `ai-agent` al ramo `new-ai-agent`, sopra la base
+dell'interfaccia corrente. Nulla del motore e' cambiato nel trasporto: `./manage.sh
+check` verde (948 casi, 0 errori) e i test Odoo verdi prima e dopo. Le due voci che
+seguono nascono **dalla verifica della ripresa**, non da una richiesta: una e' una
+decisione, l'altra e' un difetto che la disciplina del progetto aveva gia' previsto e
+che nessuno stava guardando.
+
+### 20.1 D109 — La mappa dei tipi e' un fatto, non una lettura
+
+**Il sintomo.** Il comando di misura dell'accuratezza — quello di §5.1 di `12`, che e'
+l'unico modo di sapere quanto capisce il modello — non partiva piu':
+
+    ImportError: cannot import name 'fields' from 'odoo'
+
+Non un guasto del modello ne' del corpus: lo strumento importava
+`CONTRACT_TYPE_BY_ODOO_TYPE` da `nli_semantics/introspection/runtime.py`, e quel modulo
+importa l'ORM. Sull'host l'ORM non c'e', e non deve esserci: `tools/pure/bootstrap.py`
+installa pacchetti sintetici proprio perche' `from odoo import fields` **fallisca**, che
+e' la garanzia su cui poggia tutta la zona pura.
+
+**La domanda giusta non era come dare l'ORM allo strumento.** Era perche' una tabella di
+dodici coppie fosse chiusa dietro l'ORM. Il resto dell'introspezione interroga un
+registro vivo — modelli, campi, diritti, un orologio — e senza piattaforma non ha senso.
+Questa mappa non interroga nulla: `char` e' `text` in ogni installazione, su ogni
+database, a ogni ora. E' un **fatto**, e i fatti non hanno bisogno di una piattaforma
+per essere veri.
+
+**La delibera.** La tabella si sposta in `nli_semantics/platform_types.py`, dichiarata
+zona pura in `tools/arch/spec.py` con la sua ragione, e `introspection/runtime.py` la
+importa e continua a esporla: nessun chiamante sotto Odoo cambia una riga. Cio' che
+cambia e' che il catalogo si costruisce **fuori dalla piattaforma**, che e' il
+presupposto di ogni misura fatta sul corpus.
+
+L'opzione che non toccava l'architettura — rendere l'ORM importabile sull'host — e'
+stata cercata per prima, come vuole il metodo, e scartata con un argomento: avrebbe
+messo l'ORM nel percorso di uno strumento puro per leggere una costante, cioe' avrebbe
+piegato D24 (la decisione per cui ogni zona dichiara cosa puo' importare, e il
+controllore lo verifica) per non spostare dodici righe.
+
+Verifica: 54 file in zone pure, 0 violazioni. La misura riparte e produce un numero.
+
+### 20.2 Un vincolo che non e' mai esistito in nessun database
+
+`nli_profile` dichiara `CHECK (context_window > 0)` a difesa di D78 (il profilo dichiara
+la propria finestra di contesto), che e' il divisore da cui D79 deriva il budget del
+catalogo. La riga era scritta cosi':
+
+    ("context_window_positive", "CHECK (context_window > 0),", ...)
+
+con la **virgola dentro la stringa SQL**. Odoo emette l'`ALTER TABLE`, PostgreSQL lo
+rifiuta per errore di sintassi, Odoo registra un `ERROR` nel giornale e prosegue: il
+modulo si installa, i test passano, e il vincolo **non esiste in nessun database**.
+Verificato su `nli_test`: `pg_constraint` non ne aveva traccia.
+
+Nessuna suite se n'e' accorta perche' non c'era un test che lo mostrasse scattare — che
+e' esattamente la regola del progetto: *nessun controllo puo' passare a vuoto, e ogni
+controllo ha un test che lo mostra scattare e uno che lo mostra non scattare*. La regola
+era scritta e disattesa nel punto in cui serviva.
+
+Corretta la virgola, aggiunti i due test, il vincolo ora esiste e rifiuta. L'errore e'
+riconosciuto **per nome del vincolo**, cosi' che un vincolo caduto di nuovo non possa
+passare per un rifiuto qualsiasi. 116 test Odoo verdi (erano 114).

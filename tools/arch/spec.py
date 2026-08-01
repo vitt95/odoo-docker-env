@@ -461,6 +461,15 @@ PURE_ZONES: tuple[PureZone, ...] = (
         protects="D32, D33, D34, D79",
     ),
     PureZone(
+        path="nli_semantics/platform_types.py",
+        reason="the map from the platform's field types to the type vocabulary is the "
+               "same twelve pairs in every installation: it is a fact, not a reading "
+               "of a live registry. Pure, the catalogue can be built off-platform — "
+               "which is the only way the accuracy measurement runs at all (03 §8.1, "
+               "07 §5.4)",
+        protects="D24, D44",
+    ),
+    PureZone(
         path="nli_dispatch/pure_tests",
         reason="the boundaries of the five limits are asserted without a clock and "
                "without a database: a test that read the clock to check that a turn "
