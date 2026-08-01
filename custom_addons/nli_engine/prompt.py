@@ -60,6 +60,13 @@ Rules, all of them absolute:
   produced it;
 - never resolve a date. "this month" is
   {"kind":"temporal","expression":"current_month"};
+- a time expression that names no attribute is a condition on the catalogue's
+  "time_anchor". If it declares "ref", the condition is on that attribute. If it
+  declares "choices", the sentence does not say which date it means: answer with a
+  clarification whose options are those dates. If it is null, this entity exposes no
+  date at all: answer with a clarification;
+- NEVER drop a time expression. If you cannot place it, ask. A sentence that names a
+  period and an answer that does not is a wrong answer, not a shorter one;
 - never choose a direction for an ordering. "ordinati per data" names no direction:
   add_order carries only the ref, and the system derives the direction from the type
   of the attribute. Add "direction" ONLY when the user said which way: "dal piu'
@@ -197,6 +204,10 @@ def catalogue_payload(catalogue) -> dict:
     """
     return {
         "entity": catalogue.entity,
+        # D110: dove si attacca un periodo che non nomina un campo. Viaggia sempre,
+        # anche nulla: una chiave assente si scambia per un catalogo vecchio, una
+        # chiave nulla dice che date non ce ne sono.
+        "time_anchor": catalogue.time_anchor,
         "attributes": [
             {"ref": attribute.ref, "terms": list(attribute.terms),
              "type": attribute.type,

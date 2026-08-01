@@ -30,6 +30,7 @@ class Catalogue:
     attributes = (Attribute("clienti.citta", ("città", "comune")),)
     categories = (Category("clienti.attivi", ("attivi", "operativi")),)
     entity_names = (("clienti", ("clienti", "anagrafiche")),)
+    time_anchor = None
 
 
 VALID = json.dumps({
@@ -76,7 +77,36 @@ class TestPrompt(unittest.TestCase):
     def test_the_catalogue_payload_carries_no_construction_detail(self):
         """§6.3 — the engine receives the catalogue, it does not know how it was made."""
         payload = catalogue_payload(Catalogue())
-        self.assertEqual(set(payload), {"entity", "attributes", "categories", "entities"})
+        self.assertEqual(set(payload), {"entity", "attributes", "categories", "entities", "time_anchor"})
+
+
+class TestTimeAnchorInThePrompt(unittest.TestCase):
+    """Il modello deve sapere dove si attacca un periodo (D110) e che non puo'
+    lasciarlo cadere (D111)."""
+
+    def test_the_payload_carries_the_anchor(self):
+        catalogo = Catalogue()
+        catalogo.time_anchor = {"ref": "clienti.creato_il"}
+        self.assertEqual(catalogue_payload(catalogo)["time_anchor"],
+                         {"ref": "clienti.creato_il"})
+
+    def test_an_absent_anchor_travels_as_null_not_as_a_missing_key(self):
+        """Una chiave assente e una chiave nulla sono due cose diverse per chi
+        legge: la prima si puo' scambiare per una versione vecchia del catalogo,
+        la seconda dice esplicitamente che date non ce ne sono."""
+        payload = catalogue_payload(Catalogue())
+        self.assertIn("time_anchor", payload)
+        self.assertIsNone(payload["time_anchor"])
+
+    def test_the_instructions_say_where_a_period_attaches(self):
+        message = system_message(Request(utterance="x", catalogue={}))
+        self.assertIn("time_anchor", message)
+
+    def test_the_instructions_forbid_dropping_a_period(self):
+        """La regola che conta: oggi lasciar cadere un pezzo di frase non costa
+        niente al modello, perche' la busta resta valida lo stesso."""
+        message = system_message(Request(utterance="x", catalogue={}))
+        self.assertIn("NEVER drop a time expression", message)
 
 
 class TestInterpreter(unittest.TestCase):
