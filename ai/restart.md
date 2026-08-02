@@ -247,7 +247,14 @@ da `nli_core`: sono funzioni dei loro argomenti, e ciò che serve si passa.
    **non su `nli_test`**) e riportare i numeri per quello che sono.
 5. Il confronto con `granite4.1:8b`, se serve rispondere a *«il 73,6% è del compito o
    del modello?»*. Riga di comando identica, cambia solo `--profilo`.
-7. **La via d'uscita `out_of_scope` si apre da sola.** Il `scope_note` e' un insieme
+7. **La composizione dopo un chiarimento e' debole.** **D120** (`00` §29) fa arrivare
+   al modello la frase precedente e la domanda posta, e il seguito non riparte piu' da
+   zero. Ma nella prova la seconda risposta ha perso l'entita': due chiarimenti deboli
+   in fila si sommano. La strada che chiude il caso e' far **scegliere** le letture con
+   un clic (D106), dove le operazioni sono gia' nella busta e non c'e' niente da
+   ricomporre — l'aperto qui sotto.
+
+8. **La via d'uscita `out_of_scope` si apre da sola.** Il `scope_note` e' un insieme
    chiuso di cinque valori — tutti legali — e il modello ne sceglie uno qualunque
    quando fatica. Misurato: nove rifiuti su 414 con `previsione` (`00` §21.7), e sul
    campo *«mostrami i lead di quest'anno»* classificato come **`cancellazione_record`**.

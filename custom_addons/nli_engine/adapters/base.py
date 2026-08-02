@@ -88,6 +88,12 @@ class Request:
     catalogue: dict
     #: The current state, so the model can emit a refinement (§4.3).
     state: dict | None = None
+    #: Lo scambio precedente, quando il turno prima si e' chiuso con una domanda
+    #: (**D120**). Solo due stringhe: la frase di allora e la domanda posta. Non e' una
+    #: trascrizione della conversazione — mandare tutta la cronologia al modello a ogni
+    #: turno farebbe crescere il prompt con la durata della chat, e la finestra e'
+    #: gia' occupata a meta' dal catalogo.
+    pending: tuple[str, str] | None = None
     #: The structured error of the single repair attempt (D15), when this is one.
     repair: dict | None = None
 

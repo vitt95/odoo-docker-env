@@ -216,6 +216,7 @@ Le decisioni sono state valutate contro quattro obiettivi dichiarati — **sempl
 | **D106** | Il rifiuto di D105 **propone**: `clarification` con letture derivate dal catalogo | ☑ Adottata | §19.2. Le opzioni sono derivate, mai chieste al modello (P4): chi ha appena inventato una condizione e' l'ultimo a cui chiedere le alternative. Meno di due letture, nessuna domanda |
 | **D108** | Le voci di dizionario **approvate** hanno un registro, e la condizione tipizzata si traduce in dominio | ☑ Adottata | §19.4. Senza, il dizionario vivo era **solo L0**: le proposte di D35 restavano nella coda L3 e nessuna installazione aveva una condizione nominata. La traduzione va dalla condizione tipizzata al dominio — meccanica — mai al contrario, che sarebbe una supposizione (`06` §7) |
 | **D109** | La mappa dei tipi di campo (`char`→`text`, `monetary`→`number`) è una **zona pura**, fuori dall'introspezione | ☑ Adottata | §20.1. Dodici coppie uguali in ogni installazione: un fatto, non una domanda a un sistema vivo. Chiusa dentro il file che importa l'ORM di Odoo, impediva di costruire il catalogo fuori dalla piattaforma — e il comando che misura l'accuratezza non partiva affatto |
+| **D120** | Una frase che **risponde a una domanda** porta con se' lo scambio precedente | ☑ Adottata | §29. Una richiesta di chiarimento non produce operazioni, quindi non scrive stato: il contesto spariva esattamente nel punto in cui serviva di piu'. Due stringhe, non la trascrizione: un prompt che cresce con la durata della chat consuma la finestra che serve alla risposta |
 | **D119** | Il frammento citato da un rifiuto deve **contenere le parole** che chiedono quella cosa | ☑ Adottata | §28. D118 rendeva obbligatorio citarne uno, non che dicesse qualcosa: restava possibile rifiutare citando un pezzo qualunque della frase. Il lessico sta in `nli_semantics` e arriva iniettato, perche' e' di lingua e `nli_core` non ne ha |
 | **D118** | Un **rifiuto per portata deve citare il frammento** che chiede la cosa impossibile | ☑ Adottata | §27. `out_of_scope` costava quanto una risposta ed era l'uscita che il modello prendeva ogni volta che faticava: nove rifiuti su 414 con nota `previsione`, e «mostrami i lead di quest'anno» classificato come cancellazione di record. Ora il rifiuto si guadagna con la stessa prova di qualunque altra risposta |
 | **D117** | `create_date` **non e' un campo di sistema**: e' esposto come gli altri | ☑ Adottata | §26. *«Quando e' stato creato»* e' una domanda di lavoro, non un dettaglio tecnico. Misurato sul campo: a «i lead di quest'anno» l'ancora del tempo offriva chiusura, conversione, scadenza e assegnazione — quattro date, e non quella che una persona intende |
@@ -440,7 +441,7 @@ Riassunto operativo di ciò che le delibere impongono a chi scriverà il codice.
 
 **Per superare una decisione**: `⊘ Superata da Dn`. Mai cancellata. Le quattro supersessioni già presenti sono la prova che la disciplina serve.
 
-**Per aggiungere una decisione**: numerazione in continuità da **D120**. **D119** è deliberata in §28. **D118** è deliberata in §27. **D117** è deliberata in §26. **D116** è deliberata in §24. **D115** è deliberata in §23. **D113** e **D114** sono deliberate in §22, dalla rimisura di §21.7. **D110**, **D111** e **D112** sono deliberate in §21, dalla proposta `14-ancoraggio-del-tempo.md`. **D109** è deliberata in §20. **D104**, **D105** e **D106** sono deliberate in §19, insieme a **D108** che ne era il presupposto mancante. D87–D91 sono deliberate (§14, §15); D92 è corretta; **D93** è deliberata (§16.4.1); **D94–D96** sono deliberate in §17; **D97–D103** e **D107** in §18.
+**Per aggiungere una decisione**: numerazione in continuità da **D121**. **D120** è deliberata in §29. **D119** è deliberata in §28. **D118** è deliberata in §27. **D117** è deliberata in §26. **D116** è deliberata in §24. **D115** è deliberata in §23. **D113** e **D114** sono deliberate in §22, dalla rimisura di §21.7. **D110**, **D111** e **D112** sono deliberate in §21, dalla proposta `14-ancoraggio-del-tempo.md`. **D109** è deliberata in §20. **D104**, **D105** e **D106** sono deliberate in §19, insieme a **D108** che ne era il presupposto mancante. D87–D91 sono deliberate (§14, §15); D92 è corretta; **D93** è deliberata (§16.4.1); **D94–D96** sono deliberate in §17; **D97–D103** e **D107** in §18.
 
 **Vincoli aggiunti in delibera.** Le dodici decisioni marcate ⊡ portano una condizione che è parte della decisione: rimuoverla è modificare la decisione, non semplificarla.
 
@@ -1931,3 +1932,42 @@ onestamente.
 Sul campo la risposta alla domanda che aveva scoperto il difetto e' rimasta un
 chiarimento: D118 aveva gia' chiuso quella strada, e D119 chiude quella che restava
 aperta accanto — un rifiuto citato a caso. La misura dira' quanti erano.
+
+---
+
+## 29. D120 — Chi risponde a una domanda non riparte da zero
+
+**Il difetto, segnalato dal campo.** AIDA chiede *«per "quest'anno" quale periodo
+intendi?»*, l'utente risponde *«anno corrente»*, e AIDA riparte da capo come se quella
+frase fosse una domanda nuova. E' il modo piu' rapido di far sembrare stupido un sistema
+che aveva capito.
+
+**La causa.** Il contesto di una conversazione viveva **solo nello stato**, e lo stato
+lo scrive soltanto un turno che ha prodotto operazioni. Una richiesta di chiarimento non
+ne produce: non scrive niente, e il turno dopo comincia da un foglio bianco. Il contesto
+spariva esattamente nel punto in cui serviva di piu' — subito dopo una domanda.
+
+**La decisione.** Quando il turno precedente si e' chiuso con una domanda, la richiesta
+al modello porta due stringhe: la frase di allora e la domanda posta. Il modello e'
+istruito a **comporle** invece di richiedere la stessa cosa.
+
+**Due stringhe e non la conversazione.** Mandare la cronologia intera a ogni turno
+farebbe crescere il prompt con la durata della chat, e la finestra e' gia' occupata a
+meta' dal catalogo: **D79** ricava da li' il budget degli attributi, quindi una
+cronologia che cresce si mangia il catalogo, cioe' proprio cio' che serve per capire.
+
+**Solo il turno immediatamente precedente.** Una domanda a cui l'utente non ha risposto
+subito non e' piu' in sospeso: ha cambiato argomento, e trascinarsela dietro sarebbe
+peggio che dimenticarla.
+
+**L'esito, riportato com'e'.** Il contesto adesso arriva al modello: la risposta al
+seguito non riparte piu' da zero e parla del periodo invece che di nulla. **Ma la
+composizione non e' ancora buona**: nella prova la seconda risposta ha perso l'entita' e
+ha chiesto su quale attributo temporale filtrare. Due chiarimenti deboli in fila si
+sommano, e il primo era gia' impreciso — diceva che «lead» non e' nel catalogo mentre
+`crm_lead` c'e'.
+
+Quindi: il canale del contesto e' aperto e verificato, la qualita' della composizione
+no. La strada che chiude davvero il caso resta quella gia' registrata fra gli aperti —
+**far scegliere le letture con un clic** (D106), dove le operazioni sono gia' nella
+busta e non c'e' niente da ricomporre.

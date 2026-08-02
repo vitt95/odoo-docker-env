@@ -338,3 +338,28 @@ class TestAPeriodIsNotAForecast(unittest.TestCase):
             system_message(Request(utterance="x", catalogue={})).split())
         self.assertIn("a forecast of what will happen, a write, a computation ACROSS "
                       "time such as a trend or a growth rate", message)
+
+
+class TestIlContestoDellaConversazione(unittest.TestCase):
+    """La frase che risponde a una domanda non riparte da zero (**D120**).
+
+    Segnalato dal campo: ad «anno corrente (2024)», detto subito dopo che AIDA aveva
+    chiesto quale periodo si intendesse per «i lead di quest'anno», il sistema
+    ripartiva da capo e richiedeva la stessa cosa. Una richiesta di chiarimento non
+    produce operazioni, quindi non scrive stato — e il contesto spariva esattamente nel
+    punto in cui serviva di piu'.
+    """
+
+    def test_the_previous_exchange_reaches_the_model(self):
+        message = user_message(Request(
+            utterance="anno corrente", catalogue={},
+            pending=("mostrami i lead di quest'anno", "Quale periodo intendi?")))
+        self.assertIn("mostrami i lead di quest'anno", message)
+        self.assertIn("Quale periodo intendi?", message)
+        self.assertIn("ANSWERS it", message)
+
+    def test_without_a_pending_question_nothing_is_added(self):
+        """L'altra meta': un contesto che si aggiunge sempre gonfierebbe ogni prompt
+        con una conversazione che non c'e'."""
+        message = user_message(Request(utterance="mostrami i lead", catalogue={}))
+        self.assertNotIn("ANSWERS it", message)

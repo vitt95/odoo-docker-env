@@ -117,6 +117,11 @@ def run(env, item, *, adapter, scope, context_window: int) -> Outcome:
     interrogation = turn.interrogation_id
     state = interrogation.state
     utterance = item.utterance()
+    # D120: se il turno precedente si e' chiuso con una domanda, questa frase la
+    # risponde. Una richiesta di chiarimento non scrive stato — non ha prodotto
+    # operazioni — quindi senza questo il contesto della conversazione sparisce
+    # esattamente nel punto in cui serve di piu'.
+    pending = _pending_question(interrogation, turn)
 
     semantics = env["nli.semantics"].semantics(scope)
 
@@ -139,6 +144,7 @@ def run(env, item, *, adapter, scope, context_window: int) -> Outcome:
         state=state if state.get("target") else None,
         mentions=mentions,
         scope_justifies=scope_lexicon.justifies,
+        pending=pending,
     )
     outcome = Outcome(outcome=interpretation.outcome, repairs=interpretation.repairs)
     if not interpretation.understood:
@@ -314,3 +320,22 @@ def _instant(env) -> calendar_module.Instant:
         fiscal_year_start_month=last_month % 12 + 1,
         fiscal_year_start_day=1,
     )
+
+
+def _pending_question(interrogation, turn) -> tuple[str, str] | None:
+    """La frase di prima e la domanda che le e' stata posta, se ce n'e' una.
+
+    Si guarda **solo il turno immediatamente precedente**: una domanda a cui l'utente
+    non ha risposto subito non e' piu' in sospeso, ha cambiato argomento. E si porta
+    due stringhe e non la conversazione intera, perche' un prompt che cresce con la
+    durata della chat consuma la finestra che serve alla risposta.
+    """
+    precedente = interrogation.turn_ids.filtered(
+        lambda t: t.id < turn.id).sorted("id")[-1:]
+    if not precedente or precedente.outcome != "clarification":
+        return None
+    interpretazione = precedente.interpretation or {}
+    domanda = (interpretazione.get("clarification") or interpretazione).get("question")
+    if not domanda or not precedente.utterance:
+        return None
+    return (precedente.utterance, domanda)

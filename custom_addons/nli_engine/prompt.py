@@ -166,6 +166,17 @@ def user_message(request: Request) -> str:
         # From the second turn on, the state is what makes an elliptical sentence
         # interpretable — *"only the active ones"* means nothing without it (§17.1).
         parts.append(f"Current state:\n{json.dumps(request.state, ensure_ascii=False)}")
+    if request.pending:
+        # D120: il turno prima si e' chiuso con una domanda, e questa frase la
+        # risponde. Senza, «anno corrente» e' un frammento senza senso: il modello
+        # riparte da zero e richiede la stessa cosa, che e' il modo piu' rapido di
+        # far sembrare stupido un sistema che aveva capito.
+        frase, domanda = request.pending
+        parts.append(
+            "The previous turn ended with a question. The sentence below ANSWERS it: "
+            "combine the two into one complete request, do not ask again.\n"
+            f"Earlier sentence: {frase}\nQuestion asked: {domanda}"
+        )
     if request.repair:
         # D15: one attempt, with the error in structured form. A second attempt would
         # mask a systematic defect and take it out of the metrics.

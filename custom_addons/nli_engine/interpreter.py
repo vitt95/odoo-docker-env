@@ -68,7 +68,7 @@ def not_understood() -> dict:
 
 
 def interpret(adapter, *, utterance: str, catalogue, state: dict | None = None,
-              mentions=None, scope_justifies=None,
+              mentions=None, scope_justifies=None, pending=None,
               max_repairs: int = 1) -> Interpretation:
     """Ask the model, validate, allow one repair, and never return anything else.
 
@@ -90,7 +90,7 @@ def interpret(adapter, *, utterance: str, catalogue, state: dict | None = None,
 
     for attempt in range(max_repairs + 1):
         request = Request(utterance=utterance, catalogue=payload, state=state,
-                          repair=repair)
+                          pending=pending, repair=repair)
         try:
             reply = adapter.complete(request, schema=envelope_schema)
         except AdapterError as error:
