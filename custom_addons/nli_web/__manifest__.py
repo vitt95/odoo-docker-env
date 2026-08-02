@@ -9,9 +9,10 @@
     # `ui_brand_tokens` is deliberately NOT a dependency: D25 requires the
     # tokens to be used when present and the interface to degrade gracefully
     # when they are not.
-    "depends": ["nli_dispatch", "web"],
+    "depends": ["nli_dispatch", "web", "base_setup"],
     "data": [
         "views/aida_action.xml",
+        "views/res_config_settings.xml",
     ],
     "assets": {
         "web.assets_backend": [

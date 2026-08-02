@@ -94,7 +94,11 @@ MODULES: dict[str, ModuleSpec] = {
         name="nli_web",
         responsibility="chat channel, presentation",
         nli_depends=frozenset({"nli_dispatch"}),
-        platform_depends=frozenset({"web"}),
+        # `base_setup` porta la vista delle impostazioni generali, che e' l'unico
+        # aggancio possibile per una sezione di configurazione (D116). Dichiarata qui
+        # perche' D18 vuole che allargare la superficie della piattaforma sia una
+        # decisione visibile in revisione, non un import che passa.
+        platform_depends=frozenset({"web", "base_setup"}),
         odoo_packages=frozenset({"models"}),
     ),
 }

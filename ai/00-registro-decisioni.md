@@ -216,6 +216,7 @@ Le decisioni sono state valutate contro quattro obiettivi dichiarati — **sempl
 | **D106** | Il rifiuto di D105 **propone**: `clarification` con letture derivate dal catalogo | ☑ Adottata | §19.2. Le opzioni sono derivate, mai chieste al modello (P4): chi ha appena inventato una condizione e' l'ultimo a cui chiedere le alternative. Meno di due letture, nessuna domanda |
 | **D108** | Le voci di dizionario **approvate** hanno un registro, e la condizione tipizzata si traduce in dominio | ☑ Adottata | §19.4. Senza, il dizionario vivo era **solo L0**: le proposte di D35 restavano nella coda L3 e nessuna installazione aveva una condizione nominata. La traduzione va dalla condizione tipizzata al dominio — meccanica — mai al contrario, che sarebbe una supposizione (`06` §7) |
 | **D109** | La mappa dei tipi di campo (`char`→`text`, `monetary`→`number`) è una **zona pura**, fuori dall'introspezione | ☑ Adottata | §20.1. Dodici coppie uguali in ogni installazione: un fatto, non una domanda a un sistema vivo. Chiusa dentro il file che importa l'ORM di Odoo, impediva di costruire il catalogo fuori dalla piattaforma — e il comando che misura l'accuratezza non partiva affatto |
+| **D116** | La superficie della piattaforma di `nli_web` si allarga a **`base_setup`**, per la sezione AIDA nelle impostazioni generali | ☑ Adottata | §24. Il modello si configura dal pannello, come vuole **D75**. La vista delle impostazioni generali sta in `base_setup` e non c'e' altro aggancio. Il pannello **configura e non attiva**: D80 continua a rifiutare un profilo non qualificato |
 | **D115** | L'**enunciato dell'utente resta sul turno, in chiaro** — supera D54 per la sola cronologia | ☑ Adottata — **dall'Architect** | §23. Una chat la cui cronologia non puo' rimostrare all'utente le proprie parole e' un altro prodotto. Cio' a cui si rinuncia e' scritto e non attenuato: **un dump del database contiene le frasi digitate**. A proteggerle resta la regola di record del turno, non piu' la cifratura |
 | **D113** | Su una data l'intervallo si dice **`within`**, e `between` resta l'intervallo numerico | ☑ Adottata | §22.1. Il contratto ammetteva due parole per lo stesso fatto e il corpus ne accetta una. Non emergeva finché il modello sbagliava il campo: con l'ancora di D110 è rimasta l'unica differenza su **11 casi di 414**, cioè 2,7 punti contati come errori mentre erano legali |
 | **D114** | Un **periodo che seleziona record esistenti non è fuori portata**, e il prompt lo dice | ☑ Adottata | §22.2. Nove rifiuti su 414 uscivano con `scope_note: "previsione"`, fra cui *«ordini lo scorso mese»*. L'elenco delle cose fuori portata nominava «una previsione» e «un calcolo nel tempo», e un'espressione temporale ci finiva per somiglianza |
@@ -436,7 +437,7 @@ Riassunto operativo di ciò che le delibere impongono a chi scriverà il codice.
 
 **Per superare una decisione**: `⊘ Superata da Dn`. Mai cancellata. Le quattro supersessioni già presenti sono la prova che la disciplina serve.
 
-**Per aggiungere una decisione**: numerazione in continuità da **D116**. **D115** è deliberata in §23. **D113** e **D114** sono deliberate in §22, dalla rimisura di §21.7. **D110**, **D111** e **D112** sono deliberate in §21, dalla proposta `14-ancoraggio-del-tempo.md`. **D109** è deliberata in §20. **D104**, **D105** e **D106** sono deliberate in §19, insieme a **D108** che ne era il presupposto mancante. D87–D91 sono deliberate (§14, §15); D92 è corretta; **D93** è deliberata (§16.4.1); **D94–D96** sono deliberate in §17; **D97–D103** e **D107** in §18.
+**Per aggiungere una decisione**: numerazione in continuità da **D117**. **D116** è deliberata in §24. **D115** è deliberata in §23. **D113** e **D114** sono deliberate in §22, dalla rimisura di §21.7. **D110**, **D111** e **D112** sono deliberate in §21, dalla proposta `14-ancoraggio-del-tempo.md`. **D109** è deliberata in §20. **D104**, **D105** e **D106** sono deliberate in §19, insieme a **D108** che ne era il presupposto mancante. D87–D91 sono deliberate (§14, §15); D92 è corretta; **D93** è deliberata (§16.4.1); **D94–D96** sono deliberate in §17; **D97–D103** e **D107** in §18.
 
 **Vincoli aggiunti in delibera.** Le dodici decisioni marcate ⊡ portano una condizione che è parte della decisione: rimuoverla è modificare la decisione, non semplificarla.
 
@@ -1727,3 +1728,43 @@ impaginata dal Presentatore si **conserva** invece di essere riderivata. Rideriv
 vorrebbe dire ricostruire catalogo, diritti e istante di quel momento, e riaprire una
 conversazione costerebbe quanto eseguirla — che è esattamente ciò che la specifica
 vieta quando chiede che non ci sia mai attrito nella chat.
+
+---
+
+## 24. D116 — Il modello si sceglie dal pannello
+
+**D75** (i profili di modello sono gestiti dall'amministrazione, con il protocollo preso
+da un insieme chiuso e uno solo attivo) aveva gia' messo la scelta del modello nelle
+mani di chi amministra. Mancava il pannello: fino a oggi un profilo si poteva scrivere
+solo da codice, il che rendeva D75 vera sulla carta e falsa in mano a un
+amministratore.
+
+**Cosa costa.** La vista delle impostazioni generali vive in `base_setup`, e non c'e'
+un altro aggancio: una sezione che compaia accanto alle altre deve estendere quella
+vista. Quindi `nli_web` acquista una dipendenza di piattaforma, e **D18** (allargare la
+superficie della piattaforma e' una decisione, non un import) vuole che la si scriva.
+E' dichiarata in `tools/arch/spec.py`, dove il controllo dei confini la vede — ed e' il
+controllo che me l'ha fermata prima che passasse in silenzio.
+
+**Dove sta, e perche' non nel motore.** `nli_engine` possiede il profilo, ma la sua
+responsabilita' dichiarata e' *interprete e adattatori* e non dichiara nessuna
+dipendenza dalla piattaforma: ci arriva attraverso il nucleo. Un pannello e'
+interfaccia, e l'interfaccia sta in `nli_web`. Cosi' il motore resta esercitabile senza
+Odoo davanti, che e' la ragione per cui i suoi test girano in millisecondi.
+
+**Il punto che valeva la pena non sbagliare.** Il pannello **configura, non mette in
+servizio**. Scrive i parametri su una bozza e mostra i due passaggi veri — la
+qualificazione di **D51** e l'attivazione — che restano quelli di sempre: **D80** (un
+profilo mai qualificato non puo' essere attivato) continua a rifiutare, e il rifiuto
+arriva come messaggio invece che come silenzio.
+
+Una sezione delle impostazioni che avesse scritto `state = "active"` avrebbe reso il
+cancello una formalita' aggirabile con due clic. Il cancello esiste perche' un modello
+non qualificato puo' rallentare l'ERP **per tutti**, non solo per chi lo ha scelto.
+
+**Un difetto trovato costruendolo, che vale per chiunque tocchi le impostazioni.** I
+campi erano stati scritti come calcolati con inverso. `res.config.settings` costruisce
+il proprio record con `default_get`, che **non esegue i calcoli**: `create({})`
+restituiva i valori giusti mentre la pagina mostrava caselle vuote. Riscritti come
+campi normali riempiti in `default_get` e riscritti in `set_values`, che e' il modo in
+cui la piattaforma lo fa per se stessa e non dipende da quando girano i calcoli.
