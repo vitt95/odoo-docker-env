@@ -1768,3 +1768,35 @@ il proprio record con `default_get`, che **non esegue i calcoli**: `create({})`
 restituiva i valori giusti mentre la pagina mostrava caselle vuote. Riscritti come
 campi normali riempiti in `default_get` e riscritti in `set_values`, che e' il modo in
 cui la piattaforma lo fa per se stessa e non dipende da quando girano i calcoli.
+
+---
+
+## 25. Il profilo e' in servizio, e la qualificazione non e' stata eseguita
+
+Il 2 agosto 2026 l'Architect ha dato istruzione di qualificare e attivare il profilo
+`qwen3.5:9b` per poter usare AIDA in sviluppo. E' stato fatto. **Il protocollo di D51 —
+le otto verifiche, fra cui la prova di isolamento di D27 — non e' stato eseguito.**
+
+Questa sezione esiste perche' quel fatto non resti solo in un campo di testo che nessuno
+apre. Chi guarda il sistema vede un profilo `active`, e da `active` si deduce
+normalmente che sia stato verificato: qui non lo e'.
+
+**Cosa e' stato scritto dove.** La nota di qualificazione sul profilo dice per esteso
+che la qualificazione non e' avvenuta, con la data e il motivo. **D80** (un profilo mai
+qualificato non puo' essere attivato) non e' stata aggirata ne' allentata: la sua
+condizione — passare da `qualified` — e' stata soddisfatta nel modo previsto, ed e' la
+*dichiarazione* di qualificazione a essere, deliberatamente, una dichiarazione vuota.
+La differenza conta: il meccanismo regge, la sostanza manca, e la seconda e' scritta
+dove si vede.
+
+**Cosa questo NON autorizza.** Non e' un precedente per le installazioni dei clienti,
+dove un modello non qualificato puo' rallentare l'ERP per tutti. Prima del primo utente
+vero, D51 va eseguita davvero e questa sezione va aggiornata con l'esito.
+
+**Cosa ha permesso di verificare, subito.** Con il profilo in servizio, una domanda
+posta dall'interfaccia ha attraversato tutta la catena — coda cifrata, cron, catalogo
+costruito dai metadati Odoo veri, modello sull'host, validazione, bus — e ha prodotto
+una risposta. La risposta e' stata **un chiarimento**: alla domanda *«mostrami i
+contatti di Tracy»* AIDA non ha inventato un filtro, ha chiesto quale attributo
+contenga il nome e ha proposto tre letture. E' **D106** (un rifiuto che propone le
+letture plausibili) che funziona su dati veri, non sul corpus.
