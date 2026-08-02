@@ -106,6 +106,15 @@ def _fail(env, item_id: int, error: Exception):
     """
     item = env["nli.queue.item"].browse(item_id)
     _logger.warning("AIDA turn %s failed: %s", item_id, type(error).__name__)
+    # Chiudere la riga di coda non basta: il **turno** e' cio' che la cronologia
+    # rilegge, e un turno senza esito e' un turno «in corso» per sempre. Prima di
+    # questa riga, una conversazione riaperta mostrava l'animazione dell'attesa su una
+    # domanda a cui nessuno avrebbe piu' risposto — e non lo vedeva nessun test,
+    # perche' si vede solo riaprendo.
+    item.turn_id.write({
+        "outcome": "failed",
+        "executed_at": fields.Datetime.now(),
+    })
     item.fail(type(error).__name__)
     item.notify({"outcome": "failed"})
     env.cr.commit()

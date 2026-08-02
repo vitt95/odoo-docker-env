@@ -57,6 +57,13 @@ export class AidaStore {
         this.bus.subscribe("nli.turn", (payload) => this._onTurnDone(payload));
         this.bus.start();
         await this.loadConversations({ reset: true });
+        // Si riapre l'ultima conversazione, come fa una chat: tornare su AIDA e
+        // trovare una schermata vuota costringe a ricordarsi dove si era rimasti, e
+        // l'elenco e' gia' ordinato per ultima attivita' — la prima e' quella giusta.
+        const ultima = this.state.conversations[0];
+        if (ultima) {
+            await this.open(ultima.id);
+        }
     }
 
     // --- barra laterale ---------------------------------------------------

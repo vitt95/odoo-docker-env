@@ -151,6 +151,12 @@
                     <t t-elif="turn.outcome === 'out_of_scope'">
                         <p class="o_aida_lead">Questa è una cosa che non so ancora fare.</p>
                     </t>
+                    <t t-elif="turn.outcome === 'failed'">
+                        <!-- §12.7: un guasto e' un difetto nostro, e si dice cosi'. -->
+                        <p class="o_aida_refusal">
+                            Qualcosa e' andato storto da parte nostra. La domanda non e' stata persa: riprova.
+                        </p>
+                    </t>
                     <t t-else="">
                         <p class="o_aida_lead">Non ho capito la domanda. Puoi riformularla?</p>
                     </t>

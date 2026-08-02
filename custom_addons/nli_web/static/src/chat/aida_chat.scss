@@ -7,9 +7,15 @@
 // e' installato restano quelle di Odoo. Un colore fissato qui sarebbe il posto in cui
 // il pannello smette di somigliare al resto della piattaforma.
 
+// L'azione vive dentro il gestore delle azioni di Odoo, sotto la barra di
+// navigazione. `height: 100%` da sola non basta: la catena dei genitori deve avere
+// un'altezza, altrimenti il pannello collassa e lo scorrimento finisce sulla pagina
+// invece che sul filo dei messaggi — ed e' li' che una chat comincia a dare fastidio.
+.o_action_manager > .o_aida,
 .o_aida {
     display: flex;
     height: 100%;
+    min-height: 0;
     overflow: hidden;
     background: var(--o-view-background-color, #fff);
     color: var(--o-main-text-color, #374151);
@@ -231,7 +237,10 @@
 }
 
 .o_aida_disclaimer {
-    margin: 0.5rem 0 0;
+    // `auto` sui lati e non `0`: la scorciatoia `margin: 0.5rem 0 0` azzerava il
+    // `margin-inline: auto` che centra i figli del contenitore, e la nota finiva
+    // 248px piu' a sinistra della casella di scrittura. Misurato, non stimato.
+    margin: 0.5rem auto 0;
     text-align: center;
     font-size: 0.8125rem;
     color: var(--o-gray-600, #6b7280);
