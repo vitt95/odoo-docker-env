@@ -216,6 +216,7 @@ Le decisioni sono state valutate contro quattro obiettivi dichiarati — **sempl
 | **D106** | Il rifiuto di D105 **propone**: `clarification` con letture derivate dal catalogo | ☑ Adottata | §19.2. Le opzioni sono derivate, mai chieste al modello (P4): chi ha appena inventato una condizione e' l'ultimo a cui chiedere le alternative. Meno di due letture, nessuna domanda |
 | **D108** | Le voci di dizionario **approvate** hanno un registro, e la condizione tipizzata si traduce in dominio | ☑ Adottata | §19.4. Senza, il dizionario vivo era **solo L0**: le proposte di D35 restavano nella coda L3 e nessuna installazione aveva una condizione nominata. La traduzione va dalla condizione tipizzata al dominio — meccanica — mai al contrario, che sarebbe una supposizione (`06` §7) |
 | **D109** | La mappa dei tipi di campo (`char`→`text`, `monetary`→`number`) è una **zona pura**, fuori dall'introspezione | ☑ Adottata | §20.1. Dodici coppie uguali in ogni installazione: un fatto, non una domanda a un sistema vivo. Chiusa dentro il file che importa l'ORM di Odoo, impediva di costruire il catalogo fuori dalla piattaforma — e il comando che misura l'accuratezza non partiva affatto |
+| **D117** | `create_date` **non e' un campo di sistema**: e' esposto come gli altri | ☑ Adottata | §26. *«Quando e' stato creato»* e' una domanda di lavoro, non un dettaglio tecnico. Misurato sul campo: a «i lead di quest'anno» l'ancora del tempo offriva chiusura, conversione, scadenza e assegnazione — quattro date, e non quella che una persona intende |
 | **D116** | La superficie della piattaforma di `nli_web` si allarga a **`base_setup`**, per la sezione AIDA nelle impostazioni generali | ☑ Adottata | §24. Il modello si configura dal pannello, come vuole **D75**. La vista delle impostazioni generali sta in `base_setup` e non c'e' altro aggancio. Il pannello **configura e non attiva**: D80 continua a rifiutare un profilo non qualificato |
 | **D115** | L'**enunciato dell'utente resta sul turno, in chiaro** — supera D54 per la sola cronologia | ☑ Adottata — **dall'Architect** | §23. Una chat la cui cronologia non puo' rimostrare all'utente le proprie parole e' un altro prodotto. Cio' a cui si rinuncia e' scritto e non attenuato: **un dump del database contiene le frasi digitate**. A proteggerle resta la regola di record del turno, non piu' la cifratura |
 | **D113** | Su una data l'intervallo si dice **`within`**, e `between` resta l'intervallo numerico | ☑ Adottata | §22.1. Il contratto ammetteva due parole per lo stesso fatto e il corpus ne accetta una. Non emergeva finché il modello sbagliava il campo: con l'ancora di D110 è rimasta l'unica differenza su **11 casi di 414**, cioè 2,7 punti contati come errori mentre erano legali |
@@ -437,7 +438,7 @@ Riassunto operativo di ciò che le delibere impongono a chi scriverà il codice.
 
 **Per superare una decisione**: `⊘ Superata da Dn`. Mai cancellata. Le quattro supersessioni già presenti sono la prova che la disciplina serve.
 
-**Per aggiungere una decisione**: numerazione in continuità da **D117**. **D116** è deliberata in §24. **D115** è deliberata in §23. **D113** e **D114** sono deliberate in §22, dalla rimisura di §21.7. **D110**, **D111** e **D112** sono deliberate in §21, dalla proposta `14-ancoraggio-del-tempo.md`. **D109** è deliberata in §20. **D104**, **D105** e **D106** sono deliberate in §19, insieme a **D108** che ne era il presupposto mancante. D87–D91 sono deliberate (§14, §15); D92 è corretta; **D93** è deliberata (§16.4.1); **D94–D96** sono deliberate in §17; **D97–D103** e **D107** in §18.
+**Per aggiungere una decisione**: numerazione in continuità da **D118**. **D117** è deliberata in §26. **D116** è deliberata in §24. **D115** è deliberata in §23. **D113** e **D114** sono deliberate in §22, dalla rimisura di §21.7. **D110**, **D111** e **D112** sono deliberate in §21, dalla proposta `14-ancoraggio-del-tempo.md`. **D109** è deliberata in §20. **D104**, **D105** e **D106** sono deliberate in §19, insieme a **D108** che ne era il presupposto mancante. D87–D91 sono deliberate (§14, §15); D92 è corretta; **D93** è deliberata (§16.4.1); **D94–D96** sono deliberate in §17; **D97–D103** e **D107** in §18.
 
 **Vincoli aggiunti in delibera.** Le dodici decisioni marcate ⊡ portano una condizione che è parte della decisione: rimuoverla è modificare la decisione, non semplificarla.
 
@@ -1800,3 +1801,46 @@ una risposta. La risposta e' stata **un chiarimento**: alla domanda *«mostrami 
 contatti di Tracy»* AIDA non ha inventato un filtro, ha chiesto quale attributo
 contenga il nome e ha proposto tre letture. E' **D106** (un rifiuto che propone le
 letture plausibili) che funziona su dati veri, non sul corpus.
+
+---
+
+## 26. D117 — La data di creazione non e' un campo tecnico
+
+**Il difetto, visto da un utente.** Alla domanda *«mostrami i lead di quest'anno»* AIDA
+chiedeva quale data filtrare e proponeva: chiusura, conversione, scadenza,
+assegnazione. Quattro date, e **non quella che una persona intende**. Il chiarimento
+sembrava incompetente proprio dove doveva aiutare.
+
+**La causa.** La regola 2 di `06` §5.3 esclude dal catalogo i nomi che Odoo mette su
+ogni modello. Li trattava come un gruppo solo, ma non lo sono: `id`, `create_uid`,
+`write_uid`, `display_name` non significano niente per chi lavora, mentre *«quando e'
+stato creato»* e' la prima cosa che si intende quando si dice «di quest'anno».
+
+**La decisione.** `create_date` esce dall'elenco dei campi di sistema ed e' esposto come
+qualunque altro attributo. `write_date` resta fuori: *«quando e' stato modificato
+l'ultima volta»* e' una domanda tecnica, non di lavoro.
+
+L'alternativa che non toccava la regola era dichiararlo a livello L2 nel dizionario —
+la regola 1 vince su tutte — ed e' stata scartata perche' avrebbe richiesto di farlo
+entita' per entita', installazione per installazione, e fino ad allora ogni chiarimento
+temporale avrebbe continuato a mancare l'opzione ovvia.
+
+**Un secondo difetto trovato scrivendo il test, ed e' lo stesso di D109.** L'elenco dei
+campi di sistema viveva in `introspection/l0.py`, che sta dietro un `__init__` che
+importa l'ORM: un test puro non poteva leggerlo. E' un **fatto** — gli stessi nomi in
+ogni installazione — non la lettura di un registro vivo. Spostato in
+`nli_semantics/platform_types.py`, la zona pura che gia' ospita la mappa dei tipi, con
+`l0` che lo importa. Due volte lo stesso difetto in due settimane dice che la regola
+merita di essere guardata quando si scrive: **un fatto della piattaforma non va messo
+dietro l'ORM.**
+
+**Cosa NON ha risolto, e va detto.** Dopo la modifica la stessa domanda non produce piu'
+un chiarimento: produce `out_of_scope` con nota `cancellazione_record`. Il modello ha
+classificato *«mostrami i lead di quest'anno»* come una **cancellazione di record**.
+
+Non e' una regressione di questa decisione: e' la stessa via d'uscita generica gia'
+diagnosticata in §21.7 — nove rifiuti su 414 uscivano con `previsione` — che **D114** ha
+ristretto per un solo verso. Il `scope_note` e' un insieme chiuso di cinque valori, tutti
+legali, e il modello ne sceglie uno qualunque quando fatica. Restringere una parola alla
+volta non chiude una porta che si apre da sola: e' il prossimo problema da affrontare, ed
+e' fra gli aperti.

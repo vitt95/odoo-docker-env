@@ -26,19 +26,10 @@ change freely, and the language the interpretation is shown in.
 
 from __future__ import annotations
 
-#: Field names Odoo puts on every model. Rule 2 of §5.3.
-SYSTEM_FIELDS = frozenset({
-    "id", "create_uid", "create_date", "write_uid", "write_date",
-    "display_name", "__last_update",
-})
-
-#: Prefixes of the technical mixins — messaging, activities, ratings, website.
-#: Rule 3 of §5.3. Matching by prefix rather than by an exhaustive list because the
-#: list grows with every Odoo release and a missed entry silently enlarges the
-#: catalogue.
-MIXIN_PREFIXES = (
-    "message_", "activity_", "rating_", "website_", "access_",
-)
+# Gli elenchi vivono nella zona pura `platform_types` (D109, D117): sono fatti
+# della piattaforma, uguali in ogni installazione, e li devono poter leggere
+# anche i test puri che girano senza Odoo.
+from ..platform_types import MIXIN_PREFIXES, SYSTEM_FIELDS  # noqa: F401
 
 MIXIN_FIELDS = frozenset({
     "my_activity_date_deadline", "has_message", "is_follower",

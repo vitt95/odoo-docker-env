@@ -40,3 +40,28 @@ CONTRACT_TYPE_BY_ODOO_TYPE: dict[str, str] = {
     "one2many": "relation",
     "many2many": "relation",
 }
+
+
+#: I nomi che Odoo mette su **ogni** modello. Regola 2 di `06` §5.3.
+#:
+#: Sta qui e non in `introspection/l0.py` per la stessa ragione della tabella dei tipi
+#: (**D109**): e' un fatto, non la lettura di un registro vivo — gli stessi sei nomi in
+#: ogni installazione — e chiuderlo dietro un modulo che importa l'ORM lo rendeva
+#: illeggibile a chi non ha Odoo davanti, compresi i test puri che devono verificarlo.
+#:
+#: **`create_date` non e' in questo elenco** (**D117**). Ci stava, e non e' della stessa
+#: famiglia degli altri: `id` e `create_uid` non significano niente per una persona,
+#: mentre *«quando e' stato creato»* e' la prima cosa che si intende con «i lead di
+#: quest'anno». Misurato sul campo: a quella domanda l'ancora del tempo offriva quattro
+#: date e non quella giusta.
+SYSTEM_FIELDS = frozenset({
+    "id", "create_uid", "write_uid", "write_date",
+    "display_name", "__last_update",
+})
+
+#: Prefissi dei mixin tecnici — messaggistica, attivita', valutazioni, sito. Regola 3
+#: di §5.3. Per prefisso e non per elenco esatto: l'elenco cresce a ogni versione di
+#: Odoo, e una voce dimenticata allarga il catalogo in silenzio.
+MIXIN_PREFIXES = (
+    "message_", "activity_", "rating_", "website_", "access_",
+)

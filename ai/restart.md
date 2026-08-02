@@ -247,6 +247,16 @@ da `nli_core`: sono funzioni dei loro argomenti, e ciò che serve si passa.
    **non su `nli_test`**) e riportare i numeri per quello che sono.
 5. Il confronto con `granite4.1:8b`, se serve rispondere a *«il 73,6% è del compito o
    del modello?»*. Riga di comando identica, cambia solo `--profilo`.
+7. **La via d'uscita `out_of_scope` si apre da sola.** Il `scope_note` e' un insieme
+   chiuso di cinque valori — tutti legali — e il modello ne sceglie uno qualunque
+   quando fatica. Misurato: nove rifiuti su 414 con `previsione` (`00` §21.7), e sul
+   campo *«mostrami i lead di quest'anno»* classificato come **`cancellazione_record`**.
+
+   **D114** ha ristretto il verso della previsione e non basta: restringere una parola
+   alla volta non chiude una porta che si apre da sola. Da guardare: se l'uscita debba
+   costare qualcosa al modello — per esempio esigere che nomini quale operazione
+   mancante la rende impossibile — invece di essere gratuita quanto una risposta.
+
 7. **Novanta secondi per una risposta, e la misura non lo prevedeva.** Misurato
    sull'installazione vera il 2 agosto: attesa in coda **0 secondi** — il cron
    raccoglie il turno all'istante — e **90 secondi di lavorazione**, tutti chiamate al

@@ -7,6 +7,7 @@ import unittest
 from ..catalogue import build, coverage, exposure, phases
 from ..catalogue.exposure import Attribute
 from ..dictionary.store import Dictionary
+from .. import platform_types
 
 
 def naming(ref: str, terms: list[str], level: str = "L0") -> dict:
@@ -544,3 +545,37 @@ class TestTimeAnchor(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestLaDataDiCreazione(unittest.TestCase):
+    """`create_date` e' una domanda di lavoro, non un campo tecnico (**D117**).
+
+    La regola 2 di §5.3 esclude i campi che Odoo mette su ogni modello. Li trattava
+    tutti allo stesso modo, ma non lo sono: `id` e `create_uid` non significano niente
+    per una persona, mentre *«quando e' stato creato»* e' la prima cosa che si intende
+    con «i lead di quest'anno».
+
+    Misurato sul campo: a quella domanda l'ancora del tempo (**D110**) offriva chiusura,
+    conversione, scadenza e assegnazione — quattro date, e non quella giusta.
+
+    Il controllo e' sull'elenco di `l0`, che e' dove la regola vive davvero:
+    `exposure.decide` riceve gia' il verdetto in un campo booleano, quindi provarlo li'
+    sarebbe passato per il motivo sbagliato.
+    """
+
+    def test_creation_date_is_no_longer_a_system_field(self):
+        self.assertNotIn("create_date", platform_types.SYSTEM_FIELDS)
+
+    def test_the_other_system_fields_stay_out(self):
+        """L'altra meta': togliere uno dal gruppo non apre il gruppo. Senza questo,
+        svuotare l'elenco per sbaglio passerebbe inosservato."""
+        for nome in ("id", "create_uid", "write_uid", "display_name", "__last_update"):
+            with self.subTest(campo=nome):
+                self.assertIn(nome, platform_types.SYSTEM_FIELDS)
+
+    def test_an_attribute_marked_system_is_still_refused(self):
+        """E la regola che li scarta continua a scartarli."""
+        decisione = exposure.decide(Attribute(
+            name="create_uid", label="Creato da", type="relation", is_system=True))
+        self.assertFalse(decisione.exposed)
+        self.assertEqual(decisione.rule, "system_field")
