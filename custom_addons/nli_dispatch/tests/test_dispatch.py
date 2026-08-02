@@ -397,6 +397,30 @@ class TestTheChain(DispatchCase):
         self.assertEqual(item.state, DONE)
         self.assertFalse(item.utterance_sealed)
 
+    def test_the_pipeline_hands_the_matcher_to_the_interpreter(self):
+        """D112 (categories admitted narrowed to what the sentence names) vive nella
+        costruzione dello schema, quindi non si vede nella risposta: senza questo
+        passaggio il restringimento sarebbe codice che non gira mai, e nessun altro
+        test se ne accorgerebbe."""
+        item = self.accept("le aziende di Cittaprova")
+        visti = {}
+        originale = pipeline_module.interpreter_module.interpret
+
+        def spia(adapter, **kwargs):
+            visti.update(kwargs)
+            return originale(adapter, **kwargs)
+
+        with patch.object(pipeline_module.interpreter_module, "interpret", spia):
+            self.run_pipeline(item, [envelope(target("res_partner"))])
+
+        self.assertIn("mentions", visti,
+                      "senza il riconoscitore il restringimento di D112 non si "
+                      "applica, e la categoria infondata torna scrivibile")
+        self.assertTrue(callable(visti["mentions"]),
+                        "dev'essere una funzione e non un dizionario: nli_engine "
+                        "non puo' importare nli_semantics (04 §6.3, il confine fra "
+                        "il motore e la semantica)")
+
 
 @tagged("post_install", "-at_install", "nli_dispatch")
 class TestTheLoadBench(DispatchCase):

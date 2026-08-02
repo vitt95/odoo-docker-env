@@ -126,9 +126,16 @@ def run(env, item, *, adapter, scope, context_window: int) -> Outcome:
         return outcome
 
     catalogue = _phase_c(env, semantics, entity_ref, context_window)
+    # D112 (categories admitted narrowed to what the sentence names) and D105 (which
+    # named conditions count as grounded) read the same recognizer: one keeps the
+    # ungrounded category from ever being writable, the other rejects it if it
+    # arrives by another route. Building it twice would mean building two term
+    # indexes in the request's path for the same reply.
+    mentions = grounding.mentions_of(semantics.dictionary)
     interpretation = interpreter_module.interpret(
         adapter, utterance=utterance, catalogue=catalogue,
         state=state if state.get("target") else None,
+        mentions=mentions,
     )
     outcome = Outcome(outcome=interpretation.outcome, repairs=interpretation.repairs)
     if not interpretation.understood:
@@ -161,7 +168,7 @@ def run(env, item, *, adapter, scope, context_window: int) -> Outcome:
         # D105: the dictionary decides what counts as mentioning a term, because it
         # is the only component that knows the accents, the typos and the
         # abbreviations. `nli_core` receives the answer, never the vocabulary.
-        mentions=grounding.mentions_of(semantics.dictionary))
+        mentions=mentions)
     if failures:
         # D106: an ungrounded named condition is the one failure with a remedy the
         # user can act on, and the remedy is derivable. Every other failure stays what
