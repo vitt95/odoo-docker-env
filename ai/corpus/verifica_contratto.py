@@ -49,10 +49,13 @@ sys.path.insert(0, str(REPO_ROOT / "tools"))
 from pure.bootstrap import install  # noqa: E402
 
 install("nli_core")
+install("nli_semantics")
 
 from nli_core.application import applicator  # noqa: E402
 from nli_core.contract import canonical, state as state_module  # noqa: E402
 from nli_core.validation import coherence, structural  # noqa: E402
+from nli_semantics.catalogue.anchor import time_anchor  # noqa: E402
+from riferimenti import TEMPORALI_PER_ENTITA, riferimento_attributo  # noqa: E402
 
 #: Un riferimento semantico e' `entita` oppure `entita.attributo`, con al piu' due
 #: salti di relazione (§7.3). Un nome tecnico Odoo (`sale.order.amount_total`,
@@ -301,6 +304,51 @@ def verifica_incoerenze(base: dict) -> list[str]:
     return problemi
 
 
+# --- Controllo aggiuntivo: l'ancora del tempo -------------------------------
+
+def verifica_ancora_del_tempo(casi: list[dict]) -> tuple[int, list[str]]:
+    """Un'apertura su un'entita' con due date esposte non puo' attendersi
+    un'operazione (**D110**, l'ancora del tempo dichiarata dal catalogo: una
+    sola data e' l'appiglio implicito di un periodo senza campo, due o piu'
+    non ne hanno una principale e la risposta giusta e' un chiarimento).
+
+    Un periodo si scrive senza nominare il campo — *"il mese scorso"*, non
+    *"con data fattura nel mese scorso"* — cosi' come una condizione nominata
+    porta sempre il proprio attributo. Se l'entita' espone due date la frase
+    non contiene l'informazione che l'attesa pretenderebbe: nessuno puo'
+    indovinare quale delle due, ne' un modello ne' una persona. La stessa
+    regola che il catalogo del prodotto usa per decidere l'ancora (importata,
+    non riscritta) decide qui che cosa e' ambiguo.
+    """
+    ispezionate = 0
+    problemi: list[str] = []
+    for caso in casi:
+        if caso["tipo"] != "apertura":
+            continue
+        entita = caso["etichette"].get("entita")
+        refs_ambigui = {riferimento_attributo(entita, campo)
+                        for campo in TEMPORALI_PER_ENTITA.get(entita, ())}
+        ancora = time_anchor(refs_ambigui)
+        if ancora is None or "choices" not in ancora:
+            continue  # una data sola o nessuna: non c'e' ambiguita' da controllare
+        ispezionate += 1
+        if caso["esito_atteso"] != "operations":
+            continue  # gia' un chiarimento: e' il caso corretto
+        stato = caso.get("stato_atteso") or {}
+        for condizione in state_module.conditions(stato.get("filter")):
+            if condizione.get("ref") in refs_ambigui:
+                problemi.append(
+                    f"{caso['id']}: periodo su {entita} senza campo nella frase, "
+                    f"ma esito 'operations' — l'ancora e' {ancora['choices']}, "
+                    "nessuna delle due e' quella giusta (D110)")
+                break
+    if ispezionate == 0:
+        problemi.append(
+            "verifica_ancora_del_tempo: nessuna apertura su entita' con due date "
+            "ispezionata — un controllo che non ispeziona nulla passa a vuoto")
+    return ispezionate, problemi
+
+
 # --- Esecuzione --------------------------------------------------------------
 
 def main(argv: list[str]) -> int:
@@ -312,9 +360,16 @@ def main(argv: list[str]) -> int:
     casi = [json.loads(riga) for riga in Path(argomenti.corpus).read_text(
         encoding="utf-8").splitlines() if riga.strip()]
 
+    # Prima del ciclo che segue: ispeziona proprio i casi che quel ciclo salta
+    # (esito diverso da 'operations' non e' toccato la', ed e' li' che un
+    # chiarimento mancato si nasconderebbe).
+    ispezionate_ancora, problemi_ancora = verifica_ancora_del_tempo(casi)
+
     esito = Esito()
     per_tipo: Counter = Counter()
     primo_stato: dict | None = None
+    for problema in problemi_ancora:
+        esito.errori.append(problema)
 
     for caso in casi:
         per_tipo[caso["tipo"]] += 1
@@ -358,6 +413,7 @@ def main(argv: list[str]) -> int:
     print(f"  raffinamenti: applicatore vs intento  {esito.raffinamenti}")
     print(f"  permutazioni confrontate              {esito.permutazioni}")
     print(f"  riferimenti semantici controllati     {esito.riferimenti_controllati}")
+    print(f"  aperture su entita' con due date      {ispezionate_ancora}")
     print()
     print("  criterio 2 — incoerenze respinte: "
           f"{'tutte' if not problemi_incoerenza else problemi_incoerenza}")

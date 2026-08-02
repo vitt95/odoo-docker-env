@@ -56,6 +56,7 @@ import unicodedata
 from pathlib import Path
 
 from riferimenti import (
+    TEMPORALI_PER_ENTITA,
     binding,
     riferimento_attributo,
     riferimento_categoria,
@@ -71,6 +72,7 @@ if str(_TOOLS) not in sys.path:
 from pure.bootstrap import install  # noqa: E402
 
 install("nli_semantics")
+from nli_semantics.catalogue.anchor import time_anchor  # noqa: E402
 from nli_semantics.dictionary import conditions as _condizioni  # noqa: E402
 
 
@@ -319,37 +321,37 @@ CATALOGO = {
     "sale.order": {
         "categorie": ["da_fatturare", "da_consegnare", "confermati", "in_bozza"],
         "campi": ["partner_id", "user_id", "amount_total", "date_order", "state"],
-        "temporali": ["date_order"],
+        "temporali": list(TEMPORALI_PER_ENTITA["sale.order"]),
         "raggruppabili": ["user_id", "partner_id", "state"],
     },
     "account.move.out_invoice": {
         "categorie": ["fatture_scadute", "partite_aperte", "in_bozza"],
         "campi": ["partner_id", "amount_total", "invoice_date", "invoice_date_due", "payment_state"],
-        "temporali": ["invoice_date", "invoice_date_due"],
+        "temporali": list(TEMPORALI_PER_ENTITA["account.move.out_invoice"]),
         "raggruppabili": ["partner_id", "payment_state"],
     },
     "res.partner.customer": {
         "categorie": ["attivi"],
         "campi": ["city", "country_id", "phone", "email", "vat"],
-        "temporali": [],
+        "temporali": list(TEMPORALI_PER_ENTITA["res.partner.customer"]),
         "raggruppabili": ["city", "country_id"],
     },
     "product.template": {
         "categorie": ["sottoscorta", "attivi"],
         "campi": ["categ_id", "qty_available"],
-        "temporali": [],
+        "temporali": list(TEMPORALI_PER_ENTITA["product.template"]),
         "raggruppabili": ["categ_id"],
     },
     "crm.lead": {
         "categorie": ["confermati", "attivi"],
         "campi": ["partner_id", "user_id", "expected_revenue", "stage_id", "team_id"],
-        "temporali": [],
+        "temporali": list(TEMPORALI_PER_ENTITA["crm.lead"]),
         "raggruppabili": ["user_id", "stage_id", "team_id"],
     },
     "stock.picking": {
         "categorie": ["da_consegnare", "in_bozza"],
         "campi": ["partner_id", "state"],
-        "temporali": [],
+        "temporali": list(TEMPORALI_PER_ENTITA["stock.picking"]),
         "raggruppabili": ["state"],
     },
 }
@@ -525,6 +527,10 @@ def riferimenti_di(intento: dict) -> list[str]:
     return sorted(set(trovati))
 
 
+def _ha_temporale(intento: dict) -> bool:
+    return any(c["tipo"] == "temporale" for c in intento["condizioni"])
+
+
 # --- Generazione -------------------------------------------------------------
 
 class Generatore:
@@ -608,6 +614,26 @@ class Generatore:
         intento = self._intento(target, self.rng.choice([0, 1, 1, 2, 2, 3]))
         testo = self.verb.frase(intento)
         testo, fen = self.pert.applica(testo)
+
+        ancora = time_anchor([riferimento_attributo(target, campo)
+                              for campo in TEMPORALI_PER_ENTITA[target]])
+        if _ha_temporale(intento) and ancora is not None and "choices" in ancora:
+            # Il periodo non nomina un campo (§9.2), e qui l'entita' ne espone
+            # due: nessuno puo' indovinare quale delle due la frase intendesse,
+            # ne' un modello ne' una persona. L'ancora e' quella del catalogo
+            # del prodotto (D110): se non e' unica, l'esito e' un chiarimento.
+            motivo = (
+                f"periodo senza campo su {target}: espone piu' date "
+                f"({', '.join(ancora['choices'])}) e nessuna e' l'appiglio "
+                "per costruzione (D110)"
+            )
+            return {
+                "id": f"F{idx:05d}", "tipo": "apertura", "esito_atteso": "clarification",
+                "testo": testo, "stato_partenza": None, "motivo_atteso": motivo,
+                "riferimenti_necessari": [], "binding_tecnico": {},
+                "etichette": {"entita": target, "fenomeni": fen, "difficolta": "difficile"},
+            }
+
         riferimenti = riferimenti_di(intento)
         return {
             "id": f"F{idx:05d}", "tipo": "apertura", "esito_atteso": "operations",

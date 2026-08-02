@@ -90,6 +90,22 @@ CATEGORIE: dict[str, str] = {
 }
 
 
+#: Campi che portano una data, per entita' (D110, l'ancora del tempo dichiarata dal
+#: catalogo: una sola data esposta e' l'appiglio implicito di un periodo senza campo;
+#: due o piu' non hanno una principale, e l'appiglio giusto e' un chiarimento).
+#: Il generatore e il verificatore del corpus leggono da qui, non da due copie: una
+#: misura che contasse le date con una lista diversa da quella del generatore
+#: misurerebbe un corpus che non e' quello prodotto.
+TEMPORALI_PER_ENTITA: dict[str, tuple[str, ...]] = {
+    "sale.order": ("date_order",),
+    "account.move.out_invoice": ("invoice_date", "invoice_date_due"),
+    "res.partner.customer": (),
+    "product.template": (),
+    "crm.lead": (),
+    "stock.picking": (),
+}
+
+
 def riferimento_entita(modello: str) -> str:
     return ENTITA[modello]
 
