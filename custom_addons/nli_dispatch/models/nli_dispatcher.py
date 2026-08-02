@@ -29,6 +29,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 from odoo import api, fields, models
 from odoo.addons.nli_engine.adapters import synthetic
+from odoo.addons.nli_engine.adapters.base import AdapterError
 from odoo.tools import config
 
 from ..queue import breaker as breaker_module
@@ -244,7 +245,24 @@ class NliDispatcher(models.AbstractModel):
             return bench
 
         def factory(env):
-            return env["nli.profile"].active_profile().adapter()
+            profile = env["nli.profile"].active_profile()
+            if not profile:
+                # `active_profile()` torna vuoto **di proposito**: §11 di `04` elenca
+                # *modello non disponibile* fra i modi di fallire dichiarati, in cui il
+                # sistema resta parzialmente usabile — le query salvate e la modifica
+                # dell'interpretazione continuano a funzionare — e un'eccezione li'
+                # abbatterebbe anche quelli.
+                #
+                # Chiamare `.adapter()` su un recordset vuoto disfaceva quell'intento:
+                # sollevava `ValueError: Expected singleton`, che risaliva fino al
+                # gestore generico e diventava un guasto nostro. All'utente arrivava
+                # «qualcosa e' andato storto» invece di «non c'e' un modello attivo»,
+                # che sono due cose diverse e portano a due azioni diverse.
+                raise AdapterError(
+                    "nessun profilo di modello attivo: AIDA non puo' interpretare. "
+                    "Un profilo si qualifica (D51) e poi si attiva (D80)."
+                )
+            return profile.adapter()
 
         return factory
 

@@ -151,6 +151,18 @@
                     <t t-elif="turn.outcome === 'out_of_scope'">
                         <p class="o_aida_lead">Questa è una cosa che non so ancora fare.</p>
                     </t>
+                    <t t-elif="turn.outcome === 'unavailable'">
+                        <!--
+                          §11 di `04`: il modello non disponibile e' uno stato
+                          dichiarato, e il sistema resta parzialmente usabile. Va detto
+                          cosi', perche' «non ho capito» inviterebbe a riformulare e
+                          riformulare non serve se il modello non c'e'.
+                        -->
+                        <p class="o_aida_refusal">
+                            AIDA non ha un modello attivo, quindi non puo' interpretare la domanda.
+                            La conversazione resta qui: serve attivare un profilo dal pannello dei modelli.
+                        </p>
+                    </t>
                     <t t-elif="turn.outcome === 'failed'">
                         <!-- §12.7: un guasto e' un difetto nostro, e si dice cosi'. -->
                         <p class="o_aida_refusal">

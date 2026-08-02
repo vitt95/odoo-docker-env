@@ -32,6 +32,8 @@ import logging
 import odoo
 from odoo import api, fields
 
+from odoo.addons.nli_engine.adapters.base import AdapterError
+
 from . import pipeline
 
 _logger = logging.getLogger(__name__)
@@ -51,8 +53,29 @@ def execute(dbname, item_id: int, uid: int, context: dict, *, adapter_factory,
         env = api.Environment(cr, uid, context)
         item = env["nli.queue.item"].browse(item_id)
         try:
+            adapter = adapter_factory(env)
+        except AdapterError as error:
+            # §11 di `04`: il fornitore irraggiungibile e' un modo di fallire
+            # **dichiarato**, non un guasto nostro. Deve arrivare all'utente come tale
+            # — e al circuito, che su questo apre — invece di finire nel gestore
+            # generico e diventare «qualcosa e' andato storto».
+            cr.rollback()
+            # `unavailable` e non `not_understood`: sono due cose diverse e portano a
+            # due azioni diverse. «Non ho capito» invita a riformulare, e riformulare
+            # non serve a niente se il modello non c'e'. Il campo `outcome` del turno
+            # e' nostro, non del contratto, quindi puo' dire cio' che serve
+            # all'interfaccia senza allargare il vocabolario del DSL.
+            outcome = pipeline.Outcome(
+                outcome="unavailable", provider_failed=True,
+                failures=[str(error)])
+            _persist(env, item, outcome)
+            cr.commit()
+            item.notify({"outcome": outcome.outcome})
+            return outcome
+
+        try:
             outcome = pipeline.run(
-                env, item, adapter=adapter_factory(env), scope=scope,
+                env, item, adapter=adapter, scope=scope,
                 context_window=context_window)
         except Exception as error:  # noqa: BLE001 — see the docstring
             cr.rollback()
