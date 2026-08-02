@@ -193,7 +193,7 @@ def catalogue_references(payload: dict, *, utterance: str = "",
     `mentions` is the same recognizer D105 uses to require that a named condition be
     grounded in the fragment that justifies it, passed as an argument because
     `nli_engine` does not depend on `nli_semantics` (§6.3). Absent, nothing is
-    narrowed — the same shape `validate_contextual` already gives this argument, and
+    narrowed — the same shape `contextual.validate` already gives this argument, and
     the reason the engine's own pure tests can run without a dictionary.
 
     Only the categories. An attribute names itself in the sentence — *"con importo
