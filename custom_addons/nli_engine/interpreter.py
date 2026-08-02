@@ -68,7 +68,8 @@ def not_understood() -> dict:
 
 
 def interpret(adapter, *, utterance: str, catalogue, state: dict | None = None,
-              mentions=None, max_repairs: int = 1) -> Interpretation:
+              mentions=None, scope_justifies=None,
+              max_repairs: int = 1) -> Interpretation:
     """Ask the model, validate, allow one repair, and never return anything else.
 
     `max_repairs` is an argument only so a test can assert that zero and two behave as
@@ -106,6 +107,12 @@ def interpret(adapter, *, utterance: str, catalogue, state: dict | None = None,
             failures = [parse_error]
         else:
             failures = structural.validate_envelope(candidate)
+            if not failures and scope_justifies is not None:
+                # D119: il rifiuto per portata deve citare parole che chiedono davvero
+                # quella cosa. Qui e non al livello 3, perche' qui la riparazione di
+                # D15 scatta e il modello risponde invece di uscire.
+                failures = structural.validate_scope_grounding(
+                    candidate, justifies=scope_justifies)
             if not failures:
                 failures = coherence.validate_envelope_coherence(
                     candidate.get("operations") or [], state=state)

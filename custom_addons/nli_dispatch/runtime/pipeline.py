@@ -31,6 +31,7 @@ from odoo.addons.nli_core.presentation import presenter
 from odoo.addons.nli_core.resolution import calendar as calendar_module
 from odoo.addons.nli_core.resolution import resolver as resolver_module
 from odoo.addons.nli_core.validation import contextual
+from odoo.addons.nli_semantics import scope_lexicon
 from odoo.addons.nli_semantics.dictionary import grounding
 from odoo.addons.nli_engine import interpreter as interpreter_module
 
@@ -137,6 +138,7 @@ def run(env, item, *, adapter, scope, context_window: int) -> Outcome:
         adapter, utterance=utterance, catalogue=catalogue,
         state=state if state.get("target") else None,
         mentions=mentions,
+        scope_justifies=scope_lexicon.justifies,
     )
     outcome = Outcome(outcome=interpretation.outcome, repairs=interpretation.repairs)
     if not interpretation.understood:

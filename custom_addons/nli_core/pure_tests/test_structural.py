@@ -433,3 +433,28 @@ class TestIlRifiutoSiGuadagna(unittest.TestCase):
             "out_of_scope", scope_note="cancellazione_record",
             scope_provenance={"text": "cancella tutti i lead"}))
         self.assertEqual(fallimenti, [])
+
+
+class TestIlFrammentoDeveDirlo(unittest.TestCase):
+    """Il controllo che usa il riconoscitore iniettato (**D119**)."""
+
+    def test_a_fragment_that_does_not_justify_is_refused(self):
+        fallimenti = structural.validate_scope_grounding(
+            envelope("out_of_scope", scope_note="cancellazione_record",
+                     scope_provenance={"text": "mostrami i lead"}),
+            justifies=lambda nota, testo: False)
+        self.assertEqual([f.code for f in fallimenti], ["scope_not_justified"])
+
+    def test_a_fragment_that_justifies_passes(self):
+        fallimenti = structural.validate_scope_grounding(
+            envelope("out_of_scope", scope_note="cancellazione_record",
+                     scope_provenance={"text": "cancella i lead"}),
+            justifies=lambda nota, testo: True)
+        self.assertEqual(fallimenti, [])
+
+    def test_other_outcomes_are_not_touched(self):
+        """Un controllo che parlasse anche delle risposte non sarebbe questo
+        controllo: qui si giudica solo chi rifiuta."""
+        fallimenti = structural.validate_scope_grounding(
+            envelope("not_understood"), justifies=lambda nota, testo: False)
+        self.assertEqual(fallimenti, [])

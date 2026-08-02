@@ -819,3 +819,32 @@ def validate_state(candidate: object) -> list[Failure]:
         return level1
     assert isinstance(candidate, dict)
     return _level2_state(candidate)
+
+
+def validate_scope_grounding(candidate: dict, *, justifies) -> list[Failure]:
+    """Il frammento citato deve **dire** la cosa che il rifiuto dichiara (**D119**).
+
+    **D118** ha reso obbligatorio citare un frammento; questo verifica che il frammento
+    citato contenga le parole di quella categoria. Senza, restava possibile rifiutare
+    citando un pezzo qualunque della frase — che e' il rifiuto libero di prima con un
+    passaggio in piu'.
+
+    `justifies(scope_note, fragment)` arriva come argomento e non come import: il
+    lessico e' di lingua e `nli_core` non ne ha, esattamente come per il riconoscitore
+    di **D105**. Omesso, il controllo non si applica — la stessa forma che
+    `validate_contextual` gia' ha, e cio' che lascia girare i test del contratto senza
+    un vocabolario.
+    """
+    if candidate.get("outcome") != "out_of_scope":
+        return []
+    nota = candidate.get("scope_note")
+    frammento = (candidate.get("scope_provenance") or {}).get("text") or ""
+    if not isinstance(nota, str) or justifies(nota, frammento):
+        return []
+    return [Failure(
+        2,
+        "scope_not_justified",
+        "scope_provenance.text",
+        f"the quoted fragment {frammento!r} does not ask for {nota!r}: a refusal has "
+        "to be earned by the words the user actually wrote (D119)",
+    )]

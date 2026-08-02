@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import unittest
 
+from .. import scope_lexicon
 from ..dictionary import grounding
 from ..dictionary.store import Dictionary
 
@@ -78,3 +79,34 @@ class TestMentions(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestIlRifiutoDeveDirloDavvero(unittest.TestCase):
+    """Il frammento citato deve contenere le parole di quella categoria (**D119**).
+
+    **D118** ha reso obbligatorio citarne uno. Restava possibile citarne uno qualunque:
+    sul campo, *«mostrami i lead di quest'anno»* usciva come cancellazione di record, e
+    con il solo D118 sarebbe bastato citare «mostrami i lead» per rifiutare lo stesso.
+    """
+
+    def test_a_fragment_that_asks_for_it_justifies_the_refusal(self):
+        self.assertTrue(scope_lexicon.justifies(
+            "cancellazione_record", "cancella tutti i lead"))
+
+    def test_a_fragment_that_does_not_ask_for_it_does_not(self):
+        self.assertFalse(scope_lexicon.justifies(
+            "cancellazione_record", "mostrami i lead di quest'anno"))
+
+    def test_accents_and_case_do_not_fool_it(self):
+        """Chi scrive di fretta non mette gli accenti, e un controllo che si fa
+        ingannare da un accento non protegge niente (stessa indulgenza di D83)."""
+        self.assertTrue(scope_lexicon.justifies("previsione", "QUANTO VENDERO' ?"))
+
+    def test_an_empty_fragment_justifies_nothing(self):
+        self.assertFalse(scope_lexicon.justifies("modifica_dati", "   "))
+
+    def test_an_unknown_category_is_left_alone(self):
+        """Un vocabolario incompleto non deve diventare un rifiuto di rifiutare: se
+        `SCOPE_NOTES` cresce senza che il lessico la segua, quella categoria torna
+        com'era prima di D119 invece di bloccarsi."""
+        self.assertTrue(scope_lexicon.justifies("categoria_futura", "qualunque cosa"))

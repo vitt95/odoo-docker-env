@@ -216,6 +216,7 @@ Le decisioni sono state valutate contro quattro obiettivi dichiarati — **sempl
 | **D106** | Il rifiuto di D105 **propone**: `clarification` con letture derivate dal catalogo | ☑ Adottata | §19.2. Le opzioni sono derivate, mai chieste al modello (P4): chi ha appena inventato una condizione e' l'ultimo a cui chiedere le alternative. Meno di due letture, nessuna domanda |
 | **D108** | Le voci di dizionario **approvate** hanno un registro, e la condizione tipizzata si traduce in dominio | ☑ Adottata | §19.4. Senza, il dizionario vivo era **solo L0**: le proposte di D35 restavano nella coda L3 e nessuna installazione aveva una condizione nominata. La traduzione va dalla condizione tipizzata al dominio — meccanica — mai al contrario, che sarebbe una supposizione (`06` §7) |
 | **D109** | La mappa dei tipi di campo (`char`→`text`, `monetary`→`number`) è una **zona pura**, fuori dall'introspezione | ☑ Adottata | §20.1. Dodici coppie uguali in ogni installazione: un fatto, non una domanda a un sistema vivo. Chiusa dentro il file che importa l'ORM di Odoo, impediva di costruire il catalogo fuori dalla piattaforma — e il comando che misura l'accuratezza non partiva affatto |
+| **D119** | Il frammento citato da un rifiuto deve **contenere le parole** che chiedono quella cosa | ☑ Adottata | §28. D118 rendeva obbligatorio citarne uno, non che dicesse qualcosa: restava possibile rifiutare citando un pezzo qualunque della frase. Il lessico sta in `nli_semantics` e arriva iniettato, perche' e' di lingua e `nli_core` non ne ha |
 | **D118** | Un **rifiuto per portata deve citare il frammento** che chiede la cosa impossibile | ☑ Adottata | §27. `out_of_scope` costava quanto una risposta ed era l'uscita che il modello prendeva ogni volta che faticava: nove rifiuti su 414 con nota `previsione`, e «mostrami i lead di quest'anno» classificato come cancellazione di record. Ora il rifiuto si guadagna con la stessa prova di qualunque altra risposta |
 | **D117** | `create_date` **non e' un campo di sistema**: e' esposto come gli altri | ☑ Adottata | §26. *«Quando e' stato creato»* e' una domanda di lavoro, non un dettaglio tecnico. Misurato sul campo: a «i lead di quest'anno» l'ancora del tempo offriva chiusura, conversione, scadenza e assegnazione — quattro date, e non quella che una persona intende |
 | **D116** | La superficie della piattaforma di `nli_web` si allarga a **`base_setup`**, per la sezione AIDA nelle impostazioni generali | ☑ Adottata | §24. Il modello si configura dal pannello, come vuole **D75**. La vista delle impostazioni generali sta in `base_setup` e non c'e' altro aggancio. Il pannello **configura e non attiva**: D80 continua a rifiutare un profilo non qualificato |
@@ -439,7 +440,7 @@ Riassunto operativo di ciò che le delibere impongono a chi scriverà il codice.
 
 **Per superare una decisione**: `⊘ Superata da Dn`. Mai cancellata. Le quattro supersessioni già presenti sono la prova che la disciplina serve.
 
-**Per aggiungere una decisione**: numerazione in continuità da **D119**. **D118** è deliberata in §27. **D117** è deliberata in §26. **D116** è deliberata in §24. **D115** è deliberata in §23. **D113** e **D114** sono deliberate in §22, dalla rimisura di §21.7. **D110**, **D111** e **D112** sono deliberate in §21, dalla proposta `14-ancoraggio-del-tempo.md`. **D109** è deliberata in §20. **D104**, **D105** e **D106** sono deliberate in §19, insieme a **D108** che ne era il presupposto mancante. D87–D91 sono deliberate (§14, §15); D92 è corretta; **D93** è deliberata (§16.4.1); **D94–D96** sono deliberate in §17; **D97–D103** e **D107** in §18.
+**Per aggiungere una decisione**: numerazione in continuità da **D120**. **D119** è deliberata in §28. **D118** è deliberata in §27. **D117** è deliberata in §26. **D116** è deliberata in §24. **D115** è deliberata in §23. **D113** e **D114** sono deliberate in §22, dalla rimisura di §21.7. **D110**, **D111** e **D112** sono deliberate in §21, dalla proposta `14-ancoraggio-del-tempo.md`. **D109** è deliberata in §20. **D104**, **D105** e **D106** sono deliberate in §19, insieme a **D108** che ne era il presupposto mancante. D87–D91 sono deliberate (§14, §15); D92 è corretta; **D93** è deliberata (§16.4.1); **D94–D96** sono deliberate in §17; **D97–D103** e **D107** in §18.
 
 **Vincoli aggiunti in delibera.** Le dodici decisioni marcate ⊡ portano una condizione che è parte della decisione: rimuoverla è modificare la decisione, non semplificarla.
 
@@ -1889,3 +1890,44 @@ della frase. La meta' lessicale — il frammento deve contenere le parole che ch
 quell'azione — vuole un riconoscitore iniettato come quello di D112, perche' il lessico
 e' di lingua e `nli_core` non ha lingua. E' il prossimo passo, e la misura dira' se
 serve.
+
+---
+
+## 28. D119 — Il frammento deve dirlo davvero
+
+**Cosa mancava a D118.** Il rifiuto per portata doveva citare un frammento, e il
+controllo verificava che il frammento **ci fosse**. Non che dicesse qualcosa: restava
+possibile rifiutare citando un pezzo qualunque della frase. Per la domanda che aveva
+scoperto il difetto — *«mostrami i lead di quest'anno»*, uscita come cancellazione di
+record — sarebbe bastato citare *«mostrami i lead»* e il rifiuto sarebbe passato.
+
+**La decisione.** Il frammento citato deve contenere le parole con cui quella cosa si
+chiede. Un lessico per categoria: *«cancell»*, *«elimin»*, *«rimuov»* per la
+cancellazione; *«invia»*, *«manda»*, *«mail»* per l'invio; e cosi' per le altre tre.
+
+**Radici e non parole intere.** *«cancell»* copre cancella, cancellare, cancellazione,
+cancellale. Un elenco di forme flesse sarebbe sempre incompleto di una, e la forma
+mancante sarebbe un rifiuto che passa.
+
+**Dove sta, e perche' non nel nucleo.** Il lessico e' di lingua, e `nli_core` non ne ha
+**per costruzione**: e' la ragione per cui il controllo di fondatezza di **D105** riceve
+il riconoscitore come argomento invece di importarlo. Mettere parole italiane nel nucleo
+per comodita' avrebbe rotto quella proprieta'. Sta in `nli_semantics/scope_lexicon.py`,
+dichiarata zona pura — il file diceva di esserlo e non lo era, finche' non e' stato
+scritto in `tools/arch/spec.py`, che e' l'unico posto in cui quell'affermazione diventa
+verificabile.
+
+**Una categoria sconosciuta passa.** Se `SCOPE_NOTES` cresce e il lessico non la segue,
+quella categoria torna com'era prima di D119 invece di bloccarsi. Un vocabolario
+incompleto non deve trasformarsi in un rifiuto di rifiutare.
+
+**Cosa questo controllo non e'.** Non riconosce intenzioni: non decide se l'utente
+voglia cancellare qualcosa. Decide se **il frammento che il modello ha citato** contiene
+le parole con cui quella cosa si chiede. La prima domanda e' aperta, la seconda si
+risponde confrontando due elenchi — ed e' l'unica che un controllo puo' porre
+onestamente.
+
+**Verifica.** 431 test in zona pura (erano 423), 56 file in zone pure, 117 test Odoo.
+Sul campo la risposta alla domanda che aveva scoperto il difetto e' rimasta un
+chiarimento: D118 aveva gia' chiuso quella strada, e D119 chiude quella che restava
+aperta accanto — un rifiuto citato a caso. La misura dira' quanti erano.

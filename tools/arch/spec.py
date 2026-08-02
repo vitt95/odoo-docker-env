@@ -465,6 +465,15 @@ PURE_ZONES: tuple[PureZone, ...] = (
         protects="D32, D33, D34, D79",
     ),
     PureZone(
+        path="nli_semantics/scope_lexicon.py",
+        reason="le parole con cui si chiede una cosa impossibile sono le stesse in "
+               "ogni installazione: un fatto di lingua, non la lettura di un registro "
+               "vivo. Pura, il controllo di D119 si verifica senza database e senza "
+               "modello — ed e' l'unico modo perche' un rifiuto infondato sia un test "
+               "invece di un aneddoto",
+        protects="D118, D119",
+    ),
+    PureZone(
         path="nli_semantics/platform_types.py",
         reason="the map from the platform's field types to the type vocabulary is the "
                "same twelve pairs in every installation: it is a fact, not a reading "
