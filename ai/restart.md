@@ -247,6 +247,20 @@ da `nli_core`: sono funzioni dei loro argomenti, e ciò che serve si passa.
    **non su `nli_test`**) e riportare i numeri per quello che sono.
 5. Il confronto con `granite4.1:8b`, se serve rispondere a *«il 73,6% è del compito o
    del modello?»*. Riga di comando identica, cambia solo `--profilo`.
+7. **La chat mostra le letture di un chiarimento ma non le fa scegliere.** **D106**
+   (un rifiuto propone le letture plausibili) vuole che la soluzione sia derivabile dal
+   catalogo, **senza tornare dal modello**: le operazioni della lettura sono gia' nella
+   busta. Manca il percorso server che le applichi — applicatore, livelli 3-5,
+   risolutore, esecutore, presentatore — cioe' la coda di `pipeline.run` senza la
+   chiamata al modello. Finche' non c'e', le letture si mostrano e si riscrivono a mano:
+   meno comodo, ma non finge. Un bottone che ripartisse dal modello contraddirebbe
+   D106, che esiste proprio per non chiedere le alternative a chi ha appena sbagliato.
+
+8. **La chat non mostra ancora i dati.** L'interpretazione si vede, i record no. La
+   strada e' incorporare la vista lista di Odoo, che porta con se' ricerca,
+   ordinamento, filtri, gestione colonne e paginazione — tutto cio' che `15` chiede per
+   le tabelle — invece di riscriverle.
+
 6. **Il ramo dell'ancora nulla non ha ancora una risposta.** D110 (`00` §21.1) dice che
    quando un'entità non espone nessuna data, il fatto si dichiara. Il prompt (§21.2)
    dice di rispondere con un chiarimento, ma un chiarimento richiede 2-4 opzioni e ogni

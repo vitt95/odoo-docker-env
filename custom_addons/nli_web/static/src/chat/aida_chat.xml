@@ -127,8 +127,26 @@
                         </p>
                     </t>
                     <t t-elif="turn.outcome === 'clarification'">
-                        <p class="o_aida_lead">Ho bisogno di una precisazione.</p>
-                        <p t-esc="turn.interpretation and turn.interpretation.question"/>
+                        <!--
+                          D106: un rifiuto che propone. Le letture vengono dal catalogo,
+                          mai dal modello — un modello che ha appena inventato una
+                          condizione e' l'ultimo a cui chiedere le alternative.
+                          Sceglierle con un clic richiede un percorso che applichi le
+                          operazioni della lettura **senza tornare dal modello**: non
+                          c'e' ancora, ed e' fra gli aperti. Finche' non c'e', le
+                          letture si leggono e si riscrivono a mano — meno comodo, ma
+                          non finge.
+                        -->
+                        <p class="o_aida_lead"
+                           t-esc="clarificationOf(turn).question || 'Ho bisogno di una precisazione.'"/>
+                        <ul class="o_aida_options">
+                            <t t-foreach="clarificationOf(turn).options or []" t-as="opt" t-key="opt_index">
+                                <li class="o_aida_option" t-esc="opt.label"/>
+                            </t>
+                        </ul>
+                        <p class="o_aida_rule">
+                            Riscrivi la domanda scegliendo una di queste letture.
+                        </p>
                     </t>
                     <t t-elif="turn.outcome === 'out_of_scope'">
                         <p class="o_aida_lead">Questa è una cosa che non so ancora fare.</p>

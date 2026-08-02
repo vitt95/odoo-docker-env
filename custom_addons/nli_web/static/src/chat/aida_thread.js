@@ -89,6 +89,12 @@ export class AidaThread extends Component {
         return turn.id;
     }
 
+    /** Il corpo del chiarimento, comunque sia annidato nella busta. */
+    clarificationOf(turn) {
+        const i = turn.interpretation || {};
+        return i.clarification || i;
+    }
+
     partClass(part) {
         // §10.2 e D65: l'origine si vede, e non solo dal colore — chi non distingue i
         // colori deve poter distinguere lo stesso una condizione che ha chiesto lui da
