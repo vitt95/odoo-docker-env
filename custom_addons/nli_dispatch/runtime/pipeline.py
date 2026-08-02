@@ -126,11 +126,12 @@ def run(env, item, *, adapter, scope, context_window: int) -> Outcome:
         return outcome
 
     catalogue = _phase_c(env, semantics, entity_ref, context_window)
-    # D112 (categories admitted narrowed to what the sentence names) and D105 (which
-    # named conditions count as grounded) read the same recognizer: one keeps the
-    # ungrounded category from ever being writable, the other rejects it if it
-    # arrives by another route. Building it twice would mean building two term
-    # indexes in the request's path for the same reply.
+    # D112 (categories admitted narrowed to what the sentence names) and D105 (a
+    # named condition not grounded in its own fragment is refused at level 3) read
+    # the same recognizer: one keeps the ungrounded category from ever being
+    # writable, the other refuses it if it arrives by another route. Building it
+    # twice would mean building two term indexes in the request's path for the
+    # same reply.
     mentions = grounding.mentions_of(semantics.dictionary)
     interpretation = interpreter_module.interpret(
         adapter, utterance=utterance, catalogue=catalogue,
