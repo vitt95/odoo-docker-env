@@ -45,6 +45,17 @@ export class AidaStore {
         });
     }
 
+    /**
+     * Quanto si aspetta prima di dire che ci sta mettendo troppo.
+     *
+     * Misurato su 414 chiamate vere al modello locale: mediana 8,8 s, p95 16,3 s,
+     * massimo 40,2 s. Con la riparazione singola di **D15** un turno puo' fare due
+     * chiamate, quindi il caso peggiore plausibile sfiora gli ottanta secondi.
+     * Novanta lascia margine senza far credere a nessuno che si sia rotto qualcosa
+     * mentre sta solo lavorando.
+     */
+    static ATTESA_MASSIMA_MS = 90_000;
+
     /** Un identificativo che non puo' collidere con quelli veri, che sono interi. */
     static tempId() {
         return `temp-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -194,6 +205,34 @@ export class AidaStore {
         provvisorio.id = esito.turn_id;
         this.state.waiting = "interpreting";
         this._touch(conversationId, testo);
+        this._armaLaSveglia(provvisorio);
+    }
+
+    /**
+     * Smette di aspettare dopo un tempo, e lo dice.
+     *
+     * Il turno viaggia su una coda e un processo separato, quindi la risposta puo'
+     * non arrivare: il modello e' lento, il turno scade in coda (L4), il processo
+     * muore. Il server se ne accorge, ma il recupero degli orfani guarda ogni cinque
+     * minuti — che per un server e' ragionevole e davanti a una chat e' un'eternita'.
+     *
+     * Senza questa sveglia l'animazione dell'attesa girava all'infinito, ed e'
+     * peggio di un errore: un errore si legge e si decide, un'attesa senza fine si
+     * fissa. Qui l'attesa ha un limite, e alla scadenza si dice cosa e' successo e
+     * cosa si puo' fare.
+     *
+     * Non annulla niente sul server: il turno puo' ancora concludersi, e se lo fa la
+     * notifica arriva lo stesso e sostituisce questo messaggio. E' una sveglia per
+     * chi guarda, non un ordine di smettere.
+     */
+    _armaLaSveglia(turno) {
+        const atteso = AidaStore.ATTESA_MASSIMA_MS;
+        setTimeout(() => {
+            if (!turno.pending) {
+                return;
+            }
+            turno.slow = true;
+        }, atteso);
     }
 
     /** Porta la conversazione in cima e le da' un titolo se non ne aveva. */

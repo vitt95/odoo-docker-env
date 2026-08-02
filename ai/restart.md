@@ -247,6 +247,22 @@ da `nli_core`: sono funzioni dei loro argomenti, e ciò che serve si passa.
    **non su `nli_test`**) e riportare i numeri per quello che sono.
 5. Il confronto con `granite4.1:8b`, se serve rispondere a *«il 73,6% è del compito o
    del modello?»*. Riga di comando identica, cambia solo `--profilo`.
+7. **Novanta secondi per una risposta, e la misura non lo prevedeva.** Misurato
+   sull'installazione vera il 2 agosto: attesa in coda **0 secondi** — il cron
+   raccoglie il turno all'istante — e **90 secondi di lavorazione**, tutti chiamate al
+   modello. La misura sul corpus dava una mediana di **8,8 s** per chiamata.
+
+   La differenza non e' rumore: il corpus lavora su un catalogo costruito a mano,
+   piccolo; l'installazione vera ne produce uno molto piu' grande, il prompt cresce e
+   la generazione rallenta di conseguenza. **Il numero della misura non predice la
+   latenza in produzione**, ed e' un fatto da sapere prima di promettere tempi a
+   qualcuno.
+
+   Da guardare, in ordine: quante chiamate fa davvero un turno (fase B, fase C,
+   riparazione di D15), e quanto pesa il catalogo reale rispetto a quello del corpus.
+   `00` §6.1 fissa un bersaglio di P95 205 ms per l'**accettazione**, che e' rispettato
+   — quello che manca e' un bersaglio dichiarato per la **risposta**.
+
 7. **La chat mostra le letture di un chiarimento ma non le fa scegliere.** **D106**
    (un rifiuto propone le letture plausibili) vuole che la soluzione sia derivabile dal
    catalogo, **senza tornare dal modello**: le operazioni della lettura sono gia' nella

@@ -101,7 +101,10 @@
                     <t t-if="turn.pending">
                         <div class="o_aida_waiting">
                             <span class="o_aida_dot"/><span class="o_aida_dot"/><span class="o_aida_dot"/>
-                            <span class="o_aida_waiting_text">Sto interpretando la domanda…</span>
+                            <span class="o_aida_waiting_text" t-if="!turn.slow">Sto interpretando la domanda…</span>
+                            <span class="o_aida_waiting_text" t-else="">
+                                Ci sta mettendo piu' del previsto. Sto ancora aspettando: se la risposta arriva, compare qui.
+                            </span>
                         </div>
                     </t>
                     <t t-elif="turn.outcome === 'refused'">
