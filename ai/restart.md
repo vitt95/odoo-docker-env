@@ -74,8 +74,19 @@ stessi, è cambiata l'attesa. Casi verificati **918** (erano 948), casi totali *
 invariati. Test puri **412** (erano 395), test Odoo **117** (erano 116), file in zona
 pura **55** (erano 54).
 
-**La rimisura non è stata fatta.** Di questo lavoro sappiamo che è costruito e
-verificato, non quanto è servito.
+**La rimisura è stata fatta, ed è in `00` §21.7.** Su tutte le 414 aperture:
+complessiva **70,0%**, `filter` **79,5%**, zero condizioni infondate, riparazioni dal
+2,9% al 6,3%.
+
+Il confronto con il 64,0% di luglio **non vale**: la popolazione è cambiata di 30 casi
+che erano fallimenti tutti e trenta. Ricalcolata sugli stessi 414, la riga di luglio
+vale ~68,6% complessiva e ~79,0% su `filter`. Il movimento vero è **+1,4 punti
+complessivi e +0,5 su `filter`**, cioè quasi niente.
+
+Dei 414 casi, 33 contengono un'espressione di tempo e falliscono tutti. Si dividono in
+tre gruppi da undici: **solo il predicato** (`between` invece di `within`, tutto il
+resto giusto — l'ancora funziona), **rifiuto** (il modello si ferma su entità dove la
+data è una sola), **altro** (fallimenti veri).
 
 # Come lavoriamo
 
@@ -202,24 +213,33 @@ da `nli_core`: sono funzioni dei loro argomenti, e ciò che serve si passa.
    cui la stringa si usa davvero); oppure costruire le formule dentro il metodo, dove
    il contesto c'è già. Va deliberata e registrata in `ai/00`: è la forma dello strato
    delle parole, non un ritocco.
-3. **`filter` al 73,6%, e la rimisura che manca.** Diagnosticato su 80 aperture: ventuno
-   fallimenti, dodici sul tempo e nove categorie inventate. **Quelle due famiglie sono
-   state affrontate** da D110–D112 (`00` §21): il tempo ha un appiglio dichiarato dal
-   catalogo, lasciarlo cadere è vietato, e una categoria che la frase non nomina non è
-   più scrivibile.
+3. **`filter` al 79,5%, e le due cose che lo tengono lì.** Rimisurato su tutte le 414
+   aperture (`00` §21.7). Le due famiglie diagnosticate a luglio — il tempo e le
+   categorie inventate — sono state affrontate da D110–D112 (`00` §21), e **hanno fatto
+   quello che promettevano**: l'ancora regge, zero condizioni infondate su 414. Sul
+   numero però non è cambiato quasi niente.
 
-   **Restano le altre famiglie**, che non c'entrano né con il tempo né con le categorie
-   inventate: il predicato possibile ma sbagliato, il valore preso male, le due
-   condizioni fuse in una.
+   I 33 casi con un'espressione di tempo falliscono tutti, in tre gruppi da undici:
 
-   **La rimisura non è ancora stata fatta**, ed è il primo passo da fare qui: la riga di
-   comando è più sopra, in «Il comando della misura». Va fatta sapendo che
-   **l'accuratezza complessiva può scendere**. Le risposte sbagliate diventano domande —
-   è il verso giusto — ma il corpus conta una domanda come un fallimento di
-   `operations`. Il numero che deve migliorare è un altro: quanti filtri sbagliati escono
-   con l'aria di essere giusti. I suoi indicatori sono le condizioni infondate contate
-   dal metro (il livello 3 ora gira dentro lo strumento di misura) e i chiarimenti
-   prodotti.
+   **a) Undici sono solo il predicato.** Campo giusto, periodo giusto, `between` invece
+   di `within` — due parole che il contratto ammette entrambe su una data, con lo stesso
+   significato, e di cui il corpus ne accetta una sola. Valgono **2,7 punti**. La
+   decisione di lasciar stare il sinonimo (proposta `14` §1.3) era corretta con i dati
+   di allora e non lo è più: il predicato non poteva emergere finché il modello
+   sbagliava il campo. Togliere il valore temporale a `between` lo renderebbe
+   inesprimibile alla fonte, e serve una decisione numerata.
+
+   **b) Undici sono rifiuti**, quasi tutti su `sale.order`, **dove l'ancora è una sola
+   data e non c'è ambiguità**: il modello ha l'informazione per rispondere e si ferma
+   lo stesso. Non sappiamo perché. È la cosa da diagnosticare prima di decidere altro,
+   perché potrebbe valere più dei 2,7 punti.
+
+   **c) Undici sono fallimenti veri**, delle famiglie che restano: il predicato
+   possibile ma sbagliato, il valore preso male, le due condizioni fuse in una.
+
+   Il numero da guardare non è solo l'accuratezza: sono le condizioni infondate contate
+   dal metro (zero) e i rifiuti prodotti. Le risposte sbagliate sono diventate rifiuti,
+   che è il verso giusto ma non alza il punteggio.
 4. **D27**: eseguire il banco di prova sui worker prefork (`./manage.sh loadtest <db>`,
    **non su `nli_test`**) e riportare i numeri per quello che sono.
 5. Il confronto con `granite4.1:8b`, se serve rispondere a *«il 73,6% è del compito o

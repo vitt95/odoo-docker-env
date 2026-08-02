@@ -1446,3 +1446,114 @@ scrive un generatore ne conosce la distribuzione).
 
 I punti costruiti sono verificabili **senza interrogare il modello nemmeno una volta**:
 sono test puri e test Odoo. La misura serve alla fine, a dire quanto è servito.
+
+### 21.7 La rimisura, e cosa dice davvero
+
+Eseguita il 2 agosto 2026 su tutte le **414 aperture** che attendono un'operazione, con
+`qwen3.5:9b`, generazione vincolata, ragionamento spento, finestra 4096.
+
+| | luglio, 444 casi | ora, 414 casi |
+|---|---|---|
+| complessiva | 64,0% | **70,0%** (290/414) |
+| `filter` | 73,6% | **79,5%** |
+| `fields` | 88,1% | 85,3% |
+| `target` | 98,4% | 95,7% |
+| riparazioni (**D15**, la decisione che concede un solo tentativo di correzione) | 2,9% | **6,3%** |
+| condizioni infondate (**D105**) | mai misurate | **0** |
+
+**Il confronto fra quelle due colonne non vale, e va detto prima di leggerle.** La
+popolazione è cambiata: le 30 aperture uscite sono quelle in cui l'attesa era testa o
+croce, e non erano un campione qualunque. Nel campione di 80 usato per la diagnosi
+**prima** delle modifiche ce n'erano 8, ed **erano fallimenti tutte e 8**. Otto su otto.
+
+Se le 30 uscite erano fallimenti — e la prova dice di sì — la riga di luglio ricalcolata
+**sugli stessi 414 casi** vale circa **68,6%** complessiva e **79,0%** su `filter`.
+
+Il confronto onesto è quindi questo:
+
+    complessiva   68,6%  ->  70,0%     (+1,4 punti)
+    filter        79,0%  ->  79,5%     (+0,5 punti)
+
+**Su `filter`, che era il bersaglio, il movimento è mezzo punto. Cioè niente.**
+
+Era stato previsto in §21.5 che l'accuratezza potesse non salire. Non era stato previsto
+che il guadagno apparente venisse quasi tutto dal cambio di popolazione: la stima fatta
+prima di misurare parlava di *«circa 3 punti di contabilità»*, e i punti erano **4,6**.
+La stima era bassa perché nessuno aveva contato quanti dei casi rimossi fossero già
+fallimenti. Adesso è contato.
+
+**Le tre famiglie del tempo, e sono uguali.** Dei 414 casi, 33 contengono
+un'espressione di tempo, e falliscono **tutti e 33** (sui casi senza tempo si fallisce
+nel 23,9%). Guardati uno per uno, si dividono in tre gruppi da undici:
+
+| famiglia | casi | |
+|---|---|---|
+| **solo il predicato** | 11 | campo giusto, periodo giusto, `between` invece di `within` |
+| **rifiuto** | 11 | 9 `out_of_scope`, 2 `clarification`: il modello si ferma |
+| **altro** | 11 | fallimenti veri, su `filter` e su `fields` |
+
+**D110 funziona.** Nella prima famiglia il modello attacca il periodo alla data
+dichiarata dall'ancora — che è precisamente ciò che prima non sapeva fare. Esempio:
+*«ordini di vendita con totale almeno 100 quest'anno»* produce `data_ordine` con
+`current_year`, e l'unica differenza dall'atteso è `between` al posto di `within`.
+
+**E qui una valutazione precedente si rivela sbagliata.** §1.3 della proposta `14`
+aveva classificato la coppia `within`/`between` come minore — *«due casi, che
+sbagliavano anche altro»* — e su quella base era stato deciso di lasciarla stare. La
+valutazione era corretta con i dati di allora e non lo è più: il predicato non poteva
+emergere come causa isolata **finché il modello sbagliava il campo**. Era misurato
+dietro un difetto più grande. Oggi vale **11 casi su 414, cioè 2,7 punti**, e risolverlo
+porterebbe la complessiva a ~72,7% e `filter` a ~82,1% — ancora sotto la soglia di
+**D44** (la decisione per cui l'accuratezza si misura per sezione, con soglia 85% su
+ciascuna), ma è la leva più corta disponibile.
+
+**D112 funziona, e si vede da due numeri.** Zero condizioni infondate su 414: la
+categoria che la frase non nomina non è più scrivibile, quindi il livello 3 non ha nulla
+da rifiutare. Il costo sta nelle riparazioni, più che raddoppiate: il modello prova a
+dire cose che lo schema non ammette più.
+
+**La seconda famiglia non era prevista.** Undici rifiuti, quasi tutti su `sale.order`,
+dove l'ancora è **una sola data e non c'è ambiguità**: il modello ha l'informazione per
+rispondere e si ferma lo stesso. Non sappiamo perché, ed è la prossima cosa da
+diagnosticare — non un'altra decisione da prendere.
+
+**Il bilancio, in una riga.** Il lavoro fa quello che aveva promesso — l'ancora regge,
+le categorie inventate sono sparite, gli errori invisibili sono diventati visibili — e
+sul numero non ha spostato quasi nulla. Le due cose stanno insieme, e sono entrambe
+vere.
+
+**Diagnosi della seconda famiglia, fatta subito dopo.** Gli undici rifiuti escono quasi
+tutti con la stessa etichetta: `scope_note: "previsione"`. Il modello classifica una
+richiesta che contiene un periodo come una **previsione**, e la previsione è fra le cose
+che il prompt dichiara fuori portata:
+
+    out_of_scope [...] Answer it only when the request needs something these
+    operations cannot do — a forecast, a write, a computation over time.
+
+*«ordini lo scorso mese»* non è una previsione: è un filtro su una data passata. Ma
+l'elenco delle cose fuori portata nomina *«una previsione»* e *«un calcolo nel tempo»*,
+e un'espressione temporale ci finisce dentro per somiglianza.
+
+Due osservazioni che aiutano chi ci lavorerà:
+
+* Quasi tutti quei casi hanno **una riparazione** (D15): il primo tentativo non passa la
+  validazione, e la seconda risposta è la fuga in `out_of_scope`. È anche la spiegazione
+  delle riparazioni raddoppiate.
+* I due `clarification` non sono errori grossolani: il modello chiede *«per "nel 2025"
+  intendi la data ordine in quell'anno, o gli ordini aperti a fine 2024 da evadere nel
+  2025?»*. È una domanda sensata su una frase che il corpus considera chiara.
+
+Il sospetto è che **D111 abbia alzato l'attenzione sul periodo senza dire cosa non è**:
+al modello è stato vietato di lasciarlo cadere, gli è stato detto dove attaccarlo, e non
+gli è stato detto che un periodo passato non è una previsione. Con la via d'uscita
+aperta e più saliente di prima, la prende.
+
+Non si delibera niente su questa base: è una diagnosi, e il rimedio — restringere cosa
+conta come previsione — è una modifica al prompt, che va fatta sapendo che limare il
+prompt contro un corpus sintetico è la degradazione contro cui **D42** (la decisione
+delle tre popolazioni di corpus, con quello sigillato protetto da un'autorizzazione)
+mette in guardia. Qui però non si tratta di guadagnare punti aggiustando parole: si
+tratta di una regola dimostrabilmente letta male, con il meccanismo identificato.
+
+**Insieme, le prime due famiglie valgono 22 casi su 414, cioè 5,3 punti**, e nessuna
+delle due è un difetto del modello.
