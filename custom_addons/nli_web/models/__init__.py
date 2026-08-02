@@ -9,3 +9,4 @@ state change is announced to assistive technology (D71).
 """
 from . import nli_interpretation
 from . import nli_perimeter
+from . import nli_chat

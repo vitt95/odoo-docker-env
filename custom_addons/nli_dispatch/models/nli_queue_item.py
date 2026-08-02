@@ -158,6 +158,10 @@ class NliQueueItem(models.Model):
             "company_ids": [(6, 0, self.env.companies.ids)],
             "lang": self.env.lang or "en_US",
             "tz": self.env.user.tz or "UTC",
+            # D115: la frase resta sul turno, in chiaro, perche' la cronologia deve
+            # poterla rimostrare. La copia sigillata qui sotto e' un'altra cosa: serve
+            # ad attraversare il processo cron e viene cancellata (D96).
+            "utterance": utterance,
         })
         item = self.create({
             "turn_id": turn.id,
@@ -283,10 +287,18 @@ class NliQueueItem(models.Model):
         reintroduce, on a smaller scale, the problem being solved.
         """
         self.ensure_one()
+        turn = self.turn_id
         self.user_id.partner_id._bus_send("nli.turn", {
             "item_id": self.id,
-            "turn_id": self.turn_id.id,
+            "turn_id": turn.id,
             "state": self.state,
+            # Cio' che il canale disegna, cosi' non deve chiedere altro prima di
+            # poter mostrare qualcosa: una seconda andata e ritorno fra l'avviso e il
+            # disegno si vedrebbe, ed e' l'attrito che l'interfaccia non deve avere.
+            # Niente di piu': non lo stato completo, non i record.
+            "interrogation_id": turn.interrogation_id.id,
+            "record_count": turn.record_count,
+            "executed_at": fields.Datetime.to_string(turn.executed_at),
             **payload,
         })
 

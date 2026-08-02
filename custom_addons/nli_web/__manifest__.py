@@ -10,6 +10,14 @@
     # tokens to be used when present and the interface to degrade gracefully
     # when they are not.
     "depends": ["nli_dispatch", "web"],
+    "data": [
+        "views/aida_action.xml",
+    ],
+    "assets": {
+        "web.assets_backend": [
+            "nli_web/static/src/chat/**/*",
+        ],
+    },
     "installable": True,
     "application": False,
 }

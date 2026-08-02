@@ -142,7 +142,7 @@ Le decisioni sono state valutate contro quattro obiettivi dichiarati — **sempl
 
 | # | Decisione | Stato | Delibera |
 |---|---|---|---|
-| **D54** | **Pseudonimizzazione degli enunciati all'ingresso**, mappatura separata e cifrata | ☑ Adottata | La pseudonimizzazione retroattiva non esiste: ogni giorno senza produce dati in chiaro che nessuna decisione successiva ripulisce. Cancellare una riga di mappatura è esatto e dimostrabile; cercare un nome in dodici mesi di testo non lo è |
+| **D54** | **Pseudonimizzazione degli enunciati all'ingresso**, mappatura separata e cifrata | ☑ Adottata | La pseudonimizzazione retroattiva non esiste: ogni giorno senza produce dati in chiaro che nessuna decisione successiva ripulisce. Cancellare una riga di mappatura è esatto e dimostrabile; cercare un nome in dodici mesi di testo non lo è | · ⊘ **Il meccanismo per la cronologia è superato da D115** (§23): l'enunciato resta sul turno in chiaro. Il resto di D54 vale ancora.
 | **D55** | **Vincolo V8** — nessun artefatto dall'Interprete che non sia una Busta validata | ☑ Adottata | È la formulazione esplicita della proprietà su cui poggia tutta la difesa dall'iniezione. Implicita, la Fase 6 la eroderebbe senza che nessuno debba dichiararlo |
 | **D56** | Requisiti **F-1…F-7** verso il fornitore, verificati prima dell'integrazione | ☑ Adottata | L'Adattatore rende sostituibile il fornitore, non retroattivo il trasferimento già avvenuto. **F-7** — revisione umana dei contenuti — è spesso attiva per impostazione predefinita |
 | **D57** | Il **catalogo è informazione riservata** del cliente | ☑ Adottata | Terminologia, campi personalizzati e valori enumerati descrivono processi, segmentazione e linee di prodotto. *«Sono solo metadati»* è vero e commercialmente pericoloso |
@@ -216,6 +216,7 @@ Le decisioni sono state valutate contro quattro obiettivi dichiarati — **sempl
 | **D106** | Il rifiuto di D105 **propone**: `clarification` con letture derivate dal catalogo | ☑ Adottata | §19.2. Le opzioni sono derivate, mai chieste al modello (P4): chi ha appena inventato una condizione e' l'ultimo a cui chiedere le alternative. Meno di due letture, nessuna domanda |
 | **D108** | Le voci di dizionario **approvate** hanno un registro, e la condizione tipizzata si traduce in dominio | ☑ Adottata | §19.4. Senza, il dizionario vivo era **solo L0**: le proposte di D35 restavano nella coda L3 e nessuna installazione aveva una condizione nominata. La traduzione va dalla condizione tipizzata al dominio — meccanica — mai al contrario, che sarebbe una supposizione (`06` §7) |
 | **D109** | La mappa dei tipi di campo (`char`→`text`, `monetary`→`number`) è una **zona pura**, fuori dall'introspezione | ☑ Adottata | §20.1. Dodici coppie uguali in ogni installazione: un fatto, non una domanda a un sistema vivo. Chiusa dentro il file che importa l'ORM di Odoo, impediva di costruire il catalogo fuori dalla piattaforma — e il comando che misura l'accuratezza non partiva affatto |
+| **D115** | L'**enunciato dell'utente resta sul turno, in chiaro** — supera D54 per la sola cronologia | ☑ Adottata — **dall'Architect** | §23. Una chat la cui cronologia non puo' rimostrare all'utente le proprie parole e' un altro prodotto. Cio' a cui si rinuncia e' scritto e non attenuato: **un dump del database contiene le frasi digitate**. A proteggerle resta la regola di record del turno, non piu' la cifratura |
 | **D113** | Su una data l'intervallo si dice **`within`**, e `between` resta l'intervallo numerico | ☑ Adottata | §22.1. Il contratto ammetteva due parole per lo stesso fatto e il corpus ne accetta una. Non emergeva finché il modello sbagliava il campo: con l'ancora di D110 è rimasta l'unica differenza su **11 casi di 414**, cioè 2,7 punti contati come errori mentre erano legali |
 | **D114** | Un **periodo che seleziona record esistenti non è fuori portata**, e il prompt lo dice | ☑ Adottata | §22.2. Nove rifiuti su 414 uscivano con `scope_note: "previsione"`, fra cui *«ordini lo scorso mese»*. L'elenco delle cose fuori portata nominava «una previsione» e «un calcolo nel tempo», e un'espressione temporale ci finiva per somiglianza |
 | **D110** | Il catalogo dichiara **l'ancora del tempo**: una data se ne espone una sola, l'insieme delle scelte se sono due o più, nulla se non ce ne sono | ☑ Adottata | §21.1. Un'espressione di tempo non nomina mai il proprio campo, né nel corpus né in italiano: si dice *«ordini del mese scorso»*. Nessuna euristica su quale data conti di più — sceglierne una fra due plausibili è indovinare. L'ancora si calcola dagli attributi già filtrati dai diritti e dal budget |
@@ -418,7 +419,7 @@ Riassunto operativo di ciò che le delibere impongono a chi scriverà il codice.
 | Nessun rapporto espone l'accuratezza senza la copertura | `07` §5.4 | Ispezione degli strumenti |
 | Nessun dato personale entra nel corpus | **D47** | Controllo sull'inserimento |
 | L'esecuzione del corpus gira sul dispatcher differito | `07` §14.2 | Ispezione della configurazione cron |
-| Gli enunciati non sono mai persistiti in chiaro | **D54** | Prova P-7 |
+| ~~Gli enunciati non sono mai persistiti in chiaro~~ — **non vale più**: **D115** (§23) tiene l'enunciato sul turno in chiaro, e a proteggerlo è la regola di record, non la cifratura. Resta vero per la **coda**, che continua a sigillarlo e a cancellarlo (**D96**) | **D54** ⊘ **D115** | Prova P-7, da riscrivere su ciò che è ancora vero |
 | Nessun artefatto dall'Interprete oltre la Busta validata | **D55** (**V8**) | Controllo architetturale di D24 |
 | Enunciati e cataloghi non finiscono nei registri diagnostici | **D60** | Prova P-8 |
 | Un turno senza contesto societario è respinto, non eseguito | **D40**, `08` §10 | Prova P-3 |
@@ -435,7 +436,7 @@ Riassunto operativo di ciò che le delibere impongono a chi scriverà il codice.
 
 **Per superare una decisione**: `⊘ Superata da Dn`. Mai cancellata. Le quattro supersessioni già presenti sono la prova che la disciplina serve.
 
-**Per aggiungere una decisione**: numerazione in continuità da **D115**. **D113** e **D114** sono deliberate in §22, dalla rimisura di §21.7. **D110**, **D111** e **D112** sono deliberate in §21, dalla proposta `14-ancoraggio-del-tempo.md`. **D109** è deliberata in §20. **D104**, **D105** e **D106** sono deliberate in §19, insieme a **D108** che ne era il presupposto mancante. D87–D91 sono deliberate (§14, §15); D92 è corretta; **D93** è deliberata (§16.4.1); **D94–D96** sono deliberate in §17; **D97–D103** e **D107** in §18.
+**Per aggiungere una decisione**: numerazione in continuità da **D116**. **D115** è deliberata in §23. **D113** e **D114** sono deliberate in §22, dalla rimisura di §21.7. **D110**, **D111** e **D112** sono deliberate in §21, dalla proposta `14-ancoraggio-del-tempo.md`. **D109** è deliberata in §20. **D104**, **D105** e **D106** sono deliberate in §19, insieme a **D108** che ne era il presupposto mancante. D87–D91 sono deliberate (§14, §15); D92 è corretta; **D93** è deliberata (§16.4.1); **D94–D96** sono deliberate in §17; **D97–D103** e **D107** in §18.
 
 **Vincoli aggiunti in delibera.** Le dodici decisioni marcate ⊡ portano una condizione che è parte della decisione: rimuoverla è modificare la decisione, non semplificarla.
 
@@ -1664,3 +1665,65 @@ che nessuna di queste due decisioni tocca.
 in zone pure con 0 violazioni, contratto e corpus 918/918 con 0 errori e copertura al
 100%. Gli schemi JSON derivati risultano già allineati: la tabella dei predicati per
 tipo non vi compare.
+
+---
+
+## 23. D115 — La cronologia conserva le parole dell'utente
+
+Deliberata **dall'Architect** il 2 agosto 2026, davanti alla specifica dell'interfaccia
+(`15-implementazione-ui.md`), che chiede una chat con uno storico in stile ChatGPT.
+
+### Il conflitto, posto prima della scelta
+
+`nli.turn` conservava il **contesto** e lo **stato prodotto**, mai la frase. La frase
+viveva cifrata nella coda e veniva **cancellata** al primo stato finale: **D96**
+(l'enunciato in coda è transitorio e cifrato) sopra **D54** (pseudonimizzazione degli
+enunciati all'ingresso, con mappatura separata).
+
+Quindi *«riaprendo una sessione l'utente ritrova la cronologia come l'aveva lasciata»*
+era **impossibile**. Si poteva ricostruire cosa il sistema aveva capito, non cosa
+l'utente aveva detto.
+
+Sono state poste tre strade, con il costo di ciascuna:
+
+1. conservare l'enunciato **cifrato a riposo**, decifrato solo per chi l'ha scritto, con
+   scadenza — conserva *«un dump non contiene frasi»*, costa una delibera su D54;
+2. mostrare **l'interpretazione** invece della frase — nessun cambio di contratto, ma
+   l'utente non rilegge le proprie parole;
+3. conservarlo **in chiaro**, come farebbe ChatGPT — la più fedele alla specifica, e
+   rinuncia esplicitamente alla proprietà di D54.
+
+### La decisione, e cosa costa
+
+**Scelta la terza.** L'enunciato è un campo di testo sul turno.
+
+Cio' a cui si rinuncia si scrive per intero, perche' una decisione il cui prezzo non è
+scritto è una decisione che qualcuno ripeterà senza saperlo: **un dump di questo
+database contiene le frasi che le persone hanno digitato.** A proteggerle resta la
+regola di record di `nli.turn` — un utente vede i propri turni e non quelli dei
+colleghi — e **non più la cifratura**. Chi ha accesso al database ha accesso alle
+domande.
+
+Restano invece veri, e non sono stati toccati:
+
+* la **coda** continua a sigillare l'enunciato e a cancellarlo (**D96**): quella copia
+  serve ad attraversare il processo cron, non a essere riletta;
+* **D60** (enunciati e cataloghi non finiscono nei registri diagnostici) vale ancora, ed
+  è un'altra cosa dal database;
+* la cancellazione è nelle mani dell'utente: eliminare una conversazione elimina i suoi
+  turni, e con essi le frasi. È l'unico modo che ha di ritirare le proprie parole,
+  quindi non è un dettaglio dell'interfaccia.
+
+**Cosa resta aperto e non è stato deliberato qui:** la **conservazione**. Non c'è una
+scadenza, non c'è cancellazione automatica, e `08-sicurezza-conformita.md` andrà
+riletto con questa decisione in mano — perché il documento della conformità descrive un
+sistema che non conservava le frasi, e ora le conserva.
+
+### Cosa è stato costruito sopra
+
+`nli.turn` acquista `utterance` (in chiaro), `outcome` e `interpretation_json`. Gli
+ultimi due non c'entrano con la privacy e c'entrano con la reattività: la risposta già
+impaginata dal Presentatore si **conserva** invece di essere riderivata. Riderivarla
+vorrebbe dire ricostruire catalogo, diritti e istante di quel momento, e riaprire una
+conversazione costerebbe quanto eseguirla — che è esattamente ciò che la specifica
+vieta quando chiede che non ci sia mai attrito nella chat.

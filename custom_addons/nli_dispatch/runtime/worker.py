@@ -73,11 +73,16 @@ def _persist(env, item, outcome):
     leave a window in which a crash loses the sentence and the answer both.
     """
     turn = item.turn_id
-    values = {"executed_at": fields.Datetime.now()}
+    values = {"executed_at": fields.Datetime.now(), "outcome": outcome.outcome}
     if outcome.executed:
         values["state_json"] = _dumped(outcome.state)
         values["record_count"] = outcome.record_count
         turn.interrogation_id.write_state(outcome.state)
+    # La risposta impaginata si conserva qui, non si riderivera'. Vale per ogni esito,
+    # non solo per quelli eseguiti: un chiarimento e un fuori-portata sono risposte che
+    # la cronologia deve poter rimostrare (§12.7 li registra come turni completati).
+    if outcome.interpretation is not None:
+        values["interpretation_json"] = _dumped(outcome.interpretation)
     turn.write(values)
 
     if outcome.outcome == "operations":

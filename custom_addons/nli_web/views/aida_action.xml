@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+      L'azione client che monta la chat. Non e' una vista su un modello: la
+      conversazione non e' un elenco di record da sfogliare, e forzarla in una vista
+      lista avrebbe dato all'utente un'interfaccia che gli chiede di capire il modello
+      dei dati prima di poter fare una domanda.
+    -->
+    <record id="action_aida_chat" model="ir.actions.client">
+        <field name="name">AIDA</field>
+        <field name="tag">nli_web.chat</field>
+        <field name="target">fullscreen</field>
+    </record>
+
+    <menuitem id="menu_aida_root"
+              name="AIDA"
+              sequence="15"/>
+
+    <menuitem id="menu_aida_chat"
+              name="Fai una domanda"
+              parent="menu_aida_root"
+              action="action_aida_chat"
+              sequence="10"/>
+
+</odoo>

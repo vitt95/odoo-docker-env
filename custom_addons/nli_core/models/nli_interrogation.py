@@ -141,9 +141,40 @@ class NliTurn(models.Model):
     state_json = fields.Text(
         required=True, default="{}",
         help="The state this turn produced, without provenance fragments (D54).")
+    #: What the user wrote, kept **in clear** (**D115**).
+    #:
+    #: D54 forbade this, and D115 supersedes it for the turn alone with the reason
+    #: written down: a conversational product whose history cannot show the user their
+    #: own words is a different product, and the Architect chose the history. What is
+    #: given up is stated in the register and not hidden here: **a dump of this
+    #: database contains the sentences people typed**. The record rule of `nli.turn`
+    #: is what keeps them from colleagues; encryption no longer is.
+    #:
+    #: The queue keeps its own sealed copy (D96) and still erases it: that copy exists
+    #: to cross to the cron process, not to be read again.
+    utterance = fields.Text(
+        help="Quello che l'utente ha scritto, in chiaro (D115). La coda ne tiene una "
+             "copia cifrata e transitoria per il solo passaggio al processo cron.")
+    #: L'esito del turno, come lo ha visto l'utente: `operations`, `clarification`,
+    #: `out_of_scope`, `not_understood`. Serve alla cronologia per rimostrare la
+    #: risposta senza doverla ricalcolare.
+    outcome = fields.Char()
+    #: La risposta gia' impaginata per una persona, come l'ha prodotta il Presentatore
+    #: (`presenter.present(...).interpretation`).
+    #:
+    #: Conservata invece di essere riderivata a ogni apertura della cronologia: per
+    #: ricostruirla servirebbero il catalogo, i diritti e l'istante di quel momento, e
+    #: rileggere una conversazione tornerebbe a costare quanto eseguirla. Cosi' invece
+    #: riaprire una sessione e' una lettura e basta — che e' cio' che tiene la chat
+    #: reattiva quando i turni diventano centinaia.
+    interpretation_json = fields.Text()
     executed_at = fields.Datetime()
     record_count = fields.Integer(
         help="Total matching records, counted before retrieval (D68).")
+
+    @property
+    def interpretation(self) -> dict:
+        return json.loads(self.interpretation_json or "{}")
 
     _sql_constraints = [
         ("companies_required",

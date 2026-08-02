@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="nli_web.AidaChat">
+    <div class="o_aida" t-att-class="{ 'o_aida_sidebar_closed': !ui.sidebarOpen }">
+        <AidaSidebar store="store" state="state" onOpen="(id) => store.open(id)"
+                     t-if="ui.sidebarOpen"/>
+
+        <main class="o_aida_main" role="main">
+            <header class="o_aida_topbar">
+                <button class="btn btn-link o_aida_icon" t-on-click="() => this.toggleSidebar()"
+                        t-att-aria-label="ui.sidebarOpen ? 'Nascondi le conversazioni' : 'Mostra le conversazioni'">
+                    <i class="fa fa-bars" aria-hidden="true"/>
+                </button>
+                <span class="o_aida_title" t-esc="currentConversation and currentConversation.title or 'AIDA'"/>
+            </header>
+
+            <t t-if="isEmpty">
+                <div class="o_aida_welcome">
+                    <h1 class="o_aida_welcome_title">Che cosa vuoi sapere?</h1>
+                    <p class="o_aida_welcome_hint">
+                        Chiedi in italiano quello che cerchi nei tuoi dati.
+                        Per esempio: <em>fatture di questo mese sopra 500 euro, raggruppate per cliente</em>.
+                    </p>
+                    <AidaComposer store="store" state="state" placeholder="'Fai una domanda sui tuoi dati'"/>
+                </div>
+            </t>
+            <t t-else="">
+                <AidaThread store="store" state="state"/>
+                <div class="o_aida_composer_dock">
+                    <AidaComposer store="store" state="state" placeholder="'Chiedi ancora'"/>
+                    <p class="o_aida_disclaimer">
+                        AIDA mostra sempre come ha interpretato la domanda: controlla l'interpretazione prima di fidarti dei numeri.
+                    </p>
+                </div>
+            </t>
+        </main>
+    </div>
+</t>
+
+<t t-name="nli_web.AidaSidebar">
+    <aside class="o_aida_sidebar" aria-label="Conversazioni">
+        <div class="o_aida_sidebar_head">
+            <button class="btn btn-primary w-100 o_aida_new"
+                    t-on-click="() => this.props.store.newConversation()">
+                <i class="fa fa-plus me-2" aria-hidden="true"/>Nuova conversazione
+            </button>
+        </div>
+
+        <nav class="o_aida_list" t-on-scroll="onScroll">
+            <t t-if="!props.state.conversations.length and !props.state.loadingConversations">
+                <p class="o_aida_empty_hint">Non hai ancora nessuna conversazione.</p>
+            </t>
+            <t t-foreach="props.state.conversations" t-as="c" t-key="c.id">
+                <div class="o_aida_item"
+                     t-att-class="{ 'o_aida_item_active': c.id === props.state.currentId }">
+                    <t t-if="ui.renamingId === c.id">
+                        <input type="text" class="form-control form-control-sm"
+                               t-model="ui.draftTitle"
+                               t-on-keydown="onRenameKeydown"
+                               t-on-blur="() => this.confirmRename()"
+                               aria-label="Nuovo nome della conversazione"
+                               autofocus="autofocus"/>
+                    </t>
+                    <t t-else="">
+                        <button class="o_aida_item_open" t-on-click="() => this.props.onOpen(c.id)"
+                                t-att-aria-current="c.id === props.state.currentId ? 'true' : undefined">
+                            <span class="o_aida_item_title" t-esc="c.title || 'Conversazione senza titolo'"/>
+                        </button>
+                        <div class="o_aida_item_actions">
+                            <button class="btn btn-link o_aida_icon" title="Rinomina conversazione"
+                                    aria-label="Rinomina conversazione"
+                                    t-on-click="() => this.startRename(c)">
+                                <i class="fa fa-pencil" aria-hidden="true"/>
+                            </button>
+                            <button class="btn btn-link o_aida_icon" title="Elimina conversazione"
+                                    aria-label="Elimina conversazione"
+                                    t-on-click="() => this.remove(c)">
+                                <i class="fa fa-trash" aria-hidden="true"/>
+                            </button>
+                        </div>
+                    </t>
+                </div>
+            </t>
+            <p class="o_aida_loading" t-if="props.state.loadingConversations">Carico…</p>
+        </nav>
+    </aside>
+</t>
+
+<t t-name="nli_web.AidaThread">
+    <div class="o_aida_thread" t-ref="scroller" t-on-scroll="onScroll">
+        <p class="o_aida_loading" t-if="props.state.loadingTurns">Carico i messaggi precedenti…</p>
+
+        <t t-foreach="turns" t-as="turn" t-key="turnKey(turn)">
+            <article class="o_aida_turn">
+                <div class="o_aida_bubble o_aida_bubble_user">
+                    <p t-esc="turn.utterance"/>
+                </div>
+
+                <div class="o_aida_answer" aria-live="polite">
+                    <t t-if="turn.pending">
+                        <div class="o_aida_waiting">
+                            <span class="o_aida_dot"/><span class="o_aida_dot"/><span class="o_aida_dot"/>
+                            <span class="o_aida_waiting_text">Sto interpretando la domanda…</span>
+                        </div>
+                    </t>
+                    <t t-elif="turn.outcome === 'refused'">
+                        <p class="o_aida_refusal">
+                            Non ho preso in carico la domanda: <t t-esc="turn.interpretation and turn.interpretation.refusal"/>.
+                            Riprova fra poco.
+                        </p>
+                    </t>
+                    <t t-elif="turn.interpretation and turn.interpretation.parts">
+                        <p class="o_aida_lead" t-esc="turn.interpretation.lead"/>
+                        <ul class="o_aida_parts">
+                            <t t-foreach="turn.interpretation.parts" t-as="part" t-key="part_index">
+                                <li t-att-class="partClass(part)">
+                                    <span t-esc="part.text"/>
+                                    <small class="o_aida_rule" t-if="part.rule">
+                                        dedotto: <t t-esc="part.rule"/>
+                                    </small>
+                                </li>
+                            </t>
+                        </ul>
+                        <p class="o_aida_count" t-if="turn.record_count">
+                            <t t-esc="turn.record_count"/> record trovati.
+                        </p>
+                    </t>
+                    <t t-elif="turn.outcome === 'clarification'">
+                        <p class="o_aida_lead">Ho bisogno di una precisazione.</p>
+                        <p t-esc="turn.interpretation and turn.interpretation.question"/>
+                    </t>
+                    <t t-elif="turn.outcome === 'out_of_scope'">
+                        <p class="o_aida_lead">Questa è una cosa che non so ancora fare.</p>
+                    </t>
+                    <t t-else="">
+                        <p class="o_aida_lead">Non ho capito la domanda. Puoi riformularla?</p>
+                    </t>
+                </div>
+            </article>
+        </t>
+    </div>
+</t>
+
+<t t-name="nli_web.AidaComposer">
+    <div class="o_aida_composer">
+        <textarea class="o_aida_input"
+                  t-ref="input"
+                  rows="1"
+                  t-att-placeholder="props.placeholder or 'Fai una domanda'"
+                  t-att-value="ui.text"
+                  t-on-input="onInput"
+                  t-on-keydown="onKeydown"
+                  aria-label="Scrivi la tua domanda"/>
+        <button class="btn btn-primary o_aida_send"
+                t-att-disabled="!canSend"
+                t-on-click="() => this.send()"
+                aria-label="Invia la domanda">
+            <i class="fa fa-arrow-up" aria-hidden="true"/>
+        </button>
+    </div>
+</t>
+
+</templates>
