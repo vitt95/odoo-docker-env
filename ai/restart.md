@@ -224,6 +224,15 @@ da `nli_core`: sono funzioni dei loro argomenti, e ciò che serve si passa.
    **non su `nli_test`**) e riportare i numeri per quello che sono.
 5. Il confronto con `granite4.1:8b`, se serve rispondere a *«il 73,6% è del compito o
    del modello?»*. Riga di comando identica, cambia solo `--profilo`.
+6. **Il ramo dell'ancora nulla non ha ancora una risposta.** D110 (`00` §21.1) dice che
+   quando un'entità non espone nessuna data, il fatto si dichiara. Il prompt (§21.2)
+   dice di rispondere con un chiarimento, ma un chiarimento richiede 2-4 opzioni e ogni
+   opzione porta almeno un'operazione (`nli_core/contract/schema.py`): senza una data
+   non c'è operazione da offrire. Serve una decisione dell'Architect su cosa fare in
+   questo caso — il contratto non si tocca senza una decisione numerata. Nel corpus
+   fondativo il ramo non è mai esercitato: il generatore costruisce condizioni
+   temporali solo per le entità che hanno campi data, quindi le quattro entità senza
+   data non ricevono mai un periodo.
 
 # Cosa NON va fatto
 

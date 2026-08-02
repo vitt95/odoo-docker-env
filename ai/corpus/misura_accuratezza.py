@@ -92,12 +92,15 @@ class Accuratezza:
         self.esiti: Counter = Counter()
         self.esiti_attesi: Counter = Counter()
         self.riparazioni = 0
-        #: Rifiuti del livello 3 per condizione nominata infondata — D105, "la
-        #: condizione nominata dev'essere fondata" (registro §19.1). Con D112, "le
-        #: categorie ammesse dalla generazione vincolata sono quelle nominate dalla
-        #: frase, non tutte quelle del catalogo" (registro §21.3) in vigore dovrebbero
-        #: restare a zero: se non lo sono, il riconoscitore che restringe e quello che
-        #: verifica non danno la stessa risposta.
+        #: Rifiuti del livello 3 per condizione nominata infondata — D105 (una
+        #: condizione nominata non fondata nel proprio frammento e' rifiutata al
+        #: livello 3, registro §19.1). D112 (le categorie ammesse dalla generazione
+        #: vincolata sono quelle nominate dalla frase, registro §21.3) non azzera
+        #: questo numero: D112 guarda tutta la frase (`nli_engine/prompt.py`), D105
+        #: guarda solo il frammento della condizione (`nli_core/validation/
+        #: contextual.py`). Stesso riconoscitore, testo diverso. Un numero diverso da
+        #: zero dice che il modello ha giustificato la categoria con il frammento
+        #: sbagliato, non che i due riconoscitori si contraddicono.
         self.infondate: int = 0
         self.token_prompt = 0
         self.token_risposta = 0
@@ -139,6 +142,16 @@ def _campione(casi: list[dict], quanti: int) -> list[dict]:
 def misura(casi: list[dict], dizionario, adapter, *, verboso: bool) -> Accuratezza:
     esito = Accuratezza()
 
+    # D112: costruito una volta sola, fuori dal ciclo, e passato sia a interpret()
+    # (restringe le categorie ammesse a quelle che la frase nomina) sia a
+    # contextual.validate() (D105, il controllo di fondatezza). grounding.mentions_of()
+    # costruisce un indice dei termini ad ogni chiamata (nli_semantics/dictionary/
+    # grounding.py): dentro il ciclo lo rifarebbe una volta per caso, per niente. La
+    # conduttura del prodotto (nli_dispatch/runtime/pipeline.py) lo costruisce con lo
+    # stesso argomento; questa misura deve esercitare lo stesso prodotto, non uno senza
+    # il restringimento di D112.
+    mentions = grounding.mentions_of(dizionario)
+
     for caso in casi:
         modello = caso["etichette"]["entita"]
         atteso = caso["stato_atteso"]
@@ -146,7 +159,8 @@ def misura(casi: list[dict], dizionario, adapter, *, verboso: bool) -> Accuratez
 
         partito = time.monotonic()
         interpretazione = interpret(adapter, utterance=caso["testo"],
-                                    catalogue=catalogo, state=None)
+                                    catalogue=catalogo, state=None,
+                                    mentions=mentions)
         esito.millisecondi += int((time.monotonic() - partito) * 1000)
         esito.casi += 1
         esito.riparazioni += interpretazione.repairs
@@ -184,7 +198,7 @@ def misura(casi: list[dict], dizionario, adapter, *, verboso: bool) -> Accuratez
         fallimenti = contextual.validate(
             prodotto, known_refs=catalogo.refs,
             types={attributo.ref: attributo.type for attributo in catalogo.attributes},
-            mentions=grounding.mentions_of(dizionario))
+            mentions=mentions)
         if any(fallimento.code == "ungrounded_category" for fallimento in fallimenti):
             esito.infondate += 1
 
@@ -224,8 +238,9 @@ def rapporto(esito: Accuratezza, *, modello: str) -> None:
     print()
     print(f"  riparazioni (D15)      {esito.riparazioni}  "
           f"{esito.riparazioni / esito.casi:.1%} dei casi")
-    print(f"  condizioni infondate    {esito.infondate}  "
-          f"{esito.infondate / esito.casi:.1%} dei casi  (D105, atteso 0 con D112)")
+    print(f"  condizioni infondate   {esito.infondate}  "
+          f"{esito.infondate / esito.casi:.1%} dei casi  "
+          f"(D105: >0 non e' disaccordo con D112, e' frammento sbagliato)")
     print(f"  token prompt/risposta  {esito.token_prompt} / {esito.token_risposta}")
     print(f"  latenza media          {esito.millisecondi // esito.casi} ms")
     if esito.errori:

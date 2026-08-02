@@ -1256,10 +1256,15 @@ puri. È lo stesso schema di **D109** (la mappa dei tipi di campo di Odoo vive i
 pura, fuori dall'introspezione): un fatto non ha bisogno di una piattaforma accesa per
 essere vero. Le zone pure passano da 54 a **55 file**, 0 violazioni.
 
-**Un guadagno che non era stato previsto.** Il terzo caso — nessuna data esposta — è il
-più silenzioso dei tre. Oggi *«clienti del mese scorso»* perde il tempo e nessuno se ne
-accorge, perché sui clienti non c'è una data da esporre. Con l'ancora nulla, quella
-risposta diventa una domanda.
+**Il terzo caso resta aperto.** L'ancora nulla — nessuna data esposta — è il più
+silenzioso dei tre. Oggi *«clienti del mese scorso»* perde il tempo e nessuno se ne
+accorge, perché sui clienti non c'è una data da esporre. Con D110 l'ancora nulla
+**dichiara** che l'entità non espone alcuna data: quel fatto ora si vede. Cosa
+l'interfaccia debba fare con quel fatto **non è ancora deciso**. Il prompt (§21.2) dice
+di rispondere con un chiarimento, ma un chiarimento richiede 2-4 opzioni e ogni opzione
+porta almeno un'operazione (`nli_core/contract/schema.py`): senza una data non c'è
+operazione da offrire, quindi non c'è un chiarimento da costruire. Il caso resta senza
+una risposta definita — voce aperta in `ai/restart.md`.
 
 ### 21.2 D111 — Un periodo non si lascia cadere
 
@@ -1383,9 +1388,17 @@ Un numero che scende e non è un peggioramento va detto per quello che è: si so
 1-2 e la coerenza, mai il livello 3 — che è dove vive il controllo di fondatezza di D105.
 Lo strumento di misura non aveva quindi **mai** eseguito quel controllo. È il motivo per
 cui si diceva che D105 «rende i fallimenti visibili senza spostare il punteggio»: il
-punteggio non li aveva mai visti. Ora il numero riflette D105. Con D112 in vigore quel
-contatore dovrebbe restare a zero; se non lo è, il riconoscitore che restringe e quello
-che verifica non danno la stessa risposta, ed è un'informazione che vogliamo vedere.
+punteggio non li aveva mai visti. Ora il numero riflette D105.
+
+**Il contatore non deve restare a zero con D112, e non è un segno di disaccordo se non
+lo è.** D112 (§21.3) restringe guardando **tutta la frase** — è `mentions(riferimento,
+frase)` in `nli_engine/prompt.py`. D105 verifica guardando **solo il frammento** della
+condizione, la sua provenienza — è `mentions(riferimento, frammento)` in
+`nli_core/validation/contextual.py`. Stesso riconoscitore, testo diverso. Un modello può
+nominare una categoria che la frase contiene davvero, ma giustificarla con il frammento
+sbagliato: passa D112, che ha visto tutta la frase, e fallisce D105, che vede solo quel
+frammento. Il numero diverso da zero dice questo — il livello 3 vede ora ciò che prima
+non vedeva mai — non che i due riconoscitori si contraddicono.
 
 ### 21.5 Cosa questo lavoro non fa
 
