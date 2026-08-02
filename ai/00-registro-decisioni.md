@@ -216,6 +216,8 @@ Le decisioni sono state valutate contro quattro obiettivi dichiarati — **sempl
 | **D106** | Il rifiuto di D105 **propone**: `clarification` con letture derivate dal catalogo | ☑ Adottata | §19.2. Le opzioni sono derivate, mai chieste al modello (P4): chi ha appena inventato una condizione e' l'ultimo a cui chiedere le alternative. Meno di due letture, nessuna domanda |
 | **D108** | Le voci di dizionario **approvate** hanno un registro, e la condizione tipizzata si traduce in dominio | ☑ Adottata | §19.4. Senza, il dizionario vivo era **solo L0**: le proposte di D35 restavano nella coda L3 e nessuna installazione aveva una condizione nominata. La traduzione va dalla condizione tipizzata al dominio — meccanica — mai al contrario, che sarebbe una supposizione (`06` §7) |
 | **D109** | La mappa dei tipi di campo (`char`→`text`, `monetary`→`number`) è una **zona pura**, fuori dall'introspezione | ☑ Adottata | §20.1. Dodici coppie uguali in ogni installazione: un fatto, non una domanda a un sistema vivo. Chiusa dentro il file che importa l'ORM di Odoo, impediva di costruire il catalogo fuori dalla piattaforma — e il comando che misura l'accuratezza non partiva affatto |
+| **D113** | Su una data l'intervallo si dice **`within`**, e `between` resta l'intervallo numerico | ☑ Adottata | §22.1. Il contratto ammetteva due parole per lo stesso fatto e il corpus ne accetta una. Non emergeva finché il modello sbagliava il campo: con l'ancora di D110 è rimasta l'unica differenza su **11 casi di 414**, cioè 2,7 punti contati come errori mentre erano legali |
+| **D114** | Un **periodo che seleziona record esistenti non è fuori portata**, e il prompt lo dice | ☑ Adottata | §22.2. Nove rifiuti su 414 uscivano con `scope_note: "previsione"`, fra cui *«ordini lo scorso mese»*. L'elenco delle cose fuori portata nominava «una previsione» e «un calcolo nel tempo», e un'espressione temporale ci finiva per somiglianza |
 | **D110** | Il catalogo dichiara **l'ancora del tempo**: una data se ne espone una sola, l'insieme delle scelte se sono due o più, nulla se non ce ne sono | ☑ Adottata | §21.1. Un'espressione di tempo non nomina mai il proprio campo, né nel corpus né in italiano: si dice *«ordini del mese scorso»*. Nessuna euristica su quale data conti di più — sceglierne una fra due plausibili è indovinare. L'ancora si calcola dagli attributi già filtrati dai diritti e dal budget |
 | **D111** | Un'espressione di tempo **non può essere lasciata cadere**: se non si colloca, si chiede | ☑ Adottata | §21.2. Oggi lasciar cadere un pezzo di frase non costa niente al modello, perché la busta senza quella condizione resta valida. La regola toglie l'uscita di sicurezza che D110 da sola lasciava aperta |
 | **D112** | Le categorie ammesse dalla generazione vincolata sono quelle **nominate dalla frase**, non tutte quelle del catalogo | ☑ Adottata | §21.3. `is_category` è l'unica condizione senza appiglio lessicale, e per questo era la discarica di ogni frammento non collocabile. La frase si conosce prima dello schema, quindi la categoria infondata diventa inesprimibile invece che rifiutata dopo. Stesso riconoscitore di D105, passato come argomento |
@@ -433,7 +435,7 @@ Riassunto operativo di ciò che le delibere impongono a chi scriverà il codice.
 
 **Per superare una decisione**: `⊘ Superata da Dn`. Mai cancellata. Le quattro supersessioni già presenti sono la prova che la disciplina serve.
 
-**Per aggiungere una decisione**: numerazione in continuità da **D113**. **D110**, **D111** e **D112** sono deliberate in §21, dalla proposta `14-ancoraggio-del-tempo.md`. **D109** è deliberata in §20. **D104**, **D105** e **D106** sono deliberate in §19, insieme a **D108** che ne era il presupposto mancante. D87–D91 sono deliberate (§14, §15); D92 è corretta; **D93** è deliberata (§16.4.1); **D94–D96** sono deliberate in §17; **D97–D103** e **D107** in §18.
+**Per aggiungere una decisione**: numerazione in continuità da **D115**. **D113** e **D114** sono deliberate in §22, dalla rimisura di §21.7. **D110**, **D111** e **D112** sono deliberate in §21, dalla proposta `14-ancoraggio-del-tempo.md`. **D109** è deliberata in §20. **D104**, **D105** e **D106** sono deliberate in §19, insieme a **D108** che ne era il presupposto mancante. D87–D91 sono deliberate (§14, §15); D92 è corretta; **D93** è deliberata (§16.4.1); **D94–D96** sono deliberate in §17; **D97–D103** e **D107** in §18.
 
 **Vincoli aggiunti in delibera.** Le dodici decisioni marcate ⊡ portano una condizione che è parte della decisione: rimuoverla è modificare la decisione, non semplificarla.
 
@@ -1557,3 +1559,108 @@ tratta di una regola dimostrabilmente letta male, con il meccanismo identificato
 
 **Insieme, le prime due famiglie valgono 22 casi su 414, cioè 5,3 punti**, e nessuna
 delle due è un difetto del modello.
+
+---
+
+## 22. Le delibere della rimisura (2 agosto 2026)
+
+Le due decisioni che seguono non nascono da una proposta, ma dalla misura di §21.7.
+Sono lo stesso genere di cosa: **due terzi dei fallimenti sul tempo non erano difetti
+del modello**, ed è stato possibile vederlo solo dopo che l'ancora di D110 aveva tolto
+di mezzo il difetto più grande.
+
+C'è una lezione di metodo, e vale più delle due decisioni: **un difetto misurato dietro
+un difetto più grande è misurato male**. Entrambe queste cause erano già presenti a
+luglio, e nessuna delle due era visibile finché il modello sbagliava il campo a cui
+attaccare il periodo.
+
+### 22.1 D113 — Un solo modo di dire un intervallo di tempo
+
+Il contratto ammetteva `within` e `between`, **entrambi con un valore temporale**, su
+una data. Dicono la stessa cosa. Il corpus si aspetta sempre `within`, quindi un modello
+che scriveva `between` produceva qualcosa di **legale** e veniva contato sbagliato.
+
+**Perché non se n'era fatto niente prima.** La proposta `14` §1.3 aveva guardato questa
+coppia e l'aveva classificata come minore: *«nel campione pesa due casi, che sbagliavano
+anche altro»*. La valutazione era **corretta con i dati di allora**. Il punto è che quei
+dati erano stati raccolti mentre il modello sbagliava il campo del periodo: il predicato
+non poteva emergere come causa isolata, perché arrivava sempre insieme a un errore più
+grosso. Era misurato dietro un altro difetto.
+
+Con l'ancora di **D110** (il catalogo dichiara dove si attacca un'espressione temporale
+che non nomina un campo) il campo è giusto, e il predicato è rimasto solo. Misurato:
+**11 casi su 414**, che sono **2,7 punti** di accuratezza persi su una differenza che
+non è un errore.
+
+**La decisione.** Su un attributo di tipo data o data-e-ora, i predicati ammessi
+diventano `on`, `before`, `after`, `within`. `between` esce.
+
+Esce in **due posti**, e la distinzione conta:
+
+* dai predicati ammessi per il tipo, così la generazione vincolata non lo offre affatto
+  (**D103**, la decisione per cui il predicato è vincolato dal tipo dell'attributo già
+  nello schema del turno). Il periodo scritto con la parola sbagliata diventa
+  **inesprimibile**, non rifiutato un livello dopo: è la stessa scelta di **D112** (le
+  categorie ammesse sono quelle che la frase nomina);
+* dai tipi di valore che `between` accetta, che restano il solo `range`. Questa è la
+  rete per le condizioni che arrivano da altre strade — una query salvata, un'
+  interpretazione modificata a mano — dove lo schema della generazione non passa. Uno
+  impedisce, l'altro verifica.
+
+**`between` non sparisce**: resta l'intervallo numerico, e lì non è il doppione di
+niente. `equivalence.py` fonde in quella forma un `>= X` e un `<= Y` sullo stesso
+riferimento, che è una regola di forma canonica e continua a valere.
+
+Un test asseriva la ridondanza — *«between accetta sia un intervallo sia un periodo»* —
+ed è stato riscritto con la decisione. Un test che fissa un contratto cambia quando il
+contratto cambia; aggirarlo sarebbe stato il modo di non accorgersi di niente.
+
+### 22.2 D114 — Un periodo non è una previsione
+
+Nove dei rifiuti misurati in §21.7 uscivano con la stessa etichetta:
+`scope_note: "previsione"`. Fra questi *«ordini lo scorso mese»*, *«ordini di vendita
+quest'anno raggruppati per anagrafica»*, *«commesse il mese scorso in bozza»*. Nessuna
+di quelle frasi chiede una previsione: chiedono un filtro su una data passata.
+
+**Il meccanismo.** Il prompt elencava le cose fuori portata così: *«una previsione, una
+scrittura, un calcolo nel tempo»*. Un'espressione temporale ci finisce dentro per
+somiglianza — e con **D111** (un periodo non si lascia cadere: se non si colloca, si
+chiede) il periodo è diventato più saliente di prima, senza che gli fosse detto **cosa
+un periodo non è**. Gli è stato vietato di ignorarlo, gli è stato detto dove attaccarlo,
+e la via d'uscita è rimasta aperta e più visibile.
+
+**La decisione.** La regola dice adesso cosa esclude *e* cosa non esclude: la previsione
+riguarda ciò che accadrà, il calcolo nel tempo è un andamento o un tasso di crescita, e
+**un periodo che seleziona record già esistenti non è nessuna delle due cose**.
+
+La forma non è nuova: la stessa regola conteneva già *«una parola che non riconosci non
+è fuori portata»*, con la ragione accanto. Qui si aggiunge il caso gemello.
+
+**Perché questa non è limatura del prompt.** `ai/restart.md` avverte di non limare il
+prompt contro il corpus sintetico, e l'avvertimento è giusto: ogni punto strappato
+aggiustando parole rischia di essere prompt adattato al generatore, che è la
+degradazione contro cui **D42** (le tre popolazioni di corpus, con quello sigillato
+protetto da un'autorizzazione) mette in guardia. La differenza qui è che non si cercava
+un punteggio: si è osservato un esito, se n'è letta l'etichetta, e l'etichetta diceva
+che il modello classificava un filtro come una previsione. È una regola dimostrabilmente
+letta male, con il meccanismo identificato e scritto. Se la misura successiva non
+muoverà quei nove casi, l'ipotesi era sbagliata e va detto.
+
+### 22.3 Cosa ci si aspetta, scritto prima di misurare
+
+Le due decisioni valgono insieme **22 casi su 414**, cioè **5,3 punti**. Se entrambe
+funzionano, l'accuratezza complessiva passa da 70,0% a circa **75,3%** e `filter` da
+79,5% a circa **84,8%** — che resta **sotto** la soglia dell'85% di **D44** (l'accuratezza
+si misura per sezione, con soglia su ciascuna).
+
+Questa previsione è scritta qui **prima** della misura, e serve a poter essere
+smentita. Le due decisioni agiscono su cause diverse: se il numero si muove di 2,7 e non
+di 5,3, dirà quale delle due ipotesi era giusta.
+
+Resta fuori la terza famiglia — gli undici fallimenti veri, su `filter` e su `fields` —
+che nessuna di queste due decisioni tocca.
+
+**Verifiche:** 417 test in zona pura (erano 412), 117 test Odoo, confini 131 file e 55
+in zone pure con 0 violazioni, contratto e corpus 918/918 con 0 errori e copertura al
+100%. Gli schemi JSON derivati risultano già allineati: la tabella dei predicati per
+tipo non vi compare.

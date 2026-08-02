@@ -221,21 +221,24 @@ da `nli_core`: sono funzioni dei loro argomenti, e ciò che serve si passa.
 
    I 33 casi con un'espressione di tempo falliscono tutti, in tre gruppi da undici:
 
-   **a) Undici sono solo il predicato.** Campo giusto, periodo giusto, `between` invece
-   di `within` — due parole che il contratto ammette entrambe su una data, con lo stesso
-   significato, e di cui il corpus ne accetta una sola. Valgono **2,7 punti**. La
-   decisione di lasciar stare il sinonimo (proposta `14` §1.3) era corretta con i dati
-   di allora e non lo è più: il predicato non poteva emergere finché il modello
-   sbagliava il campo. Togliere il valore temporale a `between` lo renderebbe
-   inesprimibile alla fonte, e serve una decisione numerata.
+   **a) Undici erano solo il predicato** — `between` invece di `within`, campo e
+   periodo giusti. **Risolto da D113** (`00` §22.1): su una data l'intervallo si dice
+   `within`, e `between` resta l'intervallo numerico.
 
-   **b) Undici sono rifiuti**, quasi tutti su `sale.order`, **dove l'ancora è una sola
-   data e non c'è ambiguità**: il modello ha l'informazione per rispondere e si ferma
-   lo stesso. Non sappiamo perché. È la cosa da diagnosticare prima di decidere altro,
-   perché potrebbe valere più dei 2,7 punti.
+   **b) Undici erano rifiuti**, quasi tutti su `sale.order` dove l'ancora è una sola
+   data. Diagnosticati: nove uscivano con `scope_note: "previsione"` — il modello
+   leggeva un periodo passato come una previsione, che il prompt dichiarava fuori
+   portata. **Risolto da D114** (`00` §22.2): la regola dice adesso che un periodo che
+   seleziona record esistenti non è una previsione.
 
-   **c) Undici sono fallimenti veri**, delle famiglie che restano: il predicato
-   possibile ma sbagliato, il valore preso male, le due condizioni fuse in una.
+   **c) Undici sono fallimenti veri**, e **restano**: il predicato possibile ma
+   sbagliato, il valore preso male, le due condizioni fuse in una. Nessuna delle due
+   decisioni li tocca.
+
+   **La misura dopo D113 e D114 non è ancora stata fatta.** L'attesa, scritta in `00`
+   §22.3 prima di misurare: complessiva ~75,3%, `filter` ~84,8% — ancora sotto la
+   soglia di D44. Se il numero si muove di 2,7 punti invece di 5,3, dirà quale delle
+   due decisioni ha funzionato e quale no.
 
    Il numero da guardare non è solo l'accuratezza: sono le condizioni infondate contate
    dal metro (zero) e i rifiuti prodotti. Le risposte sbagliate sono diventate rifiuti,

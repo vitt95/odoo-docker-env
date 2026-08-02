@@ -307,3 +307,34 @@ class TestSecrets(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestAPeriodIsNotAForecast(unittest.TestCase):
+    """La via d'uscita non deve inghiottire i periodi (**D114**).
+
+    Misurato il 2 agosto su 414 aperture: undici casi finivano in `out_of_scope`, e
+    nove di quelli portavano `scope_note: "previsione"`. Fra questi *«ordini lo scorso
+    mese»*, che e' un filtro su una data passata. L'elenco delle cose fuori portata
+    nominava *«una previsione»* e *«un calcolo nel tempo»*, e un'espressione temporale
+    ci finiva dentro per somiglianza.
+
+    Il confronto e' su forma a spazi normalizzati: mandare a capo una riga del prompt
+    non ne cambia il senso, e un test che si rompesse per quello verrebbe aggiornato
+    senza leggerlo.
+    """
+
+    def test_the_instructions_say_a_period_is_not_out_of_scope(self):
+        message = " ".join(
+            system_message(Request(utterance="x", catalogue={})).split())
+        self.assertIn(
+            'A period that selects records that already exist is NOT one of those: '
+            '"orders last month" is a condition on a date, and it belongs in the '
+            'answer.', message)
+
+    def test_the_instructions_still_declare_what_is_out_of_scope(self):
+        """L'altra meta': una regola che non esclude piu' niente non e' una regola.
+        La previsione, la scrittura e il calcolo nel tempo restano fuori portata."""
+        message = " ".join(
+            system_message(Request(utterance="x", catalogue={})).split())
+        self.assertIn("a forecast of what will happen, a write, a computation ACROSS "
+                      "time such as a trend or a growth rate", message)

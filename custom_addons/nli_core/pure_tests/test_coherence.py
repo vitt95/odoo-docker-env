@@ -89,19 +89,36 @@ class TestEnvelopeCoherence(unittest.TestCase):
         }])
         self.assertIn("predicate_value_mismatch", codes(failures))
 
-    def test_between_accepts_both_a_range_and_a_temporal(self):
-        for value in (
-            {"kind": "range", "from": 1, "to": 5},
-            {"kind": "temporal", "expression": "absolute_range",
-             "from": "2026-03-01", "to": "2026-04-15"},
-        ):
-            with self.subTest(kind=value["kind"]):
-                failures = coherence.validate_envelope_coherence([{
-                    "op": "add_condition",
-                    "condition": {"ref": "ordini_vendita.data_ordine",
-                                  "predicate": "between", "value": value},
-                }])
-                self.assertEqual(failures, [])
+    def test_between_is_the_numeric_interval_and_only_that(self):
+        """**D113**: su una data l'intervallo si dice `within`, e `between` non lo dice
+        piu'.
+
+        Questo test asseriva il contrario, e asseriva una ridondanza: due predicati per
+        lo stesso fatto. Finche' il modello sbagliava il campo del periodo, il doppione
+        non emergeva; con l'ancora di **D110** (il catalogo dichiara dove si attacca
+        un'espressione temporale che non nomina un campo) e' rimasto l'unica differenza
+        su undici casi della rimisura del 2 agosto, contati sbagliati mentre erano
+        legali.
+
+        `between` sull'intervallo numerico resta e non e' un doppione: `equivalence.py`
+        fonde in quella forma un `>= X` e un `<= Y` sullo stesso riferimento.
+        """
+        numerico = coherence.validate_envelope_coherence([{
+            "op": "add_condition",
+            "condition": {"ref": "ordini_vendita.importo_totale",
+                          "predicate": "between",
+                          "value": {"kind": "range", "from": 1, "to": 5}},
+        }])
+        self.assertEqual(numerico, [])
+
+        temporale = coherence.validate_envelope_coherence([{
+            "op": "add_condition",
+            "condition": {"ref": "ordini_vendita.data_ordine",
+                          "predicate": "between",
+                          "value": {"kind": "temporal", "expression": "absolute_range",
+                                    "from": "2026-03-01", "to": "2026-04-15"}},
+        }])
+        self.assertEqual([f.code for f in temporale], ["predicate_value_mismatch"])
 
     def test_contradictory_boolean_value(self):
         failures = coherence.validate_envelope_coherence([{

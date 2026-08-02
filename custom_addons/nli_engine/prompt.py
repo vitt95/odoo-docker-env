@@ -100,10 +100,12 @@ Rules, all of them absolute:
   as {"op":"add_condition","condition":{"ref":"<category ref>","predicate":"is_category"}}
   with no value. Never as an enum, never as a field;
 - out_of_scope is about the OPERATIONS, never about a word. Answer it only when the
-  request needs something these operations cannot do — a forecast, a write, a
-  computation over time. A word you do not recognise is not out of scope: it is
-  misspelled, abbreviated, foreign or trade jargon, and the catalogue holds the term
-  it belongs to. Match it to the nearest one and go on;
+  request needs something these operations cannot do — a forecast of what will happen,
+  a write, a computation ACROSS time such as a trend or a growth rate. A period that
+  selects records that already exist is NOT one of those: "orders last month" is a
+  condition on a date, and it belongs in the answer. A word you do not recognise is not
+  out of scope: it is misspelled, abbreviated, foreign or trade jargon, and the
+  catalogue holds the term it belongs to. Match it to the nearest one and go on;
 - if the request is understandable but cannot be expressed with these operations,
   answer {"dsl_version":"1.0","outcome":"out_of_scope","scope_note":"<category>"};
 - if two readings are plausible, answer with outcome "clarification" and a

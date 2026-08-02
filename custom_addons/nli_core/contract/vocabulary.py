@@ -141,8 +141,14 @@ PREDICATES_BY_TYPE: dict[str, frozenset[str]] = {
         "equals", "greater_than", "greater_or_equal",
         "less_than", "less_or_equal", "between", "approximately",
     }),
-    "date": frozenset({"on", "before", "after", "between", "within"}),
-    "datetime": frozenset({"on", "before", "after", "between", "within"}),
+    # D113: su una data l'intervallo si dice `within`, e basta. `between` diceva la
+    # stessa cosa con un'altra parola, e un contratto che ammette due modi di dire
+    # un fatto ha due posti in cui due componenti possono divergere. Tolto qui, e non
+    # solo fra i tipi di valore ammessi, perche' la generazione vincolata derivi i
+    # predicati dal tipo (D103) e il periodo scritto male sia inesprimibile invece che
+    # rifiutato un livello dopo.
+    "date": frozenset({"on", "before", "after", "within"}),
+    "datetime": frozenset({"on", "before", "after", "within"}),
     "enum": frozenset({"is_one_of", "is_not_one_of"}),
     "boolean": frozenset({"is_true", "is_false"}),
     "relation": frozenset({"is_one_of", "is_set", "is_not_set"}),
@@ -247,7 +253,12 @@ PREDICATE_VALUE_KINDS: dict[str, frozenset[str]] = {
     "greater_or_equal": frozenset({"number"}),
     "less_than": frozenset({"number"}),
     "less_or_equal": frozenset({"number"}),
-    "between": frozenset({"range", "temporal"}),
+    # D113: `between` resta l'intervallo **numerico** — `equivalence.py` fonde in
+    # quella forma un `>= X` e un `<= Y` sullo stesso riferimento. Il valore temporale
+    # se ne va: era il doppione di `within`. Questa riga e' la rete per le condizioni
+    # che arrivano da altre strade (una query salvata, un'interpretazione modificata a
+    # mano), dove lo schema della generazione non passa.
+    "between": frozenset({"range"}),
     "approximately": frozenset({"number"}),
     "on": frozenset({"temporal"}),
     "before": frozenset({"temporal"}),

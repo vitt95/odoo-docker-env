@@ -109,3 +109,46 @@ class TestPredicatesFollowTheType(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestOneWayToSayAPeriod(unittest.TestCase):
+    """Su una data, `between` e `within` dicevano la stessa cosa (**D113**).
+
+    Il contratto ammetteva entrambi con un valore temporale, e il corpus ne accetta uno
+    solo. Finche' il modello sbagliava il campo a cui attaccare il periodo, la
+    differenza non emergeva mai da sola. Con l'ancora di **D110** (il catalogo dichiara
+    dove si attacca un'espressione temporale) il campo e' giusto, e il predicato e'
+    rimasto l'unica differenza: undici casi su 414 nella rimisura del 2 agosto,
+    misurati come sbagliati mentre erano legali.
+    """
+
+    def setUp(self):
+        self.closed = schema_module.build_envelope_schema(refs=CATALOGUE)
+
+    def _admitted(self, ref, predicate, value):
+        condition = {"ref": ref, "predicate": predicate, "value": value}
+        operation = {"op": "add_condition", "combine": "all", "condition": condition,
+                     "provenance": {"text": "x"}}
+        return _jsonschema.validate(
+            envelope("operations", operations=[operation]), self.closed) == []
+
+    def test_a_date_no_longer_admits_between(self):
+        """Inesprimibile, non rifiutato dopo: e' la stessa scelta di D112 (la categoria
+        che la frase non nomina non entra nell'alfabeto del modello)."""
+        self.assertFalse(self._admitted(
+            "ordini_vendita.data_ordine", "between",
+            {"kind": "temporal", "expression": "current_year"}))
+
+    def test_a_date_still_admits_within(self):
+        """L'altra meta': un vincolo che toglie anche il modo giusto di dirlo non e'
+        un vincolo, e' un guasto."""
+        self.assertTrue(self._admitted(
+            "ordini_vendita.data_ordine", "within",
+            {"kind": "temporal", "expression": "current_year"}))
+
+    def test_a_number_still_admits_between(self):
+        """`between` resta l'intervallo numerico, che non e' un doppione di niente:
+        `canonical`/`equivalence` fonde `>= X` e `<= Y` proprio in quella forma."""
+        self.assertTrue(self._admitted(
+            "ordini_vendita.importo_totale", "between",
+            {"kind": "range", "from": 100, "to": 500}))
