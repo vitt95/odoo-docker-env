@@ -1,11 +1,19 @@
 // Lo stile della chat.
 //
-// Tutto quello che si puo' prendere da Odoo si prende da Odoo: colori, tipografia,
-// bottoni, campi. **D25** (i token di marca si usano quando ci sono e l'interfaccia
-// degrada con grazia quando non ci sono) e' il motivo per cui qui non c'e' nessun
-// colore scritto a mano: si leggono le variabili del tema, e se `ui_brand_tokens` non
-// e' installato restano quelle di Odoo. Un colore fissato qui sarebbe il posto in cui
-// il pannello smette di somigliare al resto della piattaforma.
+// Nessun colore scritto a mano: ogni superficie legge un token, in tre gradini.
+//
+//   --pui-*  il token semantico di `ui_brand_tokens`, che si ribalta da solo quando
+//            `html[data-pui-theme="dark"]`;
+//   --o-*    la variabile nativa di Odoo, per chi i token Premium non li ha;
+//   colore   l'ultimo valore, che serve solo se mancano entrambe.
+//
+// **D25** (i token di marca si usano quando ci sono e l'interfaccia degrada con grazia
+// quando non ci sono) e' il motivo dei tre gradini invece di uno.
+//
+// **E il tema scuro e' il motivo per cui l'ordine conta.** I fallback cablati sono
+// chiari: se stessero al primo posto vincerebbero sempre, e in dark il pannello
+// resterebbe bianco dentro una piattaforma nera. Un fallback e' l'ultima parola, mai
+// la prima.
 
 // L'azione vive dentro il gestore delle azioni di Odoo, sotto la barra di
 // navigazione. `height: 100%` da sola non basta: la catena dei genitori deve avere
@@ -17,8 +25,8 @@
     height: 100%;
     min-height: 0;
     overflow: hidden;
-    background: var(--o-view-background-color, #fff);
-    color: var(--o-main-text-color, #374151);
+    background: var(--pui-color-surface, var(--o-view-background-color, #fff));
+    color: var(--pui-color-text, var(--o-main-text-color, #374151));
 }
 
 // --- barra laterale --------------------------------------------------------
@@ -28,8 +36,8 @@
     flex-direction: column;
     flex: 0 0 17rem;
     max-width: 17rem;
-    border-right: 1px solid var(--o-gray-200, #e5e7eb);
-    background: var(--o-gray-100, #f9fafb);
+    border-right: 1px solid var(--pui-color-border, var(--o-gray-200, #e5e7eb));
+    background: var(--pui-color-surface-secondary, var(--o-gray-100, #f9fafb));
 }
 
 .o_aida_sidebar_head { padding: 0.75rem; }
@@ -50,8 +58,8 @@
     border-radius: 0.5rem;
     padding: 0.125rem 0.25rem;
 
-    &:hover { background: var(--o-gray-200, #eef0f2); }
-    &.o_aida_item_active { background: var(--o-gray-300, #e3e6ea); font-weight: 500; }
+    &:hover { background: var(--pui-color-surface-sunken, var(--o-gray-200, #eef0f2)); }
+    &.o_aida_item_active { background: var(--pui-color-border-strong, var(--o-gray-300, #e3e6ea)); font-weight: 500; }
 
     // Le azioni compaiono al passaggio del mouse, ma restano raggiungibili da
     // tastiera: nasconderle con `display:none` le toglierebbe anche al `Tab`.
@@ -81,7 +89,7 @@
 .o_aida_loading {
     padding: 0.75rem;
     font-size: 0.875rem;
-    color: var(--o-gray-600, #6b7280);
+    color: var(--pui-color-muted, var(--o-gray-600, #6b7280));
 }
 
 // --- colonna centrale ------------------------------------------------------
@@ -98,7 +106,7 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.5rem 1rem;
-    border-bottom: 1px solid var(--o-gray-200, #e5e7eb);
+    border-bottom: 1px solid var(--pui-color-border, var(--o-gray-200, #e5e7eb));
 }
 
 .o_aida_title { font-weight: 600; }
@@ -119,7 +127,7 @@
 }
 
 .o_aida_welcome_title { font-size: 1.75rem; font-weight: 600; }
-.o_aida_welcome_hint { max-width: 34rem; color: var(--o-gray-600, #6b7280); }
+.o_aida_welcome_hint { max-width: 34rem; color: var(--pui-color-muted, var(--o-gray-600, #6b7280)); }
 
 // --- filo dei messaggi -----------------------------------------------------
 
@@ -141,7 +149,21 @@
     width: fit-content;
     padding: 0.625rem 0.875rem;
     border-radius: 1rem 1rem 0.25rem 1rem;
-    background: var(--o-gray-200, #eef0f2);
+    background: var(--pui-color-surface-sunken, var(--o-gray-200, #eef0f2));
+    // Il bordo non e' decorazione. Misurato in tema scuro, il riempimento della bolla
+    // stava a **1,16:1** sullo sfondo: visibile a occhio riposato su un buono schermo,
+    // e non visibile a chiunque altro.
+    //
+    // I token disponibili, misurati sullo stesso sfondo: `border` 1,45 — `border-strong`
+    // **2,60** — `muted` 5,31. Scelto `border-strong`: `muted` passerebbe la soglia ma
+    // e' una linea da separatore, non da messaggio.
+    //
+    // **2,60 resta sotto il 3:1** che si chiede al contorno di un comando, e va detto
+    // invece di dichiarare una conformita' che non c'e'. Regge lo stesso perche' il
+    // riconoscimento non poggia sul solo contrasto: la bolla e' anche allineata a
+    // destra e sagomata, e il testo dentro sta a 9,28:1. E' il principio di **D65**
+    // (una distinzione non si affida mai al solo colore) applicato all'impaginazione.
+    border: 1px solid var(--pui-color-border-strong, var(--o-gray-300, #e3e6ea));
 
     p { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
 }
@@ -153,7 +175,7 @@
 
 .o_aida_part {
     padding: 0.25rem 0 0.25rem 0.75rem;
-    border-left: 3px solid var(--o-gray-300, #e3e6ea);
+    border-left: 3px solid var(--pui-color-border-strong, var(--o-gray-300, #e3e6ea));
 }
 
 // D65: l'origine non si distingue **mai** dal solo colore. Una condizione dedotta dal
@@ -161,17 +183,17 @@
 // non distingue i colori la riconosce lo stesso.
 .o_aida_part_inferred {
     border-left-style: dashed;
-    border-left-color: var(--o-info, #17a2b8);
+    border-left-color: var(--pui-color-info, var(--o-info, #17a2b8));
 }
 
 .o_aida_rule {
     display: block;
-    color: var(--o-gray-600, #6b7280);
+    color: var(--pui-color-muted, var(--o-gray-600, #6b7280));
     font-size: 0.8125rem;
 }
 
-.o_aida_count { margin-top: 0.5rem; color: var(--o-gray-600, #6b7280); }
-.o_aida_refusal { color: var(--o-warning, #b45309); }
+.o_aida_count { margin-top: 0.5rem; color: var(--pui-color-muted, var(--o-gray-600, #6b7280)); }
+.o_aida_refusal { color: var(--pui-color-warning, var(--o-warning, #b45309)); }
 
 // --- attesa ----------------------------------------------------------------
 
@@ -181,14 +203,14 @@
     width: 0.375rem;
     height: 0.375rem;
     border-radius: 50%;
-    background: var(--o-gray-500, #9ca3af);
+    background: var(--pui-color-muted, var(--o-gray-500, #9ca3af));
     animation: o-aida-pulse 1.2s infinite ease-in-out;
 
     &:nth-child(2) { animation-delay: 0.15s; }
     &:nth-child(3) { animation-delay: 0.3s; }
 }
 
-.o_aida_waiting_text { color: var(--o-gray-600, #6b7280); font-size: 0.875rem; }
+.o_aida_waiting_text { color: var(--pui-color-muted, var(--o-gray-600, #6b7280)); font-size: 0.875rem; }
 
 @keyframes o-aida-pulse {
     0%, 80%, 100% { opacity: 0.3; }
@@ -210,11 +232,11 @@
     align-items: flex-end;
     gap: 0.5rem;
     padding: 0.5rem;
-    border: 1px solid var(--o-gray-300, #e3e6ea);
+    border: 1px solid var(--pui-color-border-strong, var(--o-gray-300, #e3e6ea));
     border-radius: 1.5rem;
-    background: var(--o-view-background-color, #fff);
+    background: var(--pui-color-surface, var(--o-view-background-color, #fff));
 
-    &:focus-within { border-color: var(--o-primary, #714b67); }
+    &:focus-within { border-color: var(--pui-color-accent, var(--o-primary, #714b67)); }
 }
 
 .o_aida_input {
@@ -243,7 +265,7 @@
     margin: 0.5rem auto 0;
     text-align: center;
     font-size: 0.8125rem;
-    color: var(--o-gray-600, #6b7280);
+    color: var(--pui-color-muted, var(--o-gray-600, #6b7280));
 }
 
 // --- adattamento -----------------------------------------------------------
@@ -265,7 +287,7 @@
 
 .o_aida_option {
     padding: 0.375rem 0.75rem;
-    border: 1px solid var(--o-gray-300, #e3e6ea);
+    border: 1px solid var(--pui-color-border-strong, var(--o-gray-300, #e3e6ea));
     border-radius: 1rem;
-    background: var(--o-gray-100, #f9fafb);
+    background: var(--pui-color-surface-secondary, var(--o-gray-100, #f9fafb));
 }
