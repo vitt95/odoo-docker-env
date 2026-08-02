@@ -15,6 +15,11 @@ riprende sopra la base UI corrente (`master`). Il lavoro continua qui.
   di avanzamento, §5.1 come si verifica.
 - ai/13-perimetro-guidato.md — la proposta da cui nascono D104–D106, deliberate.
 - ai/14-ancoraggio-del-tempo.md — la proposta da cui nascono D110–D112, deliberate.
+- ai/15-implementazione-ui.md — la specifica dell'interfaccia. **Tre punti confliggono
+  con l'architettura e sono risolti in `00` §23**: lo streaming dei gettoni non e'
+  realizzabile (il modello produce una busta sola, e il turno si interpreta sul cron),
+  le risposte non sono prosa ma l'interpretazione in parti, e la cronologia ha richiesto
+  D115.
 
 Poi: `./manage.sh check` deve essere verde prima di toccare qualunque cosa.
 
@@ -87,6 +92,27 @@ Dei 414 casi, 33 contengono un'espressione di tempo e falliscono tutti. Si divid
 tre gruppi da undici: **solo il predicato** (`between` invece di `within`, tutto il
 resto giusto — l'ancora funziona), **rifiuto** (il modello si ferma su entità dove la
 data è una sola), **altro** (fallimenti veri).
+
+**Il 2 agosto, in una sessione sola.** Dodici decisioni deliberate, **D109–D120**, e
+il prodotto usato per la prima volta da un'interfaccia.
+
+*L'ancoraggio del tempo* (D110–D112, proposta `14`): il catalogo dichiara dove si
+attacca un periodo, un periodo non si lascia cadere, e una categoria che la frase non
+nomina non e' piu' scrivibile. Rimisurato: **il movimento vero e' stato mezzo punto su
+`filter`**, non i sei apparenti — il resto era cambio di popolazione, e la stima fatta
+prima di misurare era bassa. Registrato in §21.7 con l'aritmetica.
+
+*Cio' che la rimisura ha scoperto* (D113–D114, D117–D119): il predicato sinonimo che si
+mangiava 2,7 punti, la via d'uscita `out_of_scope` che si apriva da sola, `create_date`
+escluso dal catalogo come se fosse tecnico. Tutte cose che **non erano difetti del
+modello** e che nessuno vedeva perche' erano misurate dietro un difetto piu' grande.
+
+*L'interfaccia* (D115, D116, D120): la chat dentro Odoo con la barra di navigazione, in
+chiaro e in scuro, il modello configurabile dalle impostazioni generali, la cronologia
+che conserva le parole dell'utente — con il prezzo di D115 scritto per esteso.
+
+**Verifiche al 2 agosto:** 433 test in zona pura, 117 test Odoo, 56 file in zone pure,
+contratto e corpus 918/918 con copertura al 100%, confini puliti.
 
 # Come lavoriamo
 
@@ -180,129 +206,93 @@ da `nli_core`: sono funzioni dei loro argomenti, e ciò che serve si passa.
 
 # Aperto, in ordine di quanto sblocca
 
-1. **D7** (due clienti pilota) e **D85** (~200 enunciati elicitati da 8–10 persone di
-   mestiere, non richiede né clienti né prodotto attivo). Sono le due cose che bloccano
-   davvero, e nessun giro di misura le sposta. **D52** — la misura di quanto costa oggi
-   la stessa informazione sull'interfaccia nativa — ha una scadenza che non dipende da
-   noi: va fatta prima di attivare il primo utente, dopo non è più ottenibile.
-2. **Parte 7**, il resto: il canale di chat, gli stati dell'attesa (`09` §5.2), i
-   messaggi di rifiuto per carico (D69), i token di `ui_brand_tokens` con degradazione
-   (D25), l'accessibilità (D71), l'aggregato nel piede di colonna (D89), e la resa
-   visiva dei suggerimenti di 8c. Primo bersaglio di taratura: l'accettazione a **P95
-   205 ms** contro i 50 ms di `00` §6.1.
+1. **Una strada sola per il clic e per lo scritto.** Deciso il 2 agosto dall'Architect,
+   ed e' il piu' utile di questo elenco.
 
-   **Da decidere per primo, perché tocca ogni frase che scriveremo dopo.** Le parole
-   che l'utente legge — «contenente Milano», «sopra 1000» — passano dalla funzione di
-   traduzione di Odoo, `_()`. Quella funzione capisce in che lingua tradurre
-   **guardando chi l'ha chiamata**: risale la pila delle chiamate e cerca la richiesta
-   web in corso, o in mancanza di quella l'utente collegato.
+   Quando il turno precedente ha lasciato una domanda in sospeso, la frase che arriva
+   va **prima confrontata con le opzioni**. Se corrisponde a una, si applicano le sue
+   operazioni — che sono gia' nella busta, e' il punto di **D106** — **senza passare dal
+   modello**. Se non corrisponde, si interpreta come una frase qualunque, con il
+   contesto di **D120**.
 
-   In `nli_web` viene chiamata da due posti dove non trova né l'una né l'altro: le
-   lambda scritte a livello di modulo in `nli_interpretation.py` (21 righe delle 33 che
-   usano `_()` in quel file) e la funzione annidata `rendered` in `nli_perimeter.py`
-   riga 99. Dentro una richiesta web funziona lo stesso, perché la richiesta la trova.
-   Ma **la frase dell'utente si interpreta sul cron** — è la parte 6, l'esecuzione
-   asincrona: chi scrive accetta e se ne va, l'interpretazione la fa un processo
-   separato più tardi. Lì la richiesta web non c'è. Esito: la frase esce **non
-   tradotta**, in silenzio, lasciando solo un avviso nei log.
+   E il clic **non deve avere un percorso proprio**: cliccare un'opzione scrive la sua
+   etichetta nella casella e la invia. Cosi' le due strade non possono divergere per
+   costruzione, invece che perche' qualcuno si ricorda di tenerle allineate.
 
-   Oggi non fa danno perché `in_words` non ha ancora chiamanti fuori dai test; lo farà
-   appena il canale di chat la collega. Le tre strade: `self.env._()` (dice
-   esplicitamente in che lingua, ma bisogna portare `self` dentro le lambda);
-   `LazyGettext` (`odoo.tools.translate._lt`, che rimanda la traduzione al momento in
-   cui la stringa si usa davvero); oppure costruire le formule dentro il metodo, dove
-   il contesto c'è già. Va deliberata e registrata in `ai/00`: è la forma dello strato
-   delle parole, non un ritocco.
-3. **`filter` al 79,5%, e le due cose che lo tengono lì.** Rimisurato su tutte le 414
-   aperture (`00` §21.7). Le due famiglie diagnosticate a luglio — il tempo e le
-   categorie inventate — sono state affrontate da D110–D112 (`00` §21), e **hanno fatto
-   quello che promettevano**: l'ancora regge, zero condizioni infondate su 414. Sul
-   numero però non è cambiato quasi niente.
+   Tre conseguenze, ognuna sufficiente da sola: la risposta a un chiarimento diventa
+   **istantanea** invece di costare un minuto; sparisce la ricomposizione del testo, che
+   oggi fallisce (§29); e la scelta di una lettura smette di essere un'intenzione
+   scritta nel registro e diventa una cosa che si puo' fare.
 
-   I 33 casi con un'espressione di tempo falliscono tutti, in tre gruppi da undici:
+   **Serve** la coda di `pipeline.run` — applicatore, livelli 3-5, risolutore,
+   esecutore, presentatore — estratta in modo che la chiamino sia il percorso del
+   modello sia quello della scelta. E' un rifattorizzamento di un percorso critico e
+   coperto da test: va fatto con calma, non a fine sessione.
 
-   **a) Undici erano solo il predicato** — `between` invece di `within`, campo e
-   periodo giusti. **Risolto da D113** (`00` §22.1): su una data l'intervallo si dice
-   `within`, e `between` resta l'intervallo numerico.
+2. **La chat non mostra ancora i dati.** L'interpretazione si vede, i record no. La
+   strada e' incorporare la vista lista di Odoo, che porta con se' ricerca, ordinamento,
+   filtri, gestione colonne e paginazione — tutto cio' che `15` chiede per le tabelle —
+   invece di riscriverle.
 
-   **b) Undici erano rifiuti**, quasi tutti su `sale.order` dove l'ancora è una sola
-   data. Diagnosticati: nove uscivano con `scope_note: "previsione"` — il modello
-   leggeva un periodo passato come una previsione, che il prompt dichiarava fuori
-   portata. **Risolto da D114** (`00` §22.2): la regola dice adesso che un periodo che
-   seleziona record esistenti non è una previsione.
+3. **D7** (due clienti pilota) e **D85** (~200 enunciati elicitati da 8–10 persone di
+   mestiere, non richiede ne' clienti ne' prodotto attivo). Sono le due cose che
+   bloccano davvero, e nessun giro di misura le sposta. **D52** — la misura di quanto
+   costa oggi la stessa informazione sull'interfaccia nativa — ha una scadenza che non
+   dipende da noi: va fatta prima di attivare il primo utente, dopo non e' piu'
+   ottenibile.
 
-   **c) Undici sono fallimenti veri**, e **restano**: il predicato possibile ma
-   sbagliato, il valore preso male, le due condizioni fuse in una. Nessuna delle due
-   decisioni li tocca.
+4. **`filter` al 79,5%, e la famiglia che resta.** Rimisurato su tutte le 414 aperture
+   (`00` §21.7). Delle tre famiglie da undici, due sono state affrontate — il predicato
+   sinonimo con **D113**, i rifiuti con **D114**, **D118** e **D119**. Resta la terza:
+   il predicato possibile ma sbagliato, il valore preso male, le due condizioni fuse in
+   una.
 
-   **La misura dopo D113 e D114 non è ancora stata fatta.** L'attesa, scritta in `00`
-   §22.3 prima di misurare: complessiva ~75,3%, `filter` ~84,8% — ancora sotto la
-   soglia di D44. Se il numero si muove di 2,7 punti invece di 5,3, dirà quale delle
-   due decisioni ha funzionato e quale no.
+   **La misura dopo D113–D120 non e' stata fatta.** L'attesa scritta prima di misurare
+   e' in `00` §22.3: complessiva ~75,3%, `filter` ~84,8%, ancora sotto la soglia di
+   D44. Se il numero si muove meno, dira' quale ipotesi era sbagliata.
 
-   Il numero da guardare non è solo l'accuratezza: sono le condizioni infondate contate
-   dal metro (zero) e i rifiuti prodotti. Le risposte sbagliate sono diventate rifiuti,
-   che è il verso giusto ma non alza il punteggio.
-4. **D27**: eseguire il banco di prova sui worker prefork (`./manage.sh loadtest <db>`,
+5. **Novanta secondi per una risposta, e la misura non lo prevedeva.** Misurato
+   sull'installazione vera: attesa in coda **0 secondi**, **90 secondi di lavorazione**,
+   tutti chiamate al modello. La misura sul corpus da' 8,8 s di mediana per chiamata.
+
+   Il corpus lavora su un catalogo costruito a mano e piccolo; l'installazione vera ne
+   produce uno molto piu' grande, il prompt cresce e la generazione rallenta. **Il
+   numero della misura non predice la latenza in produzione.** Da guardare: quante
+   chiamate fa davvero un turno, e quanto pesa il catalogo reale. `00` §6.1 fissa un
+   bersaglio per l'**accettazione** (rispettato); per la **risposta** non ce n'e' uno.
+
+6. **Il ramo dell'ancora nulla non ha una risposta.** **D110** (`00` §21.1) dice che
+   quando un'entita' non espone nessuna data il fatto si dichiara. Il prompt dice di
+   rispondere con un chiarimento, ma un chiarimento vuole 2-4 opzioni e ognuna almeno
+   un'operazione (`nli_core/contract/schema.py`), e senza date non ce ne sono. Serve una
+   decisione numerata: probabilmente una voce nel vocabolario degli scope, che e'
+   contratto.
+
+   **Niente lo esercita**: il generatore costruisce condizioni temporali solo per
+   entita' che hanno campi data, quindi le entita' senza date non ricevono mai un
+   periodo.
+
+7. **Le parole di `nli_web` non si traducono sul cron.** `_()` capisce la lingua
+   guardando chi l'ha chiamata: dentro una richiesta web funziona, ma **il turno si
+   interpreta sul cron** e li' la richiesta non c'e'. La frase esce non tradotta, in
+   silenzio. Le lambda di modulo in `nli_interpretation.py` (21 righe su 33) e la
+   funzione annidata in `nli_perimeter.py`. Tre strade: `self.env._()`, `LazyGettext`,
+   o costruire le formule dentro il metodo. Va deliberata: e' la forma dello strato
+   delle parole.
+
+8. **D27**: eseguire il banco di prova sui worker prefork (`./manage.sh loadtest <db>`,
    **non su `nli_test`**) e riportare i numeri per quello che sono.
-5. Il confronto con `granite4.1:8b`, se serve rispondere a *«il 73,6% è del compito o
-   del modello?»*. Riga di comando identica, cambia solo `--profilo`.
-7. **La composizione dopo un chiarimento e' debole.** **D120** (`00` §29) fa arrivare
-   al modello la frase precedente e la domanda posta, e il seguito non riparte piu' da
-   zero. Ma nella prova la seconda risposta ha perso l'entita': due chiarimenti deboli
-   in fila si sommano. La strada che chiude il caso e' far **scegliere** le letture con
-   un clic (D106), dove le operazioni sono gia' nella busta e non c'e' niente da
-   ricomporre — l'aperto qui sotto.
 
-8. **La via d'uscita `out_of_scope` si apre da sola.** Il `scope_note` e' un insieme
-   chiuso di cinque valori — tutti legali — e il modello ne sceglie uno qualunque
-   quando fatica. Misurato: nove rifiuti su 414 con `previsione` (`00` §21.7), e sul
-   campo *«mostrami i lead di quest'anno»* classificato come **`cancellazione_record`**.
+9. **La conservazione delle frasi.** **D115** (`00` §23) tiene l'enunciato in chiaro sul
+   turno: non c'e' scadenza ne' cancellazione automatica, e
+   `08-sicurezza-conformita.md` descrive un sistema che non le conservava. Va riletto
+   con questa decisione in mano.
 
-   **D114** ha ristretto il verso della previsione e non basta: restringere una parola
-   alla volta non chiude una porta che si apre da sola. Da guardare: se l'uscita debba
-   costare qualcosa al modello — per esempio esigere che nomini quale operazione
-   mancante la rende impossibile — invece di essere gratuita quanto una risposta.
+10. **Il profilo e' in servizio senza qualificazione** (`00` §25). Prima del primo utente
+    vero, **D51** va eseguita davvero e la sezione aggiornata con l'esito.
 
-7. **Novanta secondi per una risposta, e la misura non lo prevedeva.** Misurato
-   sull'installazione vera il 2 agosto: attesa in coda **0 secondi** — il cron
-   raccoglie il turno all'istante — e **90 secondi di lavorazione**, tutti chiamate al
-   modello. La misura sul corpus dava una mediana di **8,8 s** per chiamata.
-
-   La differenza non e' rumore: il corpus lavora su un catalogo costruito a mano,
-   piccolo; l'installazione vera ne produce uno molto piu' grande, il prompt cresce e
-   la generazione rallenta di conseguenza. **Il numero della misura non predice la
-   latenza in produzione**, ed e' un fatto da sapere prima di promettere tempi a
-   qualcuno.
-
-   Da guardare, in ordine: quante chiamate fa davvero un turno (fase B, fase C,
-   riparazione di D15), e quanto pesa il catalogo reale rispetto a quello del corpus.
-   `00` §6.1 fissa un bersaglio di P95 205 ms per l'**accettazione**, che e' rispettato
-   — quello che manca e' un bersaglio dichiarato per la **risposta**.
-
-7. **La chat mostra le letture di un chiarimento ma non le fa scegliere.** **D106**
-   (un rifiuto propone le letture plausibili) vuole che la soluzione sia derivabile dal
-   catalogo, **senza tornare dal modello**: le operazioni della lettura sono gia' nella
-   busta. Manca il percorso server che le applichi — applicatore, livelli 3-5,
-   risolutore, esecutore, presentatore — cioe' la coda di `pipeline.run` senza la
-   chiamata al modello. Finche' non c'e', le letture si mostrano e si riscrivono a mano:
-   meno comodo, ma non finge. Un bottone che ripartisse dal modello contraddirebbe
-   D106, che esiste proprio per non chiedere le alternative a chi ha appena sbagliato.
-
-8. **La chat non mostra ancora i dati.** L'interpretazione si vede, i record no. La
-   strada e' incorporare la vista lista di Odoo, che porta con se' ricerca,
-   ordinamento, filtri, gestione colonne e paginazione — tutto cio' che `15` chiede per
-   le tabelle — invece di riscriverle.
-
-6. **Il ramo dell'ancora nulla non ha ancora una risposta.** D110 (`00` §21.1) dice che
-   quando un'entità non espone nessuna data, il fatto si dichiara. Il prompt (§21.2)
-   dice di rispondere con un chiarimento, ma un chiarimento richiede 2-4 opzioni e ogni
-   opzione porta almeno un'operazione (`nli_core/contract/schema.py`): senza una data
-   non c'è operazione da offrire. Serve una decisione dell'Architect su cosa fare in
-   questo caso — il contratto non si tocca senza una decisione numerata. Nel corpus
-   fondativo il ramo non è mai esercitato: il generatore costruisce condizioni
-   temporali solo per le entità che hanno campi data, quindi le quattro entità senza
-   data non ricevono mai un periodo.
+11. Il confronto con `granite4.1:8b`, se serve rispondere a *«il resto e' del compito o
+    del modello?»*. Riga di comando identica, cambia solo `--profilo`.
 
 # Cosa NON va fatto
 
@@ -314,6 +304,7 @@ che è la degradazione descritta da D42.
 # Se vuoi solo ripartire senza rileggere tutto
 
 Riprendi il progetto AIDA: leggi ai/00-registro-decisioni.md e
-ai/12-piano-implementazione.md, verifica con ./manage.sh check, poi vai con il punto
-che ti indico. Stesse regole di prima: deliberi tu le questioni che emergono e le
+ai/12-piano-implementazione.md, verifica con ./manage.sh check, poi vai con il punto 1
+degli aperti — una strada sola per il clic e per lo scritto — oppure con quello che ti
+indico. Stesse regole di prima: deliberi tu le questioni che emergono e le
 registri in ai/00, e mi spieghi le cose in modo non tecnico.
