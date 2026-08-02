@@ -61,10 +61,12 @@ from misura_catalogo import (  # noqa: E402
 )
 from nli_core.application import applicator, completion  # noqa: E402
 from nli_core.contract import canonical, state as state_module  # noqa: E402
+from nli_core.validation import contextual  # noqa: E402
 from nli_engine.adapters.base import Capabilities  # noqa: E402
 from nli_engine.adapters.openai_compatible import OpenAICompatibleAdapter  # noqa: E402
 from nli_engine.interpreter import interpret  # noqa: E402
 from nli_semantics.catalogue import build as build_module  # noqa: E402
+from nli_semantics.dictionary import grounding  # noqa: E402
 from nli_semantics.platform_types import (  # noqa: E402
     CONTRACT_TYPE_BY_ODOO_TYPE,
 )
@@ -90,6 +92,14 @@ class Accuratezza:
         self.esiti: Counter = Counter()
         self.esiti_attesi: Counter = Counter()
         self.riparazioni = 0
+        #: Rifiuti del livello 3 per condizione nominata infondata — D105, "la
+        #: condizione nominata dev'essere fondata" (registro §19.1). Con D112, "le
+        #: categorie ammesse dalla generazione vincolata sono quelle nominate dalla
+        #: frase, non tutte quelle del catalogo" (ai/14-ancoraggio-del-tempo.md §6,
+        #: non ancora nel registro) in vigore dovrebbero restare a zero: se non lo
+        #: sono, il riconoscitore che restringe e quello che verifica non danno la
+        #: stessa risposta.
+        self.infondate: int = 0
         self.token_prompt = 0
         self.token_risposta = 0
         self.millisecondi = 0
@@ -167,6 +177,18 @@ def misura(casi: list[dict], dizionario, adapter, *, verboso: bool) -> Accuratez
             esito.errori.append(f"{caso['id']}: {errore}")
             continue
 
+        # Livello 3 (D105): interpret() e l'applicatore fermano ai livelli 1-2 e alla
+        # coerenza, quindi senza questa chiamata il metro non aveva mai visto il
+        # controllo di fondatezza — e il punteggio non aveva mai visto i suoi
+        # fallimenti. Si conta solo `ungrounded_category`: gli altri codici sono
+        # livelli diversi, e mescolarli in un numero solo confonderebbe cose diverse.
+        fallimenti = contextual.validate(
+            prodotto, known_refs=catalogo.refs,
+            types={attributo.ref: attributo.type for attributo in catalogo.attributes},
+            mentions=grounding.mentions_of(dizionario))
+        if any(fallimento.code == "ungrounded_category" for fallimento in fallimenti):
+            esito.infondate += 1
+
         confronto = canonical.section_comparison(atteso, prodotto)
         for sezione in SEZIONI:
             if confronto.get(sezione, True):
@@ -203,6 +225,8 @@ def rapporto(esito: Accuratezza, *, modello: str) -> None:
     print()
     print(f"  riparazioni (D15)      {esito.riparazioni}  "
           f"{esito.riparazioni / esito.casi:.1%} dei casi")
+    print(f"  condizioni infondate    {esito.infondate}  "
+          f"{esito.infondate / esito.casi:.1%} dei casi  (D105, atteso 0 con D112)")
     print(f"  token prompt/risposta  {esito.token_prompt} / {esito.token_risposta}")
     print(f"  latenza media          {esito.millisecondi // esito.casi} ms")
     if esito.errori:
