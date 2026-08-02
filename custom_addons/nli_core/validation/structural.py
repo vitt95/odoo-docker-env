@@ -504,6 +504,17 @@ def _level2_envelope(candidate: dict) -> list[Failure]:
             "scope_note",
             out,
         )
+        # D118: il frammento che giustifica il rifiuto dev'esserci e non essere vuoto.
+        # Uno spazio bianco e' un rifiuto senza motivo con la forma del motivo.
+        frammento = (candidate.get("scope_provenance") or {}).get("text")
+        if not isinstance(frammento, str) or not frammento.strip():
+            out.add(
+                "ungrounded_scope",
+                "scope_provenance.text",
+                "a refusal for scope must quote the fragment that asks for the "
+                "impossible thing: without it, refusing costs nothing and becomes "
+                "the exit the model takes whenever it struggles (D118)",
+            )
 
     operations = candidate.get("operations") or []
     if candidate.get("outcome") == "clarification":

@@ -76,6 +76,7 @@ def valid_envelopes() -> list[tuple[str, dict]]:
             ],
         })),
         ("17.5 out of scope", envelope("out_of_scope", confidence=0.97,
+          scope_provenance={"text": "cancella i clienti"},
                                        scope_note="modifica_dati")),
         ("not understood", envelope("not_understood")),
         ("D87 category", envelope("operations", operations=[

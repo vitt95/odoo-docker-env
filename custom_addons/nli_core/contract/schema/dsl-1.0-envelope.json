@@ -1192,7 +1192,8 @@
         },
         "required": [
           "outcome",
-          "scope_note"
+          "scope_note",
+          "scope_provenance"
         ]
       }
     }
@@ -1232,6 +1233,9 @@
         "modifica_dati",
         "previsione"
       ]
+    },
+    "scope_provenance": {
+      "$ref": "#/$defs/provenance"
     }
   },
   "required": [

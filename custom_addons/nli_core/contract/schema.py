@@ -368,10 +368,16 @@ def build_envelope_schema(*, refs: References | None = None) -> dict:
     payload_keys = _sorted({key for key in OUTCOME_PAYLOAD.values() if key})
     for outcome in _sorted(OUTCOMES):
         payload = OUTCOME_PAYLOAD[outcome]
+        # D118: il rifiuto per portata porta anche la propria provenienza. E' l'unico
+        # esito con due chiavi obbligatorie, e la ragione e' che e' l'unico che
+        # afferma qualcosa sulla domanda invece che sui dati.
+        obbligatorie = ["outcome"] + ([payload] if payload else [])
+        if outcome == "out_of_scope":
+            obbligatorie.append("scope_provenance")
         branch: dict = {
             "if": {"properties": {"outcome": {"const": outcome}}, "required": ["outcome"]},
             "then": {
-                "required": ["outcome"] + ([payload] if payload else []),
+                "required": obbligatorie,
                 # The four outcomes are mutually exclusive: a foreign payload is a
                 # level 1 failure, not a tolerated extra (§4.4).
                 "not": {"anyOf": [
@@ -406,6 +412,12 @@ def build_envelope_schema(*, refs: References | None = None) -> dict:
             },
             "clarification": {"$ref": "#/$defs/clarification"},
             "scope_note": {"enum": _sorted(SCOPE_NOTES)},
+            # D118: un rifiuto per portata deve indicare **il pezzo di frase** che
+            # chiede la cosa impossibile. Senza, `out_of_scope` costa quanto una
+            # risposta, ed e' l'uscita che il modello prende ogni volta che fatica —
+            # misurato: nove rifiuti su 414 con nota `previsione`, e «mostrami i lead
+            # di quest'anno» classificato come cancellazione di record.
+            "scope_provenance": {"$ref": "#/$defs/provenance"},
         },
         "required": ["dsl_version", "outcome"],
         "additionalProperties": False,

@@ -88,7 +88,8 @@ class TestWorkedExamplesPass(unittest.TestCase):
         self.assertEqual(structural.validate_envelope(candidate), [])
 
     def test_section_17_5_out_of_scope(self):
-        candidate = envelope("out_of_scope", confidence=0.97, scope_note="modifica_dati")
+        candidate = envelope("out_of_scope", confidence=0.97, scope_note="modifica_dati",
+                            scope_provenance={"text": "modifica i prezzi"})
         self.assertEqual(structural.validate_envelope(candidate), [])
 
     def test_not_understood_carries_no_payload(self):
@@ -342,7 +343,8 @@ class TestLevel2(unittest.TestCase):
         self.assertIn("unknown_view", codes(structural.validate_envelope(candidate)))
 
     def test_invented_scope_note(self):
-        candidate = envelope("out_of_scope", scope_note="qualcosa_altro")
+        candidate = envelope("out_of_scope", scope_note="qualcosa_altro",
+                            scope_provenance={"text": "fai una cosa"})
         self.assertIn("unknown_scope_note", codes(structural.validate_envelope(candidate)))
 
     def test_invented_rule_identifier_in_a_state(self):
@@ -402,3 +404,32 @@ class TestCategoryPredicate(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestIlRifiutoSiGuadagna(unittest.TestCase):
+    """Un rifiuto per portata deve citare il frammento che lo giustifica (**D118**).
+
+    Misurato: nove rifiuti su 414 uscivano con nota `previsione` (`00` §21.7), e sul
+    campo *«mostrami i lead di quest'anno»* usciva come **cancellazione di record**.
+    Il `scope_note` e' un insieme chiuso di cinque valori, tutti legali, e il modello
+    ne sceglieva uno qualunque quando faticava: l'uscita costava quanto una risposta.
+    """
+
+    def test_a_refusal_without_its_fragment_is_refused(self):
+        fallimenti = structural.validate_envelope(envelope(
+            "out_of_scope", scope_note="cancellazione_record"))
+        self.assertIn("ungrounded_scope", {f.code for f in fallimenti})
+
+    def test_an_empty_fragment_does_not_count(self):
+        """Uno spazio bianco e' un rifiuto senza motivo con la forma del motivo."""
+        fallimenti = structural.validate_envelope(envelope(
+            "out_of_scope", scope_note="cancellazione_record",
+            scope_provenance={"text": "   "}))
+        self.assertIn("ungrounded_scope", {f.code for f in fallimenti})
+
+    def test_a_refusal_that_quotes_its_fragment_passes(self):
+        """L'altra meta': un controllo che rifiuta ogni rifiuto non e' un controllo."""
+        fallimenti = structural.validate_envelope(envelope(
+            "out_of_scope", scope_note="cancellazione_record",
+            scope_provenance={"text": "cancella tutti i lead"}))
+        self.assertEqual(fallimenti, [])

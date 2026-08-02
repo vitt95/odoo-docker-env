@@ -26,7 +26,11 @@ from .vocabulary import DSL_VERSION
 REQUIRED_ENVELOPE_KEYS = frozenset({"dsl_version", "outcome"})
 
 #: Keys an envelope may carry beyond its outcome payload.
-OPTIONAL_ENVELOPE_KEYS = frozenset({"confidence"})
+#: `scope_provenance` e' opzionale **qui** e obbligatoria nel ramo `out_of_scope`
+#: (**D118**): la chiave e' ammessa sulla busta, ma un rifiuto per portata senza il
+#: frammento che lo giustifica non passa. Tenerla fuori da questo insieme l'avrebbe
+#: fatta rifiutare come chiave sconosciuta prima ancora di arrivare al controllo.
+OPTIONAL_ENVELOPE_KEYS = frozenset({"confidence", "scope_provenance"})
 
 #: Keys every operation may carry, whatever its verb: the provenance and the
 #: confidence that get transferred to the state elements it produces (§6.1), plus

@@ -216,6 +216,7 @@ Le decisioni sono state valutate contro quattro obiettivi dichiarati — **sempl
 | **D106** | Il rifiuto di D105 **propone**: `clarification` con letture derivate dal catalogo | ☑ Adottata | §19.2. Le opzioni sono derivate, mai chieste al modello (P4): chi ha appena inventato una condizione e' l'ultimo a cui chiedere le alternative. Meno di due letture, nessuna domanda |
 | **D108** | Le voci di dizionario **approvate** hanno un registro, e la condizione tipizzata si traduce in dominio | ☑ Adottata | §19.4. Senza, il dizionario vivo era **solo L0**: le proposte di D35 restavano nella coda L3 e nessuna installazione aveva una condizione nominata. La traduzione va dalla condizione tipizzata al dominio — meccanica — mai al contrario, che sarebbe una supposizione (`06` §7) |
 | **D109** | La mappa dei tipi di campo (`char`→`text`, `monetary`→`number`) è una **zona pura**, fuori dall'introspezione | ☑ Adottata | §20.1. Dodici coppie uguali in ogni installazione: un fatto, non una domanda a un sistema vivo. Chiusa dentro il file che importa l'ORM di Odoo, impediva di costruire il catalogo fuori dalla piattaforma — e il comando che misura l'accuratezza non partiva affatto |
+| **D118** | Un **rifiuto per portata deve citare il frammento** che chiede la cosa impossibile | ☑ Adottata | §27. `out_of_scope` costava quanto una risposta ed era l'uscita che il modello prendeva ogni volta che faticava: nove rifiuti su 414 con nota `previsione`, e «mostrami i lead di quest'anno» classificato come cancellazione di record. Ora il rifiuto si guadagna con la stessa prova di qualunque altra risposta |
 | **D117** | `create_date` **non e' un campo di sistema**: e' esposto come gli altri | ☑ Adottata | §26. *«Quando e' stato creato»* e' una domanda di lavoro, non un dettaglio tecnico. Misurato sul campo: a «i lead di quest'anno» l'ancora del tempo offriva chiusura, conversione, scadenza e assegnazione — quattro date, e non quella che una persona intende |
 | **D116** | La superficie della piattaforma di `nli_web` si allarga a **`base_setup`**, per la sezione AIDA nelle impostazioni generali | ☑ Adottata | §24. Il modello si configura dal pannello, come vuole **D75**. La vista delle impostazioni generali sta in `base_setup` e non c'e' altro aggancio. Il pannello **configura e non attiva**: D80 continua a rifiutare un profilo non qualificato |
 | **D115** | L'**enunciato dell'utente resta sul turno, in chiaro** — supera D54 per la sola cronologia | ☑ Adottata — **dall'Architect** | §23. Una chat la cui cronologia non puo' rimostrare all'utente le proprie parole e' un altro prodotto. Cio' a cui si rinuncia e' scritto e non attenuato: **un dump del database contiene le frasi digitate**. A proteggerle resta la regola di record del turno, non piu' la cifratura |
@@ -438,7 +439,7 @@ Riassunto operativo di ciò che le delibere impongono a chi scriverà il codice.
 
 **Per superare una decisione**: `⊘ Superata da Dn`. Mai cancellata. Le quattro supersessioni già presenti sono la prova che la disciplina serve.
 
-**Per aggiungere una decisione**: numerazione in continuità da **D118**. **D117** è deliberata in §26. **D116** è deliberata in §24. **D115** è deliberata in §23. **D113** e **D114** sono deliberate in §22, dalla rimisura di §21.7. **D110**, **D111** e **D112** sono deliberate in §21, dalla proposta `14-ancoraggio-del-tempo.md`. **D109** è deliberata in §20. **D104**, **D105** e **D106** sono deliberate in §19, insieme a **D108** che ne era il presupposto mancante. D87–D91 sono deliberate (§14, §15); D92 è corretta; **D93** è deliberata (§16.4.1); **D94–D96** sono deliberate in §17; **D97–D103** e **D107** in §18.
+**Per aggiungere una decisione**: numerazione in continuità da **D119**. **D118** è deliberata in §27. **D117** è deliberata in §26. **D116** è deliberata in §24. **D115** è deliberata in §23. **D113** e **D114** sono deliberate in §22, dalla rimisura di §21.7. **D110**, **D111** e **D112** sono deliberate in §21, dalla proposta `14-ancoraggio-del-tempo.md`. **D109** è deliberata in §20. **D104**, **D105** e **D106** sono deliberate in §19, insieme a **D108** che ne era il presupposto mancante. D87–D91 sono deliberate (§14, §15); D92 è corretta; **D93** è deliberata (§16.4.1); **D94–D96** sono deliberate in §17; **D97–D103** e **D107** in §18.
 
 **Vincoli aggiunti in delibera.** Le dodici decisioni marcate ⊡ portano una condizione che è parte della decisione: rimuoverla è modificare la decisione, non semplificarla.
 
@@ -1844,3 +1845,47 @@ ristretto per un solo verso. Il `scope_note` e' un insieme chiuso di cinque valo
 legali, e il modello ne sceglie uno qualunque quando fatica. Restringere una parola alla
 volta non chiude una porta che si apre da sola: e' il prossimo problema da affrontare, ed
 e' fra gli aperti.
+
+---
+
+## 27. D118 — Il rifiuto si guadagna
+
+**Il difetto, misurato due volte.** Nella rimisura di §21.7, nove rifiuti su 414
+uscivano con `scope_note: "previsione"` — fra cui *«ordini lo scorso mese»*, che e' un
+filtro su una data passata. **D114** ha ristretto quel verso, e la porta si e' aperta da
+un'altra parte: sul campo, *«mostrami i lead di quest'anno»* e' uscito come
+**`cancellazione_record`**.
+
+**La causa non era la parola, era la porta.** `scope_note` e' un insieme chiuso di
+cinque valori, tutti legali. Il modello ne sceglieva uno qualunque quando faticava,
+perche' `out_of_scope` **non costava niente**: era facile quanto una risposta.
+Restringere una parola alla volta non chiude un'uscita che si apre da sola.
+
+**La decisione.** Un rifiuto per portata deve portare `scope_provenance`: **il pezzo di
+frase che chiede la cosa impossibile**. E' la forma di **D105** (una condizione nominata
+dev'essere fondata nel frammento che la giustifica) applicata al rifiuto invece che al
+filtro: si chiede una prova verificabile al posto di una parola libera.
+
+Il controllo e' **strutturale**, non contestuale, e la scelta conta: vive nel livello 1,
+che `interpret()` esegue gia'. Quindi un rifiuto infondato viene respinto **dentro
+l'interprete**, la riparazione singola di **D15** scatta, e il modello riceve l'errore e
+risponde invece di uscire. Se il controllo fosse stato al livello 3 il turno sarebbe
+finito, e il rifiuto sarebbe arrivato all'utente.
+
+**Cosa e' costato.** L'esempio §17.5 della specifica del DSL non era piu' valido: il
+contratto e' cambiato, quindi anche il documento e i suoi esempi vanno aggiornati, ed e'
+il genere di cosa che si scopre solo se i test eseguono gli esempi del documento —
+questi li eseguono. Rigenerati anche gli artefatti JSON derivati.
+
+**Verificato sul campo.** Alla stessa domanda che produceva `cancellazione_record`, AIDA
+risponde ora con un chiarimento: *«Il termine "lead" non e' presente nel catalogo
+disponibile. Cosa intendi mostrare?»* con due letture. Non e' ancora la risposta
+migliore possibile — `crm_lead` **e'** nel catalogo — ma e' un «non sono sicuro» onesto
+al posto di un rifiuto senza senso, ed e' il verso che **D2** rende necessario.
+
+**Cosa resta aperto.** Il controllo verifica che il frammento **ci sia**, non che
+**giustifichi** la nota dichiarata: un modello puo' ancora citare un pezzo qualunque
+della frase. La meta' lessicale — il frammento deve contenere le parole che chiedono
+quell'azione — vuole un riconoscitore iniettato come quello di D112, perche' il lessico
+e' di lingua e `nli_core` non ha lingua. E' il prossimo passo, e la misura dira' se
+serve.
