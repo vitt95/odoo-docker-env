@@ -169,7 +169,8 @@ def user_message(request: Request) -> str:
     return "\n\n".join(parts)
 
 
-def catalogue_references(payload: dict) -> schema_module.References:
+def catalogue_references(payload: dict, *, utterance: str = "",
+                          mentions=None) -> schema_module.References:
     """The references this catalogue admits, kept apart by genus (D101, D102).
 
     Read from the payload rather than from the catalogue object because the payload is
@@ -180,12 +181,33 @@ def catalogue_references(payload: dict) -> schema_module.References:
     The entity of the turn travels with the other entities: `set_target` may change
     the subject, and a catalogue that admitted only the current one would make the
     change unexpressible.
+
+    **D112 — the categories admitted are narrowed to the ones the sentence names.** A
+    named condition is the one condition whose reference the sentence does not have to
+    spell: no field, no value, no type. Measured on 80 openings, that made it the place
+    where every fragment the model could not place ended up — *"prelievi"*, the name of
+    the entity itself, became *"in bozza"*. The utterance is known before the schema is
+    built, so a category the sentence does not mention can be made **inexpressible**
+    instead of being refused after the fact.
+
+    `mentions` is the same recognizer D105 uses to require that a named condition be
+    grounded in the fragment that justifies it, passed as an argument because
+    `nli_engine` does not depend on `nli_semantics` (§6.3). Absent, nothing is
+    narrowed — the same shape `validate_contextual` already gives this argument, and
+    the reason the engine's own pure tests can run without a dictionary.
+
+    Only the categories. An attribute names itself in the sentence — *"con importo
+    oltre 500"* — and narrowing it would take away the columns and the groupings,
+    which the sentence names somewhere else entirely.
     """
     entities = {payload["entity"], *(entity["ref"] for entity in payload["entities"])}
+    categories = tuple(sorted(category["ref"] for category in payload["categories"]))
+    if mentions is not None:
+        categories = tuple(ref for ref in categories if mentions(ref, utterance))
     return schema_module.References(
         entities=tuple(sorted(ref for ref in entities if ref)),
         attributes=tuple(sorted(attribute["ref"] for attribute in payload["attributes"])),
-        categories=tuple(sorted(category["ref"] for category in payload["categories"])),
+        categories=categories,
         # D103: the type each attribute carries in the catalogue is the one §8.1 pairs
         # with its predicates. An attribute whose type the catalogue does not declare
         # is simply absent here, and keeps the whole predicate set.

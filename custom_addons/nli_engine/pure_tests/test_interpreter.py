@@ -186,6 +186,61 @@ class TestInterpreter(unittest.TestCase):
         self.assertEqual(outcome.outcome, "not_understood")
 
 
+class SpiaDelloSchema(RecordedAdapter):
+    """Registra gli schemi ricevuti: il restringimento di D112 e' invisibile nella
+    risposta e visibile solo nell'alfabeto che il modello ha ricevuto."""
+
+    def __init__(self, replies, **kwargs):
+        super().__init__(replies, **kwargs)
+        self.schemas = []
+
+    def complete(self, request, *, schema=None):
+        self.schemas.append(schema)
+        return super().complete(request, schema=schema)
+
+
+class TestCategoryNarrowing(unittest.TestCase):
+    """Una categoria che la frase non nomina non deve essere scrivibile (D112).
+
+    D112 e' la decisione per cui le categorie ammesse dalla generazione vincolata
+    sono quelle nominate dalla frase, non tutte quelle del catalogo.
+    """
+
+    def _refs_ammessi(self, schema) -> str:
+        """Grossolano per disegno: basta serializzare lo schema e cercarci il
+        riferimento per sapere se e' citabile, senza navigare la sua struttura."""
+        return json.dumps(schema)
+
+    def test_a_category_the_sentence_does_not_name_disappears(self):
+        spia = SpiaDelloSchema([VALID])
+        interpret(spia, utterance="voglio vedere i clienti",
+                  catalogue=Catalogue(),
+                  mentions=lambda ref, text: False)
+        self.assertNotIn("clienti.attivi", self._refs_ammessi(spia.schemas[0]))
+
+    def test_a_category_the_sentence_names_stays(self):
+        spia = SpiaDelloSchema([VALID])
+        interpret(spia, utterance="voglio vedere i clienti attivi",
+                  catalogue=Catalogue(),
+                  mentions=lambda ref, text: ref == "clienti.attivi")
+        self.assertIn("clienti.attivi", self._refs_ammessi(spia.schemas[0]))
+
+    def test_without_a_recognizer_nothing_is_narrowed(self):
+        spia = SpiaDelloSchema([VALID])
+        interpret(spia, utterance="voglio vedere i clienti", catalogue=Catalogue())
+        self.assertIn("clienti.attivi", self._refs_ammessi(spia.schemas[0]))
+
+    def test_attributes_are_never_narrowed(self):
+        """Un attributo si nomina da se' nella frase — *«con importo oltre
+        500»* — non dal riconoscitore delle categorie; restringerlo toglierebbe
+        colonne e raggruppamenti che nella frase compaiono altrove."""
+        spia = SpiaDelloSchema([VALID])
+        interpret(spia, utterance="voglio vedere i clienti",
+                  catalogue=Catalogue(),
+                  mentions=lambda ref, text: False)
+        self.assertIn("clienti.citta", self._refs_ammessi(spia.schemas[0]))
+
+
 class TestAllowedHosts(unittest.TestCase):
     """D77 — the list lives in the environment, and nothing in the panel widens it."""
 

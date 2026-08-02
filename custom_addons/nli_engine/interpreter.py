@@ -68,18 +68,22 @@ def not_understood() -> dict:
 
 
 def interpret(adapter, *, utterance: str, catalogue, state: dict | None = None,
-              max_repairs: int = 1) -> Interpretation:
+              mentions=None, max_repairs: int = 1) -> Interpretation:
     """Ask the model, validate, allow one repair, and never return anything else.
 
     `max_repairs` is an argument only so a test can assert that zero and two behave as
     D15 says they must; production uses the default. It is not configuration.
+
+    `mentions(ref, text)` narrows the admitted categories to the ones the sentence
+    names (**D112**). It is a callable rather than a dictionary because `nli_engine`
+    does not depend on `nli_semantics` (§6.3); omitted, nothing is narrowed.
     """
     payload = catalogue_payload(catalogue)
     # D101: the references of this catalogue close the `ref` of every operation. The
     # prompt says the model chooses and never invents; here that stops depending on
     # the model having read the sentence.
     envelope_schema = schema_module.build_envelope_schema(
-        refs=catalogue_references(payload))
+        refs=catalogue_references(payload, utterance=utterance, mentions=mentions))
     outcome = Interpretation()
     repair = None
 
