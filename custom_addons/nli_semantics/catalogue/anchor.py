@@ -16,7 +16,8 @@ richiede un appiglio, cioe' una condizione nominata.
 
 Si contano le date **esposte**, e basta. Nessuna euristica su quale data «conta di
 piu'»: sceglierne una fra due plausibili sarebbe indovinare, e un sistema che dovra'
-scrivere sui dati non puo' permettersi errori invisibili (`00` §19.3). Se un domani si
+scrivere sui dati non puo' permettersi errori invisibili (`00` §19.1, la delibera di
+D105, dove l'argomento e' scritto per esteso; e ora `00` §21.1). Se un domani si
 vorra' dichiarare che per le fatture la data principale e' la scadenza, quella e' una
 voce di dizionario che qualcuno approva, e la strada esiste gia': **D108** (la
 decisione che da' un registro alle voci di dizionario approvate).

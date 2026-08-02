@@ -95,10 +95,9 @@ class Accuratezza:
         #: Rifiuti del livello 3 per condizione nominata infondata — D105, "la
         #: condizione nominata dev'essere fondata" (registro §19.1). Con D112, "le
         #: categorie ammesse dalla generazione vincolata sono quelle nominate dalla
-        #: frase, non tutte quelle del catalogo" (ai/14-ancoraggio-del-tempo.md §6,
-        #: non ancora nel registro) in vigore dovrebbero restare a zero: se non lo
-        #: sono, il riconoscitore che restringe e quello che verifica non danno la
-        #: stessa risposta.
+        #: frase, non tutte quelle del catalogo" (registro §21.3) in vigore dovrebbero
+        #: restare a zero: se non lo sono, il riconoscitore che restringe e quello che
+        #: verifica non danno la stessa risposta.
         self.infondate: int = 0
         self.token_prompt = 0
         self.token_risposta = 0

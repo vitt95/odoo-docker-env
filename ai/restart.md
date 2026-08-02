@@ -6,12 +6,15 @@ riprende sopra la base UI corrente (`master`). Il lavoro continua qui.
 # Da leggere per primo
 
 - ai/00-registro-decisioni.md — cosa è deciso. Il changelog in fondo è la cronologia
-  reale; §18 sono le sette delibere della qualificazione del profilo (D97–D103) e §19
-  le cinque del perimetro guidato (D104–D108). §18.6 contiene due misure che non sono
+  reale; §18 sono le sette delibere della qualificazione del profilo (D97–D103), §19
+  le cinque del perimetro guidato (D104–D108), §20 la delibera della ripresa (D109) più
+  il vincolo che non esisteva in nessun database, e §21 le tre dell'ancoraggio del tempo
+  (D110–D112). §18.6 contiene due misure che non sono
   decisioni ma cambiano cosa si può affermare.
 - ai/12-piano-implementazione.md — §2 le parti, §3 il percorso critico, §5 la tabella
   di avanzamento, §5.1 come si verifica.
 - ai/13-perimetro-guidato.md — la proposta da cui nascono D104–D106, deliberate.
+- ai/14-ancoraggio-del-tempo.md — la proposta da cui nascono D110–D112, deliberate.
 
 Poi: `./manage.sh check` deve essere verde prima di toccare qualunque cosa.
 
@@ -57,6 +60,23 @@ Misura di controllo dopo lo spostamento: **65,0% su 40 aperture**, contro il 64,
 misurato a luglio su 444. Stessa fotografia — 40 casi portano ±13 punti di incertezza,
 quindi il numero conferma che nulla si è rotto, non che qualcosa sia migliorato.
 
+**L'ancoraggio del tempo, 2 agosto 2026.** Tre decisioni deliberate in `00` §21, dalla
+proposta `14`. **D110**: il catalogo dichiara l'ancora del tempo — una data se ne espone
+una sola, l'insieme delle scelte se sono due o più, nulla se non ce ne sono. **D111**:
+un'espressione di tempo non si lascia cadere; se non si colloca, si chiede. **D112**: le
+categorie ammesse dalla generazione vincolata sono solo quelle che la frase nomina,
+quindi una categoria infondata non è più scrivibile invece di essere rifiutata dopo.
+
+Il corpus ha smesso di chiedere ciò che la frase non dice: 30 aperture su
+`account.move.out_invoice` — l'unica entità con due date esposte — attendevano
+un'operazione dove nessuno poteva indovinare quale delle due date. I testi sono gli
+stessi, è cambiata l'attesa. Casi verificati **918** (erano 948), casi totali **1200**
+invariati. Test puri **412** (erano 395), test Odoo **117** (erano 116), file in zona
+pura **55** (erano 54).
+
+**La rimisura non è stata fatta.** Di questo lavoro sappiamo che è costruito e
+verificato, non quanto è servito.
+
 # Come lavoriamo
 
 - sei il Senior Staff Engineer, io l'Architect. Ti ho delegato l'autorità decisionale
@@ -65,9 +85,14 @@ quindi il numero conferma che nulla si è rotto, non che qualcosa sia migliorato
   bloccanti; decidi e vai, tranne per le azioni distruttive.
 - **spiegami le cose in un linguaggio poco tecnico, con esempi concreti, e quando citi
   una sigla o un punto della documentazione metti fra parentesi di cosa tratta.** Non
-  «D2 lo impedisce» ma «D2 (la decisione che vieta di dare risposte sbagliate con
-  l'aria di essere giuste) lo impedisce». Vale per le spiegazioni in chat, non per il
-  codice e i documenti del progetto.
+  «D2 lo impedisce» ma «D2 (il cancello che vieta qualunque scrittura sui dati finché la
+  Fase 2 non è misurata e superata) lo impedisce». **La glossa si verifica aprendo la
+  riga del registro, non si ricorda**: una glossa sbagliata è peggio di nessuna glossa,
+  perché chi legge si fida e non controlla. L'esempio qui sopra è nato proprio così —
+  diceva che D2 vieta «risposte sbagliate con l'aria di essere giuste», che è un
+  argomento che il registro porta *accanto* a D2, non ciò che D2 stabilisce. Dal
+  1 agosto 2026 la regola vale **ovunque**: chat, documenti di `ai/`, commenti del
+  codice, messaggi di commit (`ai/CLAUDE.md`, sezione «Documenti e sigle»).
 - cerca sempre prima l'opzione che NON modifica il contratto, e scartala solo con un
   argomento. Così sono nate D87, D98, D101 e D106.
 - **prima di attribuire un esito al fornitore, verifica che non sia stato il prompt a
@@ -177,10 +202,24 @@ da `nli_core`: sono funzioni dei loro argomenti, e ciò che serve si passa.
    cui la stringa si usa davvero); oppure costruire le formule dentro il metodo, dove
    il contesto c'è già. Va deliberata e registrata in `ai/00`: è la forma dello strato
    delle parole, non un ritocco.
-3. **`filter` al 73,6%.** Diagnosticato su 80 aperture: dodici fallimenti su ventuno
-   erano un frammento senza condizione nominata mappato su una condizione nominata.
-   D105 li rende visibili, non li corregge. I nove restanti sono di altre famiglie —
-   condizione dimenticata, predicato possibile e sbagliato, valore preso male.
+3. **`filter` al 73,6%, e la rimisura che manca.** Diagnosticato su 80 aperture: ventuno
+   fallimenti, dodici sul tempo e nove categorie inventate. **Quelle due famiglie sono
+   state affrontate** da D110–D112 (`00` §21): il tempo ha un appiglio dichiarato dal
+   catalogo, lasciarlo cadere è vietato, e una categoria che la frase non nomina non è
+   più scrivibile.
+
+   **Restano le altre famiglie**, che non c'entrano né con il tempo né con le categorie
+   inventate: il predicato possibile ma sbagliato, il valore preso male, le due
+   condizioni fuse in una.
+
+   **La rimisura non è ancora stata fatta**, ed è il primo passo da fare qui: la riga di
+   comando è più sopra, in «Il comando della misura». Va fatta sapendo che
+   **l'accuratezza complessiva può scendere**. Le risposte sbagliate diventano domande —
+   è il verso giusto — ma il corpus conta una domanda come un fallimento di
+   `operations`. Il numero che deve migliorare è un altro: quanti filtri sbagliati escono
+   con l'aria di essere giusti. I suoi indicatori sono le condizioni infondate contate
+   dal metro (il livello 3 ora gira dentro lo strumento di misura) e i chiarimenti
+   prodotti.
 4. **D27**: eseguire il banco di prova sui worker prefork (`./manage.sh loadtest <db>`,
    **non su `nli_test`**) e riportare i numeri per quello che sono.
 5. Il confronto con `granite4.1:8b`, se serve rispondere a *«il 73,6% è del compito o

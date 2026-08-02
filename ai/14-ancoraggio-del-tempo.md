@@ -91,8 +91,9 @@ Su quei casi **nessuno può fare meglio del 50%**, né un modello né una person
 frase non contiene l'informazione che l'attesa pretende. Una parte dei 12 fallimenti
 temporali è quindi un difetto del metro, non del prodotto.
 
-Questo è il punto che `ai/CLAUDE.md` chiede di controllare sempre per primo: prima di
-attribuire un esito al fornitore, verificare che non sia stato il metro a dettarlo.
+Questo è il punto che `ai/restart.md` («Come lavoriamo») chiede di controllare sempre
+per primo: prima di attribuire un esito al fornitore, verificare che non sia stato il
+metro a dettarlo.
 
 ### 1.3 Due difetti minori, trovati per strada
 
@@ -126,7 +127,7 @@ quella obbligatoria, quella che sta nelle viste — e prendere la prima. Scartat
 sceglierne una fra due plausibili è indovinare, che è esattamente ciò che stiamo
 togliendo.
 
-Il registro lo argomenta in §19.3 discutendo **D105**: un filtro inventato mostra
+Il registro lo argomenta in §19.1 deliberando **D105**: un filtro inventato mostra
 *meno* record con sicurezza, e chi guarda non ha modo di accorgersene, mentre un
 rifiuto è un errore che si vede. È il compromesso che **D2** (la decisione che vieta
 qualunque scrittura sui dati finché la Fase 2 non è misurata e superata) rende
@@ -216,7 +217,7 @@ esiste nel suo alfabeto.
 
 E quando il riconoscitore sbaglia — l'utente ha scritto la categoria in un modo che non
 riconosce — il fallimento degrada a **una domanda**, non a un filtro sbagliato. È la
-direzione argomentata in §19.3: un errore che si vede è preferibile a uno che non si
+direzione argomentata in §19.1: un errore che si vede è preferibile a uno che non si
 vede.
 
 D105 resta dov'è, come rete per le condizioni che arrivano da altre strade: una query

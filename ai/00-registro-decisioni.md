@@ -216,6 +216,9 @@ Le decisioni sono state valutate contro quattro obiettivi dichiarati — **sempl
 | **D106** | Il rifiuto di D105 **propone**: `clarification` con letture derivate dal catalogo | ☑ Adottata | §19.2. Le opzioni sono derivate, mai chieste al modello (P4): chi ha appena inventato una condizione e' l'ultimo a cui chiedere le alternative. Meno di due letture, nessuna domanda |
 | **D108** | Le voci di dizionario **approvate** hanno un registro, e la condizione tipizzata si traduce in dominio | ☑ Adottata | §19.4. Senza, il dizionario vivo era **solo L0**: le proposte di D35 restavano nella coda L3 e nessuna installazione aveva una condizione nominata. La traduzione va dalla condizione tipizzata al dominio — meccanica — mai al contrario, che sarebbe una supposizione (`06` §7) |
 | **D109** | La mappa dei tipi di campo (`char`→`text`, `monetary`→`number`) è una **zona pura**, fuori dall'introspezione | ☑ Adottata | §20.1. Dodici coppie uguali in ogni installazione: un fatto, non una domanda a un sistema vivo. Chiusa dentro il file che importa l'ORM di Odoo, impediva di costruire il catalogo fuori dalla piattaforma — e il comando che misura l'accuratezza non partiva affatto |
+| **D110** | Il catalogo dichiara **l'ancora del tempo**: una data se ne espone una sola, l'insieme delle scelte se sono due o più, nulla se non ce ne sono | ☑ Adottata | §21.1. Un'espressione di tempo non nomina mai il proprio campo, né nel corpus né in italiano: si dice *«ordini del mese scorso»*. Nessuna euristica su quale data conti di più — sceglierne una fra due plausibili è indovinare. L'ancora si calcola dagli attributi già filtrati dai diritti e dal budget |
+| **D111** | Un'espressione di tempo **non può essere lasciata cadere**: se non si colloca, si chiede | ☑ Adottata | §21.2. Oggi lasciar cadere un pezzo di frase non costa niente al modello, perché la busta senza quella condizione resta valida. La regola toglie l'uscita di sicurezza che D110 da sola lasciava aperta |
+| **D112** | Le categorie ammesse dalla generazione vincolata sono quelle **nominate dalla frase**, non tutte quelle del catalogo | ☑ Adottata | §21.3. `is_category` è l'unica condizione senza appiglio lessicale, e per questo era la discarica di ogni frammento non collocabile. La frase si conosce prima dello schema, quindi la categoria infondata diventa inesprimibile invece che rifiutata dopo. Stesso riconoscitore di D105, passato come argomento |
 | **D107** | Modello di riferimento: **`qwen3.5:9b`** | ☑ Adottata — **dall'Architect** | §18.8. Deliberata il 29/07/2026 su basi architetturali, con il confronto empirico contro `granite4.1:8b` **interrotto prima di produrre un numero**. Le ragioni sono in §18.8, e cosi' e' il limite della delibera |
 
 ---
@@ -430,7 +433,7 @@ Riassunto operativo di ciò che le delibere impongono a chi scriverà il codice.
 
 **Per superare una decisione**: `⊘ Superata da Dn`. Mai cancellata. Le quattro supersessioni già presenti sono la prova che la disciplina serve.
 
-**Per aggiungere una decisione**: numerazione in continuità da **D110**. **D109** è deliberata in §20. **D104**, **D105** e **D106** sono deliberate in §19, insieme a **D108** che ne era il presupposto mancante. D87–D91 sono deliberate (§14, §15); D92 è corretta; **D93** è deliberata (§16.4.1); **D94–D96** sono deliberate in §17; **D97–D103** e **D107** in §18.
+**Per aggiungere una decisione**: numerazione in continuità da **D113**. **D110**, **D111** e **D112** sono deliberate in §21, dalla proposta `14-ancoraggio-del-tempo.md`. **D109** è deliberata in §20. **D104**, **D105** e **D106** sono deliberate in §19, insieme a **D108** che ne era il presupposto mancante. D87–D91 sono deliberate (§14, §15); D92 è corretta; **D93** è deliberata (§16.4.1); **D94–D96** sono deliberate in §17; **D97–D103** e **D107** in §18.
 
 **Vincoli aggiunti in delibera.** Le dodici decisioni marcate ⊡ portano una condizione che è parte della decisione: rimuoverla è modificare la decisione, non semplificarla.
 
@@ -1180,3 +1183,253 @@ Corretta la virgola, aggiunti i due test, il vincolo ora esiste e rifiuta davver
 test riconosce l'errore **dal nome del vincolo**, non da un messaggio generico: così, se
 un domani il vincolo sparisse di nuovo, un rifiuto qualsiasi non potrebbe passare per
 quello giusto. 116 test Odoo verdi, erano 114.
+
+---
+
+
+## 21. Le delibere dell'ancoraggio del tempo (2 agosto 2026)
+
+Proposte in `14-ancoraggio-del-tempo.md`. Nascono da una diagnosi su 80 aperture del
+corpus fondativo con `qwen3.5:9b`, il modello che **D107** (la decisione che fissa il
+modello di riferimento) ha scelto.
+
+**Il difetto, e perché era uno solo.** Su 80 aperture, 21 fallivano. Il modello non
+sbagliava a scrivere: 80 buste valide su 80, zero errori di forma, zero rifiuti
+dell'applicatore. Sbagliava **cosa** diceva. Dodici fallimenti erano sul tempo, nove
+erano categorie inventate. Sembrano due famiglie. Sono la stessa.
+
+Nel DSL una condizione si aggancia alla frase in due modi soltanto. O la frase **nomina
+il campo** — *«con importo oltre 500»* — oppure la condizione è nominata, e allora la
+frase nomina solo la categoria. Un'espressione di tempo **non nomina mai il campo**.
+Nessuno dice *«ordini con data ordine nel mese scorso»*: si dice *«ordini del mese
+scorso»*. Non è un difetto del corpus, è come si parla. E nel catalogo che mandiamo al
+modello non esisteva il concetto di *«la data»* dell'entità.
+
+Il modello si trovava quindi un frammento da collocare e nessun posto dove metterlo.
+Faceva una di due cose: lo lasciava cadere, oppure lo appoggiava sull'unica condizione
+che non chiede un appiglio, cioè una categoria. **`is_category` era la discarica.** Ci
+finiva *«lo scorso mese»*, ci finiva *«prelievi»* — che è il nome dell'entità stessa —
+trasformato in *«in bozza»*.
+
+Le tre decisioni chiudono le tre uscite. Al tempo si dà un appiglio (**D110**),
+lasciarlo cadere diventa vietato (**D111**), e alla categoria si toglie la discarica
+(**D112**).
+
+### 21.1 D110 — L'ancora del tempo è un fatto di struttura
+
+**La regola.** Il catalogo conta le date che espone. Una sola → è quella, e un periodo
+senza campo si attacca lì. Due o più → nessuna è principale, e la risposta giusta è una
+domanda. Zero → su questa entità il tempo non è esprimibile, e va detto.
+
+**Perché si contano e non si scelgono.** L'alternativa era un'euristica: prendere la
+data dell'ordinamento predefinito, o quella obbligatoria, o quella che sta nelle viste.
+È stata cercata per prima e scartata con un argomento solo. Sceglierne una fra due
+plausibili **è indovinare**, che è esattamente ciò che stiamo togliendo. §19.1 lo
+argomenta deliberando **D105** (la decisione per cui una condizione nominata non fondata
+nel proprio frammento è rifiutata al livello 3): un filtro inventato mostra *meno*
+record con sicurezza, e chi guarda non ha modo di accorgersene. È il compromesso che
+**D2** (il cancello che vieta qualunque scrittura sui dati finché la Fase 2 non è
+misurata e superata) rende obbligatorio: un sistema che dovrà scrivere non può
+permettersi errori invisibili.
+
+Se un domani si vorrà dichiarare che per le fatture la data principale è la scadenza,
+quella è una voce di dizionario che qualcuno approva. La strada esiste già: è **D108**
+(la decisione che dà un registro alle voci di dizionario approvate e traduce la
+condizione tipizzata in dominio). Non si costruisce adesso, e non si indovina nel
+frattempo.
+
+**Dove nasce l'ancora, e perché lì.** Si calcola dagli attributi **sopravvissuti al
+filtro dei permessi e al budget**, mai da quelli in ingresso. Un'ancora che nominasse
+una data che l'utente non può leggere sarebbe una seconda via alla stessa informazione,
+senza le stesse guardie — e le guardie sono quelle di **D31** (le regole di esposizione,
+con il budget fissato a 60 attributi per entità) e di **D79** (il budget del catalogo
+derivato dalla finestra di contesto dichiarata). Vale la stessa garanzia di **D104** (il
+vocabolario del catalogo è mostrato all'utente, suggerito e mai imposto): il
+suggerimento nasce dallo stesso catalogo che vede il modello, costruito con i diritti di
+chi chiede. C'è un test che toglie un attributo dai riferimenti leggibili e verifica che
+sparisca dall'ancora: se qualcuno spostasse il calcolo prima del filtro, quel test
+fallirebbe.
+
+**Essere strutturale è ciò che la rende verificabile.** L'ancora è una funzione della
+lista di attributi. Non serve un database, non serve il modello, e i suoi test sono test
+puri. È lo stesso schema di **D109** (la mappa dei tipi di campo di Odoo vive in una zona
+pura, fuori dall'introspezione): un fatto non ha bisogno di una piattaforma accesa per
+essere vero. Le zone pure passano da 54 a **55 file**, 0 violazioni.
+
+**Un guadagno che non era stato previsto.** Il terzo caso — nessuna data esposta — è il
+più silenzioso dei tre. Oggi *«clienti del mese scorso»* perde il tempo e nessuno se ne
+accorge, perché sui clienti non c'è una data da esporre. Con l'ancora nulla, quella
+risposta diventa una domanda.
+
+### 21.2 D111 — Un periodo non si lascia cadere
+
+D110 dà l'appiglio. Da solo non basta, perché lascia aperta l'altra uscita.
+
+**Oggi lasciar cadere un pezzo di frase non costa niente al modello.** Nessuna regola
+glielo vieta, e una busta senza quella condizione è comunque valida: passa i livelli,
+passa la coerenza, l'applicatore la accetta. Cinque dei dodici fallimenti temporali
+erano esattamente questo — il periodo spariva e la risposta sembrava a posto.
+
+La regola nel prompt dice due cose, e la seconda è quella che conta. La prima: dove va
+un periodo che non nomina un campo. La seconda: **un periodo non si può lasciare
+fuori**. Se non si colloca, si chiede. Una frase che nomina un periodo e una risposta
+che non lo nomina è una risposta **sbagliata**, non una risposta più corta.
+
+**Perché una regola nel prompt qui, quando il progetto diffida delle regole nel
+prompt.** La leva del prompt è la più debole che abbiamo, e le prove ci sono: le regole
+scritte vengono violate. Ma D110 e D111 sono di natura diversa dalle altre. Non dicono
+*come si dice una cosa in italiano* — dicono **dove va**, e il dove è dichiarato dal
+catalogo, che è dato e non opinione. Il vincolo forte, quello che il modello non può
+violare, arriva con D112 e agisce sullo schema, non sulla prosa.
+
+### 21.3 D112 — La categoria che la frase non nomina è inesprimibile
+
+**Il difetto.** Una condizione nominata è la sola il cui riferimento la frase non deve
+scrivere: nessun campo, nessun valore, nessun tipo. È la più economica da produrre, e
+per questo raccoglieva tutto. Il caso più istruttivo dei nove: *«commesse con importo
+oltre 500 raggruppati per stato»* diventava una categoria *«da consegnare»* — il modello
+prendeva tutto il resto della frase come giustificazione, e nel farlo **perdeva il
+`> 500`**, che era l'unica condizione vera.
+
+**La leva era già in mano.** Lo schema che vincola la generazione si costruisce già per
+catalogo: è **D101** (i riferimenti sono un insieme chiuso nello schema del turno) e
+**D103** (il predicato è vincolato dal tipo dell'attributo già nello schema del turno).
+La cosa che mancava non era un meccanismo: era accorgersi che **la frase la conosciamo
+prima di costruire lo schema**. Fra le categorie del catalogo si ammettono solo quelle i
+cui termini compaiono nella frase.
+
+Il risultato per *«voglio vedere prelievi»*: il modello **non ha più in bocca**
+`in_bozza`. Non è una regola che può violare. È un simbolo che, per quella frase, non
+esiste nel suo alfabeto.
+
+**Sparisce il ramo, non resta vuoto.** Con l'insieme delle categorie vuoto, il ramo
+`is_category` **non viene proprio aggiunto** allo schema. Un ramo con una lista di
+riferimenti vuota sarebbe una forma che il modello vede e non può riempire; assente, la
+condizione nominata semplicemente non è una delle forme che quel turno ammette. È il
+predicato di **D87** (`is_category` per la condizione nominata T5) che si toglie dal
+tavolo insieme al proprio riferimento.
+
+**Solo le categorie.** Un attributo si nomina da sé nella frase, e restringerlo
+toglierebbe colonne e raggruppamenti, che la frase nomina altrove. Il restringimento si
+ferma dove l'appiglio lessicale c'è già.
+
+**Il riconoscitore si passa, non si importa.** È lo stesso di D105 — quello che sa di
+accenti mancanti, abbreviazioni e refusi — e arriva come argomento perché `nli_engine`
+non può dipendere da `nli_semantics` (`04` §6.3, il confine fra il motore e la
+semantica). Come per D105, **se non viene passato il restringimento non si applica**:
+così i test puri del motore continuano a girare senza dizionario.
+
+**Quando il riconoscitore sbaglia**, cioè l'utente ha scritto la categoria in un modo
+che non riconosce, il fallimento degrada a **una domanda** e non a un filtro sbagliato.
+È la direzione di §19.1, di nuovo: un errore che si vede è preferibile a uno che non si
+vede. E **D106** (il rifiuto di D105 propone: `clarification` con letture derivate dal
+catalogo) è già il posto in cui quella domanda prende forma.
+
+**D105 resta dov'è.** Non è ridondanza. D112 impedisce, D105 verifica, e verifica ciò
+che arriva da altre strade: una query salvata, un'interpretazione modificata a mano, un
+secondo esecutore. Il riconoscitore si costruisce **una volta sola** nella conduttura e
+serve a entrambe: costruirne due significherebbe due indici dei termini nel percorso di
+una singola richiesta, per la stessa risposta.
+
+**Dove il restringimento non è stato collegato, di proposito.** La conduttura chiama
+l'interprete due volte. La seconda chiamata — quella di Fase B, che serve solo a capire
+di quale entità si parla — **non** riceve il riconoscitore. Il catalogo di Fase B porta
+solo i nomi delle entità e ha l'insieme delle categorie sempre vuoto: lì il
+restringimento sarebbe codice che non fa niente. Verificato sul codice, non assunto.
+
+Il collegamento nella conduttura vale **1 test Odoo**, e serve: il restringimento vive
+nella costruzione dello schema, quindi non compare nella risposta. Senza quel test
+sarebbe codice mai eseguito e nessuno se ne accorgerebbe. Test Odoo da 116 a **117**.
+
+### 21.4 Il metro chiedeva cose che la frase non diceva
+
+Questa parte non è una decisione. È un difetto **della misura**, trovato mentre si
+costruivano le tre. Il metodo del progetto chiede di controllarlo sempre per primo:
+prima di attribuire un esito al modello, verificare che non sia stato il metro a
+dettarlo. Non è una precauzione teorica — tre delle sette delibere di §18 (la
+qualificazione del profilo) correggono il metro e non il modello.
+
+Il generatore del corpus, per un'entità con più date, ne pescava **una a caso** e nella
+frase scriveva solo *«lo scorso mese»*. Sulle fatture cliente le date esposte sono due —
+data fattura e scadenza. Casi reali: *«sta settimana»* → data fattura, *«lo scorso
+mese»* → scadenza, *«quest'anno»* → scadenza, *«nel 2025»* → data fattura. Stessa
+entità, stessa forma di frase, attese diverse.
+
+Su quei casi **nessuno poteva fare meglio del 50%**, né un modello né una persona: la
+frase non contiene l'informazione che l'attesa pretendeva. Era un tetto strutturale, e
+una parte dei dodici fallimenti temporali era colpa del metro.
+
+Correzione: quando l'entità espone più di una data e la frase non nomina il campo, il
+caso **si aspetta un chiarimento**. Il generatore sapeva già produrre casi di
+chiarimento con temporale ambiguo; erano le aperture normali a pescare comunque a caso.
+
+**La regola sta in un posto solo.** Quante date espone un'entità lo decide `time_anchor`
+— la stessa funzione del prodotto, importata, non copiata — e la lista delle date per
+entità vive in un unico file, letto sia dal generatore sia dal verificatore. Una misura
+che contasse le date con una regola diversa da quella del prodotto misurerebbe un altro
+prodotto. È lo stesso argomento di D109.
+
+**Cosa è cambiato nel corpus.** I casi totali restano **1200**. Le aperture che
+attendono un'operazione passano da 444 a **414**: le 30 spostate sono tutte su
+`account.move.out_invoice`, l'unica entità del corpus che espone due date. I loro
+**testi non sono cambiati** — è cambiata l'attesa. I casi verificati contro il contratto
+passano quindi da 948 a **918** (414 aperture + 504 raffinamenti), 0 errori, copertura
+100%.
+
+Un numero che scende e non è un peggioramento va detto per quello che è: si sono tolte
+30 domande a cui non esisteva una risposta giusta.
+
+**E il livello 3 ora gira dentro lo strumento di misura.** `interpret()` esegue i livelli
+1-2 e la coerenza, mai il livello 3 — che è dove vive il controllo di fondatezza di D105.
+Lo strumento di misura non aveva quindi **mai** eseguito quel controllo. È il motivo per
+cui si diceva che D105 «rende i fallimenti visibili senza spostare il punteggio»: il
+punteggio non li aveva mai visti. Ora il numero riflette D105. Con D112 in vigore quel
+contatore dovrebbe restare a zero; se non lo è, il riconoscitore che restringe e quello
+che verifica non danno la stessa risposta, ed è un'informazione che vogliamo vedere.
+
+### 21.5 Cosa questo lavoro non fa
+
+**Non alza l'accuratezza, e può abbassarla.** Le risposte sbagliate diventano domande.
+È il verso giusto — un errore visibile al posto di uno invisibile — ma il corpus conta
+una domanda come un fallimento di `operations`. Il numero da guardare è un altro: quanti
+filtri sbagliati escono con l'aria di essere giusti. I suoi indicatori sono le condizioni
+infondate contate dal metro e i chiarimenti prodotti, e vanno letti con la copertura
+accanto, come chiede `07` §5.4 (il piano di valutazione, il paragrafo su come si leggono
+i due numeri insieme).
+
+**La rimisura non è stata fatta.** È il passo 5 dell'ordine di costruzione di `14` §8, e
+va dopo, non a metà: misurare a metà strada produce un numero che non descrive né il
+prima né il dopo. Finché non è fatta, di questo lavoro sappiamo che è costruito e
+verificato, non quanto è servito.
+
+**Non risolve `filter` da solo.** Delle famiglie diagnosticate sulle 80 aperture restano
+quelle che non c'entrano con il tempo né con le categorie inventate: il predicato
+possibile ma sbagliato, il valore preso male, le due condizioni fuse in una.
+
+**Non tocca `within`/`between`.** Su una data il contratto ammette entrambi i predicati,
+il corpus si aspetta sempre `within`, e un modello che scrive `between` produce una cosa
+**legale** contata come sbagliata. Deliberato di lasciarlo com'è: nel campione pesa due
+casi, che sbagliavano anche altro. Resta scritto qui perché chi rivedrà quei due casi non
+ci perda tempo.
+
+**Non lima il prompt contro il corpus sintetico.** Le due regole del prompt sono
+strutturali: dicono dove va una cosa, non come si dice in italiano. Ogni punto strappato
+al generatore rischia di essere prompt adattato al generatore. È la degradazione che
+**D42** (le tre popolazioni di corpus, con il corpus sigillato protetto da
+autorizzazione) esiste per impedire, e sul corpus fondativo il sigillo **non c'è**: lo
+dichiara **D86** (il corpus fondativo non soddisfa D42 e non chiude D49, perché chi
+scrive un generatore ne conosce la distribuzione).
+
+### 21.6 Le verifiche
+
+| | prima | dopo |
+|---|---|---|
+| test in zona pura | 395 | **412** |
+| test Odoo | 116 | **117** |
+| file nelle zone pure | 54 | **55**, 0 violazioni |
+| casi verificati contro il contratto | 948 | **918**, 0 errori |
+| aperture che attendono un chiarimento | 0 | **30**, tutte su `account.move.out_invoice` |
+| casi totali nel corpus | 1200 | **1200** |
+
+I punti costruiti sono verificabili **senza interrogare il modello nemmeno una volta**:
+sono test puri e test Odoo. La misura serve alla fine, a dire quanto è servito.
