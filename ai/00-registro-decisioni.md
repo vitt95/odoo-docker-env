@@ -216,6 +216,20 @@ Le decisioni sono state valutate contro quattro obiettivi dichiarati — **sempl
 | **D106** | Il rifiuto di D105 **propone**: `clarification` con letture derivate dal catalogo | ☑ Adottata | §19.2. Le opzioni sono derivate, mai chieste al modello (P4): chi ha appena inventato una condizione e' l'ultimo a cui chiedere le alternative. Meno di due letture, nessuna domanda |
 | **D108** | Le voci di dizionario **approvate** hanno un registro, e la condizione tipizzata si traduce in dominio | ☑ Adottata | §19.4. Senza, il dizionario vivo era **solo L0**: le proposte di D35 restavano nella coda L3 e nessuna installazione aveva una condizione nominata. La traduzione va dalla condizione tipizzata al dominio — meccanica — mai al contrario, che sarebbe una supposizione (`06` §7) |
 | **D109** | La mappa dei tipi di campo (`char`→`text`, `monetary`→`number`) è una **zona pura**, fuori dall'introspezione | ☑ Adottata | §20.1. Dodici coppie uguali in ogni installazione: un fatto, non una domanda a un sistema vivo. Chiusa dentro il file che importa l'ORM di Odoo, impediva di costruire il catalogo fuori dalla piattaforma — e il comando che misura l'accuratezza non partiva affatto |
+| **D128** | **Una domanda che facciamo deve avere risposte che funzionano** | ☑ Adottata | §37. Il modello ha offerto quattro opzioni con un `within` senza periodo: il clic applicava fedelmente qualcosa di inapplicabile. Le opzioni si validano quando la domanda si **memorizza**, non quando qualcuno clicca; sotto due utilizzabili non e' un chiarimento. Fin li' avevamo contato **quante** opzioni c'erano e mai **se funzionavano** |
+| **D129** | **Il livello 5 gira intero**: tetto ai record, salti di relazione e costo delle categorie sullo stesso percorso | ☑ Adottata | §39.1. `coherence.validate_cost` non era chiamata da nessuno e `category_costs` non lo passava nessuno: il massimo assoluto di 500 di **D13** era scritto e inapplicato. Provato — `set_limit` a un milione passava struttura, stato e livelli 3-5 e arrivava all'Esecutore. Un utente ordinario poteva togliere disponibilita' a tutti scrivendolo in italiano |
+| **D130** | **L'Esecutore ha una porta sola**, e le aggregazioni si calcolano | ☑ Adottata | §39.2. `executor.aggregate` esisteva, era provata e **non aveva chiamanti**: `SUM`, `AVG`, `MIN` e `MAX` erano nel contratto, nel piano e nell'interpretazione mostrata all'utente, e nessuno li calcolava. *«Qual e' il fatturato medio dei lead»* restituiva l'elenco dei lead. Due funzioni pubbliche erano la scelta che il chiamante sbagliava: adesso `run` decide dal piano |
+| **D131** | **Gli estremi di un periodo si convertono in UTC** quando la colonna e' un istante | ☑ Adottata | §39.3. Odoo conserva i `datetime` in UTC, il calendario ragiona nei giorni dell'utente, e nessuno convertiva: *«i lead creati oggi»* escludeva quelli di stanotte e includeva quelli di ieri sera. Due ore su una finestra di un giorno sono l'8% delle righe, e il campo colpito e' `create_date`, che **D117** ha appena rimesso nel catalogo. Il fuso viaggia come **nome** e non come scostamento, perche' l'ora legale lo cambia |
+| **D132** | **Il piano arriva intero alla tabella**: ordinamento, raggruppamenti e misure | ☑ Adottata | §39.4. `_aida_query` calcolava `order` e `fields` e il componente OWL non li usava: la vista rileggeva il solo dominio. *«I 10 lead col fatturato piu' alto»* mostrava dieci righe ordinate da tutt'altro, sotto un'interpretazione che dichiarava l'ordinamento giusto. Le misure non partivano affatto, e pivot e grafico ricadevano sul conteggio |
+| **D133** | **La finestra dichiarata e quella servita sono due numeri, e si guardano vicini** | ☑ Adottata | §39.5. Misurato su `ollama`: dodicimila gettoni mandati, **2050 letti**, nessun errore. L'adattatore non manda la finestra al fornitore — il protocollo non ha un campo per dirla — quindi divergono in silenzio. E il contatore dei rifiuti per budget di **D79** esisteva da sempre senza lettori: con 4096 il budget vale **17** attributi contro il tetto di 60, il che toglie a **D32** la proprieta' con cui chiude **RC3** |
+| **D134** | **Una risposta si prova sul suo contenuto**, non sul suo esito | ☑ Adottata | §39.6. La regola di §38 non bastava: sette degli undici scollegamenti trovati dall'audit erano nello stesso tratto — fra il piano e lo schermo — e passavano perche' **nessuna prova andava da uno stato a un numero**. Il banco delle risposte confronta i nomi in ordine, la media col suo valore, il conteggio per gruppo. Rimesse a mano le regressioni, diventa rosso su quattro casi |
+| **D127** | **Chi nomina la propria entita' fa una domanda nuova**, chi non la nomina raffina | ☑ Adottata | §36. Lo stato si accumulava e non c'era modo di ricominciare parlando: un filtro sulla mail rispondeva a una domanda che non lo nominava. La fase A gira sempre — cinque centesimi di secondo, il dizionario e non il modello — e chi porta il proprio soggetto riparte da vuoto. Chiude anche il cambio di entita', che era impossibile |
+| **D126** | **Un'entita' si chiama come la chiama la gente**: etichetta, pezzi, menu | ☑ Adottata | §35. Ogni entita' aveva un termine solo, l'etichetta grezza `Lead/Opportunità`, che nessuna frase contiene: fase A a **0 su 8** sul database vero, 6 su 8 dopo. Le parole si raccolgono dall'installazione, non si generano — il plurale e' gia' scritto nel menu che l'utente preme. §35.1: il guardiano vale contro le prove morfologiche, non contro quelle esatte. §35.2: il registro dichiarava T1 approvabile e ne rifiutava ognuno |
+| **D125** | **Un periodo nuovo prende il posto del precedente** sullo stesso attributo | ☑ Adottata | §34. La regola di §33.2 rifiutava invece di riparare: al terzo turno sulla stessa data la conversazione era **bloccata senza via d'uscita**, e ogni tentativo di rimediare peggiorava lo stato. Ora l'Applicatore sostituisce, e uno stato gia' rovinato si ripara parlando. Il rifiuto e' giusto solo se chi lo riceve ha una mossa |
+| **D124** | **Una strada sola verso lo schermo**; due periodi sullo stesso attributo sono un rifiuto | ☑ Adottata | §33. Il Presentatore produce una struttura, `in_words` la fa parole, e non lo chiamava nessuno: **nessuna risposta riuscita e' mai stata disegnata**. §33.2: due periodi sullo stesso asse si intersecano invece di raffinare, e il conteggio non cambia — 39 e 39 — quindi non si vede. §33.3: il livello 4 girava a meta', `coherence` non era sul percorso. §33.4: le tabelle di `15` sono la vista lista di Odoo incorporata |
+| **D123** | **La modalita' diagnostica viaggia con il turno**: DSL, stato, query e tempi | ☑ Adottata | §32. Quando un turno va storto conta una domanda sola — nel modello o dopo? — e la risposta stava in dati che il sistema aveva e buttava via. Sul turno e non nei log, perche' D60 vieta frasi e cataloghi li' dentro; visibile solo a un amministratore, perche' l'interruttore dice se la traccia esiste, non chi puo' vederla. §32.1: al primo giro ha misurato la fase B a 113 s contro 33 dell'interpretazione |
+| **D122** | **Il tempo concesso al modello lo dichiara il profilo**, non una costante dell'adattatore | ☑ Adottata | §31. Il modello in servizio impiegava 60,1 s per chiamata e l'adattatore ne concedeva 60 fissi: **nessuna domanda poteva riuscire**. Non esiste il numero giusto — un modello locale impiega minuti, uno ospitato secondi — quindi si dichiara, come la finestra di D78. §31.1: il guasto arrivava all'utente come «non ho capito», che invita a riformulare una frase che era già giusta |
+| **D121** | **Una strada sola per il clic e per lo scritto**: l'opzione si sceglie dicendone l'etichetta | ☑ Adottata | §30. Le operazioni di ogni lettura sono gia' nella busta (D106): riconoscerne una costa niente, interpretarla costa un minuto di modello e puo' riscoprire la lista diversa. Il clic scrive l'etichetta nella casella e la invia, quindi non esiste una seconda strada da tenere allineata. La provenienza della condizione scelta e' l'etichetta, ed e' vera: sono le parole che l'utente ha appena detto |
 | **D120** | Una frase che **risponde a una domanda** porta con se' lo scambio precedente | ☑ Adottata | §29. Una richiesta di chiarimento non produce operazioni, quindi non scrive stato: il contesto spariva esattamente nel punto in cui serviva di piu'. Due stringhe, non la trascrizione: un prompt che cresce con la durata della chat consuma la finestra che serve alla risposta |
 | **D119** | Il frammento citato da un rifiuto deve **contenere le parole** che chiedono quella cosa | ☑ Adottata | §28. D118 rendeva obbligatorio citarne uno, non che dicesse qualcosa: restava possibile rifiutare citando un pezzo qualunque della frase. Il lessico sta in `nli_semantics` e arriva iniettato, perche' e' di lingua e `nli_core` non ne ha |
 | **D118** | Un **rifiuto per portata deve citare il frammento** che chiede la cosa impossibile | ☑ Adottata | §27. `out_of_scope` costava quanto una risposta ed era l'uscita che il modello prendeva ogni volta che faticava: nove rifiuti su 414 con nota `previsione`, e «mostrami i lead di quest'anno» classificato come cancellazione di record. Ora il rifiuto si guadagna con la stessa prova di qualunque altra risposta |
@@ -441,7 +455,7 @@ Riassunto operativo di ciò che le delibere impongono a chi scriverà il codice.
 
 **Per superare una decisione**: `⊘ Superata da Dn`. Mai cancellata. Le quattro supersessioni già presenti sono la prova che la disciplina serve.
 
-**Per aggiungere una decisione**: numerazione in continuità da **D121**. **D120** è deliberata in §29. **D119** è deliberata in §28. **D118** è deliberata in §27. **D117** è deliberata in §26. **D116** è deliberata in §24. **D115** è deliberata in §23. **D113** e **D114** sono deliberate in §22, dalla rimisura di §21.7. **D110**, **D111** e **D112** sono deliberate in §21, dalla proposta `14-ancoraggio-del-tempo.md`. **D109** è deliberata in §20. **D104**, **D105** e **D106** sono deliberate in §19, insieme a **D108** che ne era il presupposto mancante. D87–D91 sono deliberate (§14, §15); D92 è corretta; **D93** è deliberata (§16.4.1); **D94–D96** sono deliberate in §17; **D97–D103** e **D107** in §18.
+**Per aggiungere una decisione**: numerazione in continuità da **D129**. **D128** è deliberata in §37. **D127** è deliberata in §36. **D126** è deliberata in §35. **D125** è deliberata in §34. **D124** è deliberata in §33. **D123** è deliberata in §32. **D122** è deliberata in §31. **D121** è deliberata in §30. **D120** è deliberata in §29. **D119** è deliberata in §28. **D118** è deliberata in §27. **D117** è deliberata in §26. **D116** è deliberata in §24. **D115** è deliberata in §23. **D113** e **D114** sono deliberate in §22, dalla rimisura di §21.7. **D110**, **D111** e **D112** sono deliberate in §21, dalla proposta `14-ancoraggio-del-tempo.md`. **D109** è deliberata in §20. **D104**, **D105** e **D106** sono deliberate in §19, insieme a **D108** che ne era il presupposto mancante. D87–D91 sono deliberate (§14, §15); D92 è corretta; **D93** è deliberata (§16.4.1); **D94–D96** sono deliberate in §17; **D97–D103** e **D107** in §18.
 
 **Vincoli aggiunti in delibera.** Le dodici decisioni marcate ⊡ portano una condizione che è parte della decisione: rimuoverla è modificare la decisione, non semplificarla.
 
@@ -1971,3 +1985,1557 @@ Quindi: il canale del contesto e' aperto e verificato, la qualita' della composi
 no. La strada che chiude davvero il caso resta quella gia' registrata fra gli aperti —
 **far scegliere le letture con un clic** (D106), dove le operazioni sono gia' nella
 busta e non c'e' niente da ricomporre.
+
+---
+
+## 30. D121 — Una strada sola per il clic e per lo scritto
+
+**Da dove viene.** L'ha decisa l'Architect il 2 agosto 2026, ed era il primo
+dell'elenco degli aperti. Chiude il caso che **D120** (la decisione per cui chi
+risponde a una domanda non riparte da zero: al modello arrivano la frase di prima e la
+domanda posta) aveva aperto il canale ma non risolto.
+
+**Il difetto.** **D106** (la decisione per cui un rifiuto propone: quando una condizione
+nominata non e' fondata nel suo frammento, invece di fermarsi AIDA offre da due a
+quattro letture prese dal catalogo) mette nella busta le operazioni di ogni opzione.
+Poi le buttava via. Chi voleva scegliere una lettura doveva riscrivere la domanda a
+mano, e la frase riscritta ripartiva dal modello: un minuto d'attesa per riscoprire una
+lista che avevamo scritto noi — e per riscoprirla, magari, diversa.
+
+**La decisione, in due parti che si tengono.**
+
+*Primo: la frase che risponde a una domanda si confronta prima con le opzioni.* Se
+corrisponde a una, si applicano le sue operazioni **senza passare dal modello**. Se non
+corrisponde, si interpreta come una frase qualunque, con il contesto di D120.
+
+*Secondo: il clic non ha un percorso proprio.* Cliccare un'opzione **scrive la sua
+etichetta nella casella e la invia**. Da li' in poi e' una frase come tutte le altre.
+
+**Perche' la seconda parte non e' una comodita' dell'interfaccia.** Se il clic mandasse
+al server le operazioni, ci sarebbero due modi di far partire un turno: uno che passa
+per la validazione delle frasi e uno che no. Resterebbero allineati finche' qualcuno se
+ne ricorda, e il giorno in cui divergono lo fanno in silenzio — una richiesta che salta
+un livello di controllo non fallisce, **risponde**. Cosi' invece la strada e' una per
+costruzione: non c'e' una seconda strada da tenere allineata.
+
+**La conseguenza che non era prevista, e che e' il pezzo interessante.** Una lettura
+proposta non era applicabile com'era. L'opzione *«con partita iva»* sostituisce il
+riferimento della condizione ma si porta dietro il frammento di prima — *«quelle
+strane»* — e quel frammento non nomina **questa** condizione: applicata, la lettura
+falliva di nuovo il livello 3, e per la ragione giusta. Era una scelta che non si poteva
+prendere.
+
+La riparazione non e' un'eccezione al controllo: e' che **il frammento adesso e' vero**.
+Chi sceglie l'opzione dice quelle parole — le scrive o le fa scrivere dal clic — quindi
+la provenienza della condizione e' l'etichetta, che e' esattamente cio' che §10.3 chiede
+(il frammento della frase dell'utente che ha prodotto l'elemento). La condizione smette
+di essere una cosa che il modello ha asserito e diventa una cosa che l'utente ha detto,
+che e' precisamente la differenza che D105 (il livello 3 rifiuta una condizione nominata
+non fondata nel proprio frammento) esiste per riconoscere. Nessun livello viene saltato:
+il livello 3 gira e passa.
+
+**Il riconoscimento e' sull'etichetta, non sulle operazioni.** L'etichetta e' l'unica
+cosa che l'utente ha visto. Maiuscole, spazi doppi, virgolette e il punto finale non
+sono scelte sue e non contano; **gli accenti si'** — due condizioni nominate che
+differiscono per un accento sono due condizioni, e sceglierne una a caso in silenzio
+sarebbe peggio che richiedere. Due opzioni che si leggono uguali non sono una scelta: la
+frase passa alla strada ordinaria, che chiede.
+
+**Solo il turno immediatamente precedente**, come D120. L'etichetta di una domanda
+sorpassata non sceglie piu' niente: chi ha cambiato argomento e poi ha scritto per caso
+quelle parole non sta rispondendo a nulla.
+
+**La guardia sul doppio invio si e' spostata.** Stava nella casella di scrittura; ora
+sta nel punto di partenza unico. E' la stessa regola applicata a se stessa: una guardia
+che protegge una sola delle due strade protegge quella che nessuno usa per sbaglio, e un
+doppio clic su una lettura manderebbe due turni identici.
+
+**Cosa e' stato estratto, e perche' e' la parte rischiosa.** La coda di `pipeline.run` —
+applicatore, livelli 3-5, risolutore, esecutore, presentatore — e' ora la funzione
+`_apply_and_present`. Ci passano tutti e due i modi di produrre operazioni. E' un
+percorso critico e coperto: il motivo per cui e' una funzione sola e' lo stesso della
+seconda parte della decisione, cioe' che due copie andrebbero d'accordo il giorno in cui
+sono scritte e non il giorno dopo.
+
+**Verificato.** Sei prove Odoo sulla catena vera: la risposta con l'etichetta esegue e
+**il modello non viene chiamato affatto** (l'adattatore registra zero richieste),
+l'opzione che toglie il filtro non lascia condizioni, maiuscole e spazi non vanno
+riprodotti, una frase che non e' un'opzione torna al modello **con** il contesto di
+D120, e l'etichetta di un turno sorpassato non sceglie. Quattordici prove pure su
+riconoscimento e fondazione. Il turno di chiarimento viene eseguito e **scritto** come
+lo scrive il lavoratore, perche' e' nella persistenza che questa strada si sarebbe rotta
+in silenzio.
+
+**Quali chiarimenti copre davvero, e quali no.** Le letture di **D106** sono richieste
+intere, perche' sono costruite da una: ognuna porta il proprio `set_target`. Ma non
+tutti i chiarimenti nascono cosi' — quello che chiede *«per "quest'anno" quale periodo
+intendi?»* lo scrive **il modello**, e le sue opzioni sono complete quanto il modello le
+ha fatte. Un'opzione che porta la sola operazione che disambigua, senza entita', non si
+applica a niente. Quando la conversazione non ha gia' un bersaglio, un'opzione cosi'
+**non viene presa**: la frase torna alla strada ordinaria, che puo' ancora risponderle.
+Applicarla e fallire trasformerebbe la risposta parziale del modello in un *«non ho
+capito»* con il nostro nome sopra.
+
+Conseguenza da dichiarare: **per i chiarimenti scritti dal modello, D121 aiuta solo
+quando le opzioni sono complete.** Chiudere anche quel caso vuol dire costruire il
+chiarimento temporale come si costruisce quello di D106 — da noi, dal catalogo, con le
+operazioni intere — invece di chiederlo al modello. Non e' fatto ed e' fra gli aperti.
+
+**Cosa non e' misurato.** L'effetto sull'accuratezza: questa strada non cambia cosa il
+modello capisce, cambia cosa costa correggerlo. E l'interfaccia non ha prove
+automatiche — il progetto non ne ha per il lato client — quindi il clic e' verificato
+per costruzione (scrive nella casella e chiama la stessa funzione dell'invio) e non da
+un test.
+
+### 30.1 Cosa e' emerso mettendolo in servizio
+
+Messo in servizio, D121 non funzionava. Non per un difetto suo: per tre difetti che
+c'erano gia' e che nessuno poteva vedere finche' non c'era qualcosa che dipendesse dal
+turno precedente. Vale la pena elencarli perche' hanno tutti la stessa forma — **un
+fallimento che non si dichiara**.
+
+**Uno: una riga di coda che finiva senza esecuzione non chiudeva il turno.** Scadenza
+(L4), sostituzione, fallimento registrato dal cron: tutte passavano da `_finish`, che
+scriveva sulla riga e non sul turno. Il turno restava senza esito, cioe' *in corso per
+sempre*. E' esattamente il difetto che `worker._fail` era stato scritto per chiudere —
+chiuso pero' per il solo percorso del lavoratore. Ora lo chiude `_finish`, e solo se il
+turno e' ancora vuoto: un turno completato porta gia' la risposta del pipeline, e
+sovrascriverla col nome dello stato della coda cancellerebbe la risposta.
+
+**Due: un turno scartato copriva la domanda in sospeso.** D120 e D121 guardano il turno
+immediatamente precedente. Quella regola serve a riconoscere che l'utente **ha cambiato
+argomento** — ma un turno scaduto in coda non dice niente sull'utente, dice che la sua
+frase e' andata persa da noi. Contarlo faceva sparire la domanda: la risposta a un
+chiarimento tornava dal modello anche quando l'etichetta corrispondeva parola per
+parola. Ora i turni che il sistema ha buttato via (`expired`, `superseded`, `failed`)
+non contano come turni.
+
+**Tre: l'interfaccia diceva «non ho capito» a un turno che nessuno aveva letto.** Il
+ramo finale del filo dei messaggi raccoglieva ogni esito non previsto, e quindi anche
+l'assenza di esito. E' la stessa bugia che §11 di `04` aveva gia' rifiutato per il
+fornitore irraggiungibile: *«non ho capito»* invita a riformulare, e riformulare non
+serve a niente quando la frase era giusta e non e' mai arrivata a nessuno. Ora scaduto,
+sostituito e senza-esito hanno ciascuno la propria frase.
+
+**E un quarto, che non c'entra con la coda.** Il primo turno che **riusciva** di ogni
+conversazione moriva scrivendo lo stato: `dsl_version` e' obbligatoria nello schema
+dello stato, una conversazione nuova parte da `{}`, e nessuno la metteva. Le altre tre
+chiavi obbligatorie le riempiono l'applicatore e la normalizzazione; la versione no,
+perche' non si deduce dalle operazioni — la dichiara l'interrogazione, ed e' un suo
+campo. Non lo vedeva nessun test **perche' nessuna prova persisteva uno stato
+eseguito**: si fermavano tutte all'esito. Il buco di copertura era piu' interessante del
+difetto, ed e' ora coperto.
+
+**Misurato sul database vero, con il modello vero.** *«mostrami i lead di quest'anno»* →
+chiarimento in **96,0 s**. Risposta con l'etichetta della prima opzione → **operations
+in 0,08 s, zero richieste al modello, 39 record**. E' la misura che dice cosa fa D121:
+non cambia cosa il modello capisce, cambia cosa costa correggerlo.
+
+**Un difetto trovato per strada, non risolto qui.** L'impronta che fa da chiave alla
+cache della semantica (**D39**) guarda gruppi, societa', lingua e stato d'accesso dei
+modelli, **non le voci approvate del dizionario**. Approvare una condizione nominata
+(D108) non invalida la cache: la voce nuova non si vede finche' la cache non decade da
+sola. Nelle prove si aggira svuotandola a mano. E' un aperto vero e sta nell'elenco.
+
+---
+
+## 31. D122 — Il tempo concesso al modello lo dichiara il profilo
+
+**Da dove viene.** Dall'analisi del flusso chiesta dall'Architect il 2 agosto 2026,
+dopo che ogni domanda dell'interfaccia rispondeva *«non ho capito la domanda, puoi
+riformularla?»*.
+
+**Il difetto, misurato.** Il modello in servizio — `qwen3.5:9b` su ollama, sul
+processore della macchina che ospita Odoo — impiegava **60,1 secondi** per una singola
+chiamata. L'adattatore ne concedeva **60, scritti in una costante**. Tre turni di fila
+nella coda vera, ognuno finito dopo esattamente 61 secondi con
+`failure_reason = provider_unavailable`. Non era una domanda difficile: nessuna domanda
+poteva riuscire.
+
+**La decisione.** Il tempo concesso per una risposta e' un **campo del profilo**, come
+la finestra di contesto (D78), con un `CHECK` che ne rifiuta lo zero e un valore
+predefinito di 180 secondi. Si modifica dal pannello dei modelli insieme agli altri.
+
+**Perche' non una costante piu' grande.** Perche' non esiste il numero giusto. Un
+modello da nove miliardi di parametri sul processore di un portatile impiega minuti; lo
+stesso modello ospitato altrove impiega secondi. Una costante che va bene a uno
+trasforma ogni turno dell'altro in un guasto — ed e' la stessa forma di D78, dove la
+finestra e' dichiarata e non indovinata. Il valore predefinito e' generoso di proposito:
+quello che ci si prende senza scegliere non dev'essere quello che rompe il caso su cui
+si sviluppa.
+
+### 31.1 La bugia che lo copriva
+
+Il difetto sarebbe stato ovvio dal primo turno se l'interfaccia avesse detto cosa
+succedeva. Diceva *«non ho capito la domanda»*.
+
+`04` §11 stabilisce che il fornitore irraggiungibile e' un modo di fallire
+**dichiarato**, e che deve arrivare all'utente come tale — «non ho capito» invita a
+riformulare, e riformulare non serve a niente se la frase era giusta e non l'ha letta
+nessuno. `worker.execute` lo rispettava: quando a mancare era **il profilo**, l'esito
+era `unavailable`. Il pipeline no: quando a mancare era **la risposta**, teneva l'esito
+`not_understood` che l'interprete gli restituiva — e quello e' il percorso che si
+percorre sempre.
+
+Due posti, la stessa condizione, due nomi, e quello sbagliato sul percorso normale. E'
+la stessa forma di divergenza che **D121** ha chiuso per il clic e lo scritto, e la
+correzione e' la stessa: un punto solo — `_provider_failure` — da cui passano tutti e
+due i rami del pipeline.
+
+L'interprete continua a restituire una busta `not_understood`, perche' e' l'unica che il
+contratto gli permette di costruire senza modello. Il vocabolario dell'**esito del
+turno** e' nostro, non del DSL: puo' dire cio' che serve all'interfaccia senza allargare
+quello della busta.
+
+**Verificato.** Tre prove Odoo: un fornitore muto produce `unavailable` e non
+`not_understood`, raggiunge comunque il circuito, e la riga di coda lo registra come
+guasto del fornitore con il turno che lo dice. Tre prove sul profilo: l'adattatore nasce
+con il tempo dichiarato, il valore predefinito regge un modello locale, lo zero e'
+rifiutato per nome del vincolo.
+
+**Misurato dopo, sul database vero.** *«mostrami i lead creati quest'anno»* →
+**operations in 103,1 secondi, 39 record**. E' il turno che con il limite di 60 moriva.
+
+**Cosa resta da guardare, e non e' una decisione.** Il profilo in servizio dichiara una
+finestra di contesto di **4096 gettoni**. D79 ne ricava il budget del catalogo, quindi
+un valore basso non e' innocuo: taglia il catalogo che il modello vede. `qwen3.5:9b` ne
+regge molti di piu'. Va guardato prima della prossima misura di accuratezza, perche'
+misurare con un catalogo tagliato misura il taglio.
+
+---
+
+## 32. D123 — La modalità diagnostica viaggia con il turno
+
+**Da dove viene.** Richiesta dall'Architect il 2 agosto 2026: *«ho bisogno di una
+modalita' debug dove ad ogni prompt ottengo anche il DSL e la query che formula»*.
+
+**Il problema, detto per bene.** Quando un turno va storto c'e' una sola domanda che
+conta: **e' andato storto nel modello o dopo?** Fino a ieri non c'era modo di
+rispondere senza aprire una shell. Le due giornate appena passate lo mostrano: il
+chiarimento temporale sembrava un difetto di D121 ed era una riga di coda scaduta; il
+«non ho capito» sembrava il modello che non capiva ed era un tempo scaduto. In tutti e
+due i casi la risposta stava in dati che il sistema aveva e buttava via.
+
+**La decisione.** Con la modalita' accesa, ogni turno conserva **come e' stato
+costruito** e lo mostra sotto la risposta: la busta DSL uscita dal modello, lo stato che
+ne e' derivato, **la query** con cui Odoo e' stato interrogato, e il tempo di ogni fase.
+
+**Dove sta, e perche' non nei log.** Sul turno, in `debug_json`. **D60** vieta frasi
+dell'utente e cataloghi nei registri diagnostici, e la busta contiene le une e l'altro:
+un file di log e' esattamente il posto in cui non puo' andare. Sul turno invece e'
+protetta dalle stesse cose che proteggono la frase — la regola di record di `nli.turn` e
+la cancellazione a cascata con la conversazione — che e' la protezione che **D115** ha
+gia' scelto per `utterance`. Non e' un archivio nuovo da gestire per dieci anni: e' un
+campo in piu' sul record che c'era gia'.
+
+**Due condizioni per vederla, non una.** Che la traccia *esista* dipende
+dall'interruttore quando il turno e' corso; che si *veda* e' un'altra domanda, e la
+risposta e' *solo un amministratore*. Se bastasse l'interruttore, spegnerlo non
+nasconderebbe niente di cio' che era gia' stato raccolto — e un utente ordinario
+davanti al dominio Odoo non ci ricava nulla, se non l'impressione che il prodotto gli
+stia parlando addosso.
+
+**L'interruttore e' un parametro di sistema, non un campo del profilo.** Non e' una
+proprieta' del modello: e' una scelta di chi sta guardando. Spento di default, e da
+spento **non si costruisce niente e non si conserva niente** — che e' precisamente cio'
+che gli permette di portare la busta per intero quando e' acceso.
+
+**Come e' agganciata al pipeline.** `run` e' diventata un guscio sottile attorno a
+`_run`, e la traccia si attacca **li'**. Il corpo ha una decina di punti d'uscita:
+attaccarla a ognuno avrebbe voluto dire che il primo dimenticato e' un esito che non si
+sa spiegare, cioe' esattamente quello che si sta guardando quando la modalita' serve.
+Dentro, una sola funzione `trace(collector, ...)` che non fa nulla quando il raccoglitore
+e' `None` — una funzione muta e' piu' difficile da sbagliare di dieci `if debug` che
+devono ricordarsi di essere tutti uguali.
+
+**Nessun `sudo`.** Il primo tentativo leggeva il parametro con `sudo()` e il controllo
+dei confini (**V2**, nessuna elevazione di privilegi sul percorso di interrogazione) lo
+ha rifiutato. Aveva ragione e non serviva: i due soli chiamanti hanno gia' i diritti —
+il ciclo del dispatcher, che gira nell'ambiente del cron, e il pannello, che apre solo
+un amministratore.
+
+**Verificato.** Sei prove Odoo sul pipeline (spenta non raccoglie niente; la traccia
+porta la busta del modello; porta la query e non una sua descrizione; porta le fasi con
+il loro costo; si scrive sul turno solo quando e' stata raccolta) e quattro
+sull'esposizione (un utente ordinario non la riceve, un amministratore si', un turno
+senza traccia non porta la chiave, una traccia illeggibile non porta giu' la
+conversazione).
+
+### 32.1 Cosa ha detto al primo giro
+
+Acceso sul database vero, il primo turno ha risposto a una domanda aperta da giorni.
+*«mostrami i lead creati quest'anno»*, 147,6 secondi in tutto:
+
+    fase A — dizionario                     0,054 s
+    fase B — modello: quale entita'       113,439 s
+    fase C — catalogo                       0,249 s
+    modello: la busta                      33,576 s
+    esecuzione su Odoo                      0,031 s
+
+**La fase B costa piu' del triplo dell'interpretazione vera.** E la fase B risponde a
+una domanda sola — *di quale entita' si parla* — che e' il compito piu' piccolo dei due.
+L'esecuzione su Odoo, cioe' la parte che tutti immaginano lenta, e' tre centesimi di
+secondo.
+
+Questo cambia l'aperto sulla latenza: non e' *«il modello e' lento»*, e' **«la fase B e'
+la parte cara e chiede la cosa piu' facile»**. Le strade da pesare diventano concrete —
+allargare la fase A perche' la fase B serva piu' di rado, oppure un modello piccolo per
+la sola fase B. Il numero che sceglie fra le due adesso c'e', e prima non c'era.
+
+---
+
+## 33. D124 — Una strada sola verso lo schermo, e le regole che nessuno chiamava
+
+**Da dove viene.** Dall'analisi di un'interazione, il 2 agosto 2026: *«mostrami i lead
+creati da 6 mesi ad oggi»* rispondeva *«questa domanda non e' arrivata a una risposta»*.
+Il turno era **riuscito**: `operations`, 39 record, query eseguita in 0,031 s.
+
+### 33.1 Nessuna risposta riuscita e' mai stata disegnata
+
+Il Presentatore produce una **struttura** — bersaglio, condizioni, periodi risolti.
+Trasformarla in frasi e' `09` §3, e lo fa `nli.interpretation.in_words`: esiste,
+e' documentato, ha quattordici prove verdi. **Non lo chiamava nessuno.** Il turno
+memorizzava la struttura, il template cercava `parts`, e ogni `operations` finiva nel
+ramo di scarto.
+
+Due strade portavano al medesimo schermo: l'avviso sul bus, costruito in
+`nli_dispatch`, e `_aida_payload`, costruito in `nli_web`. Nessuna delle due chiamava
+la conversione. **Decisione: l'avviso dice solo che il turno e' finito**; cio' che si
+disegna lo costruisce `_aida_payload`, e una volta sola. E' l'argomento di **D121**
+applicato al percorso opposto — dal server allo schermo invece che dallo schermo al
+server — e qui le due strade non rischiavano di divergere: erano gia' divergute.
+
+Le parole si costruiscono **alla lettura**, perche' i termini vengono dal catalogo di
+chi legge: due persone con permessi diversi vedono lo stesso turno con vocabolari
+diversi, per la stessa ragione per cui il catalogo non si condivide fra utenti (D39).
+
+### 33.2 Due periodi sullo stesso attributo si intersecano
+
+Lo stato del turno portava `create_date within current_year` (dal turno prima) **e**
+`create_date within last_n_months(6)`, in AND. L'utente aveva chiesto un periodo
+nuovo e ha ottenuto l'intersezione.
+
+Il raffinamento additivo di §17.1 e' giusto — e' cio' che fa funzionare *«solo quelli
+attivi»* al secondo turno. Ma una frase che nomina **lo stesso asse** non ne aggiunge
+uno: lo riscrive, e il DSL ha gia' `replace_condition`. Nuova regola di livello 4:
+due predicati di periodo sullo stesso riferimento sono un rifiuto.
+
+**Perche' strutturale e non un'istruzione al prompt.** Perche' il fallimento e'
+**invisibile**: i due turni hanno restituito lo stesso numero di record — 39 e 39 —
+perche' i sei mesi cadevano dentro l'anno. Niente da notare, nemmeno guardando. Forma
+pura del rischio di **D2**.
+
+### 33.3 E il livello 4 girava a meta'
+
+Aggiunta la regola, **non scattava**. `contextual.validate` — la catena che il pipeline
+esegue — chiama livello 3, poi `validate_types`, poi il costo. **Non ha mai chiamato
+`coherence.validate_coherence`.** Profondita' del filtro, numero di raggruppamenti,
+misure contro vista, coerenza fra predicato e valore: regole scritte, provate in zona
+pura, e mai eseguite sul prodotto.
+
+E' il terzo caso in due giorni della stessa forma — `in_words`, `coherence`, e prima
+`_finish` che non chiudeva il turno: **codice corretto, provato, e non collegato**. La
+prova verde stava sempre un passo prima del punto in cui la cosa serviva. Ora la catena
+esegue tutte e due le meta' del livello 4.
+
+### 33.4 Le viste di risposta
+
+`15` chiede, per le tabelle: ricerca, ordinamento, filtri, selezione multipla, gestione
+e ridimensionamento colonne, preferenze salvate, paginazione con totali. E' l'elenco di
+cio' che la **vista lista di Odoo fa gia'**, con i diritti e le preferenze di chi
+guarda. `00` §23 aveva deciso di incorporarla; ora e' fatto: il turno conserva il piano
+risolto (`plan_json`), il payload ne espone il dominio, e un componente monta la vista
+nativa dentro la risposta.
+
+**Esce il dominio, non i record.** La vista li rilegge da sola: un dominio che tornasse
+indietro da un utente a cui e' stato tolto un permesso non gli mostrerebbe niente di
+piu' di quanto vedrebbe aprendo il menu — stessa regola di record, stessa vista.
+
+**Cosa resta scoperto, dichiarato invece che aggirato.** La paginazione di Odoo si
+governa scrivendo l'intervallo, non da una tendina 10/25/50/100. Una barra nostra
+riporterebbe dentro la duplicazione appena evitata.
+
+**Verificato sul database vero.** *«mostrami i lead creati quest'anno»* → `operations`
+in 112 s, **39 record, 4 parti disegnabili**, dominio
+`[("create_date",">=","2026-01-01"),("create_date","<","2027-01-01")]`.
+
+**Un difetto minore, visto e non risolto.** Il Presentatore associa i periodi risolti
+alle condizioni **per riferimento**: con due condizioni sullo stesso attributo mostrava
+due righe identiche. Con §33.2 quello stato non arriva piu' all'esecuzione, ma
+l'accoppiamento resta fragile e va guardato quando si toccheranno i periodi.
+
+### 33.5 Il difetto che ha rotto la chat, e il quinto controllo
+
+Distribuito D124, **le opzioni di disambiguazione sono sparite**. Non erano sparite le
+opzioni: era sparito il filo dei messaggi. Una riga aggiunta a colpi di sostituzione
+aveva messo `AidaRecords` fra i `static components` di `AidaThread` **senza importarlo**.
+Il modulo fallisce quando viene valutato, il componente non si registra, e tutto cio'
+che il suo template disegna scompare — **senza un solo errore lato server**.
+
+I 147 test Odoo erano verdi mentre la chat non si apriva. Non e' una prova che mancava:
+**non esiste nessuna prova del lato client in questo progetto**, ed e' il rischio piu'
+grande che resta aperto ora che l'interfaccia e' la parte che si tocca di piu'.
+
+Nell'attesa, un controllo statico: **il quinto dei confini di D24** verifica che ogni
+nome dentro `static components` sia importato o definito nello stesso file. Non e' un
+analizzatore JavaScript e non finge di esserlo — prende il caso in cui il nome non c'e'
+proprio, che e' quello capitato. Verificato togliendo di nuovo l'import: il controllo
+fallisce e nomina file, riga e componente.
+
+Il numero dei controlli e' asserito nelle prove, perche' un controllo che sparisce
+dall'elenco non fallisce: smette di guardare, e l'elenco resta verde.
+
+### 33.6 La tabella e' una tabella, non un secondo modo di chiedere
+
+Deciso dall'Architect subito dopo: la vista incorporata **non porta la barra sopra** —
+niente pulsante *Nuovo*, niente barra di ricerca, niente titolo.
+
+*Nuovo* aprirebbe un modulo di creazione dentro la risposta a una domanda, e **D2**
+(finche' la Fase 2 non e' misurata e superata non si scrive sui dati) dice che da qui
+non si scrive: un pulsante che non deve essere premuto e' peggio di un pulsante assente.
+La barra di ricerca sarebbe una **seconda strada per dire cosa si vuole**, accanto alla
+domanda in italiano che e' il prodotto — e una che non passa dall'interpretazione,
+quindi non comparirebbe in cio' che AIDA dichiara di aver capito. Il numero mostrato
+smetterebbe di corrispondere alla spiegazione sopra di esso. E' l'argomento di D121 su un
+altro pezzo.
+
+Restano ordinamento per colonna e ridimensionamento: sono lettura, non riformulazione
+della domanda.
+
+**Il prezzo, dichiarato.** Spegnere il pannello di controllo porta via anche la
+**paginazione**, che `15` chiede. Oggi si vedono i record fino al limite deciso
+dall'interpretazione e non oltre. Rimetterla vuol dire riaccendere il pannello tenendo
+spente le sue parti di sinistra e di destra, che e' una riga sola ma dipende da nomi
+interni di Odoo che cambiano fra versioni. Sta fra gli aperti.
+
+---
+
+## 34. D125 — Un periodo nuovo prende il posto del precedente
+
+**Da dove viene.** Da un caso portato dall'Architect il 2 agosto 2026, con la modalita'
+diagnostica accesa: *«la prima richiesta e' andata a buon fine, la stessa richiesta poi
+non la comprende»*.
+
+**Cosa succedeva.** Tre turni sulla stessa data:
+
+    «i lead creati quest'anno»        -> operations, stato: 1 periodo
+    «creati da 6 mesi ad oggi»        -> operations, stato: 2 periodi in AND
+    «i lead creati quest'anno»        -> 3 periodi -> livello 4 rifiuta
+    «i lead creati quest'anno»        -> 3 periodi -> rifiuta ancora
+
+**La conversazione era bloccata, e senza via d'uscita.** Ogni tentativo di rimediare
+aggiungeva un periodo in piu' e falliva allo stesso modo. Non c'era modo di uscirne
+parlando, che e' l'unico modo che l'utente ha.
+
+**Cosa avevo sbagliato in §33.2.** La regola di livello 4 riconosceva la cosa giusta e
+faceva la cosa sbagliata: **rifiutava invece di riparare**. Un rifiuto e' l'esito giusto
+quando l'utente puo' agire; qui non poteva. E il difetto era peggiore di quello che la
+regola sostituiva — prima si otteneva una risposta silenziosamente stretta, dopo non si
+otteneva piu' niente e per sempre.
+
+**La decisione.** Nell'Applicatore: un `add_condition` con un predicato di periodo, sotto
+`all`, **toglie i periodi che c'erano su quell'attributo** e mette il proprio.
+
+**Perche' sostituire e non chiedere.** §17.1 e' giusto per un asse nuovo — *«solo quelli
+confermati»* si somma — ma una frase che nomina di nuovo lo stesso asse non ne aggiunge
+uno: lo riscrive. Nessuno chiede l'intersezione fra due periodi dicendo due periodi; se
+la volesse la direbbe come un periodo solo. E' la forma di **D89** e **D99**: quando la
+forma dello stato impone cio' che l'utente intendeva, si deriva invece di domandare
+(C2/P4).
+
+**Perche' toglie tutti i periodi e non il primo.** Cosi' uno stato gia' rovinato **si
+ripara da solo** al primo turno che nomina di nuovo quell'asse. Le conversazioni guaste
+da prima di questa regola guariscono parlando, che e' l'unico rimedio che si puo'
+chiedere a un utente.
+
+**Solo sotto `all`.** Sotto `any` due periodi sono un'unione, e *«di marzo o di
+settembre»* e' una cosa che si puo' voler dire davvero.
+
+**La regola di livello 4 resta**, e cambia mestiere: da rimedio a **rete di sicurezza**.
+Dopo la sostituzione due periodi sullo stesso attributo non possono piu' nascere per la
+strada normale; se ne compaiono, e' un difetto nostro e va detto, non subito.
+
+**Verificato.** Cinque prove pure: il secondo periodo sostituisce il primo; uno stato
+gia' rovinato si ripara; un periodo su un altro attributo si somma ancora (§17.1 regge);
+una condizione che non e' un periodo si somma; sotto `any` i due periodi sopravvivono.
+
+**Cosa insegna, oltre al caso.** Una regola che rifiuta va sempre guardata due volte:
+**il rifiuto e' giusto solo se chi lo riceve ha una mossa**. Qui non l'aveva, e una
+protezione senza uscita e' un guasto con una spiegazione migliore.
+
+---
+
+## 35. D126 — Un'entità si chiama come la chiama la gente
+
+**Da dove viene.** Dal problema portato dall'Architect il 2 agosto 2026: lo stato di una
+conversazione si accumulava e non c'era modo di distinguere una domanda nuova da un
+raffinamento. Il segnale naturale — *la frase nomina la propria entità?* — non era
+misurabile, perché **la fase A non riconosceva nessuna entità**.
+
+**La causa, misurata.** Ogni entità aveva **un termine solo: l'etichetta Odoo grezza**.
+`crm.lead` si chiamava `Lead/Opportunità`. Il normalizzatore la riduce ai gettoni `lead
+opportunita`, e come termine unico pretende di trovarli tutti e due di fila: nessuna
+frase italiana lo fa. Su otto frasi di prova, **zero risolte** — nemmeno
+*«opportunità»*, che è metà del nome del modello.
+
+Non era un difetto del metodo: il corpus misura la fase A all'**86,2% con zero
+determinazioni sbagliate**. Era vocabolario che non esisteva.
+
+**La decisione: raccogliere, non generare.** Le parole che l'utente usa sono già scritte
+nell'installazione, in tre posti, e sono tutte vere:
+
+* l'etichetta **e i suoi pezzi** — `Lead/Opportunità` sono due nomi, non uno;
+* i nomi delle **azioni** che aprono quel modello **da un menu**;
+* i nomi delle **voci di menu** che ci portano.
+
+**Il plurale si legge, non si costruisce.** Il modello si chiama *Contatto*, il menu
+*Contatti*, e la gente dice il secondo. Leggerlo evita di scrivere regole di morfologia
+italiana che sbaglierebbero su *«Registrazioni contabili»* e sulle parole straniere, si
+traduce da solo, e segue il cliente che rinomina un menu.
+
+**Perché non chiedere i sinonimi al modello.** P4. Un nome di entità inventato è
+esattamente il fallimento che D14 e D105 esistono per impedire, sarebbe da rifare a ogni
+installazione, e non ci sarebbe modo di verificarlo. Il modello non decide cosa esiste.
+
+**Perché non un file di sinonimi come fondamento.** Non scala a 741 voci, invecchia al
+primo aggiornamento di Odoo, ed è per cliente. Il registro delle voci approvate (D108,
+livello L2) resta la strada per il **gergo** — *«pratiche»*, *«trattative»* — e il
+vocabolario si somma fra i livelli, come `06` §2.2 aveva già stabilito: un sinonimo
+aggiunto non cancella quelli di base.
+
+### 35.1 Il guardiano che buttava via le prove esatte
+
+Arricchiti i nomi, due frasi su otto continuavano a non risolvere — e non per ambiguità:
+i candidati erano **zero** anche se il termine c'era.
+
+    === le fatture non pagate
+       ENTITA' span=(1,1) score=1.00 account_move
+       campo   span=(1,1) score=1.00 res_partner.invoice_ids
+       campo   span=(1,1) score=1.00 sale_order.invoice_ids
+
+**V-D93-1** dice che un pezzo di frase è prova di un'entità solo se nessun termine che
+entità non è lo copre altrettanto bene. Il campo *Fatture* su un partner si chiama come
+l'entità *Fatture*: tre prove esatte identiche, e il guardiano le buttava tutte.
+
+Il caso per cui il guardiano è stato scritto è **diverso**, e il codice lo raccontava
+già: *«fatt. cliente … raggruppati per cliente»* risolveva a `clienti` perché
+l'attributo *cliente* e l'entità *clienti* hanno la stessa **forma base**. Lì l'entità
+arrivava dal livello morfologico — un'evidenza *più debole* di quella che le si
+opponeva — e scartarla era giusto.
+
+**La decisione: il guardiano vale contro le prove morfologiche, non contro quelle
+esatte.** Se l'utente ha detto *«fatture»* e le fatture sono un'entità, le fatture sono
+un candidato; se ce ne sono due, decide il margine, che è lì apposta (D33).
+
+### 35.2 Il registro dichiarava T1 approvabile e non ne accettava nessuno
+
+Scrivendo le prove ho provato a dare a un'entità un nome con una voce approvata — la
+strada che D108 offre. **Rifiutata.** `nli.dictionary.entry` elenca T1 fra i tipi
+approvabili, ha `entity_ref` obbligatorio, e `to_entry` lo metteva sempre nella voce; ma
+per un T1 `entity` non è una chiave ammessa, e il validatore la rifiutava. Il registro
+prometteva una porta che non si apriva.
+
+Un T1 non ha bisogno di dichiarare l'entità: ce l'ha nel proprio riferimento —
+`res_partner` la nomina, `res_partner.city` la contiene.
+
+**Verificato.** Undici prove Odoo sul meccanismo — non sui dati dell'installazione, che
+cambiano con i moduli e con la lingua: l'etichetta composta diventa più nomi, l'intera
+resta, il nome del menu diventa un termine, un'azione che nessun menu raggiunge no, un
+nome troppo corto no, e i campi tengono la loro etichetta sola. Tre prove pure sul
+confine del guardiano, fra cui quella che **protegge il caso per cui esiste**: un'entità
+che arriva dalla forma base viene ancora scartata.
+
+**Misurato sul database vero, da 0/8 a 6/8.** I due che restano non risolti sono quelli
+che devono restare — *«quelli che hanno per mail…»*, *«solo quelli confermati»* — perché
+non nominano un'entità: è esattamente il segnale che serviva a D127.
+
+**Cosa non è misurato.** Il corpus gira su un pacchetto di dizionario scritto a mano,
+non sull'introspezione L0: i suoi «0 determinazioni sbagliate» restano veri e **non
+coprono** questo cambiamento. Il rischio che un nome di menu tiri a sé una frase che non
+gli appartiene — *«Flusso»* verso i lead — lo sorveglia solo il margine della fase A, e
+va misurato su un'installazione vera.
+
+---
+
+## 36. D127 — Chi nomina la propria entità fa una domanda nuova
+
+**Da dove viene.** *«mostrami quelli che hanno per mail md@…»*, poi *«MOSTRAMI DI NUOVO
+I LEAD DI quest anno»*: la seconda frase non c'entrava niente con la mail e rispondeva
+sul residuo della prima. Lo stato si accumulava e **non c'era modo di ricominciare
+parlando**.
+
+**La decisione.** Una frase che nomina la propria entità è una domanda nuova e lo stato
+riparte da lì; una che non la nomina è un raffinamento e continua.
+
+Riparte **da vuoto**, non da «vuoto tranne il bersaglio»: le operazioni del turno
+ricostruiscono tutto, perché il modello emette sempre `set_target` per primo. E al
+modello si passa `state=None`, che gli toglie di dosso un contesto che non c'entra più.
+
+**La fase A gira sempre**, anche con un bersaglio nello stato. Prima si fermava lì, e
+con lei spariva il solo segnale che distingue i due casi. Costa cinque centesimi di
+secondo ed è il dizionario, non il modello: nessuna decisione probabilistica dove la
+forma della frase decide già (C2/P4).
+
+**Chiude un secondo difetto che nessuno aveva ancora incontrato.** Con un bersaglio nello
+stato, **cambiare entità era impossibile**: *«adesso mostrami le fatture»* saltava la
+fase A, il modello riceveva lo stato dei lead e ci restava. La stessa regola lo risolve
+senza aggiungere niente.
+
+**Nell'incertezza si continua, non si riparte.** I due errori non sono uguali: la fase A
+che non riconosce tratta una domanda nuova come raffinamento — silenzioso e cumulativo;
+la fase A che riconosce a sproposito tratta un raffinamento come domanda nuova — la
+risposta resta **corretta per quello che è stato detto**, il conteggio che cambia lo
+rende visibile, e si rimedia ripetendo la frase. Ma §17.1 — *«solo quelli confermati»* al
+secondo turno — è ciò che regge la conversazione, e romperlo per prudenza sarebbe uno
+scambio pessimo.
+
+**La precisione della regola è la precisione della fase A**, ed è per questo che D126
+viene prima: con la fase A che non riconosce niente, questa regola sarebbe un `if` che
+non scatta mai.
+
+**Un secondo segnale, no.** I marcatori del discorso — *«quelli»*, *«solo»* contro *«di
+nuovo»*, *«adesso invece»* — non sarebbero estranei all'architettura (`scope_lexicon` è
+già questo genere di cosa). Ma due segnali insieme vogliono dire non sapere quale ha
+lavorato. Uno, misurato, e poi si vede.
+
+**Come se ne accorge l'utente.** Da **quanto ha trovato**, che è il numero che gli
+interessa. Non da un'etichetta *«nuova domanda»*, che in una schermata che vogliamo
+pulita sarebbe rumore. E se qualcosa non torna, *«Come ho letto la domanda»* porta i
+criteri per intero: è il motivo per cui quel riepilogo è ripiegato e non tolto, e senza
+di esso questa regola sarebbe più rischiosa di quanto valga.
+
+**Verificato.** Sei prove: riparte, non chiede al modello quale entità, non gli passa lo
+stato vecchio, il raffinamento continua **e** riceve lo stato, e la traccia dice quando
+ha ripartito.
+
+---
+
+## 37. D128 — Una domanda che facciamo deve avere risposte che funzionano
+
+**Da dove viene.** Dal campo, il 3 agosto 2026, con la modalità diagnostica accesa. AIDA
+ha chiesto per quale data filtrare e ha offerto quattro opzioni. Dietro *«Filtra per Data
+creazione»*:
+
+    {"op": "add_condition", "condition": {"ref": "crm_lead.create_date",
+                                          "predicate": "within"}}
+    {"op": "add_condition", "condition": {"ref": "crm_lead.date_closed",
+                                          "predicate": "within"}}
+
+Un `within` **senza periodo**, e una condizione sulla data di chiusura dentro l'opzione
+della data di creazione. L'utente ha cliccato, D121 ha riconosciuto l'etichetta e ha
+applicato fedelmente qualcosa che non era applicabile: *«non ho capito»*, dopo un clic e
+due minuti.
+
+**Dove stava il buco.** D121 poggia su *«le operazioni di ogni opzione sono già nella
+busta»*. È vero per le letture di **D106**, che costruiamo noi dal catalogo e sono valide
+per costruzione. Non è vero per un chiarimento che scrive **il modello**: veniva
+memorizzato com'era, e le operazioni dentro le opzioni non passavano da nessuna
+validazione. Restavano lì, invalide, finché qualcuno non cliccava — e allora il difetto
+usciva dalla parte sbagliata della conversazione, come un fallimento dell'utente invece
+che del modello. Fin lì avevamo controllato **quante** opzioni c'erano e mai **se
+funzionavano**.
+
+**La decisione.** Ogni opzione si valida con la catena strutturale e con la coerenza —
+la stessa che valida una risposta — **nel momento in cui la domanda si memorizza**.
+Quelle che non passano non si mostrano. Se non ne restano almeno due non è un
+chiarimento (`01` §11.2: una sola opzione è una conferma travestita) e il turno diventa
+un onesto *«non ho capito»* **subito**, mentre l'utente sta ancora leggendo la propria
+frase.
+
+Servono tutti e due i controlli: lo strutturale prende la busta malformata, la coerenza
+prende il caso vero — un `within` senza periodo è strutturalmente una condizione a
+posto, ed è il livello 4 a sapere che quel predicato un valore lo vuole. È lo stesso
+`coherence` che fino al giorno prima non era nemmeno sul percorso (§33.3).
+
+**E le due strade, di nuovo.** Messa la validazione, le prove hanno continuato a
+fallire: un chiarimento può nascere in **fase B** — *«di quale entità parli?»* — oppure
+in **fase C**, e le due impacchettavano l'esito terminale ognuna per conto suo. Ne avevo
+protetta una. Ora c'è `_terminal_outcome`, e ci passano entrambe.
+
+**Verificato.** Cinque prove: l'opzione inapplicabile non si offre, una domanda senza
+risposte utilizzabili non è una domanda, un solo superstite è una conferma travestita, un
+chiarimento sano passa intatto, e la traccia dice **quale** opzione è stata rifiutata e
+perché.
+
+**Cosa non risolve, e va detto.** La guardia impedisce di offrire opzioni rotte; non fa
+funzionare la domanda. Su `crm.lead`, che espone quattro date, ogni frase che nomina un
+periodo senza dire quale data finisce in un rifiuto onesto invece che in una risposta.
+La strada è **costruire il chiarimento temporale come quello di D106** — le opzioni le
+facciamo noi dall'ancora del tempo, complete — e richiede che il modello ci dica il
+periodo invece di provare a scrivere le opzioni: è una delibera di contratto, ed è il
+primo degli aperti.
+
+---
+
+## 38. Il difetto che si ripete: dichiarato, provato, non collegato
+
+Non è una decisione. È un'osservazione che questa sessione ha guadagnato il diritto di
+fare, e che vale più di ognuna delle correzioni che l'hanno prodotta.
+
+**Sette volte in tre giorni**, sempre la stessa forma:
+
+| dove | cosa era vero | cosa non era vero |
+|---|---|---|
+| `_finish` | chiudeva la riga di coda | non chiudeva il turno (§33.5 lo mostra a valle) |
+| `in_words` | esisteva, documentato, quattordici prove verdi | **non lo chiamava nessuno** (§33.1) |
+| `coherence.validate_coherence` | scritto, provato in zona pura | **non era sul percorso** del pipeline (§33.3) |
+| T1 nel registro | dichiarato approvabile | **rifiutato a ogni scrittura** (§35.2) |
+| il fallimento del fornitore | dichiarato `unavailable` in `worker` | detto `not_understood` nel pipeline (§31.1) |
+| i due rami terminali | validati in fase C | non validati in fase B (§37) |
+| la fase A | misurata all'86,2% | **non girava** con un bersaglio nello stato (§36) |
+
+In tutti e sette i casi il codice era corretto e le prove erano verdi. Erano verdi **un
+passo prima** del punto in cui la cosa serviva: si asseriva l'esito e non ciò che
+l'utente vedeva, il componente e non il suo collegamento, la regola e non la catena che
+la esegue.
+
+**Cosa cambia da adesso.** Una funzione nuova non è finita quando è provata: è finita
+quando esiste una prova che **fallisce se qualcuno la scollega**. Le prove aggiunte in
+questi giorni sono scritte così di proposito — un turno riuscito deve produrre qualcosa
+che la chat sappia disegnare, una riga di coda che finisce deve chiudere il turno, il
+numero dei controlli dei confini è asserito perché un controllo che sparisce dall'elenco
+non fallisce, smette di guardare.
+
+Il quinto controllo di D24 nasce da qui: dopo che un componente OWL dichiarato e non
+importato ha fatto sparire l'intera chat con 147 prove verdi, un controllo statico non
+sostituisce le prove che mancano, ma prende senza far girare niente la classe di errore
+che nessuno stava guardando.
+
+**Il rischio più grande che resta aperto** è quello che ha prodotto due dei sette: **non
+esiste nessuna prova del lato client**, e l'interfaccia è ormai la parte che si tocca di
+più.
+
+### §38.1 — Il controllo di architettura del 3 agosto: non erano sette
+
+L'audit completo chiesto da `ai/16-controllo-architettura.md` è in
+`ai/17-esito-controllo-architettura.md`. Ha trovato **altre undici occorrenze della
+stessa forma**, tutte precedenti alla regola di §38, e sei reperti gravi.
+
+Tre tolgono al prodotto capacità che `16` elenca come obiettivo: **le aggregazioni non
+vengono mai calcolate** (`executor.aggregate` non ha chiamanti — `SUM`, `AVG`, `MIN`,
+`MAX` non arrivano da nessuna parte), **i join non esistono** (nessun riferimento
+attraversa mai una relazione, e il `Binding` documenta un percorso puntato che nessuno
+emette), **l'ordinamento e le colonne non arrivano alla tabella** che l'utente guarda
+(`AidaRecords.viewProps` ignora `order` e `fields`, quindi *«i 10 lead con fatturato
+più alto»* mostra dieci righe ordinate come Odoo ordina di suo).
+
+Tre sono comportamento sbagliato che nessuno vede: **nessun tetto ai record** sul
+percorso vivo — `coherence.validate_cost`, dove sta il massimo di 500 di **D13**, non è
+chiamata da nessuno, e la riga si può chiedere in italiano; il **fuso orario** manca su
+ogni condizione temporale che tocca un `datetime`, cioè su `create_date`, che **D117**
+ha appena rimesso nel catalogo; e il **catalogo è tagliato a 17 attributi** con la
+finestra di 4096 del profilo in servizio, il che rende falsa oggi la proprietà con cui
+**D32** chiude **RC3** (*«in fase C non c'è selezione»*).
+
+**La lezione che l'audit aggiunge a §38.** Sette degli undici casi sono lo stesso pezzo
+di catena — fra il piano risolto e lo schermo — e tutti sono provati **a monte** del
+punto in cui servivano. La causa comune è che **non esiste una sola prova che parta da
+una frase e arrivi a un numero**: le 1 549 prove verdi guardano l'esito e il conteggio,
+mai l'ordinamento, le colonne o le misure. La regola di §38 è necessaria e non
+sufficiente; quello che manca è il banco punta-a-punta descritto in `17` §5.
+
+---
+
+## §39 — Le sei delibere del controllo di architettura (D129–D134)
+
+Deliberate su delega dell'Architect il 3 agosto 2026, tutte nate dai reperti di `17`.
+Sei correzioni, e nessuna aggiunge una capacità: rimettono in servizio cose che il
+progetto credeva di avere.
+
+### §39.1 — D129: il livello 5 girava a metà, come il livello 4 prima di §33.3
+
+`00` §33.3 ha scoperto che `coherence.validate_coherence` non era sul percorso e l'ha
+collegata. **Ha lasciato indietro la sua vicina di modulo.** `coherence.validate_cost`
+— che porta il massimo assoluto di 500 record di **D13** (la decisione che fissa il
+limite predefinito a 80 e il massimo a 500) e il limite di due salti di relazione di
+**D12** (i limiti strutturali che rendono il costo calcolabile a priori) — non era
+chiamata da nessuno.
+
+`contextual.validate` chiamava la **propria** `validate_cost`, che è un'altra funzione
+e guarda solo il costo delle categorie. E anche quella girava a vuoto: il pipeline non
+passava `category_costs`, che valeva `{}`.
+
+**Provato, eseguendo la zona pura**: `set_limit` a un milione passava la validazione
+strutturale, passava lo stato, passava i livelli 3-5 senza un rifiuto e arrivava
+all'Esecutore, che chiedeva un milione di record a Odoo su un processo cron condiviso.
+Nessun privilegio da scalare: bastava scriverlo in italiano. È l'unico reperto
+dell'audit con una faccia di sicurezza, ed è di disponibilità — non di chi chiede, ma
+di tutti gli altri.
+
+**Le due metà si sommano invece di fermarsi alla prima**, perché sono lo stesso
+livello: un'interrogazione può essere insostenibile per due ragioni insieme, e dirne
+una sola costringerebbe l'utente a due giri per scoprire la seconda.
+
+Il costo delle categorie lo costruisce ora `nli_semantics`, e **anche per le condizioni
+che non si legano**: un aggregato è esattamente il caso che resta senza binding, ed è
+l'unico che il livello 5 deve poter contare. Leggerlo solo dalle condizioni legate
+avrebbe costruito una tabella dei costi con dentro tutto tranne ciò che costa.
+
+### §39.2 — D130: le aggregazioni esistevano e nessuno le calcolava
+
+`executor.py` aveva due funzioni: `execute`, che fa il conteggio e la ricerca, e
+`aggregate`, che fa `_read_group` — l'aggregazione vera dell'ORM. **`aggregate` non
+aveva chiamanti**, in nessun punto del repository, e nessun test la esercitava.
+
+Quindi lo stato poteva portare `avg` su un importo, il piano la portava avanti
+fedelmente, il Presentatore la elencava nell'interpretazione mostrata sopra la
+risposta — e il numero non lo calcolava nessuno:
+
+* *«qual è il fatturato medio dei lead»* → l'elenco dei lead. Nessun numero, sotto la
+  scritta «media di fatturato»;
+* *«il fatturato medio per stato»* → un grafico di **quantità**, perché la vista di
+  Odoo senza misure dichiarate ricade sul conteggio.
+
+`COUNT` e `GROUP BY` sopravvivevano per caso: il primo da `search_count`, che c'è per
+**D68** (il conteggio prima del recupero, per poter dire *«i primi 80 di 1 243»*); il
+secondo perché il raggruppamento arrivava alla vista lista di Odoo, che sa raggruppare
+da sola.
+
+**Una porta sola.** Due funzioni pubbliche erano la scelta che il chiamante sbagliava:
+ora `executor.run` guarda il piano e decide il ramo, ed è lo stesso rimedio di
+`_apply_and_present` (**D121**, l'unica strada per il clic e per lo scritto) applicato
+un gradino più in basso.
+
+**Le righe si leggono sempre**, anche quando ci sono misure, perché **D89** (la
+delibera che risolve la contraddizione fra §5.6 e §6.7: una misura senza raggruppamento
+resta una lista) dice che quella è una lista, e una lista senza righe non è niente.
+
+### §39.3 — D131: due ore che nessuno vedeva
+
+Odoo conserva i `datetime` in **UTC**. Il calendario ragiona nei **giorni dell'utente**,
+perché *«questo mese»* deve voler dire il suo mese (§9.2). I due non si incontravano:
+gli estremi di un periodo uscivano come date nude — `('create_date', '>=',
+'2026-08-03')` — e finivano confrontati con una colonna in un'altra unità di misura.
+
+Su un'installazione italiana d'estate lo scarto è di due ore: *«i lead creati oggi»*
+**escludeva** quelli inseriti fra mezzanotte e le due e **includeva** quelli di ieri
+sera dopo le 22. Un numero plausibile, vicino a quello giusto, e sbagliato. Su
+*«quest'anno»* due ore su 365 giorni non si vedono; su *«oggi»* sono l'8% delle righe.
+
+Il campo colpito è `create_date`, cioè proprio quello che **D117** (la decisione che lo
+toglie dai campi tecnici, perché *«quando è stato creato»* è la prima cosa che si
+intende con «i lead di quest'anno») ha appena rimesso nel catalogo.
+
+**Il fuso viaggia come nome, non come scostamento.** Un numero di ore sarebbe sbagliato
+metà anno: l'ora legale lo cambia, quindi *«il mese scorso»* chiesto a novembre e
+chiesto a giugno non si convertono allo stesso modo. Il nome porta con sé la regola.
+
+**Su un campo `date` non si converte niente**, e serve dirlo quanto l'altra metà:
+convertire anche le date pure sposterebbe *«scaduto oggi»* di due ore su un campo che
+di ore non ne ha, che è lo stesso difetto col segno invertito.
+
+**Un fuso sconosciuto non fa fallire un'interrogazione**: si torna a UTC, cioè al
+comportamento di prima. Una risposta col fuso sbagliato è un difetto; una conversazione
+che si rifiuta di rispondere perché un `tz` è scritto male è un difetto peggiore.
+
+### §39.4 — D132: la tabella non era il risultato del piano
+
+`00` §33.4 ha deciso di incorporare la vista lista di Odoo invece di riscrivere
+ricerca, colonne e paginazione. La decisione è giusta. Quello che non è stato fatto è
+**passarle il resto del piano**: sono arrivate le due chiavi che facevano comparire la
+tabella, e le altre no.
+
+`_aida_query` calcolava e mandava al client sette chiavi. Il componente `AidaRecords`
+ne usava quattro. **`order` e `fields` erano ignorati**, e le misure non partivano
+affatto.
+
+Quindi la tabella non era il risultato dell'interrogazione: era una rilettura del solo
+dominio, ordinata come Odoo ordina quel modello per conto suo. *«I 10 lead con il
+fatturato più alto»* mostrava dieci righe plausibili, con il limite giusto e
+l'ordinamento sbagliato, sotto un'interpretazione che dichiarava l'ordinamento giusto.
+Nessun errore da nessuna parte — la forma di **D2** (la decisione che fa della Fase 2
+un cancello obbligatorio prima di qualunque scrittura) applicata alla tabella.
+
+Ora l'ordinamento e i raggruppamenti passano come **proprietà** della vista, non come
+contesto, e le misure entrano nel contesto che pivot e grafico leggono.
+
+**Resta aperto `fields`**, e va deciso e non aggirato: per rispettare le colonne che
+l'utente ha chiesto bisogna generare noi la struttura della tabella, e nel farlo si
+perdono le sue preferenze di colonna — che erano il motivo per cui §33.4 ha scelto la
+vista nativa. Non si possono avere tutt'e due.
+
+### §39.5 — D133: la finestra dichiarata non è quella servita
+
+**Misurato il 3 agosto 2026 su `ollama` nativo.** Un prompt da circa dodicimila gettoni
+è tornato con `prompt_eval_count` a **2050**, e il modello non sapeva più cosa ci fosse
+scritto all'inizio. Nessun errore: HTTP 200, una risposta plausibile costruita su ciò
+che era rimasto. Il modello regge 262 144 gettoni; il **server** ne serve 4096, e oltre
+quella soglia taglia.
+
+**L'adattatore non manda la finestra al fornitore**, e non per distrazione: il
+protocollo OpenAI non ha un campo per dirla. Quindi `context_window` è ciò che il
+profilo *dichiara*, e con cui **D79** (il budget del catalogo derivato dalla finestra)
+dimensiona il catalogo, mentre ciò che il server serve è un'altra cosa che nessuno
+guarda. Due numeri che possono divergere in silenzio.
+
+**E il contatore c'era già.** `refused_for_budget` conta gli attributi che il budget
+butta via, e non lo leggeva nessuno. Con la finestra di 4096:
+
+    disponibili = 4096 × 0,25 − 600 = 424 gettoni
+    budget      = 424 ÷ 24 = 17 attributi per entità
+
+Diciassette, contro il tetto di 60 di **D31**. Questo toglie a **D32** (la strategia a
+tre fasi) la proprietà con cui chiude **RC3**, e il registro la riporta testualmente:
+*«in Fase C non c'è selezione: la copertura sugli attributi è esatta per costruzione»*.
+Con un budget di 17 la selezione c'è, ed è grossa.
+
+**La delibera è che i due numeri stiano vicini.** La traccia diagnostica di **D123**
+porta ora, sullo stesso turno, quanto il budget ha buttato e quanto il server dice di
+aver letto contro quanto il profilo dichiara. Non risolve la configurazione — alzare
+`OLLAMA_CONTEXT_LENGTH` è dell'ambiente, e costa memoria e latenza — ma toglie la
+condizione che rendeva il guasto invisibile, che è esattamente ciò per cui D79 esiste.
+
+**Nota d'ordine.** Alzare la finestra dichiarata dal profilo **senza** alzare quella del
+server sarebbe peggio di lasciarla com'è: D79 consegnerebbe un catalogo più grande e il
+server lo taglierebbe. Le due metà si muovono insieme o non si muovono.
+
+### §39.6 — D134: una prova che va da uno stato a un numero
+
+La regola di §38 — *«una funzione è finita quando esiste una prova che fallisce se
+qualcuno la scollega»* — è giusta e non basta. **Sette degli undici scollegamenti
+trovati dall'audit sono lo stesso tratto di catena**: fra il piano risolto e lo schermo.
+Tutti provati un passo a monte del punto in cui servivano.
+
+La ragione è che nessuna prova guardava il **contenuto** di una risposta. Le prove del
+contratto guardano la forma della busta, le pure guardano una funzione alla volta,
+quelle Odoo guardano l'esito — `operations`, e quanti record. Nessuna guardava *quali*
+record, in *quale* ordine, con *quale* media.
+
+Il banco delle risposte (`nli_core/tests/test_answers.py`) parte da uno stato, percorre
+risolutore, esecutore e presentatore veri, e confronta la risposta per intero su dati
+che il caso stesso crea. Rimesse a mano le regressioni di D130 e D131, diventa rosso su
+quattro casi che oggi nessun'altra prova prendeva.
+
+**Non presume un database vuoto**: ogni caso lavora dietro una condizione su una città
+che nessun popolatore produce, come `ai/restart.md` richiede.
+
+**Verifiche dopo §39**: 468 test in zona pura (erano 464), **180 test Odoo** (erano
+167), cinque controlli dei confini puliti. Il controllo sintattico di **D24** ha preso
+al primo giro un accesso diretto a PostgreSQL che avevo scritto nel banco, ed è la
+prova che quel controllo lavora.
+
+### §39.7 — Il difetto che ho introdotto io, e perché la mia prova non l'ha visto
+
+**Messo in servizio, D133 ha rotto ogni turno.** *«Mostrami i lead creati negli ultimi
+3 mesi»* rispondeva *«qualcosa non ha funzionato»* in un decimo di secondo, prima ancora
+di arrivare al modello.
+
+La causa: `Catalogue.refused_for_budget` **è già un numero**, e io ci avevo messo un
+`len()` intorno. Un `TypeError` alla costruzione della traccia.
+
+**E la traccia si costruiva anche a diagnostica spenta.** `trace()` esce subito quando
+il raccoglitore è `None`, ma il dizionario che gli si passa è un *argomento*, e Python
+valuta gli argomenti prima della chiamata. L'interruttore di D123 non protegge da un
+errore nel valore che gli viene passato — solo dal costo di conservarlo.
+
+**Perché la prova non l'ha preso, che è la parte che conta.** Il test girava con la
+finestra larga degli altri, dove il budget non scarta niente: `refused_for_budget`
+valeva **zero**, e zero è l'unico valore su cui il difetto non scatta — `0 or ()`
+diventa una tupla vuota, mentre `49 or ()` resta `49`. La prova asseriva che la chiave
+ci fosse, la chiave c'era, e ogni turno vero moriva.
+
+È §38 un giro più stretto. Non codice scollegato: una **prova che esercita il caso in
+cui il difetto non si vede**. La regola si allarga di conseguenza — *un contatore si
+prova dove conta qualcosa, non dove vale zero* — e il test ora gira con la finestra
+stretta di 4096. Rimesso il `len()`, diventa rosso.
+
+**Cosa ha rallentato la diagnosi, e cosa è cambiato.** Il log diceva `AIDA turn 80
+failed: TypeError` e nient'altro. `worker._fail` dichiarava che il dettaglio *«resta
+nell'eccezione, che la piattaforma registra con la traccia»*: **falso**, perché
+l'eccezione la catturiamo noi e non la rilanciamo. Ora si scrive la pila delle chiamate
+con `format_tb` — i soli fotogrammi, file e riga — e **mai il messaggio**, che è il
+pezzo che potrebbe citare una frase dell'utente. È la distinzione che rende la cosa
+compatibile con **D60** (il divieto di frasi e cataloghi nei registri diagnostici).
+
+### §39.8 — I numeri veri, misurati sul database vero dopo la correzione
+
+*«Mostrami i lead creati negli ultimi 3 mesi»*, modello vero, `db`:
+
+    esito        operations        record   39        tempo   101,0 s
+    dominio      ['&', ['create_date', '>=', '2026-05-02 22:00:00'],
+                       ['create_date', '<',  '2026-08-03 22:00:00']]
+    fase C       17 attributi tenuti, **49 rifiutati per budget**
+    prompt       3 655 gettoni letti / 4 096 dichiarati
+
+Tre cose che prima non si potevano dire.
+
+**D131 si vede nel dominio.** `2026-05-02 22:00:00` è la mezzanotte di Roma scritta in
+UTC. Prima c'era `2026-05-03` e mancavano due ore in testa e in coda.
+
+**Il catalogo perde il 74% di sé.** Diciassette attributi tenuti, quarantanove
+scartati. Non è una stima: è il contatore di D79, letto per la prima volta. La
+proprietà con cui **D32** chiude **RC3** — *«in fase C non c'è selezione»* — oggi è
+falsa di tre quarti.
+
+**E il margine non c'è.** Il prompt occupa 3 655 gettoni degli 4 096 che il server
+serve: l'89%. Aggiungere attributi senza alzare la finestra del **server** manderebbe
+il prompt oltre la soglia, e lì `ollama` taglia in silenzio — misurato, dodicimila
+gettoni mandati e 2 050 letti. Conferma con i numeri la nota d'ordine di §39.5: le due
+metà si muovono insieme o non si muovono.
+
+---
+
+## §40 — D135: la domanda su quale data la facciamo noi
+
+Deliberata su delega dell'Architect il 3 agosto 2026. Nasce dal punto 1 degli aperti di
+`ai/restart.md`, che era il primo per quanto sblocca.
+
+### §40.1 — Il fallimento, con i numeri
+
+Batteria sul campo del 3 agosto 2026, modello vero e banca dati vera:
+
+    mostrami i lead creati quest'anno              not_understood   145 s
+    mostrami gli ordini di vendita di questo mese  not_understood   119 s
+
+Sono le due entità che espongono **più di una data**, cioè le prime due domande che
+chiunque farebbe. E *«creati quest'anno»* aveva dato 39 record la mattina dello stesso
+giorno: **il modello non è deterministico su questo**, quindi non era una frase da
+sistemare, era una strada da togliergli.
+
+La latenza è tutta lì. Senza espressione di tempo: 15-40 s. Con: 84-145 s. Lo stesso
+pezzo, non due problemi.
+
+### §40.2 — La causa non era il modello, era il compito
+
+**D110** (la decisione per cui il catalogo dichiara dove si attacca un periodo: una
+data se ne espone una sola, l'insieme delle scelte se sono due o più, nulla se non ce
+ne sono) mette nel catalogo un campo `time_anchor`. Il prompt lo leggeva così: se
+dichiara `choices`, *«answer with a clarification whose options are those dates»*.
+
+Cioè al modello si chiedeva di scrivere lui una domanda con da due a quattro opzioni,
+ognuna **completa e applicabile**: un `set_target`, la condizione, il periodo dentro.
+È la cosa più difficile di tutto il prompt, ed è la stessa che **D128** (la delibera
+per cui le opzioni di una domanda si validano quando la domanda si memorizza) ha già
+dovuto sorvegliare, perché quelle opzioni arrivavano rotte — un `within` senza periodo
+dietro un'etichetta che diceva *«Filtra per Data creazione»*.
+
+**Il principio era già scritto altrove.** `03` §5.9 dice che chiedere al modello di
+scegliere la vista violerebbe C2/P4, perché è una decisione derivabile dalla forma
+dello stato. Le opzioni di questa domanda sono derivabili allo stesso modo: sono le
+date dell'ancora, una ciascuna, col periodo che il modello ha già collocato bene.
+
+### §40.3 — La regola: è D105 con una data al posto di una categoria
+
+**D105** (la decisione per cui una condizione nominata che il proprio frammento non
+nomina è rifiutata al livello 3) confronta due liste: i termini della condizione e le
+parole del frammento che l'ha prodotta. §10.3 definisce la provenienza come *il
+frammento della frase che ha prodotto questa operazione*, quindi una condizione che il
+proprio frammento non nomina **non è stata chiesta**, per definizione del contratto.
+
+Un periodo non nomina mai il proprio campo — si dice *«ordini del mese scorso»*, non
+*«ordini con data ordine nel mese scorso»*. Quindi:
+
+> Se l'entità espone due o più date (l'ancora dichiara `choices`) e il frammento che ha
+> prodotto la condizione temporale non nomina nessuna di quelle date, **la data l'ha
+> scelta il modello e non l'utente**. Livello 3, codice `unanchored_period`.
+
+**Con una data sola non si chiede niente**, ed è la differenza che fa leggere l'ancora
+invece del tipo: il tipo dice *questa è una data*, l'ancora dice *questo utente aveva
+una scelta*. Sulle entità con una data sola il periodo va lì per costruzione, e una
+domanda con una risposta sola non è una domanda.
+
+**Serve un secondo riconoscitore.** `mentions_of` indicizza solo le condizioni nominate
+(T5) e di un attributo non sa niente: chiedergli se *«con data di creazione»* nomina
+`create_date` avrebbe risposto sempre no, e la regola avrebbe rifiutato **anche** i
+periodi che l'utente aveva ancorato da sé. Quindi `names_of` sui nomi (T1), tenuto
+separato invece di fondere i due indici: un indice solo farebbe passare a ciascuna
+regola i casi dell'altra, che è il guasto di ogni riconoscitore condiviso.
+
+### §40.4 — Il rifiuto propone, e ogni opzione tiene il periodo
+
+`alternatives.for_unanchored` costruisce una lettura per data, sostituendo il `ref`
+della condizione e **lasciando dentro il periodo**. Due differenze da **D106** (la
+decisione per cui il rifiuto propone letture derivate dal catalogo), e tutt'e due hanno
+un motivo:
+
+* **la data che il modello aveva scelto si offre lo stesso.** In D106 la condizione
+  rifiutata era inventata, e riproporla sarebbe stato riproporre uno sbaglio. Qui è una
+  delle date che l'entità espone davvero, e toglierla metterebbe fuori portata la
+  risposta giusta tutte le volte che l'ipotesi era azzeccata;
+* **nessuna lettura toglie il periodo.** In D106 la prima opzione è *«senza quel
+  filtro»*; qui non può esistere, perché **D111** (la decisione per cui un'espressione
+  di tempo non si lascia cadere: se non si colloca, si chiede) lo vieta. La frase il
+  periodo lo dice; quello che non dice è dove va.
+
+L'etichetta di ogni opzione è il termine della data, e sceglierla la fonda: cliccare
+scrive l'etichetta nella casella e la invia (**D121**, l'unica strada per il clic e per
+lo scritto), quindi al secondo giro il frammento è davvero quelle parole e il livello 3
+la trova ancorata. **Esegue senza chiamare il modello**, come già fa per le categorie.
+
+**Il tetto delle quattro opzioni** di §4.4 resta. Un'entità con cinque date esposte ne
+vede offerte quattro, in ordine stabile: chi non trova la propria la può ancora
+nominare scrivendola, e la strada ordinaria risponde.
+
+### §40.5 — Il prezzo, e dove non si paga
+
+L'ancora sta nel catalogo, e il catalogo di un turno che risponde a una domanda non era
+costruito affatto (D121). Adesso serve per validare, ma **solo se il turno porta un
+periodo**: `contextual.carries_period` guarda i predicati dello stato prima che si
+costruisca qualcosa. Un turno senza periodo non paga niente; uno con un periodo paga la
+fase C, misurata a **0,249 s** in `00` §32.1 — niente accanto ai 96 secondi del modello,
+tutto accanto a un turno che risponde senza chiamarlo.
+
+### §40.6 — Il prompt perde la riga difficile
+
+La riga ora dice di mettere la condizione sulla scelta che la frase nomina, sulla prima
+quando non ne nomina nessuna, e **di non scrivere quella domanda**. Un modello lasciato
+libero di scriverla comunque rimetterebbe in circolo le opzioni rotte che D128 ha
+dovuto imparare a rifiutare.
+
+### §40.7 — Le prove, nella forma che §38 chiede
+
+§38 (*«una funzione è finita quando esiste una prova che fallisce se qualcuno la
+scollega»*) qui è verificata, non asserita: staccando `names` e `time_anchor` dalla
+chiamata della conduttura, **tre prove su sei diventano rosse** — provato, non dedotto.
+
+Il banco Odoo gira su `res.users`, e non è un dettaglio: `res.partner` espone **una**
+sola data (`create_date`), quindi non ha nessuna scelta da offrire e una prova scritta
+lì sarebbe passata senza esercitare niente. `res.users` ne espone due — creazione e
+ultimo accesso — ed è installata ovunque, quindi il banco non dipende da un modulo
+applicativo. La prima prova della classe **asserisce che l'ancora dichiari `choices`**,
+perché nessun controllo può passare a vuoto.
+
+E la coppia che la regola richiede c'è: una prova che la mostra **scattare** (il
+periodo che non nomina la data diventa una domanda) e una che la mostra **non
+scattare** (*«con data di creazione di quest'anno»* riceve una risposta, perché la
+scelta l'ha fatta l'utente e richiedergliela sarebbe non averlo ascoltato).
+
+**Verifiche dopo §40**: 487 test in zona pura (erano 468), **186 test Odoo** (erano
+180), cinque controlli dei confini puliti, contratto e corpus 918/918.
+
+### §40.8 — Cosa questa delibera non fa
+
+**Non è stata misurata sul campo.** Il numero che conta — la stessa batteria di frasi
+sulle stesse entità, col modello vero — non c'è ancora, e finché non c'è questa sezione
+descrive un meccanismo, non un miglioramento. L'attesa scritta prima di misurare, così
+che una previsione sbagliata si veda: *«creati quest'anno»* e *«ordini di questo mese»*
+finiscono in una domanda con due-quattro date invece che in `not_understood`, e la
+risposta al clic arriva in un decimo di secondo invece che in due minuti.
+
+**Non tocca il ramo dell'ancora nulla.** Un'entità che non espone nessuna data resta il
+punto 11 degli aperti: il prompt chiede un chiarimento e un chiarimento vuole almeno
+due opzioni con un'operazione ciascuna, che lì non esistono. Serve una delibera a parte.
+
+**E resta dipendente dal dizionario.** La regola misura se il frammento nomina la data
+con i termini che il dizionario ha (T1). Una data i cui termini non contengono la parola
+che l'utente usa davvero — *«creati»* per `create_date` — produrrà una domanda che
+l'utente troverà inutile, perché la data l'aveva già detta. Non è un difetto della
+regola: è **materiale prezioso** nel senso di §12.4, cioè una voce mancante che si
+aggiunge con **D108** (il registro delle voci di dizionario approvate). Da guardare
+alla prossima batteria, perché è l'unico modo in cui questa delibera può peggiorare le
+cose invece di migliorarle.
+
+---
+
+## §41 — Il primo turno vero di D135, e i tre difetti che ha scoperto (D136–D138)
+
+Il 3 agosto 2026, subito dopo §40, l'Architect ha scritto *«mostrami i lead di
+quest'anno»* sull'installazione vera. **La domanda è arrivata**: quattro date —
+creazione, chiusura, conversione, chiusura attesa — costruite dall'ancora, e il clic su
+*«Data creazione»* ha eseguito senza chiamare il modello. D135 fa quello che dice.
+
+**La risposta è stata «nessun record trovato».** Il turno numero 87 sul database `db`,
+letto per intero, dice perché — e sono tre cose diverse, non una.
+
+### §41.1 — Cosa è successo, nell'ordine
+
+Il modello ha tradotto *«di quest'anno»* con **`after`**, non con `within`:
+
+    condizione   crm_lead.create_date  after  current_year
+    dominio      ['create_date', '>=', '2026-12-31 23:00:00']
+    record       0
+
+`after` su un periodo prende **il lato destro** della finestra, cioè *dopo la fine del
+2026*: una data futura, e quindi nessun record. Il risolutore ha fatto la cosa giusta
+con uno stato sbagliato.
+
+D135 ha portato avanti il predicato fedelmente, ed è il comportamento voluto: le opzioni
+spostano **la data**, non toccano il resto della frase. Un'opzione che avesse anche
+corretto il predicato avrebbe corretto il modello di nascosto.
+
+### §41.2 — D136: l'interpretazione mostrava una finestra che nessuno aveva interrogato
+
+Questo è il difetto peggiore dei tre, ed è nostro.
+
+Sopra la risposta, l'interpretazione diceva:
+
+    crm_lead.create_date:  2026-01-01 - 2026-12-31
+
+cioè **l'anno intero**, mentre l'insieme interrogato era *dopo il 31 dicembre*. Il
+motivo: `calendar.describe` riceveva l'espressione e l'istante, e **non il predicato**,
+quindi descriveva la finestra di `current_year` qualunque cosa il dominio ne facesse.
+
+L'utente leggeva l'anno intero e riceveva zero record, senza nessun modo di capire
+perché. **L'interpretazione esiste per rendere una risposta verificabile** (§10): questa
+la rendeva inspiegabile. È la forma di **D2** (il cancello che vieta le scritture finché
+la Fase 2 non è misurata e superata) con un'aggravante — non solo una risposta sbagliata
+con l'aria di essere giusta, ma il pezzo che avrebbe dovuto smascherarla che la copriva.
+
+Ora il predicato entra nella descrizione: `> 2026-12-31` per `after`, `< 2026-01-01` per
+`before`, la finestra per `on` e `within`. La forma resta simbolica e non tradotta,
+perché la zona è pura e non ha lingua — ed era già così.
+
+### §41.3 — D137: chi sceglie un'opzione ripartiva dallo stato che la domanda aveva buttato via
+
+Nello stesso turno, l'ordinamento portava **due** voci: una sulla data, e una su
+`automated_probability` con provenienza vuota. Veniva dal turno 85, *«mostrami i lead
+più promettenti»*, due domande prima.
+
+Il meccanismo: la frase *«mostrami i lead di quest'anno»* nomina il proprio soggetto,
+quindi **D127** (chi nomina la propria entità ricomincia) l'aveva dichiarata domanda
+nuova e aveva buttato via lo stato. Ma quel turno è finito in una domanda, e **un turno
+che chiede non scrive stato** — quindi il vecchio era ancora lì, e le operazioni
+dell'opzione ci sono finite sopra.
+
+Qui è costato un ordinamento di troppo. Il caso che conta è un altro: se il turno di
+prima filtrava per una città, la risposta alla domanda esce **ristretta a quella
+città**, senza che niente lo dica.
+
+**La regola non è nuova, è D127 applicata dove non arrivava.** Un'opzione che si porta
+il proprio `set_target` è una richiesta intera — **D106** le costruisce da una — quindi
+riparte. Una che non ce l'ha è un raffinamento e continua sullo stato che c'è: è la
+stessa distinzione che `alternatives.chosen` fa già, pretendendo che l'entità sia nota
+quando l'opzione non porta un bersaglio.
+
+Non c'è nessun contrasto con **D120** (chi risponde a una domanda non riparte da zero):
+D120 tiene viva la domanda in sospeso, che senza di lei sparirebbe nel punto in cui
+serve di più. Quello che riparte è lo **stato dei dati**, e riparte perché l'opzione lo
+ricostruisce tutto.
+
+### §41.4 — D138: un periodo si prende intero, salvo che la frase dica altro
+
+Il prompt non diceva niente sul predicato di un'espressione di tempo, e `after` costa
+zero da scrivere quanto `within`. Ora lo dice: **il predicato di un periodo è `within`**;
+`before` e `after` si guadagnano con delle parole — *«prima di»*, *«dopo»*, *«entro»* —
+e prendono un lato della finestra, non la finestra.
+
+È la stessa forma di **D118** (il rifiuto si guadagna) e di **D113** (su una data
+l'intervallo si dice `within`, e basta): una via d'uscita che si apriva da sola perché
+nessuna riga la chiudeva.
+
+**Non è una garanzia.** Il prompt è una richiesta, non un vincolo: se il modello scrive
+`after` lo stesso, la catena lo esegue e D136 lo **mostra**. Le due cose lavorano su
+piani diversi, ed è il motivo per cui servono tutte e due.
+
+### §41.5 — Le prove
+
+* D136: due prove pure su `describe`, una per lato, più quella che mostra `on` e
+  `within` invariati.
+* D137: una prova Odoo che fa tre turni — una condizione eseguita, una domanda nuova che
+  finisce in chiarimento, la scelta — e verifica che **la condizione del primo turno non
+  sopravviva**. Diventa rossa se qualcuno rimette lo stato vecchio sotto le operazioni
+  dell'opzione.
+* D138: la riga del prompt è asserita nel test che già sorveglia le istruzioni sul tempo.
+
+**Verifiche dopo §41**: 489 test in zona pura, 187 test Odoo, cinque controlli dei
+confini puliti, contratto e corpus 918/918.
+
+### §41.6 — Quello che questo turno insegna su §40
+
+D135 ha funzionato al primo colpo e **ha reso visibili tre difetti che stavano sotto**.
+Non è un caso: finché la domanda finiva in `not_understood` dopo due minuti, nessuno di
+questi tre poteva nemmeno essere osservato. È l'argomento di §5 dell'audit (`ai/17`) da
+un'altra direzione — non «una prova che va dalla frase al numero», ma **un turno che
+arriva in fondo** — e vale la pena ricordarlo la prossima volta che una correzione
+sembra non aver migliorato niente.
+
+---
+
+## §42 — Il banco delle capacità, e la prova che passava a vuoto
+
+Richiesto dall'Architect il 3 agosto 2026: *«fai un test per tutte le operazioni
+espresse nel controllo-architettura, tranne per le join. Devo poter effettuare
+attraverso i predicati umani, tutte le operazioni»*.
+
+`nli_core/tests/test_capabilities.py`, **60 prove** su quattro classi. `ai/17` §3 aveva
+risposto **a tavolino** quali operazioni di `16` esistono e quali no; questo banco
+risponde **eseguendole**.
+
+### §42.1 — Cosa copre
+
+| classe | prove | cosa |
+|---|---|---|
+| `TestGliIntenti` | 18 | SELECT, colonne, SEARCH, FILTER, COUNT, SUM, AVG, MIN, MAX, DISTINCT, GROUP BY (semplice, multiplo, con misura), ORDER BY (semplice, multiplo), LIMIT, PAGINATION, EXISTS, NOT EXISTS |
+| `TestGliOperatori` | 15 | `=`, `>`, `<`, `>=`, `<=`, BETWEEN, CONTAINS/LIKE, ILIKE, STARTS WITH, IN, NOT IN, IS NULL, IS NOT NULL, vero/falso, i connettivi *e*/*o* |
+| `TestLeDate` | 18 | oggi, ieri, domani, questa settimana, settimana scorsa, questo mese, mese scorso, ultimi 7/30/90 giorni, quest'anno, anno scorso, questo trimestre, trimestre scorso, da inizio anno, una data precisa, un intervallo preciso, `before`/`after` |
+| `TestQuelloCheNonSiPuoDire` | 9 | HAVING, OFFSET, EXPORT, `!=`, ENDS WITH, la negazione, i trimestri e i mesi nominati, le aggregazioni annidate, i join |
+
+**Ogni prova porta nel proprio nome la frase italiana** che rappresenta, perché è quello
+il metro: non *«il contratto ammette `starts_with`»* ma *«i partner che iniziano per
+Del»* restituisce **Delta e nessun altro**.
+
+**L'ultima classe conta quanto le altre.** Un buco che nessuno misura torna a farsi
+credere una svista. La prima volta che qualcuno scriverà `HAVING` in una specifica,
+serve poter dire *«è fuori portata per costruzione, ecco la riga che lo dice»* invece di
+*«mi pare di no»*. Ognuna di quelle nove è provata sul vocabolario, che è l'unico posto
+dove una cosa che **non** esiste si può asserire.
+
+**I join sono fuori per scelta dell'Architect**, e il banco lo dichiara invece di
+tacerlo: nessun riferimento del catalogo attraversa una relazione (reperto R5), la
+relazione si prende solo come un tutto — `is_set`, `is_not_set` — ed è provato.
+
+### §42.2 — Il banco non chiama il modello, e va detto
+
+Parte dallo **stato**, non dalla frase, e percorre risolutore, esecutore e presentatore
+veri. Che il modello traduca *«i primi 10 per fatturato»* in quello stato è un'altra
+domanda e ha un altro strumento: la misura di accuratezza sul corpus. Mescolarle
+renderebbe il banco non deterministico — il modello sbaglia a caso, e una prova che
+sbaglia a caso non è una prova.
+
+Quindi qui si legge: **dato che la frase è stata capita, il prodotto sa rispondere?**
+
+### §42.3 — `create_date` non è scrivibile, e una prova ci era appoggiata sopra
+
+Scrivendo le date del banco è venuto fuori che **Odoo 18 non lascia scrivere
+`create_date`**: né in `create` né in `write`. Provato in una sessione di shell — il
+valore passato viene ignorato e il record prende l'ora corrente. Su `res.partner` non
+c'è nessun altro campo data memorizzato e scrivibile.
+
+**La conseguenza sta in `test_answers.py`.** Il caso del fuso orario (D131) creava un
+partner *«dell'una di notte»* passando `create_date`, e poi verificava di trovarlo con
+*«creati oggi»*. Il partner prendeva invece l'ora in cui la prova girava, cioè *adesso*,
+e *«creati oggi»* lo trovava **sempre**: verde qualunque cosa facesse la conversione. E
+dal giorno dopo sarebbe diventato rosso senza che nulla si rompesse, perché l'istante
+del banco è fisso al 3 agosto e *adesso* non lo è.
+
+Una riga che non distingue niente è peggio di una riga che manca. È **§39.7 un giro più
+stretto** — *un contatore si prova dove conta qualcosa, non dove vale zero* — e la
+stessa regola in versione generale: **una prova si scrive dove il difetto si vede**. Per
+la conversione del fuso quel posto è il **dominio**, e non serve nessun record: ora si
+asserisce che gli estremi siano `2026-08-02 22:00:00` e `2026-08-03 22:00:00`, cioè la
+mezzanotte di Roma scritta in UTC da tutt'e due i lati. Se le due ore mancano, cade.
+
+L'altra metà — le date su righe vere — sta nel banco nuovo, su un'entità che una data
+scrivibile ce l'ha: i **cambi di valuta**, dove il giorno è un campo proprio
+(`res.currency.rate.name`), su una valuta inventata dal banco che non dà fastidio a
+nessuno. È un `date` puro, senza ore: il fuso vive su un `datetime` e resta dove è
+provato.
+
+**Verifiche dopo §42**: 489 test in zona pura, **247 test Odoo** (erano 187), cinque
+controlli dei confini puliti, contratto e corpus 918/918.
+
+### §42.4 — Cosa il banco dice del prodotto
+
+Tutto quello che `16` chiede **e che esiste, esiste davvero**: 51 prove verdi che
+eseguono, non che ispezionano. Le nove che restano dichiarano i buchi con precisione, e
+sono la stessa lista di `ai/17` §3 — con la differenza che adesso è verificata a ogni
+giro invece che scritta una volta.
+
+---
+
+## §43 — La batteria sul campo: le stesse operazioni, dette da una persona
+
+Richiesta dall'Architect il 3 agosto 2026, subito dopo §42: *«ovviamente Intenti,
+Operatori tutto mappato in richieste prompt da chat»*.
+
+`tools/campo/frasi.py` porta **54 frasi** italiane — le stesse operazioni di `ai/16` del
+banco delle capacità, dette come le direbbe qualcuno in chat — e `tools/campo/batteria.py`
+le esegue attraverso il prodotto vero. Si lancia con `./manage.sh campo <db> [famiglia]`.
+
+### §43.1 — Perché è uno strumento e non una prova
+
+Il banco di §42 è deterministico: parte da uno stato, gira in un secondo, sta nella
+suite. Questa batteria parte da una **frase** e passa dal modello, che non è
+deterministico — la stessa frase, il 3 agosto, ha dato 39 record la mattina e
+`not_understood` il pomeriggio.
+
+Quindi è fuori da `check` e da `test`, di proposito: una suite che dipendesse dal modello
+direbbe cose diverse a ogni giro, e chi la guarda smetterebbe di crederle. È una
+**misura**, e il risultato di un giro è una fotografia da confrontare con altri giri.
+
+Le due cose insieme rispondono a due domande diverse, ed è per questo che sono due:
+
+* il banco — *il prodotto **sa fare** questa operazione?*
+* la batteria — *una persona riesce a **chiederla**?*
+
+### §43.2 — Le attese non nominano i riferimenti
+
+Un'attesa dice *«deve uscirne una misura di conteggio e un raggruppamento»*, mai
+*«`crm_lead.stage_id`»*. I riferimenti dipendono dall'installazione, e una batteria che
+li fissasse misurerebbe questa banca dati invece del prodotto.
+
+### §43.3 — I saltati, che sono la parte che insegna di più
+
+Ogni frase dichiara le parole che il catalogo deve contenere perché sia rispondibile. Se
+mancano, il caso è **saltato** invece che contato come sbagliato. Addossare al modello un
+attributo che nessuno gli ha mostrato falserebbe la misura nella direzione peggiore:
+quella che fa lavorare sul pezzo giusto per il motivo sbagliato.
+
+**E al primo giro ha parlato subito.** Con la finestra a 4096, il catalogo di `crm.lead`
+tiene **17 attributi e ne rifiuta 49**, e quelli tenuti sono:
+
+    attivo, azienda, campagna, chiusura attesa, città, data assegnazione,
+    data chiusura, data conversione, data creazione, e-mail, e-mail in cc,
+    giorni da assegnare, giorni per chiudere, nazione, nome contatto,
+    probabilità automatica, qualità e-mail
+
+Non ci sono **lo stato, il ricavo atteso, il commerciale, il telefono**. Cioè: metà delle
+domande che una persona farebbe per prime non è *sbagliata*, è **non rispondibile** — il
+modello non ha mai visto quegli attributi.
+
+Questo conferma con l'elenco alla mano ciò che **D133** (la finestra dichiarata non è
+quella servita) aveva calcolato con l'aritmetica, e chiude il punto: **la batteria intera
+va eseguita dopo aver alzato la finestra**, non prima. Prima misurerebbe il taglio.
+
+### §43.4 — Prova di funzionamento
+
+Tre frasi, per verificare lo strumento e non il prodotto:
+
+    mostrami i lead                          ok       37,7 s   39 record
+    mostrami i lead con nome e telefono      saltato           (telefono non esposto)
+    cerca i lead che hanno milano nel nome   ok       67,0 s    0 record
+
+### §43.5 — Cosa la batteria non tocca
+
+Non scrive niente: la transazione viene annullata al termine, salvo `CAMPO_SCRIVI=1`. Una
+misura non deve lasciare cinquanta turni in una banca dati di lavoro.
+
+E percorre la strada del prodotto senza copiarla: perimetro, finestra e adattatore
+vengono dai metodi del **dispatcher**, gli stessi che il cron chiama; ogni frase entra da
+`accept`, che è l'unica porta d'ingresso. Non passa dal pool di thread — quello è un
+fatto di concorrenza, provato da D27, e qui darebbe solo rumore.
+
+---
+
+## §44 — D139: il limite non arrivava alla tabella, e la chiave non esisteva
+
+Visto sul campo il 3 agosto 2026. *«I primi 5 lead ordinati per data di creazione»*: il
+piano diceva `limit 5`, il server leggeva cinque record — e la tabella ne mostrava
+**trentanove**.
+
+### §44.1 — La causa, in una parola
+
+Il limite viaggiava verso la vista come `list_view_limit` **nel contesto**. Quella chiave
+**non esiste in Odoo 18**: zero occorrenze in tutto `web/static/src`. Nessuno la leggeva,
+e la lista teneva il proprio valore predefinito.
+
+La chiave vera è una **proprietà**, non una voce di contesto:
+
+    list_controller.js:225   limit: this.archInfo.limit || this.props.limit
+
+### §44.2 — È R2 per la seconda volta, nello stesso componente
+
+Il reperto R2 dell'audit diceva: *«`order` e `fields` sono ignorati»*, e **D132** ha
+passato l'ordinamento come proprietà. Il limite è rimasto dov'era, e per la stessa
+ragione per cui c'era finito: **una chiave passata a chi non la legge non fallisce**. Non
+c'è errore, non c'è avviso, non c'è prova rossa. C'è una tabella che mostra il numero
+sbagliato di righe sotto un'interpretazione che dichiara il numero giusto.
+
+E la ragione per cui torna è sempre la stessa, ed è il punto 3 degli aperti: **dal lato
+client non esiste nessuna prova**.
+
+### §44.3 — Il controllo che la prende senza far girare niente
+
+Uno statico non sostituisce le prove che mancano, ma questa classe di guasto è
+verificabile leggendo: *questa parola, Odoo la conosce?*
+
+`tools/arch/check_owl.py` ha ora una seconda regola. Confronta le chiavi che i nostri
+componenti mettono in un `context: { ... }` con tutto il sorgente JavaScript di
+`web/static/src`; una parola che lì non compare mai non la legge nessuno.
+
+**Al primo giro ha trovato altre cinque chiavi morte**, e sono più interessanti del
+limite: `create`, `edit`, `delete`, `duplicate` e `import_enabled`. Erano lì per **D2**
+(nessuna scrittura sui dati finché la Fase 2 non è misurata e superata), con un commento
+che diceva *«la vista lo legge dal contesto, e senza, «Nuovo» ricompare»*. **Falso in
+Odoo 18**, verificato in tre punti: `getActiveActions` legge dagli attributi dell'arch;
+il server li abbassa da sé secondo i diritti (`ir_ui_view._postprocess_access_rights`);
+e nel client non c'è nessuna lettura di `context.create`. `import_enabled` non compare
+nemmeno una volta in tutto il sorgente di Odoo.
+
+Cioè: **cinque parole che sembravano una garanzia e non lo erano**. Toglierle non toglie
+niente, perché non davano niente. Ciò che tiene in piedi D2 è altrove ed è più solido —
+il pannello di controllo spento (i pulsanti non esistono), `editable: false` che è una
+proprietà vera, e soprattutto una catena che non scrive mai, che è architettura e non un
+suggerimento all'interfaccia.
+
+**Un controllo che passa perché non ha guardato è peggio di un controllo che manca**:
+senza il sorgente di Odoo la regola tace invece di dichiararsi verde. E i commenti si
+tolgono prima di cercare le chiavi — al primo giro segnalava una voce chiamata `D2`,
+presa da una nota, e un controllo che segnala le proprie note è un controllo che si
+impara a ignorare.
+
+### §44.4 — Il limite dichiarato di questo controllo
+
+Prende le parole **distintive**: `list_view_limit`, `import_enabled`. Non può prendere
+`create` o `edit`, che nel sorgente di Odoo compaiono ovunque per altre ragioni — quelle
+sono state trovate a mano, seguendo la stessa domanda. E non dice il contrario: una
+chiave che *esiste* può essere passata nel posto sbagliato, e il controllo non se ne
+accorge.
+
+Resta che le due chiavi morte che hanno prodotto un difetto visibile sarebbero state
+prese tutte e due, prima di arrivare sullo schermo.
+
+**Verifiche dopo §44**: 489 test in zona pura, 247 test Odoo, **51 test dei confini**
+(erano 47), cinque controlli puliti, contratto e corpus 918/918.
+
+### §44.5 — D140: la frase di D68 era calcolata e nessuno la mostrava
+
+Stesso turno, riga sopra la tabella: **«39 record trovati»** con cinque righe sotto.
+
+Il numero è giusto — è il totale, e l'Esecutore lo conta prima di recuperare. Ma è
+**metà della frase**, e l'altra metà esiste da sempre: `Result.describe()` produce
+*«i primi 5 di 39»*, il Presentatore la mette in `interpretation.records`, il payload la
+porta al client. **Nessuno la disegna.** La chat scriveva il totale e basta.
+
+Ed è il motivo per cui **D68** esiste, scritto nella delibera: *«ottanta record senza
+contesto si leggono come **tutti quanti**. È un fraintendimento plausibile prodotto
+dall'interfaccia, non dal modello»*. La riga faceva esattamente quello.
+
+**Terza volta in un turno solo**, e sempre la stessa forma: il limite che non arrivava
+alla vista (§44), le cinque chiavi inerti (§44.3), e ora una frase calcolata sul server e
+mai disegnata. Tutte fra il piano e lo schermo, tutte nel pezzo che **non ha prove**.
+
+**La correzione sta dove c'è la lingua.** Il client ha già i due numeri — `record_count`
+è il totale, `query.limit` quante righe si leggono — e se il primo supera il secondo la
+risposta è troncata: lo stesso conto di `Result.truncated`, fatto dove si può scrivere in
+italiano. Sopra la tabella ora c'è *«I primi 5 di 39 record.»*
+
+**Le prove.** Due, sul lato Python, e dichiarano cosa non coprono: che la query porti il
+limite (senza, la tabella non sa quante righe mostrare **e** la frase non si può
+comporre) e che il payload porti totale e limite **insieme** — con uno solo dei due la
+chat può solo dire *«39 record trovati»* sopra cinque righe, che è vero e fuorviante.
+Il banco di componente OWL resta il punto 3 degli aperti.
+
+**Verifiche dopo §44.5**: 489 test in zona pura, **249 test Odoo**, 51 test dei confini,
+cinque controlli puliti.
+
+---
+
+## §45 — La finestra alzata, e cosa rende di nuovo misurabile
+
+4 agosto 2026. Eseguito il punto 1 degli aperti, cioè la nota d'ordine di **D133** (la
+finestra dichiarata non è quella servita): le due metà si muovono insieme o non si
+muovono.
+
+    server   OLLAMA_CONTEXT_LENGTH=8192   (launchctl setenv + riavvio dell'applicazione)
+    profilo  context_window = 8192        (il profilo in servizio, su `db`)
+
+**Verificato su tutti e due i lati**, che è la parte che conta:
+
+* il server legge **4 061 gettoni** di un prompt da 4 077 senza specificare nulla nella
+  richiesta. Prima, con dodicimila gettoni mandati, ne leggeva 2 050 e tagliava in
+  silenzio;
+* il catalogo di `crm.lead` tiene ora **60 attributi su 66** — il tetto di **D31** — con
+  **sei** rifiuti per budget invece di quarantanove.
+
+Il catalogo passa dal 26% al 91% di sé stesso.
+
+### §45.1 — Cosa questo invalida
+
+Tutto ciò che è stato misurato prima di oggi è stato misurato attraverso un catalogo
+tagliato a un quarto, e **va rifatto**: il 70,0% di accuratezza, le frasi saltate della
+batteria sul campo, e il banco dei tre candidati di `ai/19` §2.
+
+Non è una perdita: è la ragione per cui la nota d'ordine di §39.5 diceva di alzare la
+finestra **prima** di qualunque misura. Il costo di averla ignorata sarebbe stato
+scoprire fra un mese che stavamo ottimizzando il pezzo giusto per il motivo sbagliato.
+
+### §45.2 — Il prompt cresce, ed è previsto
+
+Con 60 attributi il prompt di `crm.lead` passa da 11 057 a **14 763 caratteri**, cioè da
+3 655 a **4 077 gettoni**: metà della finestra, con metà di margine. È dentro il conto di
+**D79** (il budget del catalogo derivato dalla finestra) per costruzione — un quarto
+della finestra per il catalogo — e lascia spazio alla risposta.
+
+`ai/19` misura quanto costa in tempo: leggere quei 4 077 gettoni sono 17 secondi sul 9b
+e 3,7 sul 2b, e sono la ragione vera dei tempi di risposta di oggi.
