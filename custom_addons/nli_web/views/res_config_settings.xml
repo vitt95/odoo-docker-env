@@ -25,6 +25,7 @@
                         <setting string="Che cosa il modello sa fare"
                                  help="Sono le capacita' dichiarate del profilo (D78). Dichiararle sbagliate non rende il modello piu' capace: rende sbagliato il budget che se ne ricava.">
                             <field name="aida_context_window"/>
+                            <field name="aida_timeout_seconds"/>
                             <div class="mt-2">
                                 <field name="aida_constrained_generation"/>
                                 <span class="ms-2">Sa rispettare uno schema JSON imposto</span>
@@ -55,6 +56,28 @@
                             </div>
                             <div class="mt-2 text-muted" invisible="aida_profile_id">
                                 Nessun profilo ancora: compila l'indirizzo e il nome del modello e salva.
+                            </div>
+                        </setting>
+
+                    </block>
+
+                    <!--
+                      Blocco suo, e non una riga in fondo a quello del modello: non è una
+                      capacità del modello, è una scelta di chi sta guardando (D123). In
+                      fondo a un altro blocco c'era e non si trovava, che per un
+                      interruttore è lo stesso che non esserci.
+                    -->
+                    <block title="Diagnostica" name="aida_debug_block"
+                           help="Per capire come AIDA ha costruito una risposta, quando qualcosa non torna.">
+
+                        <setting string="Mostra come è stata costruita ogni risposta"
+                                 help="Accesa, sotto ogni risposta compare un blocco richiudibile con la busta DSL uscita dal modello, lo stato che ne è derivato e la query con cui Odoo è stato interrogato, più il tempo di ogni fase. Serve a rispondere alla sola domanda che conta quando un turno va storto: se è andato storto nel modello o dopo.">
+                            <field name="aida_debug"/>
+                            <div class="mt-2 text-muted">
+                                Da tenere spenta quando non serve: accesa, ogni turno conserva
+                                la frase dell'utente dentro la busta. La traccia resta scritta
+                                sui turni già eseguiti anche dopo averla spenta, e in ogni caso
+                                la vede solo un amministratore.
                             </div>
                         </setting>
 

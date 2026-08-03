@@ -30,7 +30,7 @@
                 <div class="o_aida_composer_dock">
                     <AidaComposer store="store" state="state" placeholder="'Chiedi ancora'"/>
                     <p class="o_aida_disclaimer">
-                        AIDA mostra sempre come ha interpretato la domanda: controlla l'interpretazione prima di fidarti dei numeri.
+                        AIDA può sbagliare: sotto ogni risposta trovi come ha letto la domanda.
                     </p>
                 </div>
             </t>
@@ -101,10 +101,15 @@
                     <t t-if="turn.pending">
                         <div class="o_aida_waiting">
                             <span class="o_aida_dot"/><span class="o_aida_dot"/><span class="o_aida_dot"/>
-                            <span class="o_aida_waiting_text" t-if="!turn.slow">Sto interpretando la domanda…</span>
-                            <span class="o_aida_waiting_text" t-else="">
-                                Ci sta mettendo piu' del previsto. Sto ancora aspettando: se la risposta arriva, compare qui.
-                            </span>
+                            <!--
+                              «Sto pensando» e non «sto interpretando la domanda»: il
+                              secondo racconta come e' fatto il prodotto dentro, e chi
+                              aspetta una risposta non ha chiesto quello. L'attesa lunga
+                              lo dice lo stesso, perche' un'attesa muta di due minuti si
+                              legge come un guasto.
+                            -->
+                            <span class="o_aida_waiting_text" t-if="!turn.slow">Sto pensando…</span>
+                            <span class="o_aida_waiting_text" t-else="">Ci sto ancora pensando…</span>
                         </div>
                     </t>
                     <t t-elif="turn.outcome === 'refused'">
@@ -114,45 +119,82 @@
                         </p>
                     </t>
                     <t t-elif="turn.interpretation and turn.interpretation.parts">
-                        <p class="o_aida_lead" t-esc="turn.interpretation.lead"/>
-                        <ul class="o_aida_parts">
-                            <t t-foreach="turn.interpretation.parts" t-as="part" t-key="part_index">
-                                <li t-att-class="partClass(part)">
-                                    <span t-esc="part.text"/>
-                                    <small class="o_aida_rule" t-if="part.rule">
-                                        dedotto: <t t-esc="part.rule"/>
-                                    </small>
-                                </li>
-                            </t>
-                        </ul>
-                        <p class="o_aida_count" t-if="turn.record_count">
-                            <t t-esc="turn.record_count"/> record trovati.
+                        <!--
+                          Il conteggio c'e' **sempre** per un turno eseguito, zero
+                          compreso: «nessun record» e' una risposta, e senza di essa una
+                          tabella vuota si legge come un guasto invece che come un dato.
+                        -->
+                        <p class="o_aida_count" t-if="turn.query">
+                            <t t-esc="recordsLabel(turn)"/>
                         </p>
+                        <!--
+                          `00` §23: la tabella e' la vista lista di Odoo, incorporata.
+                          Ricerca, ordinamento, filtri, colonne e paginazione arrivano
+                          da li' invece di essere riscritte — che e' cio' che `15`
+                          chiede per le tabelle.
+                        -->
+                        <div class="o_aida_records" t-if="turn.query">
+                            <AidaRecords query="turn.query"/>
+                        </div>
+                        <!--
+                          **Come ho letto la domanda**, chiuso di suo.
+                          L'interpretazione in parti (`09` §3) non e' decorazione: e' il
+                          modo in cui una risposta sbagliata si puo' **vedere** sbagliata,
+                          ed e' il pezzo su cui poggia D2 finche' la Fase 2 non e'
+                          misurata. Ma aperta di default riempiva la risposta di
+                          «first 80», «as list», «dedotto: default_list» — che non e'
+                          trasparenza, e' il registro tecnico messo in faccia a chi ha
+                          fatto una domanda.
+                          Ripiegata: chi guarda vede la risposta, chi dubita ha ancora
+                          tutto. Sono due bisogni diversi e adesso non si contendono lo
+                          stesso spazio.
+                        -->
+                        <details class="o_aida_reading">
+                            <summary>Come ho letto la domanda</summary>
+                            <ul class="o_aida_parts">
+                                <t t-foreach="turn.interpretation.parts" t-as="part" t-key="part_index">
+                                    <li t-att-class="partClass(part)">
+                                        <span t-esc="part.text"/>
+                                        <small class="o_aida_rule" t-if="part.rule">
+                                            dedotto: <t t-esc="part.rule"/>
+                                        </small>
+                                    </li>
+                                </t>
+                            </ul>
+                        </details>
                     </t>
                     <t t-elif="turn.outcome === 'clarification'">
                         <!--
                           D106: un rifiuto che propone. Le letture vengono dal catalogo,
                           mai dal modello — un modello che ha appena inventato una
                           condizione e' l'ultimo a cui chiedere le alternative.
-                          Sceglierle con un clic richiede un percorso che applichi le
-                          operazioni della lettura **senza tornare dal modello**: non
-                          c'e' ancora, ed e' fra gli aperti. Finche' non c'e', le
-                          letture si leggono e si riscrivono a mano — meno comodo, ma
-                          non finge.
+                          D121: cliccarne una **scrive la sua etichetta nella casella e
+                          la invia**. Non e' una scorciatoia dell'interfaccia: e' cio'
+                          che rende impossibile al clic e allo scritto di divergere,
+                          perche' il clic non ha una strada propria da tenere allineata.
                         -->
                         <p class="o_aida_lead"
                            t-esc="clarificationOf(turn).question || 'Ho bisogno di una precisazione.'"/>
                         <ul class="o_aida_options">
                             <t t-foreach="clarificationOf(turn).options or []" t-as="opt" t-key="opt_index">
-                                <li class="o_aida_option" t-esc="opt.label"/>
+                                <li>
+                                    <button class="o_aida_option"
+                                            type="button"
+                                            t-if="isAnswerable(turn)"
+                                            t-on-click="() => this.chooseOption(opt)"
+                                            t-esc="opt.label"/>
+                                    <span class="o_aida_option o_aida_option_past"
+                                          t-else=""
+                                          t-esc="opt.label"/>
+                                </li>
                             </t>
                         </ul>
-                        <p class="o_aida_rule">
-                            Riscrivi la domanda scegliendo una di queste letture.
+                        <p class="o_aida_rule" t-if="isAnswerable(turn)">
+                            Scegli una lettura, o riscrivi la domanda.
                         </p>
                     </t>
                     <t t-elif="turn.outcome === 'out_of_scope'">
-                        <p class="o_aida_lead">Questa è una cosa che non so ancora fare.</p>
+                        <p class="o_aida_lead">Questo non lo so ancora fare.</p>
                     </t>
                     <t t-elif="turn.outcome === 'unavailable'">
                         <!--
@@ -161,24 +203,129 @@
                           cosi', perche' «non ho capito» inviterebbe a riformulare e
                           riformulare non serve se il modello non c'e'.
                         -->
+                        <!--
+                          §11 di `04`: il modello non disponibile e' uno stato dichiarato.
+                          All'utente si dice cosa fare, non com'e' fatto il prodotto: il
+                          dettaglio tecnico e' nel pannello, per chi lo amministra.
+                        -->
                         <p class="o_aida_refusal">
-                            AIDA non ha un modello attivo, quindi non puo' interpretare la domanda.
-                            La conversazione resta qui: serve attivare un profilo dal pannello dei modelli.
+                            Non riesco a rispondere in questo momento. Riprova fra poco.
                         </p>
                     </t>
                     <t t-elif="turn.outcome === 'failed'">
                         <!-- §12.7: un guasto e' un difetto nostro, e si dice cosi'. -->
                         <p class="o_aida_refusal">
-                            Qualcosa e' andato storto da parte nostra. La domanda non e' stata persa: riprova.
+                            Qualcosa non ha funzionato. Riprova.
                         </p>
                     </t>
-                    <t t-else="">
-                        <p class="o_aida_lead">Non ho capito la domanda. Puoi riformularla?</p>
+                    <t t-elif="turn.outcome === 'expired'">
+                        <!--
+                          L4: una domanda che ha aspettato troppo viene scartata perche'
+                          la coda possa riprendersi. Dirlo con «non ho capito» sarebbe
+                          una bugia con una conseguenza: invita a riformulare, e
+                          riformulare non serve a niente quando la frase era giusta e
+                          non e' mai stata letta.
+                        -->
+                        <p class="o_aida_refusal">
+                            Non sono riuscito a rispondere in tempo. Riprova.
+                        </p>
                     </t>
+                    <t t-elif="turn.outcome === 'superseded'">
+                        <p class="o_aida_refusal">
+                            Sostituita dalla domanda successiva.
+                        </p>
+                    </t>
+                    <t t-elif="turn.outcome === 'not_understood'">
+                        <p class="o_aida_lead">Non ho capito. Puoi dirlo in un altro modo?</p>
+                    </t>
+                    <t t-else="">
+                        <!--
+                          Nessun esito: il turno non e' arrivato in fondo. Prima questo
+                          ramo diceva «non ho capito», che e' la risposta a una domanda
+                          letta — e questa non lo e' stata.
+                        -->
+                        <p class="o_aida_refusal">
+                            Non sono arrivato a una risposta. Riprova.
+                        </p>
+                    </t>
+
+                    <!--
+                      D123: la modalita' diagnostica. Chiusa di suo, perche' e' uno
+                      strumento e non parte della risposta: chi non l'apre vede la
+                      conversazione di sempre. Il server la manda solo se qualcuno l'ha
+                      accesa e solo a un amministratore, quindi qui non c'e' altro da
+                      proteggere.
+                    -->
+                    <details class="o_aida_debug" t-if="turn.debug">
+                        <summary>Come è stato costruito</summary>
+
+                        <ul class="o_aida_debug_phases">
+                            <t t-foreach="phasesOf(turn)" t-as="fase" t-key="fase.key">
+                                <li>
+                                    <span t-esc="fase.label"/>
+                                    <strong t-if="fase.seconds !== undefined">
+                                        <t t-esc="fase.seconds"/> s
+                                    </strong>
+                                    <em t-if="fase.note" t-esc="fase.note"/>
+                                </li>
+                            </t>
+                        </ul>
+
+                        <t t-if="turn.debug.path === 'chosen_reading'">
+                            <p class="o_aida_rule">
+                                Lettura scelta: applicata senza chiamare il modello (D121).
+                            </p>
+                        </t>
+
+                        <t t-if="envelopeOf(turn)">
+                            <h6>DSL — la busta che il modello ha restituito</h6>
+                            <pre t-esc="envelopeOf(turn)"/>
+                        </t>
+
+                        <t t-if="stateOf(turn)">
+                            <h6>Stato dopo l'applicazione</h6>
+                            <pre t-esc="stateOf(turn)"/>
+                        </t>
+
+                        <t t-if="planOf(turn)">
+                            <h6>Query — come Odoo è stato interrogato</h6>
+                            <p class="o_aida_rule">
+                                Dominio: <code t-esc="domainOf(turn)"/>
+                            </p>
+                            <pre t-esc="planOf(turn)"/>
+                        </t>
+
+                        <t t-if="turn.debug.validation_failures and turn.debug.validation_failures.length">
+                            <h6>Livelli 3-5 — cosa ha rifiutato</h6>
+                            <ul>
+                                <t t-foreach="turn.debug.validation_failures" t-as="f" t-key="f_index">
+                                    <li t-esc="f"/>
+                                </t>
+                            </ul>
+                        </t>
+
+                        <t t-if="turn.debug.failures and turn.debug.failures.length">
+                            <h6>Perché il turno è finito così</h6>
+                            <ul>
+                                <t t-foreach="turn.debug.failures" t-as="f" t-key="f_index">
+                                    <li t-esc="f"/>
+                                </t>
+                            </ul>
+                        </t>
+                    </details>
                 </div>
             </article>
         </t>
     </div>
+</t>
+
+<t t-name="nli_web.AidaRecords">
+    <!--
+      Un'altezza dichiarata e non `auto`: la vista lista di Odoo si aspetta un
+      contenitore che le dica quanto e' alto, altrimenti il caricamento a blocchi non
+      sa quando fermarsi e la paginazione perde il proprio ancoraggio.
+    -->
+    <View t-props="viewProps"/>
 </t>
 
 <t t-name="nli_web.AidaComposer">
@@ -187,7 +334,7 @@
                   t-ref="input"
                   rows="1"
                   t-att-placeholder="props.placeholder or 'Fai una domanda'"
-                  t-att-value="ui.text"
+                  t-att-value="text"
                   t-on-input="onInput"
                   t-on-keydown="onKeydown"
                   aria-label="Scrivi la tua domanda"/>

@@ -34,7 +34,7 @@ from odoo import api, fields, models
 #: I campi che descrivono il modello. Elencati una volta sola: il pannello li legge e
 #: li riscrive tutti insieme, e due elenchi che divergono sono un campo che si perde.
 CAMPI_PROFILO = (
-    "endpoint", "model_name", "context_window",
+    "endpoint", "model_name", "context_window", "timeout_seconds",
     "constrained_generation", "reasoning_effort",
 )
 
@@ -63,6 +63,21 @@ class ResConfigSettings(models.TransientModel):
     aida_context_window = fields.Integer(
         string="Finestra di contesto",         help="Quanti gettoni regge il modello (D78). Da qui si ricava il budget del "
              "catalogo, quindi un valore ottimistico si paga in risposte troncate.")
+    aida_timeout_seconds = fields.Integer(
+        string="Tempo concesso per rispondere (secondi)",
+        help="Quanto si aspetta una risposta del modello (D122). Un modello da nove "
+             "miliardi di parametri sul processore di un portatile impiega minuti; uno "
+             "ospitato altrove impiega secondi. Se questo valore e' piu' corto di "
+             "quanto il modello impiega davvero, **ogni** domanda finisce con «il "
+             "modello non ha risposto».")
+    aida_debug = fields.Boolean(
+        string="Modalità diagnostica",
+        help="Ogni turno conserva e mostra come è stato costruito: la busta DSL che il "
+             "modello ha restituito, lo stato che ne è uscito e **la query** con cui "
+             "Odoo è stato interrogato, con i tempi di ogni fase (D123). Serve a capire "
+             "se un turno è andato storto nel modello o dopo. Da tenere spenta quando "
+             "non serve: accesa, ogni turno conserva la frase dell'utente dentro la "
+             "busta, e la traccia la vede solo un amministratore.")
     aida_constrained_generation = fields.Boolean(
         string="Generazione vincolata",         help="Il modello sa rispettare uno schema JSON imposto. Senza, l'interprete "
              "riceve testo libero e la maggior parte dei turni fallisce.")
@@ -94,6 +109,7 @@ class ResConfigSettings(models.TransientModel):
         valori["aida_profile_state"] = profilo.state if profilo else False
         for campo in CAMPI_PROFILO:
             valori[f"aida_{campo}"] = profilo[campo] if profilo else False
+        valori["aida_debug"] = self.env["nli.dispatcher"]._debug_enabled()
         return valori
 
     # --- scrittura ---------------------------------------------------------
@@ -107,6 +123,12 @@ class ResConfigSettings(models.TransientModel):
         """
         super().set_values()
         for impostazioni in self:
+            # D123: parametro di sistema e non campo del profilo — non e' una proprieta'
+            # del modello, e' una scelta di chi sta guardando.
+            # Senza `sudo` (V2): il pannello delle impostazioni lo apre solo un
+            # amministratore, che il parametro puo' gia' scriverlo.
+            self.env["ir.config_parameter"].set_param(
+                "aida.debug", "True" if impostazioni.aida_debug else "False")
             valori = {campo: impostazioni[f"aida_{campo}"] for campo in CAMPI_PROFILO}
             profilo = impostazioni._profilo()
             if profilo:

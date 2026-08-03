@@ -6,7 +6,7 @@ carry — its origin, for the graded salience of D65, and its provenance, for th
 highlighting of §3.4.
 """
 
-from odoo.tests.common import TransactionCase, tagged
+from odoo.tests.common import TransactionCase, new_test_user, tagged
 
 
 class Attributo:
@@ -145,3 +145,55 @@ class TestInWords(TransactionCase):
         testo = " ".join(part["text"] for part in words["parts"])
         self.assertIn("venditore", testo)
         self.assertNotIn("ordini_vendita.venditore", testo)
+
+
+@tagged("post_install", "-at_install")
+class TestTheDebugTraceIsNotForEveryone(TransactionCase):
+    """D123 — che la traccia esista e che si possa vedere sono due domande diverse.
+
+    La traccia resta scritta sul turno anche dopo che l'interruttore e' stato rimesso a
+    posto: se bastasse l'interruttore, spegnerlo non nasconderebbe niente di quello che
+    era gia' stato raccolto.
+    """
+
+    def setUp(self):
+        super().setUp()
+        self.utente = new_test_user(
+            self.env, login="aida_lettore", groups="base.group_user")
+        uenv = self.env(user=self.utente)
+        interrogazione = uenv["nli.interrogation"].create({})
+        self.turno = uenv["nli.turn"].create({
+            "interrogation_id": interrogazione.id,
+            "user_id": self.utente.id,
+            "company_ids": [(6, 0, uenv.companies.ids)],
+            "utterance": "le aziende di Cittaprova",
+            "outcome": "operations",
+            "debug_json": '{"plan": {"model": "res.partner", "domain": []}}',
+        })
+
+    def test_an_ordinary_user_does_not_receive_it(self):
+        payload = self.turno.with_user(self.utente)._aida_payload()
+        self.assertNotIn("debug", payload)
+
+    def test_an_administrator_does(self):
+        amministratore = new_test_user(
+            self.env, login="aida_admin", groups="base.group_system")
+        payload = self.turno.with_user(amministratore)._aida_payload()
+        self.assertEqual(payload["debug"]["plan"]["model"], "res.partner")
+
+    def test_a_turn_without_a_trace_carries_no_key_at_all(self):
+        """Una chiave `debug: null` su ogni turno farebbe credere al client che la
+        modalita' esista sempre e sia sempre vuota."""
+        self.turno.debug_json = False
+        amministratore = new_test_user(
+            self.env, login="aida_admin2", groups="base.group_system")
+        self.assertNotIn("debug", self.turno.with_user(amministratore)._aida_payload())
+
+    def test_an_unreadable_trace_does_not_take_the_conversation_down(self):
+        """E' uno strumento diagnostico, non un pezzo della risposta."""
+        self.turno.debug_json = "{non e' json"
+        amministratore = new_test_user(
+            self.env, login="aida_admin3", groups="base.group_system")
+        payload = self.turno.with_user(amministratore)._aida_payload()
+        self.assertNotIn("debug", payload)
+        self.assertEqual(payload["outcome"], "operations")

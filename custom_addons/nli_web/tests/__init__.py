@@ -6,3 +6,4 @@ verified today are in `nli_core/tests/test_boundaries.py` and in `tools/arch/`.
 """
 from . import test_interpretation
 from . import test_perimeter
+from . import test_query_payload

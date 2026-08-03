@@ -10,12 +10,15 @@ command is the whole gate of D24.
 
 from __future__ import annotations
 
+import re
 import tempfile
 import textwrap
 import unittest
 from pathlib import Path
 
-from tools.arch import check_imports, check_manifest, check_purity, check_syntax, runner
+from tools.arch import (
+    check_imports, check_manifest, check_owl, check_purity, check_syntax, runner,
+)
 from tools.arch.report import CheckResult
 from tools.arch.spec import ModuleSpec, PureZone
 
@@ -490,11 +493,16 @@ class TestPurityCheck(FixtureCase):
 
 
 class TestRepository(unittest.TestCase):
-    """The four checks against the real repository — the gate of D24 itself."""
+    """The checks against the real repository — the gate of D24 itself.
 
-    def test_all_four_checks_pass(self):
+    Il numero e' asserito perche' un controllo che sparisce dall'elenco non fallisce:
+    smette di guardare, e l'elenco resta verde. Aggiungerne uno vuol dire cambiare
+    questa riga di proposito.
+    """
+
+    def test_every_check_passes(self):
         results = runner.run_all()
-        self.assertEqual(len(results), 4)
+        self.assertEqual(len(results), 5)
         failures = [
             f"{result.name}: " + "; ".join(str(v) for v in result.violations)
             for result in results
@@ -667,3 +675,61 @@ class TestEnvironmentIdentity(FixtureCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestUnaChiaveCheOdooNonConosce(unittest.TestCase):
+    """La seconda regola di `check_owl`: una chiave di contesto che nessuno legge.
+
+    **Il difetto che l'ha fatta nascere.** 3 agosto 2026, sul campo: *«i primi 5 lead
+    ordinati per data di creazione»*. Il piano diceva `limit 5`, il server leggeva
+    cinque record, e la tabella ne mostrava **trentanove**. Il limite viaggiava come
+    `list_view_limit` nel contesto della vista, e quella chiave non esiste in Odoo 18.
+
+    La regola confronta le chiavi che i nostri componenti mettono in un `context: {}`
+    con tutto il sorgente JavaScript di Odoo. Una parola che li' non compare mai non la
+    legge nessuno.
+    """
+
+    def _violazioni(self, sorgente: str, odoo: str):
+        with tempfile.TemporaryDirectory() as cartella:
+            percorso = Path(cartella) / "componente.js"
+            percorso.write_text(sorgente, encoding="utf-8")
+            trovate = []
+            for blocco in check_owl._CONTEXT.findall(
+                    check_owl._COMMENTO.sub("", sorgente)):
+                for chiave in dict.fromkeys(check_owl._CHIAVE.findall(blocco)):
+                    if chiave in check_owl.NOSTRE:
+                        continue
+                    if not re.search(rf"\b{re.escape(chiave)}\b", odoo):
+                        trovate.append(chiave)
+            return trovate
+
+    def test_la_chiave_che_odoo_non_ha_e_segnalata(self):
+        """La riga esatta che e' costata il pomeriggio."""
+        sorgente = "const p = { context: { list_view_limit: 5 } };"
+        self.assertEqual(self._violazioni(sorgente, odoo="const limit = 80;"),
+                         ["list_view_limit"])
+
+    def test_la_chiave_che_odoo_ha_passa(self):
+        """La meta' gemella: senza, la regola segnalerebbe tutto e verrebbe spenta."""
+        sorgente = "const p = { context: { pivot_measures: ['x'] } };"
+        self.assertEqual(
+            self._violazioni(sorgente, odoo="context.pivot_measures || []"), [])
+
+    def test_un_commento_non_e_una_chiave(self):
+        """*«D2: da qui non si scrive»* dentro un contesto non e' una chiave chiamata
+        `D2`. Un controllo che segnala le proprie note e' un controllo che si impara a
+        ignorare, ed e' successo al primo giro."""
+        sorgente = ("const p = { context: {\n"
+                    "  // D2: da qui non si scrive, e il conteggio non c'entra.\n"
+                    "  pivot_measures: ['x'],\n"
+                    "} };")
+        self.assertEqual(
+            self._violazioni(sorgente, odoo="context.pivot_measures || []"), [])
+
+    def test_senza_il_sorgente_di_odoo_la_regola_tace(self):
+        """Un controllo che passa perche' non ha guardato e' peggio di un controllo che
+        manca: `run()` salta la regola quando il sorgente di Odoo non c'e'."""
+        self.assertEqual(check_owl._core_source.__doc__ is None, False)
+        sorgente = "const p = { context: { chiave_inventata: 1 } };"
+        self.assertEqual(self._violazioni(sorgente, odoo="chiave_inventata"), [])

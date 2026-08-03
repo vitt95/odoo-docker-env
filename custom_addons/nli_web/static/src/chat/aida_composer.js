@@ -10,9 +10,13 @@
  * L'altezza cresce con il testo fino a un tetto, come in ChatGPT. Si ricalcola sul
  * campo stesso invece che misurando un elemento nascosto: una misura in più per
  * battitura è lavoro che si paga a ogni tasto.
+ *
+ * **Il testo non è suo.** Vive nello store, perché anche il clic su una lettura scrive
+ * lì (D121). Questa casella lo mostra e lo manda; non è l'unica a riempirlo, ed è
+ * l'unica cosa che la distingue da una casella qualunque.
  */
 
-import { Component, useRef, useState } from "@odoo/owl";
+import { Component, useEffect, useRef, useState } from "@odoo/owl";
 
 const ALTEZZA_MASSIMA = 200;
 
@@ -26,15 +30,33 @@ export class AidaComposer extends Component {
 
     setup() {
         this.input = useRef("input");
-        this.ui = useState({ text: "", sending: false });
+        // Si prende **il proprio** riferimento allo stato condiviso invece di leggerlo
+        // attraverso la proprietà. È quello che fa scattare il ridisegno su questo
+        // componente e non sul padre: altrimenti ogni battitura ridisegnerebbe anche il
+        // filo dei messaggi, che con una conversazione lunga si sente.
+        this.chat = useState(this.props.state);
+        // Il testo può arrivare da un clic invece che dalla tastiera: l'altezza va
+        // ricalcolata lo stesso, altrimenti una lettura lunga resta tagliata a una riga.
+        useEffect(
+            () => {
+                if (this.input.el) {
+                    this._resize(this.input.el);
+                }
+            },
+            () => [this.chat.draft]
+        );
+    }
+
+    get text() {
+        return this.chat.draft;
     }
 
     get canSend() {
-        return this.ui.text.trim().length > 0 && !this.ui.sending;
+        return this.text.trim().length > 0 && !this.chat.sending;
     }
 
     onInput(ev) {
-        this.ui.text = ev.target.value;
+        this.props.store.setDraft(ev.target.value);
         this._resize(ev.target);
     }
 
@@ -56,17 +78,10 @@ export class AidaComposer extends Component {
         if (!this.canSend) {
             return;
         }
-        const testo = this.ui.text;
-        this.ui.text = "";
-        this.ui.sending = true;
         if (this.input.el) {
             this.input.el.style.height = "auto";
             this.input.el.focus();
         }
-        try {
-            await this.props.store.send(testo);
-        } finally {
-            this.ui.sending = false;
-        }
+        await this.props.store.submitDraft();
     }
 }

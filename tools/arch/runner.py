@@ -10,7 +10,8 @@ from __future__ import annotations
 import argparse
 from typing import Callable, Sequence
 
-from . import check_imports, check_manifest, check_purity, check_syntax
+from . import (check_imports, check_manifest, check_owl, check_purity,
+               check_syntax)
 from .report import CheckResult
 
 CHECKS: tuple[Callable[[], CheckResult], ...] = (
@@ -18,6 +19,7 @@ CHECKS: tuple[Callable[[], CheckResult], ...] = (
     check_imports.run,
     check_syntax.run,
     check_purity.run,
+    check_owl.run,
 )
 
 _GREEN = "\033[32m"
@@ -59,7 +61,7 @@ def format_report(results: Sequence[CheckResult], *, colour: bool = True) -> str
         names = ", ".join(result.name for result in failed)
         lines.append(paint(f"FAILED: {names}", _RED))
     else:
-        lines.append(paint("All four boundary checks pass.", _GREEN))
+        lines.append(paint(f"All {len(results)} boundary checks pass.", _GREEN))
     return "\n".join(lines)
 
 

@@ -42,6 +42,19 @@ export class AidaStore {
             pendingCount: 0,
             /** Testo dello stato d'attesa, mostrato mentre il turno viaggia. */
             waiting: null,
+            /**
+             * Quello che c'e' nella casella di scrittura.
+             *
+             * Sta qui e non dentro la casella perche' **anche il clic scrive qui**
+             * (D121): scegliere una lettura mette la sua etichetta nella casella e la
+             * invia, e da li' in poi e' una frase come le altre. Se la casella si
+             * tenesse il testo per se', il clic avrebbe bisogno di una strada propria
+             * verso il server — due strade per la stessa cosa, che restano allineate
+             * finche' qualcuno se ne ricorda.
+             */
+            draft: "",
+            /** Vero mentre una frase sta partendo. Vale per la casella e per il clic. */
+            sending: false,
         });
     }
 
@@ -133,6 +146,9 @@ export class AidaStore {
         this.state.currentId = id;
         this.state.turns = [];
         this.state.waiting = null;
+        // La casella appartiene alla conversazione: una risposta scritta qui e inviata
+        // altrove risponderebbe a una domanda che non e' stata posta.
+        this.state.draft = "";
         await this.loadTurns({ reset: true });
     }
 
@@ -158,6 +174,39 @@ export class AidaStore {
             this.state.hasMoreTurns = data.has_more;
         } finally {
             this.state.loadingTurns = false;
+        }
+    }
+
+    /**
+     * Scrive una frase nella casella. E' cio' che fa il clic su una lettura (D121).
+     */
+    setDraft(text) {
+        this.state.draft = text || "";
+    }
+
+    /**
+     * Invia quello che c'e' nella casella, e la svuota.
+     *
+     * **Unico punto di partenza di una frase.** Ci passa chi scrive e chi clicca, per
+     * costruzione: non esiste un secondo modo di far partire un turno, quindi non
+     * esiste un secondo modo che possa comportarsi diversamente.
+     *
+     * La guardia sul doppio invio sta **qui** e non nella casella per la stessa
+     * ragione: un doppio clic su una lettura manderebbe due turni identici, e una
+     * guardia che protegge una sola delle due strade protegge quella che nessuno usa
+     * per sbaglio.
+     */
+    async submitDraft() {
+        if (this.state.sending || !this.state.draft.trim()) {
+            return;
+        }
+        const testo = this.state.draft;
+        this.state.draft = "";
+        this.state.sending = true;
+        try {
+            await this.send(testo);
+        } finally {
+            this.state.sending = false;
         }
     }
 
@@ -249,7 +298,16 @@ export class AidaStore {
         this.state.conversations.unshift(conversazione);
     }
 
-    _onTurnDone(payload) {
+    /**
+     * Un turno è finito (D124).
+     *
+     * L'avviso dice **che** è finito, non cosa dice: la risposta si chiede al server,
+     * che la costruisce con la stessa funzione che serve la cronologia. Prima l'avviso
+     * portava anche l'interpretazione, ed era la seconda strada verso questo schermo —
+     * quella che portava la struttura invece delle parole, e per cui nessuna risposta
+     * riuscita è mai comparsa.
+     */
+    async _onTurnDone(payload) {
         // L'avviso arriva per ogni turno dell'utente, anche di conversazioni che non
         // sta guardando: quelle si ignorano qui invece di ridisegnare qualcosa che
         // nessuno vede.
@@ -260,12 +318,16 @@ export class AidaStore {
         if (!turno) {
             return;
         }
-        Object.assign(turno, {
-            outcome: payload.outcome,
-            interpretation: payload.interpretation,
-            record_count: payload.record_count,
-            executed_at: payload.executed_at,
-        });
+        let completo = null;
+        try {
+            completo = await this.orm.call(
+                "nli.interrogation", "aida_turn",
+                [[this.state.currentId], payload.turn_id]);
+        } catch {
+            // Se la lettura non riesce, l'attesa non deve restare accesa per sempre:
+            // si mostra l'esito che l'avviso portava, che è poco ma è vero.
+        }
+        Object.assign(turno, completo || { outcome: payload.outcome });
         turno.pending = false;
         this.state.pendingCount = Math.max(0, this.state.pendingCount - 1);
         this.state.waiting = this.state.pendingCount > 0 ? this.state.waiting : null;

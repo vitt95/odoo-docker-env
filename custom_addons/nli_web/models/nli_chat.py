@@ -134,6 +134,22 @@ class NliInterrogation(models.Model):
             "has_more": len(turni) == limit,
         }
 
+    def aida_turn(self, turn_id: int):
+        """Un turno solo, quello appena finito (D124).
+
+        **Perche' esiste invece di far portare la risposta all'avviso.** L'avviso sul
+        bus lo costruisce `nli_dispatch`, il payload della chat lo costruisce
+        `_aida_payload` qui: erano due strade verso lo stesso schermo, e sono
+        divergute — l'avviso portava l'interpretazione strutturata, il template si
+        aspettava le parole, e per mesi **nessun turno riuscito e' stato disegnato**.
+        Ora l'avviso porta un identificativo e basta, e cio' che si disegna lo
+        costruisce una funzione sola.
+        """
+        self.ensure_one()
+        turno = self.env["nli.turn"].search(
+            [("id", "=", turn_id), ("interrogation_id", "=", self.id)], limit=1)
+        return turno._aida_payload() if turno else None
+
 
 class NliTurn(models.Model):
     _inherit = "nli.turn"
@@ -145,14 +161,120 @@ class NliTurn(models.Model):
         vuole rieseguire il turno lo ricarica quando serve.
         """
         self.ensure_one()
-        return {
+        payload = {
             "id": self.id,
             "utterance": self.utterance or "",
             "outcome": self.outcome or "",
-            "interpretation": json.loads(self.interpretation_json or "null"),
+            "interpretation": self._aida_interpretation(),
             "record_count": self.record_count,
             "executed_at": fields.Datetime.to_string(self.executed_at),
             # Un turno senza esito e' in corso: il client mostra l'attesa e aspetta
             # la notifica, invece di interrogare il server a ripetizione.
             "pending": not self.outcome,
         }
+        query = self._aida_query()
+        if query is not None:
+            payload["query"] = query
+        traccia = self._aida_debug()
+        if traccia is not None:
+            payload["debug"] = traccia
+        return payload
+
+    def _aida_query(self):
+        """Gli argomenti con cui la chat costruisce la tabella dei record (D124).
+
+        **Il dominio esce, i record no.** La vista lista di Odoo li rilegge da sola con
+        i diritti di chi guarda, quindi un dominio che tornasse indietro da un utente a
+        cui e' stato tolto un permesso non gli farebbe vedere niente di piu' di quanto
+        vedrebbe aprendo il menu. E' `00` §23: si incorpora la vista nativa invece di
+        riscrivere tabella, ricerca, colonne e paginazione — che e' cio' che `15`
+        chiede, ottenuto senza reimplementarlo.
+        """
+        self.ensure_one()
+        if self.outcome != "operations" or not self.plan_json:
+            return None
+        try:
+            piano = json.loads(self.plan_json)
+        except ValueError:
+            return None
+        return {
+            "model": piano.get("model"),
+            "domain": piano.get("domain") or [],
+            "fields": piano.get("fields") or [],
+            "group_by": piano.get("group_by") or [],
+            "order": piano.get("order") or "",
+            "limit": piano.get("limit"),
+            "view": piano.get("view") or "list",
+            # Le misure, che il piano porta come coppie `[funzione, campo]`. Servono
+            # alla vista pivot e al grafico, che senza ricadono sul conteggio — e
+            # l'interpretazione sopra la tabella dice «media», non «quante».
+            "measures": [{"function": funzione, "field": campo}
+                         for funzione, campo in (piano.get("measures") or [])],
+        }
+
+    def _aida_interpretation(self):
+        """L'interpretazione come la legge una persona (D124).
+
+        Il Presentatore produce una **struttura**: bersaglio, condizioni, periodi
+        risolti, riferimenti. Trasformarla in frasi e' `09` §3, e lo fa
+        `nli.interpretation.in_words`. Nessuno lo chiamava: il turno memorizzava la
+        struttura, il template cercava le parole, e ogni risposta riuscita finiva nel
+        ramo di scarto. Qui e' l'unico punto in cui una risposta diventa qualcosa da
+        guardare, quindi e' l'unico punto in cui la conversione puo' mancare.
+
+        **Le parole si costruiscono alla lettura e non alla scrittura**, perche' i
+        termini vengono dal catalogo dell'utente che sta leggendo: due persone con
+        permessi diversi vedono lo stesso turno con vocabolari diversi, ed e' la stessa
+        ragione per cui il catalogo non si mette in cache fra utenti (D39).
+        """
+        self.ensure_one()
+        interpretazione = json.loads(self.interpretation_json or "null")
+        if not isinstance(interpretazione, dict) or "target" not in interpretazione:
+            # Un chiarimento o un rifiuto: portano gia' la forma che il client legge.
+            return interpretazione
+        return self.env["nli.interpretation"].in_words(
+            interpretazione, catalogue=self._aida_catalogue(interpretazione))
+
+    def _aida_catalogue(self, interpretazione):
+        """Il catalogo dell'entita' del turno, per dire le cose con le parole di casa.
+
+        Se non si riesce a costruirlo — permessi cambiati, entita' sparita da un
+        aggiornamento — si va avanti senza: `in_words` degrada mostrando l'ultimo pezzo
+        del riferimento invece del riferimento intero, che e' brutto ma leggibile. Una
+        cronologia che non si apre perche' un turno di marzo nomina un campo che non
+        c'e' piu' sarebbe molto peggio.
+        """
+        riferimento = (interpretazione.get("target") or {}).get("ref")
+        if not riferimento:
+            return None
+        try:
+            semantica = self.env["nli.semantics"].semantics(
+                self.env["nli.semantics"].entity_scope())
+            return self.env["nli.semantics"].catalogue_for(
+                semantica, riferimento,
+                context_window=self.env["nli.dispatcher"]._context_window())
+        except Exception:  # noqa: BLE001 — vedi il docstring
+            return None
+
+    def _aida_debug(self):
+        """La traccia di D123, a chi puo' vederla.
+
+        **Due condizioni, non una.** Che la traccia esista sul turno vuol dire che
+        qualcuno aveva acceso la modalita' diagnostica quando il turno e' corso; che si
+        possa vedere adesso e' una domanda diversa, e la risposta e' *solo un
+        amministratore*. Un utente ordinario che si trovasse davanti il dominio Odoo e
+        i riferimenti del catalogo non ne ricaverebbe niente, e li vedrebbe per sempre
+        perche' la traccia resta scritta sul turno anche dopo che l'interruttore e'
+        stato rimesso a posto.
+        """
+        self.ensure_one()
+        if not self.debug_json:
+            return None
+        if not self.env.user.has_group("base.group_system"):
+            return None
+        try:
+            return json.loads(self.debug_json)
+        except ValueError:
+            # Una traccia illeggibile non deve impedire di leggere la conversazione:
+            # e' uno strumento diagnostico, non un pezzo della risposta.
+            return None
