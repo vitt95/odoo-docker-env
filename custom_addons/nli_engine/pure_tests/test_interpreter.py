@@ -102,6 +102,14 @@ class TestTimeAnchorInThePrompt(unittest.TestCase):
         """Non basta che la parola compaia: la regola deve ancora **dire** cosa
         fare quando l'ancora non e' unica, che e' il caso per cui D110 esiste.
 
+        **D135 ha cambiato la risposta, non la domanda.** Prima il modello doveva
+        scrivere lui il chiarimento, e sulle due entita' che ne hanno bisogno —
+        `crm.lead` e `sale.order` — l'esito misurato il 3 agosto 2026 e' stato
+        `not_understood` tre volte su tre. Adesso colloca la condizione e la domanda
+        la facciamo noi dall'ancora, quindi la riga deve dire **di non scriverla**:
+        un modello lasciato libero di farlo comunque rimetterebbe in circolo le
+        opzioni rotte che D128 ha dovuto imparare a rifiutare.
+
         Il confronto e' su una forma a spazi normalizzati perche' mandare a capo
         una riga del prompt non ne cambia il senso, e un test che si rompesse per
         quello verrebbe aggiornato senza leggerlo.
@@ -109,9 +117,9 @@ class TestTimeAnchorInThePrompt(unittest.TestCase):
         message = " ".join(
             system_message(Request(utterance="x", catalogue={})).split())
         self.assertIn("time_anchor", message)
-        self.assertIn('If it declares "choices", the sentence does not say which '
-                      "date it means: answer with a clarification whose options are "
-                      "those dates.", message)
+        self.assertIn('If it declares "choices", put the condition on the choice the '
+                      "sentence names", message)
+        self.assertIn("Do NOT write that question yourself.", message)
 
     def test_the_instructions_forbid_dropping_a_period(self):
         """La regola che conta: oggi lasciar cadere un pezzo di frase non costa

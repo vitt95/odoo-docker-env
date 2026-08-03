@@ -21,20 +21,45 @@ from typing import Callable
 #: has to contain for the condition to be founded.
 NAMED_CONDITION_TYPES = frozenset({"T5"})
 
+#: Entities and attributes are T1 entries — *naming*. They are what D135 asks about:
+#: whether the fragment that carried a period named the date it landed on.
+NAMING_TYPES = frozenset({"T1"})
 
-def mentions_of(dictionary) -> Callable[[str, str], bool]:
-    """Build the `mentions(ref, text)` the level-3 grounding check needs.
+
+def _recogniser(dictionary, entry_types) -> Callable[[str, str], bool]:
+    """`(ref, text) -> bool` over one family of entries.
 
     The index is built once and captured: it is read at every condition of every turn,
     and rebuilding it per call would put the dictionary's whole term list inside the
     request path for nothing.
     """
-    index = dictionary.term_index(entry_types=NAMED_CONDITION_TYPES)
+    index = dictionary.term_index(entry_types=entry_types)
 
-    def mentions(reference: str, text: str) -> bool:
+    def recognises(reference: str, text: str) -> bool:
         if not reference or not text:
             return False
         return any(match.ref == reference
-                   for match in index.match(text, entry_types=NAMED_CONDITION_TYPES))
+                   for match in index.match(text, entry_types=entry_types))
 
-    return mentions
+    return recognises
+
+
+def mentions_of(dictionary) -> Callable[[str, str], bool]:
+    """Build the `mentions(ref, text)` the level-3 grounding check needs (D105)."""
+    return _recogniser(dictionary, NAMED_CONDITION_TYPES)
+
+
+def names_of(dictionary) -> Callable[[str, str], bool]:
+    """Build the `names(ref, text)` the level-3 anchoring check needs (**D135**).
+
+    **Why a second recogniser and not the same one.** `mentions_of` indexes T5 only,
+    which is right for a named condition and blind to an attribute: asking it whether
+    *«con data di creazione»* names `create_date` would always answer no, and the check
+    would refuse every period including the ones the user anchored themselves.
+
+    The two are separate on purpose rather than merged into one index over both
+    families. A fragment naming a category would then also count as naming an
+    attribute of the same reference, and the two rules would start passing each
+    other's cases — which is the failure mode of every shared matcher.
+    """
+    return _recogniser(dictionary, NAMING_TYPES)

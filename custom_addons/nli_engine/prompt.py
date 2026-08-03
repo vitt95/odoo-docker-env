@@ -62,9 +62,16 @@ Rules, all of them absolute:
   {"kind":"temporal","expression":"current_month"};
 - a time expression that names no attribute is a condition on the catalogue's
   "time_anchor". If it declares "ref", the condition is on that attribute. If it
-  declares "choices", the sentence does not say which date it means: answer with a
-  clarification whose options are those dates. If it is null, this entity exposes no
-  date at all: answer with a clarification;
+  declares "choices", put the condition on the choice the sentence names, and on the
+  first of them when the sentence names none: the system compares the fragment with
+  the date and asks the user itself when they did not choose (D135). Do NOT write that
+  question yourself. If it is null, this entity exposes no date at all: answer with a
+  clarification;
+- a period is taken WHOLE unless the sentence says otherwise: the predicate is
+  "within". "before" and "after" have to be earned by words — "prima di", "dopo",
+  "entro" — and they take one side of the period, not the period. "i lead di
+  quest'anno" is within(current_year); after(current_year) means AFTER the end of
+  2026, which is a different question and almost always empty;
 - NEVER drop a time expression. If you cannot place it, ask. A sentence that names a
   period and an answer that does not is a wrong answer, not a shorter one;
 - never choose a direction for an ordering. "ordinati per data" names no direction:
