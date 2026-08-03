@@ -197,6 +197,8 @@ def _add_condition(result: Result, operation: dict, limits: Limits, defaults, in
     if existing is None:
         state["filter"] = condition
         return
+    if _supersedes_period(state, condition, combine):
+        return
     if state_module.is_connective(existing) and existing["connective"] == combine:
         existing["conditions"].append(condition)
         return
@@ -204,6 +206,66 @@ def _add_condition(result: Result, operation: dict, limits: Limits, defaults, in
     # depth limit of §5.4 is checked by level 4, not enforced by silent flattening
     # — flattening would change the meaning of the filter.
     state["filter"] = {"connective": combine, "conditions": [existing, condition]}
+
+
+#: Predicati che collocano un attributo in un intervallo di tempo. Vedi
+#: `_supersedes_period`, e la regola gemella di livello 4 in `validation/coherence.py`.
+_PERIOD_PREDICATES = frozenset({"within", "before", "after", "between"})
+
+
+def _supersedes_period(state: dict, condition: dict, combine: str) -> bool:
+    """Un periodo nuovo **sostituisce** quello che c'era sullo stesso attributo (D125).
+
+    **Il caso, visto sul campo il 2 agosto 2026.** *«i lead creati quest'anno»*, poi
+    *«creati da 6 mesi ad oggi»*, poi di nuovo *«creati quest'anno»*. Ogni turno
+    aggiungeva il proprio periodo, e al terzo la conversazione era **bloccata**: lo
+    stato ne portava tre in AND, il livello 4 li rifiutava, e ogni tentativo successivo
+    ne aggiungeva un quarto. La stessa frase che aveva funzionato al primo turno non
+    funzionava piu' al terzo, e non c'era modo di uscirne parlando.
+
+    **Perche' sostituire e non chiedere.** Il raffinamento additivo di §17.1 e' giusto
+    per un asse nuovo — *«solo quelli confermati»* si somma — ma una frase che nomina di
+    nuovo lo stesso asse non ne aggiunge uno: lo riscrive. Nessuno chiede l'intersezione
+    fra due periodi dicendo due periodi; se la volesse, la direbbe come un periodo solo.
+    E' la stessa forma di D89 e D99: quando la forma dello stato **impone** cio' che
+    l'utente intendeva, si deriva invece di domandare (C2/P4).
+
+    **Perche' toglie tutti i periodi e non il primo.** Cosi' uno stato gia' rovinato si
+    ripara al primo turno che nomina di nuovo quell'asse, invece di restare rotto per
+    sempre. Le conversazioni guaste da prima di questa regola guariscono da sole.
+
+    **Solo sotto `all`.** Sotto `any` due periodi sono un'unione, che e' una cosa che si
+    puo' voler dire davvero — *«di marzo o di settembre»*.
+    """
+    if combine != "all" or condition.get("predicate") not in _PERIOD_PREDICATES:
+        return False
+    reference = condition.get("ref")
+    if not reference:
+        return False
+
+    existing = state.get("filter")
+
+    def _is_superseded(node: dict) -> bool:
+        return (not state_module.is_connective(node)
+                and node.get("ref") == reference
+                and node.get("predicate") in _PERIOD_PREDICATES)
+
+    if _is_superseded(existing):
+        # Il filtro era quella sola condizione: il periodo nuovo prende il suo posto.
+        state["filter"] = condition
+        return True
+    if not (state_module.is_connective(existing)
+            and existing.get("connective") == "all"):
+        return False
+
+    children = existing.get("conditions") or []
+    kept = [child for child in children if not _is_superseded(child)]
+    if len(kept) == len(children):
+        return False
+
+    kept.append(condition)
+    existing["conditions"] = kept
+    return True
 
 
 def _replace_condition(result: Result, operation: dict, limits: Limits, defaults, index: int) -> None:

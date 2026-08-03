@@ -218,7 +218,62 @@ def validate_coherence(state: dict, *, limits: Limits = DEFAULT_LIMITS) -> list[
     for condition in state_module.conditions(state.get("filter")):
         failures.extend(_check_predicate_value(condition, "filter"))
 
+    failures.extend(_check_one_period_per_attribute(state))
+
     return failures
+
+
+#: Predicati che collocano un attributo in un intervallo di tempo. Due di questi sullo
+#: stesso attributo non si sommano: si contraddicono.
+_PERIOD_PREDICATES = frozenset({"within", "before", "after", "between"})
+
+
+def _check_one_period_per_attribute(state: dict) -> list[Failure]:
+    """Due periodi sullo stesso attributo non sono un raffinamento (D124).
+
+    **Il caso, misurato il 2 agosto 2026.** *«mostrami i lead creati quest'anno»*, poi
+    *«mostrami i lead creati da 6 mesi ad oggi»*. Il secondo turno **aggiungeva** il
+    proprio periodo invece di sostituire il primo, e il risultato era l'intersezione
+    dei due — un intervallo che l'utente non aveva chiesto e che nessuno gli diceva.
+
+    **Perche' il raffinamento additivo e' giusto ovunque tranne qui.** §17.1 e' cio' che
+    fa funzionare *«solo quelli attivi»* al secondo turno: la frase aggiunge un asse
+    nuovo, e sommarla e' esattamente cio' che si vuole. Ma una frase che nomina di
+    nuovo **lo stesso asse** non ne aggiunge uno: lo riscrive. Sommarla produce un'
+    intersezione che nessuno ha chiesto, e il DSL ha gia' l'operazione giusta,
+    `replace_condition`.
+
+    **Perche' la regola sta qui e non nel prompt.** Un'istruzione al modello e'
+    probabilistica; questo e' strutturale, come D89, D99 e D105. E soprattutto: il
+    fallimento e' **invisibile**. Nel caso misurato i due turni hanno restituito lo
+    stesso numero di record — 39 e 39 — perche' i sei mesi cadevano dentro l'anno.
+    Niente da notare, nemmeno guardando. E' la forma pura del rischio di **D2**: una
+    risposta sbagliata con l'aria di essere giusta.
+
+    Il rifiuto qui diventa un chiarimento o un *«non ho capito»*, che e' cio' che D2
+    chiede di preferire a un numero plausibile.
+    """
+    per_attribute: dict[str, int] = {}
+    for condition in state_module.conditions(state.get("filter")):
+        if condition.get("predicate") not in _PERIOD_PREDICATES:
+            continue
+        reference = condition.get("ref")
+        if not reference:
+            continue
+        per_attribute[reference] = per_attribute.get(reference, 0) + 1
+
+    return [
+        _failure(
+            4,
+            "two_periods_on_one_attribute",
+            f"filter.{reference}",
+            f"{count} separate periods are placed on {reference!r}. Two periods on one "
+            "attribute intersect instead of refining, which narrows the answer in a "
+            "way nobody asked for and nothing shows: a turn that names a period "
+            "already constrained replaces it (D124), it does not add to it",
+        )
+        for reference, count in sorted(per_attribute.items()) if count > 1
+    ]
 
 
 # ---------------------------------------------------------------------------

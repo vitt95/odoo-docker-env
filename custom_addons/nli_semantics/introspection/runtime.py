@@ -32,12 +32,13 @@ the product where it is cheapest to obey.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from odoo import fields as odoo_fields
 
 from ..catalogue import build as build_module
 from ..catalogue import exposure, phases
+from ..dictionary import conditions as conditions_module
 from ..dictionary import domains
 from ..dictionary.store import Dictionary
 from ..platform_types import CONTRACT_TYPE_BY_ODOO_TYPE
@@ -94,6 +95,18 @@ class Semantics:
     models_by_ref: dict
     #: References this user may read (D39, D40), already filtered.
     readable_refs: frozenset[str]
+    #: Riferimento di condizione nominata -> classe di costo, `simple` o `aggregate`.
+    #:
+    #: **Serve al livello 5, e finora nessuno lo costruiva.** `contextual.validate` ha
+    #: sempre avuto il parametro `category_costs`; il pipeline non lo passava, quindi
+    #: valeva `{}` e `too_many_aggregate_categories` — la regola con cui **V-D87-2**
+    #: (il vincolo di D87 per cui una condizione nominata che aggrega su un'altra
+    #: entita' e' affare del livello 5) si giustifica — non poteva scattare mai.
+    #:
+    #: Si costruisce qui e non nel pipeline perche' la classe di costo si legge dalla
+    #: **definizione** della condizione, che sta nel dizionario: `nli_core` riceve la
+    #: risposta e non il vocabolario, come per `mentions` di D105.
+    category_costs: dict = field(default_factory=dict)
 
     def model_of(self, entity_ref: str) -> str | None:
         return self.models_by_ref.get(entity_ref)
@@ -170,11 +183,20 @@ def semantics(env, scope) -> Semantics:
     # whose condition cannot be executed as a domain — an aggregate, level 5's
     # business — is left unbound, and level 3 refuses it by name instead of letting it
     # fail late at execution.
+    # La classe di costo si legge sempre, anche quando la condizione **non** si lega:
+    # un aggregato e' esattamente il caso che resta senza binding, ed e' anche l'unico
+    # che il livello 5 deve poter contare. Leggerla solo dalle condizioni legate
+    # avrebbe costruito una tabella dei costi con dentro tutto tranne cio' che costa.
+    category_costs: dict[str, str] = {}
     for entry in approved:
-        if entry["type"] != "T5" or entry["ref"] in bindings:
+        if entry["type"] != "T5":
+            continue
+        condition = entry.get("condition") or {}
+        category_costs[entry["ref"]] = conditions_module.cost_class(condition)
+        if entry["ref"] in bindings:
             continue
         try:
-            domain = domains.domain_of(entry.get("condition") or {},
+            domain = domains.domain_of(condition,
                                        instant=odoo_fields.Date.context_today(env.user))
         except domains.UntranslatableCondition:
             continue
@@ -186,6 +208,7 @@ def semantics(env, scope) -> Semantics:
         bindings=bindings,
         models_by_ref=models_by_ref,
         readable_refs=readable,
+        category_costs=category_costs,
     )
 
 

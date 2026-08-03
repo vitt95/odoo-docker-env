@@ -34,6 +34,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+
+#: Il formato con cui Odoo scrive e confronta un `datetime` nel database. Sempre UTC.
+UTC_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
 @dataclass(frozen=True)
@@ -52,10 +56,42 @@ class Instant:
     #: Month and day the fiscal year **starts**. 1 January for a calendar year.
     fiscal_year_start_month: int = 1
     fiscal_year_start_day: int = 1
+    #: Il nome del fuso dell'utente — `Europe/Rome` — non uno scostamento in ore.
+    #:
+    #: **Uno scostamento sarebbe sbagliato mezzo anno.** L'ora legale lo cambia, quindi
+    #: *«il mese scorso»* chiesto a novembre e *«il mese scorso»* chiesto a giugno non
+    #: si convertono allo stesso modo. Il nome porta con se' la regola; il numero no.
+    #:
+    #: Vuoto vuol dire UTC, che e' anche il comportamento di prima: chi non dichiara un
+    #: fuso non ne subisce uno.
+    timezone: str = ""
 
     @property
     def today(self) -> date:
         return self.now.date()
+
+    def as_utc(self, moment: date) -> str:
+        """La mezzanotte locale di `moment`, scritta in UTC come la scrive Odoo.
+
+        E' il ponte fra il calendario, che ragiona in **giorni dell'utente**, e le
+        colonne `datetime`, che stanno in **UTC**. Senza, i due estremi di un periodo
+        finivano confrontati con una colonna in un'altra unita' di misura, e il numero
+        usciva vicino a quello giusto e sbagliato.
+
+        Un fuso che il sistema non conosce non fa fallire un'interrogazione: si torna a
+        UTC, che e' esattamente cio' che si faceva prima di questa funzione. Una
+        risposta con il fuso sbagliato e' un difetto; una conversazione che si rifiuta
+        di rispondere perche' un `tz` e' scritto male e' un difetto peggiore.
+        """
+        naive = datetime(moment.year, moment.month, moment.day)
+        if not self.timezone:
+            return naive.strftime(UTC_FORMAT)
+        try:
+            zone = ZoneInfo(self.timezone)
+        except (ZoneInfoNotFoundError, ValueError):
+            return naive.strftime(UTC_FORMAT)
+        return naive.replace(tzinfo=zone).astimezone(ZoneInfo("UTC")).strftime(
+            UTC_FORMAT)
 
 
 @dataclass(frozen=True)
@@ -210,15 +246,31 @@ def _parse(value: str) -> date:
         raise UnresolvableExpression(f"{value!r} is not an ISO date") from error
 
 
-def describe(value: dict, instant: Instant) -> str:
-    """The resolved period, in the form the interpretation shows (D67).
+def describe(value: dict, instant: Instant, predicate: str = "within") -> str:
+    """The resolved period **as the predicate takes it**, for the interpretation (D67).
 
     *"This month"* confirms itself; only the resolved period makes a non-calendar
     fiscal year verifiable — the canonical form of R1 on aggregated data. So the
     interpretation shows *"1 – 31 July 2026"*, never *"questo mese"*.
+
+    **Why the predicate is here, since 3 August 2026.** It was not, and the turn that
+    showed why is worth keeping: the state said `after current_year`, the executed
+    domain was `create_date >= 2026-12-31 23:00:00` — after the *end* of the year, no
+    records — and the interpretation above the answer said *"2026-01-01 - 2026-12-31"*.
+    The product was showing the window of the expression instead of the set it had
+    actually queried, so the user read the whole year and got nothing, with no way of
+    telling why.
+
+    A description that does not describe is worse than none: the interpretation exists
+    to make an answer checkable (§10), and this one was making a wrong answer look
+    right. `before` and `after` take one side of the window, and say so.
     """
     resolved = resolve(value, instant)
     last = resolved.end - timedelta(days=1)
+    if predicate == "before":
+        return f"< {resolved.start.isoformat()}"
+    if predicate == "after":
+        return f"> {last.isoformat()}"
     if resolved.start == last:
         return resolved.start.isoformat()
     return f"{resolved.start.isoformat()} - {last.isoformat()}"

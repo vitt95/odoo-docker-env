@@ -35,7 +35,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from ..dictionary.index import Match, TermIndex
+from ..dictionary.index import Match, TermIndex, WEIGHT_EXACT
 
 #: Minimum score for a candidate to be considered at all.
 #:
@@ -117,6 +117,15 @@ class PhaseA:
                 f"the margin of {self.margin:.2f}")
 
 
+def _is_exact(match) -> bool:
+    """Se il termine sta nella frase **come e' scritto**, non per morfologia.
+
+    E' la distinzione che rende usabile il guardiano di V-D93-1 senza spegnere i
+    riconoscimenti giusti — vedi `determine_entity`.
+    """
+    return match.score >= WEIGHT_EXACT
+
+
 def determine_entity(
     request: str,
     index: TermIndex,
@@ -137,6 +146,21 @@ def determine_entity(
     # attribute or a T5 category — matches that same span at least as well. Same span,
     # never a sentence-wide best: "ordini di vendita raggruppati per cliente" names an
     # attribute and still names an entity, and a global comparison would lose it.
+    #
+    # **Vale solo contro le prove morfologiche, non contro quelle esatte.** Misurato
+    # sul database vero il 3 agosto 2026: *«le fatture non pagate»* non risolveva
+    # niente, perche' l'entita' `account_move` porta il termine *Fatture* — esatto,
+    # 1.00 — e sullo stesso pezzo di frase lo portano anche `res_partner.invoice_ids`
+    # e `sale_order.invoice_ids`, che si chiamano *Fatture* pure loro. Tre prove
+    # esatte identiche, e il guardiano le buttava tutte.
+    #
+    # La differenza col caso che il guardiano esiste per prendere: li' l'entita'
+    # arrivava dal livello morfologico — *clienti* contro l'attributo *cliente*, stessa
+    # forma base — cioe' da un'evidenza **piu' debole** di quella che le si opponeva.
+    # Qui l'entita' e' scritta nella frase come si scrive. Un pareggio fra due prove
+    # esatte non e' una ragione per buttare quella dell'entita': se l'utente ha detto
+    # *«fatture»* e le fatture sono un'entita', le fatture sono un candidato — e se ce
+    # ne sono due, decide il margine, che e' li' apposta.
     #
     # This guard is not a refinement, it is what makes the base-form tier usable at
     # all, and the corpus is what showed it. Italian morphology collapses the
@@ -163,7 +187,7 @@ def determine_entity(
         if match.ref not in entity_refs:
             continue
         span = (match.start, match.length)
-        if best_non_entity.get(span, 0.0) >= match.score:
+        if best_non_entity.get(span, 0.0) >= match.score and not _is_exact(match):
             continue
         current = best_by_ref.get(match.ref)
         if current is None or (match.length, match.score) > (current.length, current.score):

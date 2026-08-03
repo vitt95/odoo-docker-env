@@ -22,6 +22,7 @@ from __future__ import annotations
 
 from ..contract import state as state_module
 from ..contract.failure import Failure
+from . import coherence
 from ..contract.vocabulary import (
     AGGREGATION_TYPES,
     DEFAULT_LIMITS,
@@ -32,6 +33,12 @@ from ..contract.vocabulary import (
 
 #: Attribute types a `granularity` may be applied to (§12.5).
 TEMPORAL_TYPES = frozenset({"date", "datetime"})
+
+#: I predicati che una data ammette (§8.1), cioe' i soli che portano un periodo. Si
+#: leggono dalla tabella del contratto invece di riscriverli: D113 ne ha tolto uno
+#: (`between`, doppione di `within`) e una seconda copia non se ne sarebbe accorta.
+TEMPORAL_PREDICATES = frozenset().union(
+    *(PREDICATES_BY_TYPE[attribute_type] for attribute_type in sorted(TEMPORAL_TYPES)))
 
 #: Cost class of a category that aggregates over another entity (V-D87-2).
 COST_AGGREGATE = "aggregate"
@@ -116,6 +123,71 @@ def validate_grounding(state: dict, *, mentions) -> list[Failure]:
             "for" if text else
             f"the named condition {reference!r} carries no provenance, so there is "
             "nothing that shows the user asked for it (§10.3)",
+        ))
+    return failures
+
+
+def carries_period(state: dict) -> bool:
+    """Whether any condition of this state puts a period on an attribute.
+
+    The chain asks this before building a catalogue it would otherwise not need: the
+    anchor of D110 lives in the catalogue, and a turn with no period has nothing to
+    anchor. Phase C costs a quarter of a second measured (`00` §32.1), which is
+    nothing next to the model and everything next to a turn that answers without it
+    (D121).
+    """
+    return any(condition.get("predicate") in TEMPORAL_PREDICATES
+               for condition in state_module.conditions(state.get("filter")))
+
+
+def validate_anchoring(state: dict, *, names, time_anchor: dict | None) -> list[Failure]:
+    """Level 3 — a period must sit on the date the user named (**D135**).
+
+    **The failure this exists for.** Measured on the real database on 3 August 2026:
+    *«mostrami i lead creati quest'anno»* and *«mostrami gli ordini di vendita di questo
+    mese»* both ended in `not_understood`, three times out of three, and they are the
+    two entities that expose more than one date. The model was being asked to write the
+    clarification itself — D110's anchor declares `choices`, and the prompt told it to
+    turn that into two-to-four complete, applicable options. It is the hardest thing in
+    the whole prompt, and D128 already had to add a validation because those options
+    arrived broken.
+
+    **This is D105 with a date in place of a category.** A period never names its own
+    attribute — one says *«ordini del mese scorso»*, not *«ordini con data ordine nel
+    mese scorso»* — so when the entity exposes two dates and the fragment names
+    neither, the attribute the condition landed on was chosen by the model. §10.3
+    defines the provenance as *the fragment of the sentence that produced this
+    operation*, and a date the fragment does not mention was not asked for.
+
+    **With one date there is nothing to ask.** D110's anchor declares `ref`, the period
+    goes there by construction, and a question with a single answer is not a question.
+    That is why this rule reads the anchor and not the type: the type says *this is a
+    date*, the anchor says *this user had a choice*.
+
+    `names(ref, text)` is the dictionary's naming recogniser (T1), injected for the same
+    reason `mentions` is: `nli_core` depends on nothing, and deciding that *«scadenza»*
+    names `date_deadline` belongs to the component that knows the terms.
+    """
+    choices = frozenset((time_anchor or {}).get("choices") or ())
+    if not choices:
+        return []
+    failures: list[Failure] = []
+    for condition in state_module.conditions(state.get("filter")):
+        reference = condition.get("ref", "")
+        if reference not in choices:
+            continue
+        if condition.get("predicate") not in TEMPORAL_PREDICATES:
+            continue
+        text = ((condition.get("provenance") or {}).get("text") or "").strip()
+        if text and names(reference, text):
+            continue
+        failures.append(_failure(
+            3, "unanchored_period", reference,
+            f"the period on {reference!r} comes from a fragment that names no date "
+            f"({text!r}); this entity exposes {len(choices)} and D110 declares none of "
+            "them principal, so the attribute was chosen by the model" if text else
+            f"the period on {reference!r} carries no provenance, so there is nothing "
+            "that shows the user chose this date among the ones exposed (§10.3)",
         ))
     return failures
 
@@ -214,6 +286,8 @@ def validate(
     types: dict[str, str],
     category_costs: dict[str, str] | None = None,
     mentions=None,
+    names=None,
+    time_anchor: dict | None = None,
     limits: Limits = DEFAULT_LIMITS,
 ) -> list[Failure]:
     """Levels 3, 4 and 5 in sequence; the first that fails stops the chain (§12.2).
@@ -225,7 +299,9 @@ def validate(
     `mentions` omitted means the grounding of D105 is **not checked**. It is optional
     only because a caller with no dictionary at hand — a test on the contract alone —
     has nothing to check it with; every caller that has one passes it, and the
-    pipeline is the one that matters.
+    pipeline is the one that matters. `names` and `time_anchor` are the same bargain
+    for D135: without an anchor there is nothing that says the user had a choice of
+    dates, and a caller that cannot build one cannot check it.
     """
     level3 = validate_resolution(state, known_refs=known_refs)
     if level3:
@@ -237,7 +313,34 @@ def validate(
         grounding = validate_grounding(state, mentions=mentions)
         if grounding:
             return grounding
-    level4 = validate_types(state, types=types)
+    if names is not None and time_anchor is not None:
+        # **D135**, e sta qui e non altrove per la stessa ragione della riga sopra: la
+        # domanda e' se l'utente ha chiesto quello che lo stato dice. La categoria
+        # inventata e la data indovinata sono la stessa forma di fallimento, e per
+        # tutt'e due la risposta e' una domanda con le opzioni gia' pronte.
+        anchoring = validate_anchoring(state, names=names, time_anchor=time_anchor)
+        if anchoring:
+            return anchoring
+    # **Le due meta' del livello 4, e per un anno ne e' corsa una sola.**
+    # `validate_types` vuole i tipi; `coherence.validate_coherence` non vuole
+    # niente e non era chiamata da nessuno — profondita' del filtro,
+    # raggruppamenti, misure contro vista e la coerenza fra predicato e valore
+    # erano regole scritte, provate e mai eseguite sul prodotto. Trovato
+    # aggiungendo D124 e vedendolo non scattare su un caso che lo doveva far
+    # scattare: e' il modo in cui una regola morta si scopre, cioe' per caso.
+    level4 = (validate_types(state, types=types)
+              + coherence.validate_coherence(state, limits=limits))
     if level4:
         return level4
-    return validate_cost(state, category_costs=category_costs or {}, limits=limits)
+    # **E il livello 5 era diviso allo stesso modo, con lo stesso esito.** La riga qui
+    # sopra ha ricollegato `coherence.validate_coherence` e ha lasciato indietro la sua
+    # vicina di modulo: `coherence.validate_cost` — il massimo assoluto di record di
+    # **D13** e il limite di due salti di relazione di **D12** — non era chiamata da
+    # nessuno. Provato: `set_limit` a un milione passava struttura, stato e livelli 3-5
+    # senza un rifiuto, e arrivava all'Esecutore.
+    #
+    # Le due meta' si sommano invece di fermarsi alla prima, perche' sono lo stesso
+    # livello: un'interrogazione puo' essere insostenibile per due ragioni insieme, e
+    # dirne una sola costringerebbe l'utente a due giri per scoprire la seconda.
+    return (validate_cost(state, category_costs=category_costs or {}, limits=limits)
+            + coherence.validate_cost(state, limits=limits))

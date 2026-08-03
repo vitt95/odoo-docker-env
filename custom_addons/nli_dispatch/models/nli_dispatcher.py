@@ -135,6 +135,9 @@ class NliDispatcher(models.AbstractModel):
     def _run_batch(self, items, *, scope, context_window: int) -> int:
         """Run a claimed batch in parallel, one cursor and one identity per row."""
         dbname = self.env.cr.dbname
+        # D123: letto una volta per lotto e non per turno. E' un interruttore
+        # d'amministrazione, non una proprieta' della domanda.
+        debug = self._debug_enabled()
         jobs = [
             (item.id, item.user_id.id, item.turn_id.context_for_execution())
             for item in items
@@ -145,7 +148,7 @@ class NliDispatcher(models.AbstractModel):
                 executor.submit(
                     worker_module.execute, dbname, item_id, uid, context,
                     adapter_factory=self._adapter_factory(), scope=scope,
-                    context_window=context_window)
+                    context_window=context_window, debug=debug)
                 for item_id, uid, context in jobs
             ]
             for future in futures:
@@ -210,6 +213,22 @@ class NliDispatcher(models.AbstractModel):
             ceiling=pool_ceiling or pool_module.DEFAULT_POOL_CEILING,
         )
         return limits_module.Limits(pool=size)
+
+    @api.model
+    def _debug_enabled(self) -> bool:
+        """Se la modalita' diagnostica e' accesa (D123).
+
+        E' un parametro di sistema e non un campo del profilo: non e' una proprieta' del
+        modello, e' una scelta di chi sta guardando. Spenta di default, perche' accesa
+        ogni turno conserva la busta per intero — la frase dell'utente compresa.
+        """
+        # Nessun `sudo`: **V2 vale anche qui** e non serve. Questo metodo lo
+        # chiamano due soli posti, e tutti e due hanno gia' i diritti — il ciclo
+        # del dispatcher, che gira nell'ambiente del cron, e il pannello delle
+        # impostazioni, che apre solo un amministratore. Elevare qui vorrebbe dire
+        # aprire una terza strada che nessuno sta usando.
+        return self.env["ir.config_parameter"].get_param(
+            "aida.debug", "False") in ("True", "true", "1")
 
     @api.model
     def _context_window(self) -> int:

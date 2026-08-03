@@ -65,6 +65,12 @@ class NliProfile(models.Model):
         required=True, default=8192,
         help="Tokens the model accepts. The catalogue budget is derived from it "
              "(D79): a narrow window truncates the catalogue in silence.")
+    timeout_seconds = fields.Integer(
+        required=True, default=180,
+        help="How long to wait for one answer. Declared here and not fixed in the "
+             "adapter (D122): a nine-billion-parameter model on a laptop CPU takes "
+             "minutes per turn, a hosted one takes seconds, and a constant that suits "
+             "one of them turns every turn of the other into a failure.")
     constrained_generation = fields.Boolean(
         default=False,
         help="Whether the provider can constrain output to a JSON schema (§12.3). "
@@ -88,6 +94,8 @@ class NliProfile(models.Model):
     _sql_constraints = [
         ("context_window_positive", "CHECK (context_window > 0)",
          "A profile declares its context window (D78)."),
+        ("timeout_positive", "CHECK (timeout_seconds > 0)",
+         "A profile declares how long it may take to answer (D122)."),
     ]
 
     @api.constrains("endpoint", "protocol")
@@ -197,6 +205,7 @@ class NliProfile(models.Model):
             model=self.model_name,
             capabilities=self.capabilities(),
             secret_variable=self.secret_env_var or None,
+            timeout=self.timeout_seconds,
         )
 
     @api.model

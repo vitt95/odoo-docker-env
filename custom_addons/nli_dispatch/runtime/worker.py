@@ -28,6 +28,7 @@ tool for, and `pool.py` is where the size stops being a matter of taste.
 from __future__ import annotations
 
 import logging
+import traceback
 
 import odoo
 from odoo import api, fields
@@ -40,7 +41,7 @@ _logger = logging.getLogger(__name__)
 
 
 def execute(dbname, item_id: int, uid: int, context: dict, *, adapter_factory,
-            scope, context_window: int):
+            scope, context_window: int, debug: bool = False):
     """Run one queue row to completion. Never raises: it records and notifies.
 
     A thread that dies with an exception leaves a row in `running` and a user in
@@ -73,18 +74,31 @@ def execute(dbname, item_id: int, uid: int, context: dict, *, adapter_factory,
             item.notify({"outcome": outcome.outcome})
             return outcome
 
+        # **La scrittura sta dentro il `try` quanto l'interpretazione**, e per la
+        # ragione che il docstring dichiara: *«non solleva mai»*. Prima il `try`
+        # copriva `pipeline.run` e basta, quindi un guasto in `_persist` usciva dal
+        # thread — e la riga restava in `running` con l'utente davanti all'attesa fino
+        # al cron di recupero, cinque minuti dopo.
+        #
+        # Non e' un'ipotesi: `write_state` ha gia' fallito una volta, per la
+        # `dsl_version` mancante di `00` §30.1, e il primo turno che riusciva di ogni
+        # conversazione moriva li'. Allora il guasto fu corretto; il fatto che potesse
+        # uccidere il thread, no.
         try:
             outcome = pipeline.run(
                 env, item, adapter=adapter, scope=scope,
-                context_window=context_window)
+                context_window=context_window, debug=debug)
+            _persist(env, item, outcome)
         except Exception as error:  # noqa: BLE001 — see the docstring
             cr.rollback()
             return _fail(env, item_id, error)
 
-        _persist(env, item, outcome)
         cr.commit()
-        item.notify({"outcome": outcome.outcome,
-                     "interpretation": outcome.interpretation})
+        # D124: l'avviso dice **che** il turno e' finito, non cosa dice. Cio' che si
+        # disegna lo costruisce `_aida_payload`, in `nli_web`, e una sola volta: quando
+        # l'avviso portava anche l'interpretazione erano due strade verso lo stesso
+        # schermo, ed erano divergute in silenzio.
+        item.notify({"outcome": outcome.outcome})
         return outcome
 
 
@@ -106,6 +120,15 @@ def _persist(env, item, outcome):
     # la cronologia deve poter rimostrare (§12.7 li registra come turni completati).
     if outcome.interpretation is not None:
         values["interpretation_json"] = _dumped(outcome.interpretation)
+    # D123: la traccia c'e' solo se qualcuno l'ha chiesta accendendo la modalita'
+    # diagnostica. Un'installazione ordinaria non ne scrive nessuna, che e' il motivo
+    # per cui puo' contenere la busta per intero senza essere un archivio di frasi.
+    if outcome.debug is not None:
+        values["debug_json"] = _dumped(outcome.debug)
+    # D124: il piano non e' diagnostica, e' la query con cui si disegna la
+    # tabella. Si scrive per ogni turno eseguito.
+    if outcome.plan is not None:
+        values["plan_json"] = _dumped(outcome.plan)
     turn.write(values)
 
     if outcome.outcome == "operations":
@@ -123,12 +146,23 @@ def _fail(env, item_id: int, error: Exception):
     """Record an unexpected failure without ever writing what caused it verbatim.
 
     D60 forbids utterances and catalogues in diagnostic logs, and an exception
-    message can carry either — a validation error quotes the value it refused. The
-    class name is recorded; the detail stays in the exception, which is logged by the
-    platform with the rest of the traceback and not by us.
+    message can carry either — a validation error quotes the value it refused. So il
+    **messaggio** non si scrive, mai.
+
+    **La pila delle chiamate invece si scrive, e prima non succedeva.** Il docstring
+    diceva che il dettaglio *«resta nell'eccezione, che la piattaforma registra con la
+    traccia»*: non e' vero, perche' l'eccezione la catturiamo noi e non la rilanciamo.
+    Il risultato era una riga sola — `AIDA turn 80 failed: TypeError` — e nessun modo di
+    sapere dove. Trovato il 3 agosto 2026 debuggando un difetto mio: il file e la riga
+    erano l'unica cosa che serviva, ed erano l'unica che mancava.
+
+    `format_tb` scrive **solo i fotogrammi** — file, riga, sorgente — e non il messaggio
+    dell'eccezione, che e' il pezzo che potrebbe citare una frase dell'utente. La
+    distinzione e' la ragione per cui questo si puo' fare senza toccare D60.
     """
     item = env["nli.queue.item"].browse(item_id)
-    _logger.warning("AIDA turn %s failed: %s", item_id, type(error).__name__)
+    _logger.warning("AIDA turn %s failed: %s\n%s", item_id, type(error).__name__,
+                    "".join(traceback.format_tb(error.__traceback__)))
     # Chiudere la riga di coda non basta: il **turno** e' cio' che la cronologia
     # rilegge, e un turno senza esito e' un turno «in corso» per sempre. Prima di
     # questa riga, una conversazione riaperta mostrava l'animazione dell'attesa su una

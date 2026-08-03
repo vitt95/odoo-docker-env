@@ -143,6 +143,27 @@ class TestProfile(TransactionCase):
         """The other half: a check that refuses everything is not a check either."""
         self.assertEqual(self.profile(context_window=1).context_window, 1)
 
+    # --- D122 --------------------------------------------------------------
+
+    def test_the_adapter_is_built_with_the_declared_timeout(self):
+        """Misurato il 2 agosto: il modello locale impiegava 60,1 s per una chiamata e
+        l'adattatore ne concedeva 60 fissi, quindi **ogni** turno scadeva. Il valore
+        deve arrivare dal profilo, o non c'e' modo di usare il prodotto con un modello
+        piu' lento di quanto qualcuno ha scritto in una costante."""
+        profile = self.profile(timeout_seconds=240)
+        self.assertEqual(profile.adapter().timeout, 240)
+
+    def test_the_default_is_generous_enough_for_a_local_model(self):
+        """Il valore che si prende senza scegliere non deve essere quello che rompe il
+        caso su cui si sviluppa."""
+        self.assertGreaterEqual(self.profile().timeout_seconds, 180)
+
+    def test_a_timeout_that_is_not_positive_is_refused(self):
+        with self.assertRaises(Exception) as refusal:
+            self.profile(timeout_seconds=0)
+            self.env.flush_all()
+        self.assertIn("timeout_positive", str(refusal.exception))
+
     # The obvious next assertion — that the declared window drives the catalogue
     # budget (D79) — is **not** here, and the boundary check is what said so: it
     # would import `nli_semantics` from `nli_engine`, and §6.3 forbids that edge.

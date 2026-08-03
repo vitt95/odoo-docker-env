@@ -614,3 +614,86 @@ class TestNormalisation(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestAPeriodSupersedesThePrevious(unittest.TestCase):
+    """D125 — un periodo nuovo prende il posto di quello sullo stesso attributo.
+
+    Visto sul campo: tre turni di seguito sulla data di creazione lasciavano tre
+    periodi in AND, il livello 4 li rifiutava, e ogni tentativo di uscirne ne
+    aggiungeva un quarto. **La stessa frase che aveva funzionato al primo turno non
+    funzionava piu' al terzo.**
+    """
+
+    @staticmethod
+    def _add(ref, expression, predicate="within", combine="all"):
+        return {"op": "add_condition", "combine": combine,
+                "condition": {"ref": ref, "predicate": predicate,
+                              "value": {"kind": "temporal", "expression": expression}},
+                "provenance": {"text": expression}}
+
+    def _periods(self, state, ref):
+        return [c for c in state_module.conditions(state.get("filter"))
+                if c.get("ref") == ref]
+
+    def _apply(self, *operations):
+        return applicator.apply({"dsl_version": "1.0"}, list(operations)).state
+
+    def test_the_second_period_replaces_the_first(self):
+        state = self._apply(
+            {"op": "set_target", "ref": "ordini", "provenance": {"text": "ordini"}},
+            self._add("ordini.data", "current_year"),
+            self._add("ordini.data", "current_month"),
+        )
+        periods = self._periods(state, "ordini.data")
+        self.assertEqual(len(periods), 1)
+        self.assertEqual(periods[0]["value"]["expression"], "current_month")
+
+    def test_a_state_already_spoiled_repairs_itself(self):
+        """Le conversazioni guaste da prima della regola guariscono al turno dopo."""
+        state = self._apply(
+            {"op": "set_target", "ref": "ordini", "provenance": {"text": "ordini"}},
+            self._add("ordini.data", "current_year"),
+        )
+        # Due periodi messi a mano, come li porta uno stato scritto prima di D125.
+        state["filter"] = {"connective": "all", "conditions": [
+            {"id": "c1", "ref": "ordini.data", "predicate": "within",
+             "value": {"kind": "temporal", "expression": "current_year"}},
+            {"id": "c2", "ref": "ordini.data", "predicate": "within",
+             "value": {"kind": "temporal", "expression": "last_n_months"}},
+        ]}
+        risanato = applicator.apply(
+            state, [self._add("ordini.data", "current_quarter")]).state
+        periods = self._periods(risanato, "ordini.data")
+        self.assertEqual(len(periods), 1)
+        self.assertEqual(periods[0]["value"]["expression"], "current_quarter")
+
+    def test_a_period_on_another_attribute_is_still_added(self):
+        """§17.1: un asse nuovo si somma, ed e' cio' che fa funzionare la conversazione."""
+        state = self._apply(
+            {"op": "set_target", "ref": "ordini", "provenance": {"text": "ordini"}},
+            self._add("ordini.data", "current_year"),
+            self._add("ordini.consegna", "current_month"),
+        )
+        self.assertEqual(len(self._periods(state, "ordini.data")), 1)
+        self.assertEqual(len(self._periods(state, "ordini.consegna")), 1)
+
+    def test_a_condition_that_is_not_a_period_is_still_added(self):
+        state = self._apply(
+            {"op": "set_target", "ref": "ordini", "provenance": {"text": "ordini"}},
+            self._add("ordini.data", "current_year"),
+            {"op": "add_condition", "combine": "all",
+             "condition": {"ref": "ordini.confermati", "predicate": "is_category"},
+             "provenance": {"text": "confermati"}},
+        )
+        refs = [c.get("ref") for c in state_module.conditions(state.get("filter"))]
+        self.assertEqual(sorted(refs), ["ordini.confermati", "ordini.data"])
+
+    def test_under_any_two_periods_are_a_union_and_survive(self):
+        """*«di marzo o di settembre»* e' una cosa che si puo' voler dire davvero."""
+        state = self._apply(
+            {"op": "set_target", "ref": "ordini", "provenance": {"text": "ordini"}},
+            self._add("ordini.data", "current_year", combine="any"),
+            self._add("ordini.data", "current_month", combine="any"),
+        )
+        self.assertEqual(len(self._periods(state, "ordini.data")), 2)

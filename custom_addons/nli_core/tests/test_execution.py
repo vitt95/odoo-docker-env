@@ -100,10 +100,13 @@ class TestEndToEnd(TransactionCase):
         self.assertEqual(result.total, 2)
 
         shown = presenter.present(state=state, plan=outcome.plan, result=result)
-        action = shown.action()
-        self.assertEqual(action["res_model"], "res.partner")
-        self.assertEqual(action["view_mode"], "list")
-        self.assertIn(("city", "=", "Cittaprova"), action["domain"])
+        # Il piano **e'** la query, e da qui in poi e' lui che viaggia: `nli_web` lo
+        # passa alla vista lista di Odoo incorporata (`00` §33.4). Prima questa riga
+        # controllava `Presentation.action()`, che costruiva un'azione che non
+        # chiamava nessuno — l'unico lettore era questa prova.
+        self.assertEqual(shown.plan.model, "res.partner")
+        self.assertEqual(shown.plan.view, "list")
+        self.assertIn(("city", "=", "Cittaprova"), shown.plan.domain)
 
     def test_the_count_precedes_the_retrieval(self):
         """D68 — eighty records with no context are read as **all of them**."""

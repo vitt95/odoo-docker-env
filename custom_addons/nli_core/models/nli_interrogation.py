@@ -168,6 +168,24 @@ class NliTurn(models.Model):
     #: riaprire una sessione e' una lettura e basta — che e' cio' che tiene la chat
     #: reattiva quando i turni diventano centinaia.
     interpretation_json = fields.Text()
+    #: Il piano risolto: modello, dominio, campi, ordine, limite (D124). **Non e'
+    #: diagnostica**: e' cio' con cui la chat costruisce la tabella dei record, quindi
+    #: si scrive sempre per un turno eseguito e non solo a modalita' accesa.
+    #:
+    #: Non porta parole dell'utente — i valori sono gia' risolti in date e numeri — ma
+    #: porta nomi tecnici, e per questo esce solo verso il proprietario del turno.
+    plan_json = fields.Text()
+    #: La traccia diagnostica del turno: la busta del modello, lo stato e **la query**
+    #: (D123). Scritta solo quando la modalita' diagnostica e' accesa, quindi
+    #: un'installazione ordinaria non ne conserva nessuna.
+    #:
+    #: **Contiene testo dell'utente in chiaro**, perche' la busta porta la provenienza
+    #: di ogni operazione, cioe' i frammenti della frase. E' lo stesso prezzo che D115
+    #: ha gia' pagato per `utterance`, con la stessa protezione: la regola di record di
+    #: `nli.turn` e la cancellazione a cascata con la conversazione. Non e' un registro
+    #: diagnostico e non finisce nei log — D60 vieta frasi e cataloghi li' dentro, e
+    #: questo e' il motivo per cui la traccia sta sul turno e non in un file.
+    debug_json = fields.Text()
     executed_at = fields.Datetime()
     record_count = fields.Integer(
         help="Total matching records, counted before retrieval (D68).")
@@ -176,11 +194,17 @@ class NliTurn(models.Model):
     def interpretation(self) -> dict:
         return json.loads(self.interpretation_json or "{}")
 
-    _sql_constraints = [
-        ("companies_required",
-         "CHECK (true)",
-         "A turn without a company context is refused, never executed (D40)."),
-    ]
+    # **Nessun vincolo SQL qui, e la ragione va scritta.** C'era, si chiamava
+    # `companies_required` e verificava `CHECK (true)`: un vincolo che dichiara una
+    # garanzia e non ne verifica nessuna. E' la stessa forma di `00` §20.2 — il `CHECK`
+    # di `nli_profile` che PostgreSQL rifiutava per una virgola e che non e' mai
+    # esistito in nessun database — con l'aggravante che qui il testo era valido, quindi
+    # non c'era nemmeno un `ERROR` nei log a tradirlo.
+    #
+    # La versione giusta **non e' scrivibile**: `company_ids` e' un many2many, le righe
+    # stanno in un'altra tabella, e un `CHECK` di riga non puo' contare le righe di una
+    # relazione. La garanzia di D40 la da' il `@api.constrains` qui sotto, che gira
+    # sull'ORM ed e' provato. Togliere il vincolo finto e dirlo vale piu' che tenerlo.
 
     @api.constrains("company_ids")
     def _check_company_context(self):

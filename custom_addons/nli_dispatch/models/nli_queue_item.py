@@ -57,6 +57,16 @@ SUPERSEDED = "superseded"
 #: States from which nothing else will happen. Reaching one erases the utterance.
 FINAL_STATES = (DONE, FAILED, EXPIRED, SUPERSEDED)
 
+#: How a turn nobody executed is told. The queue's state and the turn's outcome are
+#: two different vocabularies on purpose — the first describes the row, the second
+#: describes what the user got — but for a turn that never ran they say the same thing,
+#: and the turn has to say *something* or it stays a spinner for ever.
+TURN_OUTCOME_FOR_STATE = {
+    EXPIRED: "expired",
+    SUPERSEDED: "superseded",
+    FAILED: "failed",
+}
+
 
 class NliQueueItem(models.Model):
     _name = "nli.queue.item"
@@ -256,6 +266,17 @@ class NliQueueItem(models.Model):
         Not in a later pass, and not by a retention job: the sentence is transient by
         design (D96), and a transient thing that outlives its use by one cleanup cycle
         is a retained thing with extra steps.
+
+        **The turn is closed too, when nobody else closed it.** A queue row that reaches
+        a final state without the pipeline having run leaves a turn with no outcome, and
+        a turn with no outcome is a turn *in corso* for ever: the history shows it
+        waiting for an answer nobody will give. `worker._fail` already closed this for
+        the failure it handles; every other way of ending — expiry, supersession, a
+        failure recorded from the cron — went through here and closed nothing.
+
+        It only writes when the turn is still blank. A completed turn already carries
+        the outcome the pipeline produced, and overwriting it would replace the answer
+        with the name of the queue state that followed it.
         """
         values = {
             "state": state,
@@ -265,6 +286,10 @@ class NliQueueItem(models.Model):
         if failure_reason:
             values["failure_reason"] = failure_reason
         self.write(values)
+        for record in self:
+            turn = record.turn_id
+            if turn and not turn.outcome:
+                turn.outcome = TURN_OUTCOME_FOR_STATE.get(state, "failed")
         return self
 
     def utterance(self) -> str:

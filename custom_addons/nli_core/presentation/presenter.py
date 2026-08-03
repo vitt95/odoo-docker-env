@@ -12,26 +12,25 @@ So `Presentation` holds the state, the interpretation and the result together, a
 there is no constructor that takes only the result. The architectural check of §6.4
 asks exactly this: that the Presenter receive state and result together.
 
-## Native views (V4)
+## Native views (V4), e chi le costruisce
 
-The result is an `ir.actions.act_window` on the entity, with the resolved domain and
-the derived view. Not a rendering of our own: a conversational result must be
-indistinguishable from the first page of a native view (`02` §4.6), which is also
-what makes every element actionable for free (D66) — the actions are Odoo's.
+Un risultato conversazionale dev'essere indistinguibile dalla prima pagina di una
+vista nativa (`02` §4.6), che e' anche cio' che rende ogni elemento azionabile senza
+lavoro (D66) — le azioni sono di Odoo.
+
+**Non e' pero' questo modulo a costruirla.** Qui c'era un metodo `action()` che
+produceva un `ir.actions.act_window`, e **non lo chiamava nessuno**: dal 2 agosto
+(`00` §33.4) la vista nativa e' *incorporata* nella conversazione dal componente
+`AidaRecords` di `nli_web`, che riceve il piano risolto e lascia a Odoo tabella,
+ordinamento, colonne e paginazione.
+
+Il metodo e' stato tolto invece di essere ricollegato, perche' due strade verso lo
+stesso schermo sono esattamente cio' che D124 ha appena chiuso — e una delle due era
+gia' morta. Un metodo che realizza un vincolo e non gira non e' una garanzia: e' una
+garanzia che sembra esserci.
 """
 
 from ..resolution.plan import Plan
-
-#: Contract view names to Odoo view types. `list` is Odoo 18's name for what earlier
-#: versions called `tree`.
-VIEW_TYPES = {
-    "list": "list",
-    "kanban": "kanban",
-    "calendar": "calendar",
-    "pivot": "pivot",
-    "graph": "graph",
-    "form": "form",
-}
 
 
 class Presentation:
@@ -47,20 +46,6 @@ class Presentation:
         self.plan = plan
         self.result = result
         self.interpretation = interpretation
-
-    def action(self) -> dict:
-        """The native Odoo action that shows the result (V4)."""
-        view_type = VIEW_TYPES.get(self.plan.view, "list")
-        return {
-            "type": "ir.actions.act_window",
-            "res_model": self.plan.model,
-            "domain": list(self.plan.domain),
-            "view_mode": view_type,
-            "views": [(False, view_type)],
-            "limit": self.plan.limit,
-            "context": {"create": False},
-            "target": "current",
-        }
 
 
 def interpretation_of(state: dict, plan: Plan, result) -> dict:
@@ -107,6 +92,18 @@ def interpretation_of(state: dict, plan: Plan, result) -> dict:
         "presentation": state.get("presentation"),
         "records": result.describe(),
         "truncated": result.truncated,
+        # I numeri, quando lo stato ne ha chiesti. **Fino al 3 agosto 2026 non c'erano**
+        # e la sezione `measures` qui sopra elencava le misure senza mai portarne il
+        # valore: l'interpretazione diceva «media di fatturato» sopra un elenco di
+        # record. Dichiarare una misura e non mostrarne il numero e' la forma di D2 che
+        # costa di piu' — l'utente crede di aver letto una media.
+        "results": [
+            {"keys": list(group.keys),
+             "measures": [{"function": function, "ref": reference or None,
+                           "value": value}
+                          for (function, reference), value in group.measures.items()]}
+            for group in getattr(result, "groups", ()) or ()
+        ],
     }
 
 

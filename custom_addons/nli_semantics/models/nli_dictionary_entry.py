@@ -106,7 +106,12 @@ class NliDictionaryEntry(models.Model):
                       if line.strip()],
             "version": self.version,
         }
-        if self.entity_ref:
+        # `entity` solo per i tipi che la dichiarano (T5, T4). Per un **T1** e' una
+        # chiave in piu' e il validatore la rifiuta — cioe' il registro dichiarava T1
+        # fra i tipi approvabili e poi non ne accettava **nemmeno uno**. L'entita' di
+        # un T1 e' gia' nel suo riferimento: `res_partner` la nomina, `res_partner.city`
+        # la contiene.
+        if self.entity_ref and self.entry_type not in ("T1", "T2"):
             entry["entity"] = self.entity_ref
         if self.entry_type == "T5":
             entry["condition"] = self.condition_value()

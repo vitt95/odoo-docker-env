@@ -106,6 +106,41 @@ class TestCalendar(unittest.TestCase):
             "2026-07-01 - 2026-07-31",
         )
 
+    def test_the_description_says_which_side_of_the_period_was_taken(self):
+        """**Visto sul campo il 3 agosto 2026, ed e' il difetto peggiore dei tre di
+        quel turno.** Lo stato diceva `after current_year`, il dominio eseguito era
+        `create_date >= 2026-12-31 23:00:00` — cioe' *dopo la fine dell'anno*, zero
+        record — e l'interpretazione sopra la risposta diceva
+        *«crm_lead.create_date: 2026-01-01 - 2026-12-31»*.
+
+        Cioe' il prodotto mostrava **la finestra dell'espressione** invece
+        dell'insieme che aveva davvero interrogato. L'utente leggeva l'anno intero e
+        riceveva nessun record: non aveva nessun modo di capire perche'. E' la forma
+        pura del rischio di **D2** (il cancello che vieta le scritture finche' la Fase 2
+        non e' misurata), una risposta sbagliata con l'aria di essere giusta — con
+        l'aggravante che qui il pezzo che avrebbe dovuto spiegarla la nascondeva.
+
+        Il predicato fa parte di cosa e' stato chiesto, quindi entra nella descrizione.
+        """
+        self.assertEqual(
+            calendar_module.describe(temporal("current_year"), CALENDAR_YEAR,
+                                     predicate="after"),
+            "> 2026-12-31")
+        self.assertEqual(
+            calendar_module.describe(temporal("current_year"), CALENDAR_YEAR,
+                                     predicate="before"),
+            "< 2026-01-01")
+
+    def test_a_period_taken_whole_is_described_as_before(self):
+        """`on` e `within` chiedono la stessa cosa — se la data e' dentro — e la
+        finestra e' la risposta giusta per tutt'e due."""
+        for predicate in ("on", "within"):
+            with self.subTest(predicate=predicate):
+                self.assertEqual(
+                    calendar_module.describe(temporal("current_month"), CALENDAR_YEAR,
+                                             predicate=predicate),
+                    "2026-07-01 - 2026-07-31")
+
 
 def bindings_of_orders() -> dict[str, Binding]:
     return {
@@ -328,6 +363,56 @@ class TestContextualValidation(unittest.TestCase):
                 state, category_costs={"ordini_vendita.importanti": "aggregate"}),
             [],
         )
+
+    # -- il livello 5 sul percorso vivo ------------------------------------
+    #
+    # **Queste quattro prove interrogano `validate` e non le funzioni sotto**, ed e' il
+    # punto. Le regole del livello 5 erano gia' provate una per una e passavano tutte,
+    # mentre nessuna girava sul prodotto: `coherence.validate_cost` non era chiamata da
+    # nessuno e `category_costs` non lo passava nessuno. Una prova che chiama la regola
+    # direttamente non puo' accorgersene. Queste falliscono se qualcuno la scollega.
+
+    def test_the_absolute_record_ceiling_is_on_the_path(self):
+        """D13 fissa il massimo assoluto a 500, e fino a oggi non lo applicava nessuno.
+
+        Misurato prima della correzione: `set_limit` a un milione passava la struttura,
+        passava lo stato, passava i livelli 3-5 e arrivava all'Esecutore, che chiedeva
+        un milione di record a Odoo su un processo cron condiviso. Nessun privilegio da
+        scalare: bastava scriverlo in italiano.
+        """
+        failures = contextual.validate(
+            state_with(limit={"value": 501, "origin": "user"}),
+            known_refs=self.KNOWN, types=self.TYPES)
+        self.assertIn("limit_above_maximum", self.codes(failures))
+
+    def test_a_limit_at_the_ceiling_is_admitted(self):
+        """E la prova gemella: il controllo non deve scattare a 500 (`restart.md`)."""
+        failures = contextual.validate(
+            state_with(limit={"value": 500, "origin": "user"}),
+            known_refs=self.KNOWN, types=self.TYPES)
+        self.assertEqual(failures, [])
+
+    def test_the_relation_hop_limit_is_on_the_path(self):
+        """§7.3 e D12: oltre due salti la strada e' un riferimento promosso (T7)."""
+        reference = "ordini_vendita.cliente.paese.codice.zona"
+        failures = contextual.validate(
+            state_with(fields=[{"ref": reference, "origin": "user"}]),
+            known_refs=self.KNOWN | {reference}, types=self.TYPES)
+        self.assertIn("too_many_relation_hops", self.codes(failures))
+
+    def test_the_cost_of_the_categories_is_on_the_path(self):
+        """V-D87-2 attraverso l'unica porta che il pipeline apre."""
+        state = state_with(filter={"connective": "all", "conditions": [
+            condition("ordini_vendita.confermati", "is_category", identifier="c1"),
+            condition("ordini_vendita.importanti", "is_category", identifier="c2"),
+        ]})
+        failures = contextual.validate(
+            state,
+            known_refs=self.KNOWN | {"ordini_vendita.importanti"},
+            types={**self.TYPES, "ordini_vendita.importanti": "category"},
+            category_costs={"ordini_vendita.confermati": "aggregate",
+                            "ordini_vendita.importanti": "aggregate"})
+        self.assertIn("too_many_aggregate_categories", self.codes(failures))
 
     def test_level_4_does_not_run_when_level_3_failed(self):
         """§12.2 — a type read from a reference that does not exist is not a type."""

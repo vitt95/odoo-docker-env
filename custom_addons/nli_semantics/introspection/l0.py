@@ -133,6 +133,102 @@ def attribute_descriptors(env, model_name: str, *, l1_relevant=frozenset(),
     return descriptors
 
 
+#: Separatori dentro un'etichetta di modello: `Lead/Opportunità`, `Ordine, preventivo`.
+#: Ogni pezzo e' un nome per conto suo, non una parte di un nome solo.
+_LABEL_SEPARATORS = ("/", ",", "&")
+
+#: Sotto questa lunghezza un nome di menu non e' un nome di entita': e' un'abbreviazione
+#: o un verbo, e indicizzarlo produce collisioni invece di riconoscimenti.
+_MIN_TERM = 4
+
+
+def _entity_terms(env, model_name: str, label: str) -> list[str]:
+    """I nomi con cui una persona chiama questa entita' (D126).
+
+    **Il difetto che chiude.** L'entita' aveva **un termine solo: l'etichetta grezza**.
+    `crm.lead` si chiamava `Lead/Opportunità`, e nessuna frase italiana contiene quella
+    stringa: il normalizzatore la riduce ai gettoni `lead opportunita`, che come termine
+    unico pretende di trovarli tutti e due di fila. Misurato sul database vero, la fase
+    A non riconosceva **nessuna** entita' — nemmeno *«opportunita'»*, che e' meta' del
+    nome del modello.
+
+    **Perche' raccogliere e non generare.** Le parole che l'utente usa sono gia' scritte
+    nell'installazione, e sono vere:
+
+    * l'etichetta, **e i suoi pezzi**: `Lead/Opportunità` sono due nomi, non uno;
+    * i nomi delle **azioni** che aprono quel modello da un menu;
+    * i nomi delle **voci di menu** che ci portano — le parole che l'utente preme da
+      anni, gia' tradotte e gia' rinominate se il cliente le ha rinominate.
+
+    Il plurale non si costruisce con regole di morfologia italiana, che sbaglierebbero
+    su *«Registrazioni contabili»* e sulle parole straniere: **si legge nel menu**, dove
+    e' gia' scritto. Il modello si chiama *Ordine di vendita*, il menu si chiama
+    *Ordini di vendita*, e il secondo e' quello che la gente dice.
+
+    Chiedere i sinonimi al modello sarebbe P4: un nome di entita' inventato e' il
+    fallimento che D14 e D105 esistono per impedire.
+
+    **Solo le azioni che un menu raggiunge.** `act_window` ne esiste una pila per ogni
+    modello, molte con nomi di servizio; quelle appese a un menu sono quelle che una
+    persona ha davanti.
+    """
+    terms: list[str] = []
+
+    def _consider(text):
+        for candidate in _split_label(text or ""):
+            if candidate and candidate not in terms:
+                terms.append(candidate)
+
+    _consider(label)
+    for name in _menu_facing_names(env, model_name):
+        if len(name) >= _MIN_TERM:
+            _consider(name)
+    return terms or [label]
+
+
+def _split_label(text: str) -> list[str]:
+    """L'etichetta intera **piu'** i suoi pezzi.
+
+    Intera perche' chi dice *«lead/opportunità»* deve trovarla; a pezzi perche' chi dice
+    *«i lead»* pure. Sono termini distinti e non si escludono: il vocabolario si somma
+    (`06` §2.2), anche dentro un livello.
+    """
+    text = (text or "").strip()
+    if not text:
+        return []
+    parts = [text]
+    for separator in _LABEL_SEPARATORS:
+        if separator in text:
+            parts.extend(piece.strip() for piece in text.split(separator))
+            break
+    return [part for part in parts if part]
+
+
+def _menu_facing_names(env, model_name: str) -> list[str]:
+    """I nomi con cui questo modello compare nei menu.
+
+    Nessun `sudo` (**V2**): si legge con i diritti di chi sta chiedendo, ed e' giusto
+    cosi' — un utente che non vede il menu degli ordini non deve nemmeno saperne il
+    nome. Se la lettura non riesce si torna vuoti: un nome in meno rende la fase A meno
+    brava, un'eccezione qui renderebbe il dizionario non costruibile.
+    """
+    try:
+        actions = env["ir.actions.act_window"].search(
+            [("res_model", "=", model_name)])
+        if not actions:
+            return []
+        menus = env["ir.ui.menu"].search(
+            [("action", "in", [f"ir.actions.act_window,{a.id}" for a in actions])])
+        names = list(menus.mapped("name"))
+        # Il nome dell'azione conta solo se un menu la raggiunge: e' il filtro che
+        # tiene fuori le azioni di servizio.
+        names.extend(action.name for action in actions
+                     if action.id in {m.action.id for m in menus if m.action})
+        return [name for name in names if name]
+    except Exception:  # noqa: BLE001 — vedi il docstring
+        return []
+
+
 def naming_entries(env, model_name: str) -> list[dict]:
     """T1 entries for the entity and its fields, from the translated labels.
 
@@ -145,7 +241,7 @@ def naming_entries(env, model_name: str) -> list[dict]:
     entries.append({
         "type": "T1", "level": "L0",
         "ref": reference_of_model(model_name),
-        "terms": [label],
+        "terms": _entity_terms(env, model_name, label),
     })
     for name, info in model.fields_get().items():
         string = info.get("string")

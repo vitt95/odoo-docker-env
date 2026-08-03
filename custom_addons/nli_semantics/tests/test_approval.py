@@ -137,3 +137,103 @@ class TestApproval(TransactionCase):
         self.assertFalse(
             [ref for ref in semantics.bindings if "richiamare" in ref],
             "a saved filter must not become a category on its own")
+
+
+@tagged("post_install", "-at_install")
+class TestEntityNaming(TransactionCase):
+    """D126 — un'entita' ha i nomi con cui la gente la chiama, non l'etichetta grezza.
+
+    Misurato sul database vero il 2 agosto 2026: la fase A non riconosceva **nessuna**
+    entita', perche' `crm.lead` aveva un termine solo — `Lead/Opportunità` — e nessuna
+    frase italiana contiene quella stringa.
+
+    **Le prove guardano il meccanismo, non i dati dell'installazione.** Asserire che
+    `res.partner` si chiama *Contatti* legherebbe la prova ai moduli installati e alla
+    lingua della banca dati, e la prima volta che cambiano fallisce per una ragione che
+    non riguarda questo codice. Il menu se lo costruisce la prova.
+    """
+
+    def setUp(self):
+        super().setUp()
+        from odoo.addons.nli_semantics.introspection import l0
+        self.l0 = l0
+
+    def _terms(self, model_name):
+        return self.l0.naming_entries(self.env, model_name)[0]["terms"]
+
+    # --- l'etichetta composta ---------------------------------------------
+
+    def test_a_composite_label_becomes_several_names(self):
+        """`Lead/Opportunità` sono due nomi, non uno: chi dice «i lead» deve trovarlo.
+
+        Il normalizzatore riduce l'etichetta ai gettoni `lead opportunita`, e come
+        termine unico pretende di trovarli tutti e due di fila — cosa che nessuna frase
+        fa."""
+        self.assertEqual(
+            self.l0._split_label("Lead/Opportunità"),
+            ["Lead/Opportunità", "Lead", "Opportunità"])
+
+    def test_the_whole_label_is_kept_too(self):
+        """Il vocabolario si somma (`06` §2.2): i pezzi non sostituiscono l'intero."""
+        self.assertIn("Ordine, preventivo", self.l0._split_label("Ordine, preventivo"))
+
+    def test_a_plain_label_stays_one_name(self):
+        self.assertEqual(self.l0._split_label("Contatto"), ["Contatto"])
+
+    def test_an_empty_label_produces_nothing_instead_of_an_empty_term(self):
+        self.assertEqual(self.l0._split_label("   "), [])
+
+    # --- i nomi che vengono dai menu --------------------------------------
+
+    def test_the_name_in_the_menu_becomes_a_term(self):
+        """Il modello si chiama *Contatto*, il menu *Le mie rubriche*, e la gente dice
+        quello che preme. Leggerlo evita di costruire i plurali con regole di
+        morfologia, che sbagliano sulle parole straniere e sui femminili irregolari."""
+        azione = self.env["ir.actions.act_window"].create({
+            "name": "Rubriche aziendali", "res_model": "res.partner",
+            "view_mode": "list,form",
+        })
+        self.env["ir.ui.menu"].create({
+            "name": "Rubriche aziendali", "action": f"ir.actions.act_window,{azione.id}",
+        })
+        self.assertIn("Rubriche aziendali", self._terms("res.partner"))
+
+    def test_an_action_nobody_reaches_from_a_menu_is_not_a_name(self):
+        """`act_window` ne esiste una pila per ogni modello, molte di servizio. Quelle
+        appese a un menu sono quelle che una persona ha davanti."""
+        self.env["ir.actions.act_window"].create({
+            "name": "Azione tecnica di servizio", "res_model": "res.partner",
+            "view_mode": "list",
+        })
+        self.assertNotIn("Azione tecnica di servizio", self._terms("res.partner"))
+
+    def test_a_name_too_short_is_not_a_name(self):
+        """Sotto quattro caratteri e' un'abbreviazione o un verbo: indicizzarlo produce
+        collisioni invece di riconoscimenti."""
+        azione = self.env["ir.actions.act_window"].create({
+            "name": "Ok", "res_model": "res.partner", "view_mode": "list"})
+        self.env["ir.ui.menu"].create({
+            "name": "Ok", "action": f"ir.actions.act_window,{azione.id}"})
+        self.assertNotIn("Ok", self._terms("res.partner"))
+
+    # --- cio' che non deve rompersi ---------------------------------------
+
+    def test_a_model_nobody_reaches_still_has_its_label(self):
+        """Un'entita' senza nomi non e' nominabile: meglio l'etichetta grezza di
+        niente."""
+        self.assertTrue(self._terms("ir.attachment"))
+
+    def test_no_term_is_repeated(self):
+        azione = self.env["ir.actions.act_window"].create({
+            "name": "Contatto", "res_model": "res.partner", "view_mode": "list"})
+        self.env["ir.ui.menu"].create({
+            "name": "Contatto", "action": f"ir.actions.act_window,{azione.id}"})
+        terms = self._terms("res.partner")
+        self.assertEqual(len(terms), len(set(terms)), terms)
+
+    def test_the_fields_keep_their_single_label(self):
+        """L'arricchimento riguarda l'entita': un campo si chiama come si chiama."""
+        voci = self.l0.naming_entries(self.env, "res.partner")
+        campi = [v for v in voci if "." in v["ref"]]
+        self.assertTrue(campi)
+        self.assertTrue(all(len(v["terms"]) == 1 for v in campi))

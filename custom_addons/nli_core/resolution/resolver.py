@@ -204,7 +204,7 @@ def _condition_domain(condition, bindings, instant, resolvers, failures, periods
     if predicate in ("on", "before", "after", "within") or (
             predicate == "between" and value.get("kind") == "temporal"):
         return _temporal_domain(field, predicate, value, instant, condition, periods,
-                                failures)
+                                failures, is_instant=binding.type == "datetime")
 
     if predicate == "between":
         return ["&", (field, ">=", value.get("from")), (field, "<=", value.get("to"))]
@@ -252,17 +252,44 @@ def _approximate(value, resolvers, reference, failures):
     return amount - delta, amount + delta
 
 
-def _temporal_domain(field, predicate, value, instant, condition, periods, failures):
+def _temporal_domain(field, predicate, value, instant, condition, periods, failures,
+                     *, is_instant: bool = False):
+    """Un periodo in due estremi, nell'unita' della colonna che interroga.
+
+    **`is_instant` e' la correzione del 3 agosto 2026, e vale un numero sbagliato al
+    giorno.** Odoo conserva i `datetime` in **UTC**; il calendario qui sopra lavora
+    sull'ora dell'utente, perche' *«questo mese»* deve voler dire il suo mese (§9.2).
+    Fino a oggi i due non si incontravano: gli estremi uscivano come date nude —
+    `('create_date', '>=', '2026-08-03')` — e finivano confrontati con una colonna in
+    UTC, senza che nessuno convertisse.
+
+    Su un'installazione italiana d'estate lo scarto e' di due ore: *«i lead creati
+    oggi»* **escludeva** quelli inseriti fra mezzanotte e le due e **includeva** quelli
+    di ieri sera dopo le 22. Un numero plausibile, vicino a quello giusto, e sbagliato —
+    e su una finestra corta e' l'8% delle righe. Il campo colpito e' `create_date`, cioe'
+    proprio quello che **D117** (la decisione che lo toglie dai campi tecnici perche'
+    *«quando e' stato creato»* e' la prima cosa che si intende) ha appena rimesso nel
+    catalogo.
+
+    Su un campo `date` non c'e' niente da convertire: un giorno e' un giorno in ogni
+    fuso, e il confronto resta quello di prima.
+    """
     try:
         window = calendar_module.resolve(value, instant)
     except calendar_module.UnresolvableExpression as error:
         failures.append(ResolutionFailure(condition["ref"], str(error)))
         return []
 
-    # D67: the interpretation shows the **resolved** period, not the expression.
-    periods.append((condition["ref"], calendar_module.describe(value, instant)))
+    # D67: the interpretation shows the **resolved** period, not the expression. Si
+    # mostra il periodo **locale**, che e' quello che l'utente ha chiesto: dirgli che
+    # «oggi» va dal 2 alle 22:00 sarebbe esatto e incomprensibile.
+    periods.append(
+        (condition["ref"], calendar_module.describe(value, instant, predicate)))
 
-    start, end = window.start.isoformat(), window.end.isoformat()
+    if is_instant:
+        start, end = instant.as_utc(window.start), instant.as_utc(window.end)
+    else:
+        start, end = window.start.isoformat(), window.end.isoformat()
     if predicate == "before":
         return [(field, "<", start)]
     if predicate == "after":

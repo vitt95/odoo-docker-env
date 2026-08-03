@@ -239,3 +239,71 @@ class TestCost(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestTwoPeriodsOnOneAttribute(unittest.TestCase):
+    """D124 — due periodi sullo stesso attributo si intersecano, non raffinano.
+
+    Misurato il 2 agosto 2026: *«i lead creati quest'anno»* e poi *«i lead creati da 6
+    mesi ad oggi»* producevano `create_date` dentro l'anno **e** dentro i sei mesi. Il
+    conteggio non cambiava — 39 e 39 — quindi non c'era niente da notare.
+    """
+
+    @staticmethod
+    def _period(ref, expression, identifier, predicate="within"):
+        return {"id": identifier, "ref": ref, "predicate": predicate,
+                "value": {"kind": "temporal", "expression": expression},
+                "origin": "user"}
+
+    def _state(self, *conditions):
+        return base_state(filter={"connective": "all", "conditions": list(conditions)})
+
+    def test_two_periods_on_the_same_attribute_are_refused(self):
+        failures = coherence.validate_coherence(self._state(
+            self._period("ordini_vendita.data_ordine", "current_year", "c1"),
+            self._period("ordini_vendita.data_ordine", "last_n_months", "c2"),
+        ))
+        self.assertIn("two_periods_on_one_attribute", codes(failures))
+
+    def test_the_failure_names_the_attribute(self):
+        """Un rifiuto che non dice su cosa e' caduto costringe a rileggere lo stato."""
+        failures = coherence.validate_coherence(self._state(
+            self._period("ordini_vendita.data_ordine", "current_year", "c1"),
+            self._period("ordini_vendita.data_ordine", "current_month", "c2"),
+        ))
+        failure = next(f for f in failures
+                       if f.code == "two_periods_on_one_attribute")
+        self.assertIn("data_ordine", failure.path)
+
+    def test_periods_on_two_different_attributes_are_fine(self):
+        """E' un raffinamento vero: due assi diversi si sommano (§17.1)."""
+        failures = coherence.validate_coherence(self._state(
+            self._period("ordini_vendita.data_ordine", "current_year", "c1"),
+            self._period("ordini_vendita.data_consegna", "current_month", "c2"),
+        ))
+        self.assertNotIn("two_periods_on_one_attribute", codes(failures))
+
+    def test_one_period_beside_another_kind_of_condition_is_fine(self):
+        """Il caso che regge tutto §17.1: *«solo quelli confermati»* dopo un periodo."""
+        failures = coherence.validate_coherence(self._state(
+            self._period("ordini_vendita.data_ordine", "current_year", "c1"),
+            {"id": "c2", "ref": "ordini_vendita.confermati",
+             "predicate": "is_category", "origin": "user"},
+        ))
+        self.assertNotIn("two_periods_on_one_attribute", codes(failures))
+
+    def test_a_single_period_passes(self):
+        failures = coherence.validate_coherence(self._state(
+            self._period("ordini_vendita.data_ordine", "current_year", "c1")))
+        self.assertNotIn("two_periods_on_one_attribute", codes(failures))
+
+    def test_the_other_period_predicates_count_too(self):
+        """`before` e `after` collocano nel tempo quanto `within`: due di loro sullo
+        stesso attributo sono la stessa intersezione con un altro nome."""
+        failures = coherence.validate_coherence(self._state(
+            self._period("ordini_vendita.data_ordine", "current_year", "c1",
+                         predicate="after"),
+            self._period("ordini_vendita.data_ordine", "current_month", "c2",
+                         predicate="before"),
+        ))
+        self.assertIn("two_periods_on_one_attribute", codes(failures))
