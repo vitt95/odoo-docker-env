@@ -52,6 +52,8 @@ Usage: ./manage.sh <command> [args]
   ${C_BOLD}update${C_RESET}                 Pull/rebuild images and recreate containers
   ${C_BOLD}upgrade${C_RESET} <db> [mods]    Upgrade modules (default: all) on <db>
   ${C_BOLD}loadtest${C_RESET} <db> [n] [s]   Isolation proof of D27 on prefork workers
+  ${C_BOLD}campo${C_RESET} <db> [famiglia]  Batteria sul campo: le frasi di ai/16 col modello vero
+  ${C_BOLD}atlante${C_RESET} <db>           Raccoglie il vocabolario di tutte le app (fine tuning)
   ${C_BOLD}backup${C_RESET}                 Dump all databases + filestore to ./backups
   ${C_BOLD}restore${C_RESET} <timestamp>    Restore a backup (DESTRUCTIVE)
   ${C_BOLD}rotate-secrets${C_RESET}         Regenerate all passwords and apply them live
@@ -89,6 +91,48 @@ cmd_shell() {
 cmd_odoo_shell() {
   local db="${1:?Usage: ./manage.sh odoo-shell <db>}"
   dc exec odoo python3 /opt/odoo/core/odoo-bin shell -c /etc/odoo/odoo.conf -d "$db"
+}
+
+cmd_campo() {
+  # La batteria sul campo: le frasi di `tools/campo/frasi.py` attraverso il prodotto
+  # vero, sul database indicato e con il modello del profilo in servizio.
+  #
+  # Non e' una prova ed e' apposta fuori da `check` e da `test`: il modello non e'
+  # deterministico, e una suite che dipendesse da lui direbbe cose diverse a ogni
+  # giro. E' una **misura**, e costa tempo di modello — un'ora abbondante per intero.
+  #
+  #   ./manage.sh campo db            tutte le famiglie
+  #   ./manage.sh campo db date       una famiglia sola
+  #   CAMPO_MAX=5 ./manage.sh campo db    le prime cinque
+  local db="${1:?Usage: ./manage.sh campo <db> [intenti|operatori|date|limiti]}"
+  local famiglia="${2:-}"
+  log "Batteria sul campo su '${db}'${famiglia:+ (famiglia: ${famiglia})}..."
+  dc exec -T \
+    -e "CAMPO_FAMIGLIA=${famiglia}" \
+    -e "CAMPO_MAX=${CAMPO_MAX:-}" \
+    -e "CAMPO_SCRIVI=${CAMPO_SCRIVI:-}" \
+    odoo python3 /opt/odoo/core/odoo-bin shell -c /etc/odoo/odoo.conf -d "$db" \
+    --log-level=warn \
+    < <(cat "${PROJECT_ROOT}/tools/campo/frasi.py" \
+           "${PROJECT_ROOT}/tools/campo/batteria.py")
+  ok "Batteria finita."
+}
+
+cmd_atlante() {
+  # Raccoglie l'atlante: tutto quello che AIDA può nominare in un'installazione con
+  # tutte le applicazioni Odoo Community. È l'ingresso del dataset di addestramento.
+  #
+  #   ./manage.sh atlante atlante
+  #
+  # Il documento esce in tools/finetuning/atlante.json.
+  local db="${1:?Usage: ./manage.sh atlante <db>}"
+  log "Raccolgo l'atlante da '${db}' (una entità per volta, ci vuole qualche minuto)..."
+  dc exec -T odoo python3 /opt/odoo/core/odoo-bin shell -c /etc/odoo/odoo.conf \
+    -d "$db" --log-level=warn < "${PROJECT_ROOT}/tools/finetuning/atlante.py"
+  docker compose --project-name odoo --env-file "$ENV_FILE" \
+    -f "${PROJECT_ROOT}/docker-compose.yml" \
+    cp odoo:/var/lib/odoo/atlante.json "${PROJECT_ROOT}/tools/finetuning/atlante.json"
+  ok "Atlante in tools/finetuning/atlante.json"
 }
 
 cmd_psql() {
@@ -278,6 +322,8 @@ case "$cmd" in
   update)            cmd_update "$@" ;;
   upgrade)           cmd_upgrade "$@" ;;
   loadtest)          cmd_loadtest "$@" ;;
+  campo)             cmd_campo "$@" ;;
+  atlante)           cmd_atlante "$@" ;;
   backup)            cmd_backup "$@" ;;
   restore)           cmd_restore "$@" ;;
   rotate-secrets)    cmd_rotate_secrets "$@" ;;
