@@ -2,10 +2,11 @@
 //
 // Nessun colore scritto a mano: ogni superficie legge un token, in tre gradini.
 //
-//   --pui-*  il token semantico di `ui_brand_tokens`, che si ribalta da solo quando
-//            `html[data-pui-theme="dark"]`;
-//   --o-*    la variabile nativa di Odoo, per chi i token Premium non li ha;
-//   colore   l'ultimo valore, che serve solo se mancano entrambe.
+//   --pui-*   il token semantico di `ui_brand_tokens`, che si ribalta da solo quando
+//             `html[data-pui-theme="dark"]`. C'e' solo con la skin Premium;
+//   --body-bg la variabile di Bootstrap che Odoo emette davvero a `:root`, e che si
+//   e simili  ribalta con il pacchetto scuro. E' il gradino della skin Classic;
+//   colore    l'ultimo valore, che serve solo se mancano entrambe.
 //
 // **D25** (i token di marca si usano quando ci sono e l'interfaccia degrada con grazia
 // quando non ci sono) e' il motivo dei tre gradini invece di uno.
@@ -14,6 +15,36 @@
 // chiari: se stessero al primo posto vincerebbero sempre, e in dark il pannello
 // resterebbe bianco dentro una piattaforma nera. Un fallback e' l'ultima parola, mai
 // la prima.
+//
+// ## Il gradino di mezzo era un nome che non esiste
+//
+// Fino al 5 agosto 2026 questa colonna diceva `--o-view-background-color`,
+// `--o-gray-200`, `--o-main-text-color`. **Nessuna di quelle variabili CSS esiste.**
+// Sono variabili **SCSS** (`$o-view-background-color`), risolte a compilazione: sotto
+// quel nome non arrivano mai al browser. In tutto `web/static/src` ci sono 38
+// variabili CSS con prefisso `--o-`, e nessuna e' fra queste.
+//
+// Quindi con la skin Classic il browser saltava al terzo gradino, cioe' ai valori
+// cablati, che sono **chiari**: la chat si disegnava bianca dentro una piattaforma che
+// poteva essere scura. Il fallback funzionava, ed e' proprio per questo che non se ne
+// accorgeva nessuno — un gradino intermedio assente non da' nessun errore, si limita a
+// non essere mai usato.
+//
+// **E nemmeno `--bs-*` era la risposta.** `web/static/src/scss/bootstrap_overridden.scss`
+// imposta `$variable-prefix: ''`, quindi Bootstrap emette `--body-bg` e non
+// `--bs-body-bg`: nel pacchetto servito le occorrenze di `--bs-` sono **zero**. Due
+// nomi plausibili di fila, tutti e due assenti. I nomi qui sotto sono quelli letti da
+// `getComputedStyle` sull'installazione vera, non dedotti dai sorgenti.
+//
+// Nella skin Classic l'accento diventa il **viola di Odoo** (`--primary`, `#71639e`) e
+// non il blu di marca, ed e' giusto cosi': senza i token Premium la chat deve sembrare
+// parte della piattaforma che la ospita.
+//
+// ## E un token Premium scritto male
+//
+// Tre righe dicevano `--pui-color-text-muted`, che **non e' fra i 98 token** che
+// `ui_brand_tokens` emette — il nome e' `--pui-color-muted`. Stesso difetto un gradino
+// piu' su, e con la stessa forma: nessun errore, solo un gradino che non si usa mai.
 
 // L'azione vive dentro il gestore delle azioni di Odoo, sotto la barra di
 // navigazione. `height: 100%` da sola non basta: la catena dei genitori deve avere
@@ -25,8 +56,8 @@
     height: 100%;
     min-height: 0;
     overflow: hidden;
-    background: var(--pui-color-surface, var(--o-view-background-color, #fff));
-    color: var(--pui-color-text, var(--o-main-text-color, #374151));
+    background: var(--pui-color-surface, var(--body-bg, #fff));
+    color: var(--pui-color-text, var(--body-color, #374151));
 }
 
 // --- barra laterale --------------------------------------------------------
@@ -36,8 +67,8 @@
     flex-direction: column;
     flex: 0 0 17rem;
     max-width: 17rem;
-    border-right: 1px solid var(--pui-color-border, var(--o-gray-200, #e5e7eb));
-    background: var(--pui-color-surface-secondary, var(--o-gray-100, #f9fafb));
+    border-right: 1px solid var(--pui-color-border, var(--border-color, #e5e7eb));
+    background: var(--pui-color-surface-secondary, var(--tertiary-bg, #f9fafb));
 }
 
 .o_aida_sidebar_head { padding: 0.75rem; }
@@ -58,8 +89,8 @@
     border-radius: 0.5rem;
     padding: 0.125rem 0.25rem;
 
-    &:hover { background: var(--pui-color-surface-sunken, var(--o-gray-200, #eef0f2)); }
-    &.o_aida_item_active { background: var(--pui-color-border-strong, var(--o-gray-300, #e3e6ea)); font-weight: 500; }
+    &:hover { background: var(--pui-color-surface-sunken, var(--secondary-bg, #eef0f2)); }
+    &.o_aida_item_active { background: var(--pui-color-border-strong, var(--border-color, #e3e6ea)); font-weight: 500; }
 
     // Le azioni compaiono al passaggio del mouse, ma restano raggiungibili da
     // tastiera: nasconderle con `display:none` le toglierebbe anche al `Tab`.
@@ -89,7 +120,7 @@
 .o_aida_loading {
     padding: 0.75rem;
     font-size: 0.875rem;
-    color: var(--pui-color-muted, var(--o-gray-600, #6b7280));
+    color: var(--pui-color-muted, var(--secondary-color, #6b7280));
 }
 
 // --- colonna centrale ------------------------------------------------------
@@ -106,7 +137,7 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.5rem 1rem;
-    border-bottom: 1px solid var(--pui-color-border, var(--o-gray-200, #e5e7eb));
+    border-bottom: 1px solid var(--pui-color-border, var(--border-color, #e5e7eb));
 }
 
 .o_aida_title { font-weight: 600; }
@@ -127,7 +158,7 @@
 }
 
 .o_aida_welcome_title { font-size: 1.75rem; font-weight: 600; }
-.o_aida_welcome_hint { max-width: 34rem; color: var(--pui-color-muted, var(--o-gray-600, #6b7280)); }
+.o_aida_welcome_hint { max-width: 34rem; color: var(--pui-color-muted, var(--secondary-color, #6b7280)); }
 
 // --- filo dei messaggi -----------------------------------------------------
 
@@ -149,7 +180,7 @@
     width: fit-content;
     padding: 0.625rem 0.875rem;
     border-radius: 1rem 1rem 0.25rem 1rem;
-    background: var(--pui-color-surface-sunken, var(--o-gray-200, #eef0f2));
+    background: var(--pui-color-surface-sunken, var(--secondary-bg, #eef0f2));
     // Il bordo non e' decorazione. Misurato in tema scuro, il riempimento della bolla
     // stava a **1,16:1** sullo sfondo: visibile a occhio riposato su un buono schermo,
     // e non visibile a chiunque altro.
@@ -163,7 +194,7 @@
     // riconoscimento non poggia sul solo contrasto: la bolla e' anche allineata a
     // destra e sagomata, e il testo dentro sta a 9,28:1. E' il principio di **D65**
     // (una distinzione non si affida mai al solo colore) applicato all'impaginazione.
-    border: 1px solid var(--pui-color-border-strong, var(--o-gray-300, #e3e6ea));
+    border: 1px solid var(--pui-color-border-strong, var(--border-color, #e3e6ea));
 
     p { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
 }
@@ -175,7 +206,7 @@
 
 .o_aida_part {
     padding: 0.25rem 0 0.25rem 0.75rem;
-    border-left: 3px solid var(--pui-color-border-strong, var(--o-gray-300, #e3e6ea));
+    border-left: 3px solid var(--pui-color-border-strong, var(--border-color, #e3e6ea));
 }
 
 // D65: l'origine non si distingue **mai** dal solo colore. Una condizione dedotta dal
@@ -183,17 +214,17 @@
 // non distingue i colori la riconosce lo stesso.
 .o_aida_part_inferred {
     border-left-style: dashed;
-    border-left-color: var(--pui-color-info, var(--o-info, #17a2b8));
+    border-left-color: var(--pui-color-info, var(--info, #17a2b8));
 }
 
 .o_aida_rule {
     display: block;
-    color: var(--pui-color-muted, var(--o-gray-600, #6b7280));
+    color: var(--pui-color-muted, var(--secondary-color, #6b7280));
     font-size: 0.8125rem;
 }
 
-.o_aida_count { margin-top: 0.5rem; color: var(--pui-color-muted, var(--o-gray-600, #6b7280)); }
-.o_aida_refusal { color: var(--pui-color-warning, var(--o-warning, #b45309)); }
+.o_aida_count { margin-top: 0.5rem; color: var(--pui-color-muted, var(--secondary-color, #6b7280)); }
+.o_aida_refusal { color: var(--pui-color-warning, var(--warning, #b45309)); }
 
 // --- attesa ----------------------------------------------------------------
 
@@ -203,14 +234,14 @@
     width: 0.375rem;
     height: 0.375rem;
     border-radius: 50%;
-    background: var(--pui-color-muted, var(--o-gray-500, #9ca3af));
+    background: var(--pui-color-muted, var(--tertiary-color, #9ca3af));
     animation: o-aida-pulse 1.2s infinite ease-in-out;
 
     &:nth-child(2) { animation-delay: 0.15s; }
     &:nth-child(3) { animation-delay: 0.3s; }
 }
 
-.o_aida_waiting_text { color: var(--pui-color-muted, var(--o-gray-600, #6b7280)); font-size: 0.875rem; }
+.o_aida_waiting_text { color: var(--pui-color-muted, var(--secondary-color, #6b7280)); font-size: 0.875rem; }
 
 @keyframes o-aida-pulse {
     0%, 80%, 100% { opacity: 0.3; }
@@ -232,11 +263,11 @@
     align-items: flex-end;
     gap: 0.5rem;
     padding: 0.5rem;
-    border: 1px solid var(--pui-color-border-strong, var(--o-gray-300, #e3e6ea));
+    border: 1px solid var(--pui-color-border-strong, var(--border-color, #e3e6ea));
     border-radius: 1.5rem;
-    background: var(--pui-color-surface, var(--o-view-background-color, #fff));
+    background: var(--pui-color-surface, var(--body-bg, #fff));
 
-    &:focus-within { border-color: var(--pui-color-accent, var(--o-primary, #714b67)); }
+    &:focus-within { border-color: var(--pui-color-accent, var(--primary, #714b67)); }
 }
 
 .o_aida_input {
@@ -265,7 +296,7 @@
     margin: 0.5rem auto 0;
     text-align: center;
     font-size: 0.8125rem;
-    color: var(--pui-color-muted, var(--o-gray-600, #6b7280));
+    color: var(--pui-color-muted, var(--secondary-color, #6b7280));
 }
 
 // --- adattamento -----------------------------------------------------------
@@ -290,9 +321,9 @@
 // chi non prova a premerla.
 .o_aida_option {
     padding: 0.375rem 0.75rem;
-    border: 1px solid var(--pui-color-border-strong, var(--o-gray-300, #e3e6ea));
+    border: 1px solid var(--pui-color-border-strong, var(--border-color, #e3e6ea));
     border-radius: 1rem;
-    background: var(--pui-color-surface-secondary, var(--o-gray-100, #f9fafb));
+    background: var(--pui-color-surface-secondary, var(--tertiary-bg, #f9fafb));
     color: inherit;
     font: inherit;
     text-align: left;
@@ -304,7 +335,7 @@ button.o_aida_option {
 
     &:hover,
     &:focus-visible {
-        border-color: var(--pui-color-accent, var(--o-brand-primary, #714b67));
+        border-color: var(--pui-color-accent, var(--primary, #714b67));
         background: var(--pui-color-surface, #fff);
     }
 }
@@ -321,13 +352,13 @@ button.o_aida_option {
 // attenzione da chi non l'ha aperta.
 .o_aida_debug {
     margin-top: 0.75rem;
-    border-top: 1px dashed var(--pui-color-border-strong, var(--o-gray-300, #e3e6ea));
+    border-top: 1px dashed var(--pui-color-border-strong, var(--border-color, #e3e6ea));
     padding-top: 0.5rem;
     font-size: 0.8125rem;
 
     > summary {
         cursor: pointer;
-        color: var(--pui-color-text-muted, var(--o-gray-600, #6c757d));
+        color: var(--pui-color-muted, var(--secondary-color, #6c757d));
         user-select: none;
     }
 
@@ -336,7 +367,7 @@ button.o_aida_option {
         font-size: 0.75rem;
         text-transform: uppercase;
         letter-spacing: 0.03em;
-        color: var(--pui-color-text-muted, var(--o-gray-600, #6c757d));
+        color: var(--pui-color-muted, var(--secondary-color, #6c757d));
     }
 
     pre,
@@ -354,8 +385,8 @@ button.o_aida_option {
         max-height: 22rem;
         overflow-y: auto;
         border-radius: 0.375rem;
-        background: var(--pui-color-surface-secondary, var(--o-gray-100, #f9fafb));
-        border: 1px solid var(--pui-color-border-strong, var(--o-gray-300, #e3e6ea));
+        background: var(--pui-color-surface-secondary, var(--tertiary-bg, #f9fafb));
+        border: 1px solid var(--pui-color-border-strong, var(--border-color, #e3e6ea));
     }
 }
 
@@ -369,7 +400,7 @@ button.o_aida_option {
         gap: 0.5rem;
         justify-content: space-between;
         padding: 0.125rem 0;
-        color: var(--pui-color-text-muted, var(--o-gray-600, #6c757d));
+        color: var(--pui-color-muted, var(--secondary-color, #6c757d));
     }
 }
 
@@ -383,7 +414,7 @@ button.o_aida_option {
     margin-top: 0.75rem;
     max-height: unquote("min(26rem, 55vh)");
     overflow: auto;
-    border: 1px solid var(--pui-color-border, var(--o-gray-200, #e5e7eb));
+    border: 1px solid var(--pui-color-border, var(--border-color, #e5e7eb));
     border-radius: 0.5rem;
 
     // La vista si dimensiona sul contenuto: le sue regole di pagina intera vogliono
@@ -431,7 +462,7 @@ button.o_aida_option {
 
     > summary {
         cursor: pointer;
-        color: var(--pui-color-muted, var(--o-gray-600, #6b7280));
+        color: var(--pui-color-muted, var(--secondary-color, #6b7280));
         user-select: none;
         list-style: none;
 
