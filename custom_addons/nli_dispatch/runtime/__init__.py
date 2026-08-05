@@ -5,4 +5,4 @@ control can be tested at all: `queue/` decides, `runtime/` acts. Nothing here ch
 a limit, a pool size or a message; nothing in `queue/` opens a cursor.
 """
 
-from . import claim, pipeline, worker
+from . import claim, pipeline, progress, worker

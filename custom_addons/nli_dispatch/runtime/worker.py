@@ -36,6 +36,7 @@ from odoo import api, fields
 from odoo.addons.nli_engine.adapters.base import AdapterError
 
 from . import pipeline
+from .progress import Reporter
 
 _logger = logging.getLogger(__name__)
 
@@ -87,7 +88,8 @@ def execute(dbname, item_id: int, uid: int, context: dict, *, adapter_factory,
         try:
             outcome = pipeline.run(
                 env, item, adapter=adapter, scope=scope,
-                context_window=context_window, debug=debug)
+                context_window=context_window, debug=debug,
+                reporter=_reporter(dbname, item, uid))
             _persist(env, item, outcome)
         except Exception as error:  # noqa: BLE001 — see the docstring
             cr.rollback()
@@ -100,6 +102,26 @@ def execute(dbname, item_id: int, uid: int, context: dict, *, adapter_factory,
         # schermo, ed erano divergute in silenzio.
         item.notify({"outcome": outcome.outcome})
         return outcome
+
+
+def _reporter(dbname: str, item, uid: int):
+    """Chi racconta il turno mentre corre, o `None` se non si puo'.
+
+    Legge qui gli identificativi — partner, turno, conversazione — e non dentro il
+    `Reporter`: quello lavora su un cursore proprio, e fargli rileggere a ogni passo
+    dei numeri che questo cursore ha gia' sotto mano sarebbe una query in piu' per
+    ogni riga d'animazione.
+
+    **Un turno senza destinatario non ha avanzamento, e non e' un errore.** Il
+    `None` e' la stessa forma di `debug`: il turno gira uguale, semplicemente
+    nessuno guarda.
+    """
+    partner = item.user_id.partner_id
+    turn = item.turn_id
+    if not partner or not turn:
+        return None
+    return Reporter(dbname, uid=uid, partner_id=partner.id, turn_id=turn.id,
+                    interrogation_id=turn.interrogation_id.id)
 
 
 def _persist(env, item, outcome):

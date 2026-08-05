@@ -361,6 +361,21 @@ DEROGATIONS: tuple[Derogation, ...] = (
             "ORM query, and no `execute` is admitted in this file"
         ),
     ),
+    Derogation(
+        path="nli_dispatch/runtime/progress.py",
+        calls=frozenset({"cursor", "registry.cursor"}),
+        rationale=(
+            "one cursor per progress event, and it is the whole point of the file. "
+            "`bus.bus._sendone` queues on `cr.precommit` and wakes the bus process "
+            "on `cr.postcommit`, so nothing leaves until that cursor commits — and "
+            "the worker commits once, at the end. Sent on the worker's cursor, every "
+            "progress event would arrive together with the answer it was meant to "
+            "precede: an animation describing a wait that is already over. The "
+            "cursor is held for a single ORM write and released; no `execute` is "
+            "admitted here either, and the throttle and ceiling of the module bound "
+            "how many of these transactions a turn can ever open"
+        ),
+    ),
 )
 
 

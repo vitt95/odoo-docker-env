@@ -35,6 +35,7 @@ from ..models.nli_queue_item import (
 from ..queue import limits as limits_module
 from ..runtime import claim as claim_module
 from ..runtime import pipeline as pipeline_module
+from ..runtime import progress as progress_module
 from ..runtime import worker as worker_module
 
 UTTERANCE = "mostrami le aziende di Cittaprova"
@@ -637,6 +638,123 @@ class TestTheDebugTrace(DispatchCase):
             adapter=RecordedAdapter([envelope(target("res_partner"))]),
             scope=self.scope, context_window=32_000, debug=True)
         self.assertEqual(outcome.debug["path"], "model")
+
+
+class PassiRegistrati:
+    """Un reporter che raccoglie invece di scrivere sul bus.
+
+    Il vero `Reporter` apre un cursore per evento, e quel cursore e' provato altrove
+    (`pure_tests/test_progress.py`). Qui interessa una cosa diversa e che solo un
+    turno vero puo' dire: **quali passi il pipeline emette, e in quale ordine.**
+    """
+
+    def __init__(self):
+        self.passi = []
+
+    def __call__(self, step, *, detail=None, force=False):
+        self.passi.append((step, detail or ""))
+
+    @property
+    def chiavi(self):
+        return [chiave for chiave, _ in self.passi]
+
+
+@tagged("post_install", "-at_install", "nli_dispatch")
+class TestTheProgressSteps(DispatchCase):
+    """Che cosa sta facendo il turno, detto mentre lo fa.
+
+    L'avanzamento non cambia una virgola di cio' che un turno produce — e' proprio
+    per questo che si puo' spegnere senza cautele — ma **e' l'unica cosa che sta
+    sullo schermo** durante i secondi in cui il modello pensa: mediana 8,8 s, p95
+    16,3 s sulle 414 chiamate misurate. Un passo che sparisce non rompe nessuna
+    risposta, quindi non c'e' nessun altro test che se ne accorga: o e' asserito qui
+    o non e' asserito da nessuna parte.
+
+    **Le parole non si provano qui.** Il server manda chiavi, il client le traduce;
+    provare le chiavi e' provare il contratto, provare le parole sarebbe provare la
+    lingua dell'interfaccia dentro il dispatcher.
+    """
+
+    def setUp(self):
+        super().setUp()
+        self.env["res.partner"].create(
+            [{"name": "Alfa SpA", "city": "Cittaprova", "is_company": True}])
+        self.scope = ("res.partner",)
+
+    def _turno(self, frase="le aziende di Cittaprova"):
+        passi = PassiRegistrati()
+        item = self.accept(frase)
+        outcome = pipeline_module.run(
+            self.user_env, item.with_env(self.user_env),
+            adapter=RecordedAdapter([
+                envelope(target("res_partner")),
+                envelope(
+                    target("res_partner"),
+                    {"op": "add_condition", "combine": "all",
+                     "condition": {"ref": "res_partner.city", "predicate": "equals",
+                                   "value": {"kind": "text", "text": "Cittaprova"}},
+                     "provenance": {"text": "di Cittaprova"}},
+                ),
+            ]),
+            scope=self.scope, context_window=32_000, reporter=passi)
+        return outcome, passi
+
+    def test_senza_reporter_il_turno_gira_uguale(self):
+        """L'interruttore a `None` e' la stessa forma della traccia diagnostica: il
+        turno non deve accorgersi di non essere guardato."""
+        item = self.accept("le aziende di Cittaprova")
+        outcome = pipeline_module.run(
+            self.user_env, item.with_env(self.user_env),
+            adapter=RecordedAdapter([
+                envelope(target("res_partner")),
+                envelope(target("res_partner")),
+            ]),
+            scope=self.scope, context_window=32_000)
+        self.assertIn(outcome.outcome, ("operations", "not_understood"))
+
+    def test_il_primo_passo_e_il_dizionario(self):
+        """E' quello che toglie dallo schermo l'attesa muta, quindi viene per primo."""
+        _outcome, passi = self._turno()
+        self.assertEqual(passi.chiavi[0], "dictionary")
+
+    def test_i_passi_coprono_il_turno_dal_dizionario_all_esecuzione(self):
+        outcome, passi = self._turno()
+        self.assertEqual(outcome.outcome, "operations", outcome.failures)
+        for atteso in ("dictionary", "catalogue", "interpret", "validate", "execute"):
+            self.assertIn(atteso, passi.chiavi, passi.chiavi)
+
+    def test_i_passi_arrivano_nell_ordine_in_cui_il_turno_li_percorre(self):
+        """Un elenco fuori ordine racconta un lavoro che non e' stato fatto cosi'."""
+        _outcome, passi = self._turno()
+        posizioni = [passi.chiavi.index(chiave)
+                     for chiave in ("dictionary", "catalogue", "interpret",
+                                    "validate", "execute")]
+        self.assertEqual(posizioni, sorted(posizioni), passi.chiavi)
+
+    def test_ogni_passo_emesso_e_dichiarato_nel_contratto(self):
+        """Una chiave che il client non conosce e' una riga vuota sullo schermo, e
+        nessuna risposta sbagliata da nessuna parte che lo faccia notare."""
+        _outcome, passi = self._turno()
+        for chiave in passi.chiavi:
+            self.assertIn(chiave, progress_module.PASSI, chiave)
+
+    def test_l_interpretazione_dice_di_che_cosa_ha_capito_che_si_parla(self):
+        """Il passo lungo porta il nome di casa dell'entita', non il riferimento.
+
+        E' l'unico momento in cui il sistema puo' dire *«sto cercando fra i
+        contatti»* mentre lo sta ancora facendo — dopo, la risposta parla da se'.
+        """
+        _outcome, passi = self._turno()
+        dettaglio = dict(passi.passi)["interpret"]
+        self.assertTrue(dettaglio)
+        self.assertNotIn("res_partner", dettaglio)
+
+    def test_nessun_passo_porta_la_frase_dell_utente(self):
+        """D60 letto come principio: il payload minimo che funziona e' quello che non
+        puo' diventare un archivio di cio' che la gente ha scritto."""
+        _outcome, passi = self._turno("le aziende di Cittaprova")
+        for chiave, dettaglio in passi.passi:
+            self.assertNotIn("Cittaprova", dettaglio, chiave)
 
 
 @tagged("post_install", "-at_install", "nli_dispatch")

@@ -36,6 +36,8 @@ from odoo.addons.nli_semantics import scope_lexicon
 from odoo.addons.nli_semantics.dictionary import grounding
 from odoo.addons.nli_engine import interpreter as interpreter_module
 
+from .progress import report
+
 #: Outcomes that end the turn without an execution. None of them is a failure of the
 #: system: a clarification is the contract working (§4.4), and `out_of_scope` is the
 #: product declining honestly rather than answering something adjacent.
@@ -196,17 +198,24 @@ def trace(collector: dict | None, key: str, value):
 
 
 def run(env, item, *, adapter, scope, context_window: int,
-        debug: bool = False) -> Outcome:
+        debug: bool = False, reporter=None) -> Outcome:
     """Un turno, dalla frase al risultato presentato.
 
     **La traccia si aggancia qui e non dentro** (D123). Il corpo ha una decina di
     punti d'uscita, e attaccare la traccia a ognuno vorrebbe dire che il primo
     dimenticato e' un esito che non si sa spiegare — cioe' proprio quello che si sta
     guardando quando la modalita' diagnostica serve.
+
+    **L'avanzamento invece si aggancia dentro, e la differenza e' il verso.** La
+    traccia racconta un turno finito, quindi la si puo' raccogliere in fondo;
+    l'avanzamento racconta un turno in corso, e in fondo non racconterebbe piu'
+    niente. I due passano da funzioni diverse (`trace` e `report`) con lo stesso
+    interruttore a `None`, perche' spegnerli non deve costare condizioni sparse.
     """
     collector: dict | None = {} if debug else None
     outcome = _run(env, item, adapter=adapter, scope=scope,
-                   context_window=context_window, collector=collector)
+                   context_window=context_window, collector=collector,
+                   reporter=reporter)
     if collector is not None:
         collector["outcome"] = outcome.outcome
         collector["repairs"] = outcome.repairs
@@ -216,7 +225,7 @@ def run(env, item, *, adapter, scope, context_window: int,
 
 
 def _run(env, item, *, adapter, scope, context_window: int,
-         collector: dict | None = None) -> Outcome:
+         collector: dict | None = None, reporter=None) -> Outcome:
     turn = item.turn_id
     interrogation = turn.interrogation_id
     state = _starting_state(interrogation)
@@ -240,6 +249,10 @@ def _run(env, item, *, adapter, scope, context_window: int,
 
     chosen = _chosen_operations(precedente, utterance, state)
     if chosen is not None:
+        # La strada corta: nessuna chiamata al modello, quindi un passo solo. Dirne
+        # sei su un turno che dura mezzo secondo sarebbe raccontare una fatica che
+        # non c'e' — e chi guarda imparerebbe in fretta a non fidarsi dei passi.
+        report(reporter, "reading", force=True)
         trace(collector, "path", "chosen_reading")
         trace(collector, "operations", chosen)
         riparte = _target_of({"operations": chosen})
@@ -262,12 +275,12 @@ def _run(env, item, *, adapter, scope, context_window: int,
             env, semantics, state, chosen,
             catalogue_of=lambda ref: _phase_c(env, semantics, ref, context_window),
             entity_ref=(state.get("target") or {}).get("ref"),
-            collector=collector)
+            collector=collector, reporter=reporter)
 
     trace(collector, "path", "model")
     entity_ref, outcome, riparte = _determine_entity(
         env, semantics, state, utterance, adapter=adapter,
-        context_window=context_window, collector=collector)
+        context_window=context_window, collector=collector, reporter=reporter)
     if entity_ref is None:
         return outcome
     if riparte:
@@ -279,6 +292,7 @@ def _run(env, item, *, adapter, scope, context_window: int,
         state = {"dsl_version": interrogation.dsl_version}
         trace(collector, "state_restarted", entity_ref)
 
+    report(reporter, "catalogue")
     started = time.monotonic()
     catalogue = _phase_c(env, semantics, entity_ref, context_window)
     budget = getattr(catalogue, "budget", None)
@@ -310,6 +324,13 @@ def _run(env, item, *, adapter, scope, context_window: int,
     # twice would mean building two term indexes in the request's path for the
     # same reply.
     mentions = grounding.mentions_of(semantics.dictionary)
+    # L'attesa lunga comincia qui: e' la chiamata al modello, mediana 8,8 s e p95
+    # 16,3 s sulle 414 misurate. L'avviso parte **prima** di entrarci, non dopo:
+    # dire «ho interpretato» a cose fatte non toglie un secondo di attesa muta a
+    # nessuno. Porta con se' il nome di casa dell'entita' — «fatture», «lead» —
+    # perche' e' l'unico momento in cui il sistema puo' dire di che cosa ha capito
+    # che si parla mentre lo sta ancora usando.
+    report(reporter, "interpret", detail=_entity_label(catalogue))
     started = time.monotonic()
     interpretation = interpreter_module.interpret(
         adapter, utterance=utterance, catalogue=catalogue,
@@ -359,12 +380,28 @@ def _run(env, item, *, adapter, scope, context_window: int,
         # question. Handing it over as a callable is what lets the other caller, which
         # has no catalogue and usually needs none, avoid building one for nothing.
         catalogue_of=lambda ref: catalogue,
-        entity_ref=entity_ref, outcome=outcome, mentions=mentions)
+        entity_ref=entity_ref, outcome=outcome, mentions=mentions,
+        reporter=reporter)
+
+
+def _entity_label(catalogue) -> str:
+    """Il nome di casa dell'entita', quello con cui l'utente la chiama.
+
+    `entity_names` porta gia' le coppie riferimento/termini che il catalogo espone al
+    modello: il primo termine e' il nome piu' comune, ed e' quello che una persona
+    riconosce. Se manca si torna vuoti — un passo senza dettaglio resta leggibile,
+    un passo con un riferimento tecnico dentro no.
+    """
+    entita = getattr(catalogue, "entity", None)
+    for riferimento, termini in getattr(catalogue, "entity_names", ()) or ():
+        if riferimento == entita and termini:
+            return termini[0]
+    return ""
 
 
 def _apply_and_present(env, semantics, state, operations, *, catalogue_of,
                        entity_ref=None, outcome=None, mentions=None, names=None,
-                       collector=None) -> Outcome:
+                       collector=None, reporter=None) -> Outcome:
     """From operations to a presented result: applicator, levels 3-5, resolver,
     executor, presenter.
 
@@ -403,6 +440,7 @@ def _apply_and_present(env, semantics, state, operations, *, catalogue_of,
                  if asked and contextual.carries_period(new_state) else None)
 
     # --- levels 3-5, with the dictionary this user actually has --------------
+    report(reporter, "validate")
     failures = contextual.validate(
         new_state, known_refs=frozenset(semantics.bindings), types=types,
         # D105: the dictionary decides what counts as mentioning a term, because it
@@ -462,6 +500,7 @@ def _apply_and_present(env, semantics, state, operations, *, catalogue_of,
 
     outcome.plan = _plan_as_dict(resolution.plan)
     trace(collector, "plan", outcome.plan)
+    report(reporter, "execute")
     started = time.monotonic()
     # `run` e non `execute`: l'aggregazione era una seconda funzione dell'Esecutore che
     # questa riga non chiamava, quindi ogni misura dello stato arrivava fin qui e non
@@ -481,7 +520,7 @@ def _apply_and_present(env, semantics, state, operations, *, catalogue_of,
 
 
 def _determine_entity(env, semantics, state, utterance, *, adapter, context_window,
-                      collector=None):
+                      collector=None, reporter=None):
     """Phases A, B and C — the strategy of D32 on a live dictionary.
 
     Restituisce `(entity_ref, None, riparte)` quando un'entita' e' stata determinata,
@@ -502,6 +541,11 @@ def _determine_entity(env, semantics, state, utterance, *, adapter, context_wind
     # Prima si fermava qui, e con lei spariva il solo segnale che distingue una domanda
     # nuova da un raffinamento. Costa cinque centesimi di secondo ed e' il dizionario,
     # non il modello.
+    # Il primo passo parte **subito** (`force`), perche' e' quello che sostituisce
+    # l'attesa muta. Costa un quinto di secondo di strozzamento a tutti gli altri e
+    # toglie il momento peggiore dell'interazione: quello in cui non si sa se il
+    # sistema ha ricevuto la frase.
+    report(reporter, "dictionary", force=True)
     started = time.monotonic()
     decision = runtime.determine_entity(semantics, utterance)
     trace(collector, "phase_a", {
@@ -530,6 +574,10 @@ def _determine_entity(env, semantics, state, utterance, *, adapter, context_wind
     # at. The expensive path is also the narrow one, which is what closes RC3.
     catalogue = env["nli.semantics"].entity_catalogue(
         semantics, context_window=context_window)
+    # La strada costosa di D32: il dizionario non ha riconosciuto il soggetto e si
+    # paga una chiamata al modello per saperlo. E' anche la piu' lenta delle due, ed
+    # e' giusto che chi aspetta veda che sta succedendo qualcosa di diverso.
+    report(reporter, "entity")
     started = time.monotonic()
     interpretation = interpreter_module.interpret(
         adapter, utterance=utterance, catalogue=catalogue, state=None)
