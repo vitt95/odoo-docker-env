@@ -27,3 +27,10 @@ __pycache__/
 *.pyc
 *.pyo
 .tokensave
+
+# --- Riferimenti video per il disegno dell'interfaccia ---
+# Cattura dell'agente Rovo di Jira usata come riferimento per il pannello di AIDA
+# (ai/20-ux-pannello-aida.md). Sono decine di megabyte di binario che cambiano per
+# intero a ogni ripresa: le misure che contano sono gia' nel documento, il file
+# serve solo a rifarle.
+/ai/screenvideo/
