@@ -3,6 +3,77 @@ Progetto AIDA — NLIL per Odoo 18. Repo ~/Learning/odoo-docker-env, branch **ne
 Il branch `ai-agent` è il ramo storico e si ferma al 29 luglio: `new-ai-agent` lo
 riprende sopra la base UI corrente (`master`). Il lavoro continua qui.
 
+# I prossimi passi
+
+*(scritto il 5 agosto 2026, dopo la sessione dell'interfaccia)*
+
+Sta qui in cima e non a meta' file perche' e' la domanda che si fa per prima. La
+lista lunga, con i motivi, resta sotto in «Aperto, in ordine di quanto sblocca»: qui
+c'e' solo **l'ordine**, e perche' e' quello.
+
+## Il fatto che decide l'ordine
+
+**Il punto 1 e il fine tuning hanno lo stesso primo ostacolo.**
+
+`18` §12 dice che prima di addestrare si rimisura la linea di partenza, e le dieci
+soglie di `18` §1 si leggono contro un «oggi» — di cui quattro righe dicono gia' *«non
+misurata»* e le altre sono numeri vecchi. Ma la batteria sul campo **inventa
+fallimenti e nasconde successi** (§4 dello stato del 4 agosto): 21 frasi su 54 non
+sono mai partite. Qualunque numero produca oggi non regge come linea di partenza.
+
+Quindi riparare lo strumento non e' manutenzione: e' la cosa piu' a monte che
+abbiamo, e sblocca due lavori invece di uno.
+
+## L'ordine
+
+| | Cosa | Costo | Sblocca |
+|---|---|---|---|
+| **P0** | Guardare **una risposta vera** nel pannello | ~30 min | chiude il punto 5, decide il punto 6 |
+| **P1** | **1c** — riparare le attese della batteria (`_manca`, le stringhe di `frasi.py`) | mezza giornata | il punto 1 **e** il passo 2 di `18` §12 |
+| **P2** | **D85** — avviare l'elicitazione degli enunciati | settimane, non nostre | il dataset del fine tuning |
+| **P3** | **1b** — togliere `QueueRefusal` per la batteria | poco | le 34 frasi difficili (date, operatori, limiti) |
+| **P4** | **1a** — copertura con i residui nascosti | macchina | **cancello D34**: sotto il 99% la regola non e' adottabile |
+| **P5** | **1d** — deliberare la selezione degli attributi | — | otto frasi su venti |
+| **P6** | Corpus a `--finestra 4096` | ~70 min macchina, nessuna attesa umana | separa D113-D120 da D133 |
+| **P7** | Fine tuning: pulizia atlante, seconda raccolta, sinonimi | dati, non misure | in parallelo da subito |
+
+**P0 prima di P1** solo perche' condividono l'accensione: per la batteria serve il
+modello acceso e una banca dati con dati veri, e con quelli accesi guardare una
+risposta costa mezz'ora.
+
+**P2 e P7 partono in parallelo a tutto**, perche' sono lavoro sui dati e su persone,
+non sulle misure, e non aspettano niente.
+
+## P0 nel dettaglio, perche' e' il piu' corto e non e' scritto altrove
+
+Il **contenitore** del pannello e' stato guardato nei tre temi. Il **contenuto di una
+risposta** no: i turni di `nli_test` erano tutti fermi in `pending` dalle batterie di
+carico, quindi la vista lista incorporata, la riga del conteggio, «Come ho letto la
+domanda», le opzioni di chiarimento di D121 e la riga dei comandi **non li ha visti
+disegnare nessuno**.
+
+Da guardare, in quest'ordine:
+
+1. una risposta con tabella — l'altezza del riquadro, lo scorrimento orizzontale, e se
+   440 px bastano o se il punto 6 (paginazione) diventa urgente;
+2. **due tabelle nella stessa conversazione** — e' il caso in cui l'altezza sbaglia;
+3. un chiarimento di D121 — le opzioni sono cliccabili solo sull'ultimo turno;
+4. «Come ho letto la domanda» aperto, con una condizione dedotta (bordo tratteggiato);
+5. il blocco diagnostico di D123, che e' il piu' largo di tutti dentro una colonna
+   stretta.
+
+E i passi che arrivano davvero: e' la prima volta che `nli.turn.progress` viaggia
+contro un turno vero invece che contro un reporter finto.
+
+## Cosa **non** e' il prossimo passo
+
+Il pannello e' consegnato ma **non e' finito**: mancano il punto 5 (sopra) e il punto
+6 (paginazione). Non aggiungere altra interfaccia prima di aver guardato quella che
+c'e' — e' esattamente il modo in cui si sono accumulati i dieci difetti di
+`ai/20-ux-pannello-aida.md` §7.
+
+---
+
 # Da leggere per primo
 
 > **Prima di ogni altra cosa in questo file: la sezione «Stato al 4 agosto 2026 — la
