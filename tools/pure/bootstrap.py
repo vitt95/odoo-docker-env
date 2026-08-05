@@ -37,6 +37,20 @@ def install(module: str) -> Path:
     return path
 
 
+#: Sotto-cartelle il cui `__init__` raggiunge Odoo, ma che contengono moduli che non
+#: lo fanno.
+#:
+#: `nli_dispatch/runtime/__init__.py` importa `claim` e `worker`, che vivono di ORM.
+#: Accanto a loro sta `progress.py`, che Odoo lo importa solo dentro il metodo che
+#: scrive davvero: strozzamento, tetto e silenzio sugli errori sono aritmetica pura.
+#: Senza questa riga quelle tre proprieta' pretenderebbero una base dati per colpa di
+#: un `__init__` che sta nella stessa cartella — che e' un pessimo motivo per non
+#: avere un test, ed e' esattamente come si finisce per non averlo.
+PURE_SUBPACKAGES: tuple[str, ...] = (
+    "nli_dispatch.runtime",
+)
+
+
 def install_all() -> list[str]:
     """Register every `nli_*` addon present, in a stable order."""
     modules = sorted(
@@ -45,7 +59,32 @@ def install_all() -> list[str]:
     )
     for module in modules:
         install(module)
+    for dotted in PURE_SUBPACKAGES:
+        install_subpackage(dotted)
     return modules
+
+
+def install_subpackage(dotted: str) -> Path:
+    """Lo stesso trucco di `install`, un livello piu' in basso.
+
+    Il pacchetto sintetico porta solo un `__path__`, quindi importare un modulo che
+    sta dentro non esegue mai il vero `__init__.py`. Il nome resta quello di
+    produzione, cosi' una traccia d'errore legge `nli_dispatch.runtime.progress` e
+    non un alias inventato per i test.
+    """
+    addon, _, rest = dotted.partition(".")
+    path = ADDONS / addon / Path(*rest.split("."))
+    if not path.is_dir():
+        raise SystemExit(f"{dotted}: no such directory under {ADDONS}")
+    install(addon)
+    if dotted not in sys.modules:
+        package = types.ModuleType(dotted)
+        package.__path__ = [str(path)]  # type: ignore[attr-defined]
+        sys.modules[dotted] = package
+        # Anche come attributo del genitore: `from nli_dispatch.runtime import x`
+        # guarda l'attributo, non solo `sys.modules`.
+        setattr(sys.modules[addon], rest.split(".")[0], package)
+    return path
 
 
 def modules_with_pure_tests() -> list[str]:
