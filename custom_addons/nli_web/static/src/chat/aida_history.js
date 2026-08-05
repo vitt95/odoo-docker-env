@@ -1,22 +1,36 @@
 /** @odoo-module **/
 
 /**
- * L'elenco delle conversazioni.
+ * Le conversazioni, in un pannello che entra da sinistra.
  *
- * Carica una finestra alla volta e chiede la successiva quando lo scorrimento arriva
- * in fondo. Non si carica tutto: un utente che usa il prodotto da un anno ha centinaia
- * di sessioni, e disegnarle tutte per mostrarne dodici e' lavoro che si paga a ogni
- * apertura del pannello.
+ * ## Perché non è una colonna fissa
+ *
+ * Nella versione a pagina intera l'elenco stava sempre lì, e ci stava: c'era tutta
+ * la larghezza dello schermo. Dentro una colonna da quattrocentoquaranta pixel una
+ * barra laterale permanente lascerebbe alla conversazione meno di trecento — sotto
+ * la soglia in cui una riga di testo si legge invece di scansionarsi.
+ *
+ * Quindi copre la conversazione quando serve e se ne va quando non serve più. È lo
+ * stesso compromesso del riferimento, e nasce dallo stesso vincolo: chi apre la
+ * cronologia sta cercando *un'altra* conversazione, quindi in quel momento non gli
+ * serve vedere questa.
+ *
+ * ## Perché carica a finestre
+ *
+ * Un utente che usa il prodotto da un anno ha centinaia di sessioni. Disegnarle
+ * tutte per mostrarne dodici è lavoro che si paga a ogni apertura del pannello, e si
+ * paga di più proprio a chi lo usa di più.
  */
 
 import { Component, useState } from "@odoo/owl";
 
-export class AidaSidebar extends Component {
-    static template = "nli_web.AidaSidebar";
+export class AidaHistory extends Component {
+    static template = "nli_web.AidaHistory";
     static props = {
         store: Object,
         state: Object,
         onOpen: Function,
+        onClose: Function,
     };
 
     setup() {
@@ -51,15 +65,18 @@ export class AidaSidebar extends Component {
         if (ev.key === "Enter") {
             this.confirmRename();
         } else if (ev.key === "Escape") {
+            // Si ferma qui: senza, `Escape` arriverebbe anche alla scorciatoia del
+            // pannello e annullare una rinomina chiuderebbe AIDA.
+            ev.stopPropagation();
             this.ui.renamingId = null;
         }
     }
 
     async remove(conversation) {
         // Cancellare una conversazione cancella anche le frasi che vi sono dentro
-        // (D115 le conserva in chiaro), quindi la domanda e' dovuta: e' l'unico modo
+        // (D115 le conserva in chiaro), quindi la domanda è dovuta: è l'unico modo
         // che l'utente ha di ritirare le proprie parole.
-        const testo = conversation.title || this.env._t("questa conversazione");
+        const testo = conversation.title || "questa conversazione";
         if (!window.confirm(`Eliminare «${testo}» e tutti i suoi messaggi?`)) {
             return;
         }

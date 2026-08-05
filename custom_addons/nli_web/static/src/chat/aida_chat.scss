@@ -1,333 +1,180 @@
-// Lo stile della chat.
+// =============================================================================
+// AIDA — la conversazione dentro il pannello
+// =============================================================================
 //
-// Nessun colore scritto a mano: ogni superficie legge un token, in tre gradini.
+// Nessun colore scritto qui: tutto viene da `--aida-*`, che è il solo file che sa
+// dei tre temi (Premium chiaro, Premium scuro, Classic). Vedi `aida_tokens.scss` —
+// e in particolare il perché il gradino di mezzo è `--bs-*` e non `--o-*`.
 //
-//   --pui-*   il token semantico di `ui_brand_tokens`, che si ribalta da solo quando
-//             `html[data-pui-theme="dark"]`. C'e' solo con la skin Premium;
-//   --body-bg la variabile di Bootstrap che Odoo emette davvero a `:root`, e che si
-//   e simili  ribalta con il pacchetto scuro. E' il gradino della skin Classic;
-//   colore    l'ultimo valore, che serve solo se mancano entrambe.
+// ## Il vincolo che decide quasi tutto: quattrocentoquaranta pixel
 //
-// **D25** (i token di marca si usano quando ci sono e l'interfaccia degrada con grazia
-// quando non ci sono) e' il motivo dei tre gradini invece di uno.
+// A pagina intera si poteva mettere il testo in una colonna centrata e lasciare
+// respirare i margini. Qui la colonna **è** il pannello, e ogni pixel di rientro è un
+// pixel tolto alla riga di testo. Da qui vengono le tre scelte che si ripetono in
+// tutto il file:
 //
-// **E il tema scuro e' il motivo per cui l'ordine conta.** I fallback cablati sono
-// chiari: se stessero al primo posto vincerebbero sempre, e in dark il pannello
-// resterebbe bianco dentro una piattaforma nera. Un fallback e' l'ultima parola, mai
-// la prima.
-//
-// ## Il gradino di mezzo era un nome che non esiste
-//
-// Fino al 5 agosto 2026 questa colonna diceva `--o-view-background-color`,
-// `--o-gray-200`, `--o-main-text-color`. **Nessuna di quelle variabili CSS esiste.**
-// Sono variabili **SCSS** (`$o-view-background-color`), risolte a compilazione: sotto
-// quel nome non arrivano mai al browser. In tutto `web/static/src` ci sono 38
-// variabili CSS con prefisso `--o-`, e nessuna e' fra queste.
-//
-// Quindi con la skin Classic il browser saltava al terzo gradino, cioe' ai valori
-// cablati, che sono **chiari**: la chat si disegnava bianca dentro una piattaforma che
-// poteva essere scura. Il fallback funzionava, ed e' proprio per questo che non se ne
-// accorgeva nessuno — un gradino intermedio assente non da' nessun errore, si limita a
-// non essere mai usato.
-//
-// **E nemmeno `--bs-*` era la risposta.** `web/static/src/scss/bootstrap_overridden.scss`
-// imposta `$variable-prefix: ''`, quindi Bootstrap emette `--body-bg` e non
-// `--bs-body-bg`: nel pacchetto servito le occorrenze di `--bs-` sono **zero**. Due
-// nomi plausibili di fila, tutti e due assenti. I nomi qui sotto sono quelli letti da
-// `getComputedStyle` sull'installazione vera, non dedotti dai sorgenti.
-//
-// Nella skin Classic l'accento diventa il **viola di Odoo** (`--primary`, `#71639e`) e
-// non il blu di marca, ed e' giusto cosi': senza i token Premium la chat deve sembrare
-// parte della piattaforma che la ospita.
-//
-// ## E un token Premium scritto male
-//
-// Tre righe dicevano `--pui-color-text-muted`, che **non e' fra i 98 token** che
-// `ui_brand_tokens` emette — il nome e' `--pui-color-muted`. Stesso difetto un gradino
-// piu' su, e con la stessa forma: nessun errore, solo un gradino che non si usa mai.
+// * rientri di dodici pixel e non di ventiquattro;
+// * niente riquadri dentro riquadri — un bordo esterno e separatori sottili dentro;
+// * tutto ciò che è largo (tabelle, blocchi di codice) scorre **dentro il proprio
+//   riquadro** invece di allargare la conversazione.
 
-// L'azione vive dentro il gestore delle azioni di Odoo, sotto la barra di
-// navigazione. `height: 100%` da sola non basta: la catena dei genitori deve avere
-// un'altezza, altrimenti il pannello collassa e lo scorrimento finisce sulla pagina
-// invece che sul filo dei messaggi — ed e' li' che una chat comincia a dare fastidio.
-.o_action_manager > .o_aida,
-.o_aida {
-    display: flex;
-    height: 100%;
-    min-height: 0;
-    overflow: hidden;
-    background: var(--pui-color-surface, var(--body-bg, #fff));
-    color: var(--pui-color-text, var(--body-color, #374151));
-}
-
-// --- barra laterale --------------------------------------------------------
-
-.o_aida_sidebar {
-    display: flex;
-    flex-direction: column;
-    flex: 0 0 17rem;
-    max-width: 17rem;
-    border-right: 1px solid var(--pui-color-border, var(--border-color, #e5e7eb));
-    background: var(--pui-color-surface-secondary, var(--tertiary-bg, #f9fafb));
-}
-
-.o_aida_sidebar_head { padding: 0.75rem; }
-
-.o_aida_list {
-    flex: 1 1 auto;
-    overflow-y: auto;
-    padding: 0 0.5rem 0.75rem;
-    // Lo scorrimento della barra laterale non deve trascinare quello del filo dei
-    // messaggi quando arriva in fondo.
-    overscroll-behavior: contain;
-}
-
-.o_aida_item {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-    border-radius: 0.5rem;
-    padding: 0.125rem 0.25rem;
-
-    &:hover { background: var(--pui-color-surface-sunken, var(--secondary-bg, #eef0f2)); }
-    &.o_aida_item_active { background: var(--pui-color-border-strong, var(--border-color, #e3e6ea)); font-weight: 500; }
-
-    // Le azioni compaiono al passaggio del mouse, ma restano raggiungibili da
-    // tastiera: nasconderle con `display:none` le toglierebbe anche al `Tab`.
-    .o_aida_item_actions { opacity: 0; transition: opacity 120ms ease; }
-    &:hover .o_aida_item_actions,
-    &:focus-within .o_aida_item_actions { opacity: 1; }
-}
-
-.o_aida_item_open {
-    flex: 1 1 auto;
-    min-width: 0;
-    border: 0;
-    background: none;
-    text-align: left;
-    padding: 0.5rem;
-    color: inherit;
-}
-
-.o_aida_item_title {
-    display: block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.o_aida_empty_hint,
-.o_aida_loading {
-    padding: 0.75rem;
-    font-size: 0.875rem;
-    color: var(--pui-color-muted, var(--secondary-color, #6b7280));
-}
-
-// --- colonna centrale ------------------------------------------------------
-
-.o_aida_main {
-    flex: 1 1 auto;
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-}
-
-.o_aida_topbar {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    border-bottom: 1px solid var(--pui-color-border, var(--border-color, #e5e7eb));
-}
-
-.o_aida_title { font-weight: 600; }
-
-.o_aida_welcome {
-    flex: 1 1 auto;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 1rem;
-    padding: 1.5rem;
-    text-align: center;
-
-    // `unquote` perche' `min()` la deve valutare il browser: SASS ha una funzione con
-    // lo stesso nome e prova a farlo a compilazione, dove `rem` e `%` non si sommano.
-    .o_aida_composer { width: unquote("min(46rem, 100%)"); }
-}
-
-.o_aida_welcome_title { font-size: 1.75rem; font-weight: 600; }
-.o_aida_welcome_hint { max-width: 34rem; color: var(--pui-color-muted, var(--secondary-color, #6b7280)); }
-
-// --- filo dei messaggi -----------------------------------------------------
-
+// -----------------------------------------------------------------------------
+// Il filo dei messaggi
+// -----------------------------------------------------------------------------
 .o_aida_thread {
     flex: 1 1 auto;
+    min-height: 0;
     overflow-y: auto;
+    // Lo scorrimento della conversazione non deve trascinare quello della pagina
+    // sotto quando arriva in fondo: nel pannello succede a ogni risposta lunga.
     overscroll-behavior: contain;
-    padding: 1.5rem 1rem;
-    // Il contenuto sta in una colonna leggibile anche su schermi molto larghi: una
-    // riga di testo lunga mezzo metro non si legge, si scansiona.
-    > * { max-width: 46rem; margin-inline: auto; }
+    padding: 12px;
+    // Il pannello si può ridimensionare, quindi il contenuto deve poter rimpicciolire:
+    // senza, un blocco largo tiene aperta la colonna e il trascinamento si inchioda.
+    min-width: 0;
 }
 
-.o_aida_turn { margin-bottom: 2rem; }
+.o_aida_turn {
+    & + & { margin-top: 18px; }
+}
 
-.o_aida_bubble_user {
+// La domanda: bolla a destra. L'allineamento fa metà del lavoro di riconoscimento,
+// il colore l'altra metà — e nessuno dei due da solo (D65).
+.o_aida_bubble {
     margin-left: auto;
-    max-width: 80%;
     width: fit-content;
-    padding: 0.625rem 0.875rem;
-    border-radius: 1rem 1rem 0.25rem 1rem;
-    background: var(--pui-color-surface-sunken, var(--secondary-bg, #eef0f2));
-    // Il bordo non e' decorazione. Misurato in tema scuro, il riempimento della bolla
-    // stava a **1,16:1** sullo sfondo: visibile a occhio riposato su un buono schermo,
-    // e non visibile a chiunque altro.
-    //
-    // I token disponibili, misurati sullo stesso sfondo: `border` 1,45 — `border-strong`
-    // **2,60** — `muted` 5,31. Scelto `border-strong`: `muted` passerebbe la soglia ma
-    // e' una linea da separatore, non da messaggio.
-    //
-    // **2,60 resta sotto il 3:1** che si chiede al contorno di un comando, e va detto
-    // invece di dichiarare una conformita' che non c'e'. Regge lo stesso perche' il
-    // riconoscimento non poggia sul solo contrasto: la bolla e' anche allineata a
-    // destra e sagomata, e il testo dentro sta a 9,28:1. E' il principio di **D65**
-    // (una distinzione non si affida mai al solo colore) applicato all'impaginazione.
-    border: 1px solid var(--pui-color-border-strong, var(--border-color, #e3e6ea));
+    max-width: 86%;
+    padding: 7px 11px;
+    border-radius: var(--aida-radius-lg) var(--aida-radius-lg) var(--aida-radius-sm) var(--aida-radius-lg);
+    background: var(--aida-bubble-bg);
+    color: var(--aida-bubble-fg);
+    border: 1px solid var(--aida-bubble-border);
+    font-size: 0.875rem;
 
-    p { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+    p {
+        margin: 0;
+        white-space: pre-wrap;
+        // Una domanda può contenere un codice lungo senza spazi: senza questo,
+        // spinge fuori la bolla e con lei il pannello.
+        overflow-wrap: anywhere;
+    }
 }
 
-.o_aida_answer { margin-top: 1rem; }
-.o_aida_lead { font-weight: 500; margin-bottom: 0.5rem; }
-
-.o_aida_parts { list-style: none; padding-left: 0; margin: 0; }
-
-.o_aida_part {
-    padding: 0.25rem 0 0.25rem 0.75rem;
-    border-left: 3px solid var(--pui-color-border-strong, var(--border-color, #e3e6ea));
+.o_aida_answer {
+    margin-top: 10px;
+    font-size: 0.875rem;
+    line-height: 1.55;
+    color: var(--aida-text);
 }
 
-// D65: l'origine non si distingue **mai** dal solo colore. Una condizione dedotta dal
-// sistema porta anche un bordo diverso e la propria regola scritta sotto, cosi' chi
-// non distingue i colori la riconosce lo stesso.
-.o_aida_part_inferred {
-    border-left-style: dashed;
-    border-left-color: var(--pui-color-info, var(--info, #17a2b8));
+.o_aida_lead { margin: 0 0 6px; font-weight: 500; color: var(--aida-heading); }
+
+.o_aida_count {
+    margin: 0 0 8px;
+    color: var(--aida-secondary);
+    font-weight: 500;
 }
 
 .o_aida_rule {
     display: block;
-    color: var(--pui-color-muted, var(--secondary-color, #6b7280));
+    color: var(--aida-muted);
+    font-size: 0.75rem;
+}
+
+// Un avviso non è una risposta: si distingue dal bordo a sinistra, che si vede anche
+// senza colore, e non da un fondo colorato che in tre temi diversi si comporta in
+// tre modi.
+.o_aida_notice {
+    margin: 0;
+    padding: 6px 0 6px 10px;
+    border-left: 3px solid var(--aida-border-strong);
+    color: var(--aida-secondary);
+
+    &.o_aida_notice_warn { border-left-color: var(--aida-warning); }
+}
+
+// -----------------------------------------------------------------------------
+// «Come ho letto la domanda»
+// -----------------------------------------------------------------------------
+.o_aida_reading {
+    margin-top: 10px;
     font-size: 0.8125rem;
+
+    > summary {
+        cursor: pointer;
+        color: var(--aida-muted);
+        user-select: none;
+        list-style: none;
+
+        &::-webkit-details-marker { display: none; }
+
+        &::before {
+            content: "\203A";
+            display: inline-block;
+            margin-right: 6px;
+            transition: transform var(--aida-fast) var(--aida-ease);
+        }
+
+        &:hover { color: var(--aida-text); }
+
+        &:focus-visible {
+            outline: 2px solid var(--aida-accent);
+            outline-offset: 2px;
+            border-radius: var(--aida-radius-sm);
+        }
+    }
+
+    &[open] > summary::before { transform: rotate(90deg); }
 }
 
-.o_aida_count { margin-top: 0.5rem; color: var(--pui-color-muted, var(--secondary-color, #6b7280)); }
-.o_aida_refusal { color: var(--pui-color-warning, var(--warning, #b45309)); }
-
-// --- attesa ----------------------------------------------------------------
-
-.o_aida_waiting { display: flex; align-items: center; gap: 0.375rem; }
-
-.o_aida_dot {
-    width: 0.375rem;
-    height: 0.375rem;
-    border-radius: 50%;
-    background: var(--pui-color-muted, var(--tertiary-color, #9ca3af));
-    animation: o-aida-pulse 1.2s infinite ease-in-out;
-
-    &:nth-child(2) { animation-delay: 0.15s; }
-    &:nth-child(3) { animation-delay: 0.3s; }
+.o_aida_parts {
+    list-style: none;
+    padding-left: 0;
+    margin: 8px 0 0;
 }
 
-.o_aida_waiting_text { color: var(--pui-color-muted, var(--secondary-color, #6b7280)); font-size: 0.875rem; }
-
-@keyframes o-aida-pulse {
-    0%, 80%, 100% { opacity: 0.3; }
-    40% { opacity: 1; }
+.o_aida_part {
+    padding: 3px 0 3px 10px;
+    border-left: 3px solid var(--aida-border-strong);
 }
 
-// Chi ha chiesto meno animazioni non le riceve: l'attesa resta leggibile lo stesso.
-@media (prefers-reduced-motion: reduce) {
-    .o_aida_dot { animation: none; opacity: 0.6; }
+// D65: l'origine non si distingue **mai** dal solo colore. Una condizione dedotta dal
+// sistema porta anche un bordo tratteggiato e la propria regola scritta sotto, così
+// chi non distingue i colori la riconosce lo stesso.
+.o_aida_part_inferred {
+    border-left-style: dashed;
+    border-left-color: var(--aida-info);
 }
 
-// --- casella di scrittura --------------------------------------------------
-
-.o_aida_composer_dock { padding: 0 1rem 1rem; }
-.o_aida_composer_dock > * { max-width: 46rem; margin-inline: auto; }
-
-.o_aida_composer {
-    display: flex;
-    align-items: flex-end;
-    gap: 0.5rem;
-    padding: 0.5rem;
-    border: 1px solid var(--pui-color-border-strong, var(--border-color, #e3e6ea));
-    border-radius: 1.5rem;
-    background: var(--pui-color-surface, var(--body-bg, #fff));
-
-    &:focus-within { border-color: var(--pui-color-accent, var(--primary, #714b67)); }
-}
-
-.o_aida_input {
-    flex: 1 1 auto;
-    border: 0;
-    outline: none;
-    resize: none;
-    background: none;
-    padding: 0.5rem 0.75rem;
-    max-height: 200px;
-    color: inherit;
-}
-
-.o_aida_send {
-    flex: 0 0 auto;
-    border-radius: 50%;
-    width: 2.25rem;
-    height: 2.25rem;
-    padding: 0;
-}
-
-.o_aida_disclaimer {
-    // `auto` sui lati e non `0`: la scorciatoia `margin: 0.5rem 0 0` azzerava il
-    // `margin-inline: auto` che centra i figli del contenitore, e la nota finiva
-    // 248px piu' a sinistra della casella di scrittura. Misurato, non stimato.
-    margin: 0.5rem auto 0;
-    text-align: center;
-    font-size: 0.8125rem;
-    color: var(--pui-color-muted, var(--secondary-color, #6b7280));
-}
-
-// --- adattamento -----------------------------------------------------------
-
-// Sotto i 62rem la barra laterale non convive con la conversazione: toglierla lascia
-// al testo la larghezza che gli serve, invece di comprimere entrambe.
-@media (max-width: 62rem) {
-    .o_aida_sidebar { position: absolute; z-index: 2; height: 100%; }
-}
-
+// -----------------------------------------------------------------------------
+// Le letture da scegliere (D106, D121)
+// -----------------------------------------------------------------------------
 .o_aida_options {
     list-style: none;
     padding-left: 0;
-    margin: 0.5rem 0 0;
+    margin: 8px 0 0;
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
+    flex-direction: column;
+    gap: 4px;
 }
 
-// D121: una lettura si sceglie con un clic, quindi è un bottone e ne ha l'aspetto.
-// Un elemento cliccabile che non sembra cliccabile è una funzione che non esiste per
-// chi non prova a premerla.
+// In colonna e non in fila: nel pannello due opzioni affiancate diventano due
+// colonne da centoventi pixel, e una lettura come «ordinati per data di creazione,
+// decrescente» ci va a capo tre volte. Una per riga si legge in un colpo d'occhio.
 .o_aida_option {
-    padding: 0.375rem 0.75rem;
-    border: 1px solid var(--pui-color-border-strong, var(--border-color, #e3e6ea));
-    border-radius: 1rem;
-    background: var(--pui-color-surface-secondary, var(--tertiary-bg, #f9fafb));
-    color: inherit;
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid transparent;
+    border-radius: var(--aida-radius-md);
+    background: none;
+    color: var(--aida-link);
     font: inherit;
     text-align: left;
-    transition: background 120ms ease, border-color 120ms ease;
+    transition: background var(--aida-fast) var(--aida-ease),
+                border-color var(--aida-fast) var(--aida-ease);
 }
 
 button.o_aida_option {
@@ -335,90 +182,84 @@ button.o_aida_option {
 
     &:hover,
     &:focus-visible {
-        border-color: var(--pui-color-accent, var(--primary, #714b67));
-        background: var(--pui-color-surface, #fff);
+        border-color: var(--aida-border);
+        background: var(--aida-hover);
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--aida-accent);
+        outline-offset: 1px;
     }
 }
 
-// La domanda di un turno passato resta leggibile ma non risponde più: il server guarda
-// solo il turno immediatamente precedente, e un bottone che finge sarebbe una bugia.
+.o_aida_option_mark {
+    flex: 0 0 auto;
+    margin-top: 3px;
+    font-size: 0.6875rem;
+    opacity: 0.7;
+    transform: rotate(90deg);
+}
+
+// La domanda di un turno passato resta leggibile ma non risponde più: il server
+// guarda solo il turno immediatamente precedente, e un bottone che finge sarebbe
+// una bugia con una conseguenza — manderebbe la frase a interpretare da capo.
 .o_aida_option_past {
-    display: inline-block;
-    opacity: 0.6;
+    color: var(--aida-muted);
+    cursor: default;
 }
 
-// D123 — la modalità diagnostica. Deliberatamente sobria e monospaziata: è uno
-// strumento, non una parte della risposta, e deve stare sotto senza pretendere
-// attenzione da chi non l'ha aperta.
-.o_aida_debug {
-    margin-top: 0.75rem;
-    border-top: 1px dashed var(--pui-color-border-strong, var(--border-color, #e3e6ea));
-    padding-top: 0.5rem;
-    font-size: 0.8125rem;
+// -----------------------------------------------------------------------------
+// I comandi sotto una risposta
+// -----------------------------------------------------------------------------
+.o_aida_actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 10px;
+}
 
-    > summary {
-        cursor: pointer;
-        color: var(--pui-color-muted, var(--secondary-color, #6c757d));
-        user-select: none;
-    }
+.o_aida_action {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 8px;
+    border: 1px solid var(--aida-border);
+    border-radius: var(--aida-radius-md);
+    background: none;
+    color: var(--aida-muted);
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: background var(--aida-fast) var(--aida-ease),
+                color var(--aida-fast) var(--aida-ease);
 
-    h6 {
-        margin: 0.75rem 0 0.25rem;
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 0.03em;
-        color: var(--pui-color-muted, var(--secondary-color, #6c757d));
-    }
+    &:hover { background: var(--aida-hover); color: var(--aida-text); }
 
-    pre,
-    code {
-        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-        font-size: 0.75rem;
-    }
-
-    // Il piano e la busta sono larghi: scorrono dentro il proprio riquadro invece di
-    // allargare la conversazione.
-    pre {
-        margin: 0;
-        padding: 0.5rem 0.625rem;
-        overflow-x: auto;
-        max-height: 22rem;
-        overflow-y: auto;
-        border-radius: 0.375rem;
-        background: var(--pui-color-surface-secondary, var(--tertiary-bg, #f9fafb));
-        border: 1px solid var(--pui-color-border-strong, var(--border-color, #e3e6ea));
+    &:focus-visible {
+        outline: 2px solid var(--aida-accent);
+        outline-offset: 1px;
     }
 }
 
-.o_aida_debug_phases {
-    list-style: none;
-    padding-left: 0;
-    margin: 0.5rem 0 0;
-
-    li {
-        display: flex;
-        gap: 0.5rem;
-        justify-content: space-between;
-        padding: 0.125rem 0;
-        color: var(--pui-color-muted, var(--secondary-color, #6c757d));
-    }
-}
-
-// La tabella dei record: la vista lista di Odoo, incorporata (`00` §23).
+// -----------------------------------------------------------------------------
+// La tabella dei record — la vista lista di Odoo, incorporata (`00` §23)
+// -----------------------------------------------------------------------------
 //
 // **L'altezza segue i record, non il contrario.** `max-height` e non `height`: tre
 // risultati occupano tre righe, ottanta scorrono dentro il proprio riquadro senza
-// spingere fuori la conversazione. Una tabella alta uguale con tre righe o con ottanta
-// dice all'occhio che il numero non conta, ed è la prima cosa che conta.
+// spingere fuori la conversazione. Una tabella alta uguale con tre righe o con
+// ottanta dice all'occhio che il numero non conta, ed è la prima cosa che conta.
+//
+// **E qui dentro scorre anche in orizzontale**, che a pagina intera non serviva. Una
+// lista di sei colonne in quattrocento pixel deve poter scorrere: l'alternativa è
+// che allarghi il pannello da sola, e un contenuto che decide la larghezza del suo
+// contenitore rende il ridimensionamento una lotta.
 .o_aida_records {
-    margin-top: 0.75rem;
-    max-height: unquote("min(26rem, 55vh)");
+    margin-top: 8px;
+    max-height: 22rem;
     overflow: auto;
-    border: 1px solid var(--pui-color-border, var(--border-color, #e5e7eb));
-    border-radius: 0.5rem;
+    border: 1px solid var(--aida-border);
+    border-radius: var(--aida-radius-md);
 
-    // La vista si dimensiona sul contenuto: le sue regole di pagina intera vogliono
-    // riempire il viewport, e qui il viewport è la bolla di una risposta.
     .o_view_controller,
     .o_content,
     .o_list_view,
@@ -427,11 +268,11 @@ button.o_aida_option {
         min-height: 0;
     }
 
-    // **Le righe vuote non ci sono.** `list_renderer` riempie fino a quattro righe con
-    // celle contenenti uno spazio a larghezza zero (`getEmptyRowIds`), perché in una
-    // pagina intera una tabella di due righe sembra rotta. Dentro una risposta è il
-    // contrario: le righe finte fanno sembrare che ci siano risultati che non ci sono,
-    // e sono l'unica cosa in tutta la chat che mostra dati inesistenti.
+    // **Le righe vuote non ci sono.** `list_renderer` riempie fino a quattro righe
+    // con celle contenenti uno spazio a larghezza zero (`getEmptyRowIds`), perché in
+    // una pagina intera una tabella di due righe sembra rotta. Dentro una risposta è
+    // il contrario: le righe finte fanno sembrare che ci siano risultati che non ci
+    // sono, e sono l'unica cosa in tutta la chat che mostra dati inesistenti.
     .o_list_table > tbody > tr:not(.o_data_row):not(.o_group_header) {
         display: none;
     }
@@ -446,37 +287,433 @@ button.o_aida_option {
     .o_cp_buttons {
         display: none;
     }
+
+    // Nel pannello la lista deve poter essere più larga della colonna e scorrere.
+    .o_list_table { min-width: max-content; }
 }
 
-// --- «Come ho letto la domanda» --------------------------------------------
-//
-// Chiusa di suo e visivamente in secondo piano. L'interpretazione in parti resta
-// quella di `09` §3 — è il modo in cui una risposta sbagliata si può *vedere*
-// sbagliata — ma aperta di default riempiva ogni risposta di «first 80», «as list»,
-// «dedotto: default_list». Quella non è trasparenza: è il registro tecnico messo in
-// faccia a chi ha fatto una domanda. Chi guarda vede la risposta; chi dubita ha ancora
-// tutto, a un clic.
-.o_aida_reading {
-    margin-top: 0.75rem;
-    font-size: 0.8125rem;
+// -----------------------------------------------------------------------------
+// La modalità diagnostica (D123)
+// -----------------------------------------------------------------------------
+// Deliberatamente sobria e monospaziata: è uno strumento, non una parte della
+// risposta, e deve stare sotto senza pretendere attenzione da chi non l'ha aperta.
+.o_aida_debug {
+    margin-top: 10px;
+    border-top: 1px dashed var(--aida-border);
+    padding-top: 8px;
+    font-size: 0.75rem;
 
     > summary {
         cursor: pointer;
-        color: var(--pui-color-muted, var(--secondary-color, #6b7280));
+        color: var(--aida-muted);
         user-select: none;
-        list-style: none;
-
-        &::-webkit-details-marker { display: none; }
-
-        &::before {
-            content: "\203A";
-            display: inline-block;
-            margin-right: 0.375rem;
-            transition: transform 120ms ease;
-        }
     }
 
-    &[open] > summary::before { transform: rotate(90deg); }
+    h6 {
+        margin: 10px 0 3px;
+        font-size: 0.6875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        color: var(--aida-muted);
+    }
 
-    .o_aida_parts { margin-top: 0.5rem; }
+    pre,
+    code {
+        font-family: var(--aida-font-mono);
+        font-size: 0.6875rem;
+    }
+
+    // Il piano e la busta sono larghi: scorrono dentro il proprio riquadro invece di
+    // allargare la conversazione.
+    pre {
+        margin: 0;
+        padding: 6px 8px;
+        overflow: auto;
+        max-height: 18rem;
+        border-radius: var(--aida-radius-sm);
+        background: var(--aida-sunken);
+        border: 1px solid var(--aida-border);
+    }
+}
+
+.o_aida_debug_phases {
+    list-style: none;
+    padding-left: 0;
+    margin: 6px 0 0;
+
+    li {
+        display: flex;
+        gap: 8px;
+        justify-content: space-between;
+        padding: 2px 0;
+        color: var(--aida-muted);
+    }
+}
+
+// -----------------------------------------------------------------------------
+// La schermata di partenza
+// -----------------------------------------------------------------------------
+.o_aida_welcome {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    padding: 20px 16px;
+    text-align: center;
+}
+
+.o_aida_welcome_title {
+    margin: 8px 0 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--aida-heading);
+}
+
+.o_aida_welcome_hint {
+    margin: 0 0 8px;
+    max-width: 26rem;
+    color: var(--aida-muted);
+    font-size: 0.8125rem;
+}
+
+.o_aida_suggestions {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    text-align: left;
+}
+
+.o_aida_suggestion {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid transparent;
+    border-radius: var(--aida-radius-md);
+    background: none;
+    color: var(--aida-secondary);
+    font: inherit;
+    font-size: 0.8125rem;
+    text-align: left;
+    cursor: pointer;
+    transition: background var(--aida-fast) var(--aida-ease),
+                border-color var(--aida-fast) var(--aida-ease);
+
+    i { margin-top: 2px; color: var(--aida-muted); }
+
+    &:hover {
+        background: var(--aida-hover);
+        border-color: var(--aida-border);
+        color: var(--aida-text);
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--aida-accent);
+        outline-offset: 1px;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// La casella di scrittura
+// -----------------------------------------------------------------------------
+.o_aida_composer {
+    display: flex;
+    flex-direction: column;
+    padding: 6px 8px 6px 10px;
+    border: 1px solid var(--aida-border-strong);
+    border-radius: var(--aida-radius-lg);
+    background: var(--aida-surface);
+    transition: border-color var(--aida-fast) var(--aida-ease),
+                box-shadow var(--aida-fast) var(--aida-ease);
+
+    // Il fuoco si vede sul riquadro intero e non sul solo campo: il bordo è ciò che
+    // l'occhio legge come «la casella», e illuminarne una parte sola sembra un
+    // difetto di disegno.
+    &:focus-within {
+        border-color: var(--aida-accent);
+        box-shadow: 0 0 0 3px rgba(var(--aida-accent-rgb), 0.16);
+    }
+}
+
+.o_aida_input {
+    width: 100%;
+    border: 0;
+    outline: none;
+    resize: none;
+    background: none;
+    padding: 3px 0;
+    max-height: 160px;
+    color: var(--aida-text);
+    font: inherit;
+    font-size: 0.875rem;
+    line-height: 1.5;
+
+    &::placeholder { color: var(--aida-muted); }
+}
+
+.o_aida_composer_bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+}
+
+.o_aida_composer_spacer { flex: 1 1 auto; }
+
+.o_aida_counter { font-size: 0.6875rem; color: var(--aida-muted); }
+
+.o_aida_send {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--aida-radius-md);
+    background: var(--aida-accent);
+    color: #fff;
+    cursor: pointer;
+    transition: opacity var(--aida-fast) var(--aida-ease),
+                background var(--aida-fast) var(--aida-ease);
+
+    // Spento e non nascosto: sparire farebbe saltare la riga a ogni prima lettera, e
+    // il salto si nota molto più del grigio.
+    &:disabled {
+        background: var(--aida-border-strong);
+        color: var(--aida-muted);
+        cursor: default;
+        opacity: 0.8;
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--aida-accent);
+        outline-offset: 2px;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// Le conversazioni
+// -----------------------------------------------------------------------------
+// La larghezza sta in una variabile perché **due regole devono usarla identica**: la
+// cronologia e il bordo sinistro del velo. Due numeri uguali scritti in due posti sono
+// un numero che prima o poi diverge, e qui divergerebbe in un modo che non si vede —
+// un velo qualche pixel troppo largo continua a sembrare giusto e smette di essere
+// cliccabile dove serve.
+//
+// `unquote` perché Sass ha un `min()` suo e proverebbe a **calcolare** questa riga:
+// confrontare 300px con 88% è un errore di unità, e l'errore ferma la compilazione
+// dell'intero pacchetto `web.assets_backend` — cioè lo stile di tutto Odoo, non solo
+// il nostro. Qui `min()` deve arrivare al browser così com'è, ed è il browser a
+// scegliere a tempo di disegno.
+.o_aida_body { --aida-history-width: #{unquote("min(300px, 88%)")}; }
+
+// **Il velo comincia dove finisce la cronologia**, e non sotto di lei.
+//
+// Coprendo tutto il pannello, con la colonna alla larghezza minima (360 px) e la
+// cronologia a 300, restavano sessanta pixel di velo cliccabile — e il centro del
+// velo, che è dove punta chiunque, cadeva sulla cronologia. Il gesto «clicca fuori per
+// chiudere» funzionava solo mirando bene. Trovato dal copione di verifica, che clicca
+// il centro come farebbe una persona.
+//
+// Restringendolo, ogni suo pixel è cliccabile per costruzione. Visivamente non cambia
+// niente: la parte che non copre più è quella su cui sta la cronologia, che è opaca.
+.o_aida_history_veil {
+    position: absolute;
+    inset: 0 0 0 var(--aida-history-width);
+    z-index: 2;
+    background: rgba(0, 0, 0, 0.28);
+    animation: o-aida-fade var(--aida-fast) var(--aida-ease);
+}
+
+.o_aida_history {
+    position: absolute;
+    inset: 0 auto 0 0;
+    z-index: 3;
+    width: var(--aida-history-width);
+    display: flex;
+    flex-direction: column;
+    background: var(--aida-elevated);
+    border-right: 1px solid var(--aida-border);
+    box-shadow: var(--aida-shadow);
+    // Si anima `transform` e non `left`: la prima la muove la scheda grafica, la
+    // seconda obbliga il browser a rifare il layout a ogni fotogramma.
+    animation: o-aida-slide-in var(--aida-base) var(--aida-ease-out);
+    contain: layout paint;
+}
+
+@keyframes o-aida-slide-in {
+    from { transform: translateX(-100%); }
+    to   { transform: translateX(0); }
+}
+
+@keyframes o-aida-fade {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+.o_aida_history_head {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 8px 8px 12px;
+    border-bottom: 1px solid var(--aida-border-subtle);
+}
+
+.o_aida_history_title {
+    flex: 1 1 auto;
+    font-weight: 600;
+    font-size: 0.8125rem;
+    color: var(--aida-heading);
+}
+
+.o_aida_list {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 6px;
+}
+
+.o_aida_item {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    border-radius: var(--aida-radius-md);
+    padding: 0 2px;
+
+    &:hover { background: var(--aida-hover); }
+    &.o_aida_item_active { background: var(--aida-selected); font-weight: 500; }
+
+    // Le azioni compaiono al passaggio del mouse, ma restano raggiungibili da
+    // tastiera: nasconderle con `display: none` le toglierebbe anche al `Tab`.
+    .o_aida_item_actions {
+        display: flex;
+        opacity: 0;
+        transition: opacity var(--aida-fast) var(--aida-ease);
+    }
+
+    &:hover .o_aida_item_actions,
+    &:focus-within .o_aida_item_actions { opacity: 1; }
+}
+
+.o_aida_item_open {
+    flex: 1 1 auto;
+    min-width: 0;
+    border: 0;
+    background: none;
+    text-align: left;
+    padding: 7px 6px;
+    color: inherit;
+    font: inherit;
+    font-size: 0.8125rem;
+    cursor: pointer;
+
+    &:focus-visible {
+        outline: 2px solid var(--aida-accent);
+        outline-offset: -2px;
+        border-radius: var(--aida-radius-sm);
+    }
+}
+
+.o_aida_item_title {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.o_aida_rename {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 3px 4px;
+    padding: 4px 6px;
+    border: 1px solid var(--aida-accent);
+    border-radius: var(--aida-radius-sm);
+    background: var(--aida-surface);
+    color: var(--aida-text);
+    font: inherit;
+    font-size: 0.8125rem;
+}
+
+.o_aida_empty_hint,
+.o_aida_loading {
+    padding: 10px;
+    font-size: 0.8125rem;
+    color: var(--aida-muted);
+}
+
+// -----------------------------------------------------------------------------
+// Il segno grande, e la pagina che spiega dov'è finita AIDA
+// -----------------------------------------------------------------------------
+.o_aida_mark_lg {
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+
+    &::after {
+        right: -7px;
+        bottom: -6px;
+        width: 17px;
+        height: 17px;
+        border-width: 3px;
+    }
+}
+
+.o_aida_action {
+    display: flex;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: var(--aida-bg);
+    color: var(--aida-text);
+}
+
+.o_aida_action_card {
+    max-width: 30rem;
+    text-align: center;
+
+    h1 {
+        margin: 14px 0 8px;
+        font-size: 1.375rem;
+        font-weight: 600;
+        color: var(--aida-heading);
+    }
+
+    p { color: var(--aida-secondary); }
+}
+
+.o_aida_action_hint {
+    margin-top: 14px;
+    font-size: 0.8125rem;
+    color: var(--aida-muted);
+
+    kbd {
+        padding: 1px 5px;
+        border: 1px solid var(--aida-border);
+        border-radius: var(--aida-radius-sm);
+        background: var(--aida-sunken);
+        color: var(--aida-text);
+        font-size: 0.75rem;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// Chi ha chiesto meno movimento
+// -----------------------------------------------------------------------------
+@media (prefers-reduced-motion: reduce) {
+    .o_aida_history,
+    .o_aida_history_veil { animation: none; }
 }

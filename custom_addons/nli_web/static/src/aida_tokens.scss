@@ -1,0 +1,145 @@
+// =============================================================================
+// AIDA — il livello dei token
+// =============================================================================
+//
+// Tutto il resto dello stile di AIDA legge **solo** `--aida-*`. Nessun altro file
+// nomina un token di marca, una variabile di Odoo o un colore scritto a mano.
+//
+// La ragione non è l'eleganza: è che quando un tema si rompe ci sia **un solo file
+// da aprire**. Prima i gradini erano ripetuti in ottocento righe, e la catena
+// sbagliata — quella qui sotto — stava scritta ottanta volte.
+//
+// ## I tre gradini
+//
+//   1. `--pui-*`      il token semantico di `ui_brand_tokens`, che si ribalta da solo
+//                     quando `html[data-pui-theme="dark"]`. C'è solo con la skin Premium.
+//   2. la variabile   di Bootstrap, che Odoo emette davvero a `:root` e che si ribalta
+//      di Odoo        con il pacchetto scuro. È il gradino della skin Classic.
+//   3. il valore      l'ultima parola, se mancano entrambe.
+//
+// ## Due nomi sbagliati, entrambi trovati guardando invece di ricordare
+//
+// **Primo: `--o-view-background-color` non esiste.** Era il gradino 2 fino a oggi.
+// `$o-view-background-color` è una variabile **SCSS**, risolta a compilazione: come
+// variabile CSS non arriva mai al browser. In tutto `web/static/src` ci sono 38
+// variabili CSS con prefisso `--o-` e nessuna è quella. Il browser saltava al gradino
+// 3, cioè ai valori cablati, che sono chiari: con la skin Classic AIDA si disegnava
+// bianca dentro una piattaforma che poteva essere scura.
+//
+// **Secondo: `--bs-body-bg` non esiste neanche.** Era la correzione ovvia, ed era
+// sbagliata pure lei. `web/static/src/scss/bootstrap_overridden.scss:51` imposta
+// `$variable-prefix: ''`, quindi Bootstrap emette `--body-bg` e non `--bs-body-bg`.
+// Verificato contando: nel pacchetto `web.assets_web` servito, le occorrenze di
+// `--bs-` sono **zero**.
+//
+// Due nomi plausibili di fila, tutti e due assenti, tutti e due silenziosi. È il
+// modo di fallire di un fallback: non c'è nessun errore da nessuna parte, perché il
+// gradino successivo funziona sempre. **L'unica prova possibile è guardare il
+// browser**, e i valori qui sotto sono quelli letti da `getComputedStyle` su questa
+// installazione, non quelli dedotti dai sorgenti.
+//
+// ## Sul buio della skin Classic
+//
+// Odoo 18 Community non ha un tema scuro vero: `web.assets_web_dark` aggiunge tre
+// file di componente e lascia la tavolozza dov'è (verificato — nessun
+// `*.dark.scss` fra gli SCSS principali, e i valori a `:root` con il cookie
+// `color_scheme=dark` sono identici a quelli chiari). Quindi con la skin Classic
+// AIDA è chiara perché **Odoo è chiaro**, non perché non sappia essere scura: il
+// giorno in cui `web_enterprise` porta il suo pacchetto scuro, `--body-bg` si
+// ribalta e AIDA si ribalta con lui, senza che nessuno tocchi questo file.
+//
+// **D25** (i token di marca si usano quando ci sono e l'interfaccia degrada con
+// grazia quando non ci sono) è il motivo dei tre gradini invece di uno.
+
+.o_aida_scope {
+    // --- superfici ---------------------------------------------------------
+    // Classic misurato: `--body-bg: #f8f9fa`, `--secondary-bg: #e9ecef`,
+    // `--tertiary-bg: #f8f9fa`.
+    --aida-bg: var(--pui-color-bg, var(--body-bg, #ffffff));
+    --aida-surface: var(--pui-color-surface, var(--body-bg, #ffffff));
+    --aida-elevated: var(--pui-color-surface-secondary, var(--tertiary-bg, #f7f8fa));
+    --aida-sunken: var(--pui-color-surface-sunken, var(--secondary-bg, #eef0f4));
+    --aida-hover: var(--pui-color-hover, var(--secondary-bg, #eef0f4));
+    // `--primary-bg-subtle` è la tinta d'accento leggera che Bootstrap deriva dal
+    // primario: in Classic è il viola tenue di Odoo, e la riga selezionata assomiglia
+    // a quelle del resto della piattaforma invece che a una nostra invenzione.
+    --aida-selected: var(--pui-color-selected, var(--primary-bg-subtle, #e9f2ff));
+
+    // --- bordi -------------------------------------------------------------
+    --aida-border-subtle: var(--pui-color-border-subtle, var(--border-color, #e3e6ec));
+    --aida-border: var(--pui-color-border, var(--border-color, #e3e6ec));
+    // Il bordo forte si compone invece di essere pescato: `--border-color-translucent`
+    // in Classic è `rgba(0,0,0,.175)`, cioè **nero** — su fondo scuro sparirebbe. Un
+    // bordo mescolato con il testo si scurisce sul chiaro e si schiarisce sullo
+    // scuro, che è ciò che «più forte» vuol dire in entrambi i casi.
+    --aida-border-strong: var(--pui-color-border-strong, var(--border-color, #cdd2db));
+    --aida-border-strong: var(--pui-color-border-strong,
+        color-mix(in srgb, var(--aida-border) 60%, var(--aida-text)));
+
+    // --- testo -------------------------------------------------------------
+    // Classic misurato: `--heading-color: #212529`, `--body-color: #495057`,
+    // `--secondary-color: rgba(73,80,87,.75)`, `--tertiary-color: rgba(73,80,87,.5)`.
+    --aida-heading: var(--pui-color-heading, var(--heading-color, #172b4d));
+    --aida-text: var(--pui-color-text, var(--body-color, #2c3e5d));
+    --aida-secondary: var(--pui-color-secondary, var(--secondary-color, #44546f));
+    --aida-muted: var(--pui-color-muted, var(--tertiary-color, #626f86));
+
+    // --- accento -----------------------------------------------------------
+    // In Classic `--primary` è il viola di Odoo (`#71639e`), e va bene così: AIDA
+    // deve sembrare parte della piattaforma che la ospita, non portarsi dietro il blu
+    // di un altro prodotto. Con Premium è il blu di marca.
+    --aida-accent: var(--pui-color-accent, var(--primary, #0c66e4));
+    --aida-accent-rgb: var(--pui-accent-rgb, var(--primary-rgb, 12, 102, 228));
+    --aida-accent-soft: var(--pui-accent-soft, rgba(var(--aida-accent-rgb), 0.12));
+    --aida-link: var(--pui-color-accent, var(--link-color, #0c66e4));
+
+    // --- stati -------------------------------------------------------------
+    --aida-success: var(--pui-color-success, var(--success, #16a34a));
+    --aida-info: var(--pui-color-info, var(--info, #0ea5e9));
+    --aida-warning: var(--pui-color-warning, var(--warning, #b45309));
+    --aida-danger: var(--pui-color-danger, var(--danger, #e5484d));
+
+    // --- forma -------------------------------------------------------------
+    --aida-radius-sm: var(--pui-radius-sm, var(--border-radius-sm, 4px));
+    --aida-radius-md: var(--pui-radius-md, var(--border-radius, 6px));
+    --aida-radius-lg: var(--pui-radius-lg, var(--border-radius-lg, 10px));
+    --aida-radius-pill: var(--pui-radius-pill, var(--border-radius-pill, 999px));
+    --aida-shadow: var(--pui-shadow-lg, var(--box-shadow-lg, 0 8px 24px rgba(16, 24, 40, 0.12)));
+
+    // --- movimento ---------------------------------------------------------
+    // Odoo non espone durate come variabili CSS, quindi qui il gradino 2 non c'è e
+    // non serve: sono numeri nostri, e devono essere gli stessi in tutte le skin
+    // perché il movimento è una firma dell'interfaccia, non del tema.
+    --aida-fast: var(--pui-motion-fast, 120ms);
+    --aida-base: var(--pui-motion-base, 180ms);
+    --aida-slow: var(--pui-motion-slow, 280ms);
+    --aida-ease-out: var(--pui-ease-out, cubic-bezier(0.16, 1, 0.3, 1));
+    --aida-ease: var(--pui-ease, cubic-bezier(0.4, 0, 0.2, 1));
+
+    // --- tipografia --------------------------------------------------------
+    --aida-font: var(--pui-font-sans, var(--font-sans-serif, inherit));
+    --aida-font-mono: var(--pui-font-mono, var(--font-monospace, ui-monospace, monospace));
+
+    // --- la bolla di chi scrive -------------------------------------------
+    //
+    // **Si mescola con la superficie invece di essere dichiarata due volte.**
+    //
+    // Una tinta d'accento al 12% su bianco si vede; la stessa su un grigio scuro
+    // sparisce. La prima versione risolveva con due blocchi, uno per Premium scuro e
+    // uno per Classic scuro, e il secondo doveva indovinare quale pacchetto Odoo
+    // avesse servito — cosa che `prefers-color-scheme` **non dice**: quello racconta
+    // il sistema operativo, non la skin.
+    //
+    // `color-mix` toglie la domanda invece di rispondere male: la bolla si compone
+    // con la superficie che ha davvero sotto, e si adatta da sola a tutti i casi
+    // senza che nessuno debba sapere in quale si trova.
+    //
+    // La riga sopra è il ripiego per un browser che `color-mix` non conosce: una
+    // dichiarazione non valida viene scartata e vince la precedente, che è la regola
+    // della cascata usata per quello che serve.
+    --aida-bubble-bg: var(--aida-accent-soft);
+    --aida-bubble-bg: color-mix(in srgb, var(--aida-accent) 14%, var(--aida-surface));
+    --aida-bubble-fg: var(--aida-heading);
+    --aida-bubble-border: var(--aida-border);
+    --aida-bubble-border: color-mix(in srgb, var(--aida-accent) 28%, transparent);
+}

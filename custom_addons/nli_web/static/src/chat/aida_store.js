@@ -23,11 +23,28 @@
 
 import { reactive } from "@odoo/owl";
 
+/**
+ * Gli avanzamenti arrivati per un turno che il client non ha ancora numerato.
+ *
+ * `accept_request` restituisce l'identificativo del turno, e il dispatcher puo'
+ * cominciare a lavorarlo **prima** che quella risposta arrivi: il primo passo viene
+ * emesso appena il turno parte, e viaggia sul bus, che e' un'altra strada con i suoi
+ * tempi. Senza questa memoria il primo passo — proprio quello che toglie di mezzo
+ * l'attesa muta — si perderebbe nella meta' dei casi, e si perderebbe *di piu'*
+ * quando il server e' veloce.
+ *
+ * Tenerli da parte e riversarli quando il numero arriva costa una mappa con dentro
+ * al massimo una manciata di voci, e toglie una corsa che altrimenti si vede.
+ */
+const MASSIMO_IN_ATTESA = 40;
+
 export class AidaStore {
     constructor(orm, busService, notify) {
         this.orm = orm;
         this.bus = busService;
         this.notify = notify;
+        /** Passi arrivati prima del loro turno, per identificativo. */
+        this._passiOrfani = new Map();
 
         this.state = reactive({
             conversations: [],
@@ -79,6 +96,10 @@ export class AidaStore {
         // e' asincrona, ed e' documentato proprio come alternativa al polling.
         // Aggiungerne un secondo avrebbe significato due avvisi per un evento solo.
         this.bus.subscribe("nli.turn", (payload) => this._onTurnDone(payload));
+        // Il secondo canale: che cosa sta facendo il turno **mentre** lo fa. Sono due
+        // messaggi con due destini diversi — questo si puo' perdere senza danno,
+        // quello no — e tenerli separati e' cio' che permette di trattarli cosi'.
+        this.bus.subscribe("nli.turn.progress", (payload) => this._onTurnProgress(payload));
         this.bus.start();
         await this.loadConversations({ reset: true });
         // Si riapre l'ultima conversazione, come fa una chat: tornare su AIDA e
@@ -231,6 +252,16 @@ export class AidaStore {
             record_count: 0,
             executed_at: false,
             pending: true,
+            /**
+             * I passi che il server annuncia mentre lavora.
+             *
+             * Nasce vuoto e non `null`: il componente che lo disegna non deve avere
+             * due casi da distinguere, e «nessun passo ancora» e «nessun passo mai»
+             * si disegnano uguali — l'attesa senza elenco.
+             */
+            steps: [],
+            /** Vero quando l'elenco si e' chiuso perche' la risposta e' arrivata. */
+            stepsCollapsed: false,
         };
         this.state.turns.push(provvisorio);
         this.state.pendingCount += 1;
@@ -252,6 +283,7 @@ export class AidaStore {
         }
         // Da qui in poi il turno ha un identificativo vero: la notifica lo trovera'.
         provvisorio.id = esito.turn_id;
+        this._riversaPassi(provvisorio);
         this.state.waiting = "interpreting";
         this._touch(conversationId, testo);
         this._armaLaSveglia(provvisorio);
@@ -327,9 +359,84 @@ export class AidaStore {
             // Se la lettura non riesce, l'attesa non deve restare accesa per sempre:
             // si mostra l'esito che l'avviso portava, che è poco ma è vero.
         }
+        // I passi non stanno nel payload del server e non devono sparire: quello che
+        // arriva descrive il turno **concluso**, e `Object.assign` sovrascriverebbe
+        // solo le chiavi che porta. Si conservano e si chiudono, perche' «Completati
+        // sei passi» e' l'unico modo di poter tornare a guardare come ci è arrivato.
+        const passi = turno.steps || [];
         Object.assign(turno, completo || { outcome: payload.outcome });
+        turno.steps = passi;
+        turno.stepsCollapsed = true;
         turno.pending = false;
         this.state.pendingCount = Math.max(0, this.state.pendingCount - 1);
         this.state.waiting = this.state.pendingCount > 0 ? this.state.waiting : null;
+        this._passiOrfani.delete(payload.turn_id);
+    }
+
+    /**
+     * Un passo di un turno in corso.
+     *
+     * **Il passo si scarta, il turno no.** Un avanzamento perso non toglie niente
+     * alla risposta: e' cortesia, e la cortesia che non arriva non e' un guasto. Per
+     * questo qui non c'e' nessun tentativo di recupero, nessuna richiesta al server
+     * e nessun errore mostrato — sarebbero tutte cose che costano di piu' di quello
+     * che proteggono.
+     */
+    _onTurnProgress(payload) {
+        if (payload.interrogation_id !== this.state.currentId) {
+            return;
+        }
+        const turno = this.state.turns.find((t) => t.id === payload.turn_id);
+        if (!turno) {
+            // Il passo ha battuto la risposta di `accept_request`: si tiene da parte
+            // finche' il turno non ha il suo numero. Vedi `MASSIMO_IN_ATTESA`.
+            this._ricordaOrfano(payload);
+            return;
+        }
+        if (!turno.pending) {
+            return; // Arrivato dopo la risposta: non ha piu' niente da annunciare.
+        }
+        this._aggiungiPasso(turno, payload);
+    }
+
+    _aggiungiPasso(turno, payload) {
+        // L'indice arriva dal server e non si ricalcola qui: e' lui a sapere quanti
+        // ne ha mandati, e due passi con lo stesso numero vorrebbero dire che il bus
+        // ne ha consegnato uno due volte — cosa che puo' succedere, e che si scarta.
+        if (turno.steps.some((passo) => passo.index === payload.index)) {
+            return;
+        }
+        turno.steps.push({
+            index: payload.index,
+            step: payload.step,
+            detail: payload.detail || "",
+        });
+        // Il bus non promette l'ordine. Ordinare qui costa niente su una manciata di
+        // voci, e toglie di mezzo un elenco che racconta il lavoro al contrario.
+        turno.steps.sort((a, b) => a.index - b.index);
+    }
+
+    _ricordaOrfano(payload) {
+        const attesa = this._passiOrfani.get(payload.turn_id) || [];
+        attesa.push(payload);
+        this._passiOrfani.set(payload.turn_id, attesa);
+        // Un tetto, perche' una mappa che cresce senza limite in una scheda lasciata
+        // aperta tutto il giorno e' una perdita di memoria con un'altra faccia. Il
+        // caso vero e' una voce sola: qualunque numero ben oltre e' sufficiente.
+        if (this._passiOrfani.size > MASSIMO_IN_ATTESA) {
+            this._passiOrfani.delete(this._passiOrfani.keys().next().value);
+        }
+    }
+
+    /** Riversa nel turno i passi che erano arrivati prima del suo numero. */
+    _riversaPassi(turno) {
+        const attesa = this._passiOrfani.get(turno.id);
+        if (!attesa) {
+            return;
+        }
+        this._passiOrfani.delete(turno.id);
+        for (const payload of attesa) {
+            this._aggiungiPasso(turno, payload);
+        }
     }
 }

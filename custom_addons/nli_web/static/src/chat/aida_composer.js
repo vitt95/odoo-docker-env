@@ -18,7 +18,26 @@
 
 import { Component, useEffect, useRef, useState } from "@odoo/owl";
 
-const ALTEZZA_MASSIMA = 200;
+/**
+ * Quanto può crescere prima di scorrere dentro di sé.
+ *
+ * Nel pannello conta più che a pagina intera: una casella che si prende metà
+ * dell'altezza disponibile spinge fuori dallo schermo la risposta a cui si sta
+ * rispondendo, ed è il momento in cui serve di più.
+ */
+const ALTEZZA_MASSIMA = 160;
+
+/**
+ * Oltre questo la frase non è più una domanda.
+ *
+ * Non è un limite del server — quello sta altrove ed è più alto — è il punto in cui
+ * conviene dirlo: una domanda di duemila caratteri non è una domanda, è un documento,
+ * e il modello la leggerà male comunque.
+ */
+const CARATTERI_MASSIMI = 2000;
+
+/** Da qui in poi il conteggio si vede. Prima non serve a nessuno. */
+const SOGLIA_CONTEGGIO = 1800;
 
 export class AidaComposer extends Component {
     static template = "nli_web.AidaComposer";
@@ -26,6 +45,8 @@ export class AidaComposer extends Component {
         store: Object,
         state: Object,
         placeholder: { type: String, optional: true },
+        /** Vero mentre AIDA sta lavorando su un turno. */
+        busy: { type: Boolean, optional: true },
     };
 
     setup() {
@@ -52,7 +73,33 @@ export class AidaComposer extends Component {
     }
 
     get canSend() {
-        return this.text.trim().length > 0 && !this.chat.sending;
+        const lunghezza = this.text.trim().length;
+        return lunghezza > 0 && lunghezza <= CARATTERI_MASSIMI && !this.chat.sending;
+    }
+
+    /**
+     * Il testo grigio nella casella, che cambia con il momento.
+     *
+     * A conversazione vuota invita a cominciare; dopo una risposta invita a
+     * continuare. Sono due situazioni diverse e un testo solo ne servirebbe male una:
+     * «Chiedi qualcosa» sotto una risposta suona come se la conversazione precedente
+     * non fosse successa.
+     */
+    get placeholder() {
+        if (this.props.placeholder) {
+            return this.props.placeholder;
+        }
+        return this.chat.turns.length
+            ? "Chiedi altro, o precisa la domanda"
+            : "Chiedi qualcosa sui tuoi dati";
+    }
+
+    get counter() {
+        return `${this.text.length} / ${CARATTERI_MASSIMI}`;
+    }
+
+    get nearLimit() {
+        return this.text.length >= SOGLIA_CONTEGGIO;
     }
 
     onInput(ev) {

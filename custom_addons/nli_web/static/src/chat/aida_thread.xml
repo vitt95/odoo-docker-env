@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="nli_web.AidaThread">
+    <div class="o_aida_thread" t-ref="scroller" t-on-scroll="onScroll">
+        <p class="o_aida_loading" t-if="props.state.loadingTurns">Carico i messaggi precedenti…</p>
+
+        <t t-foreach="turns" t-as="turn" t-key="turnKey(turn)">
+            <article class="o_aida_turn">
+                <!--
+                  La domanda è una bolla a destra. L'allineamento fa metà del lavoro:
+                  chi scorre una conversazione lunga riconosce chi parla dalla posizione
+                  prima di leggere una parola, ed è il motivo per cui il colore da solo
+                  non basterebbe (D65).
+                -->
+                <!--
+                  Senza frase non c'è bolla. Un turno può arrivare senza: quelli
+                  della batteria di carico nascono da un processo e non da una
+                  persona, e la coda cancella comunque la frase quando il turno si
+                  chiude (D96). Una bolla vuota si legge come un messaggio perso, ed
+                  è la cosa peggiore da far credere in una cronologia.
+                -->
+                <div class="o_aida_bubble" t-if="turn.utterance">
+                    <p t-esc="turn.utterance"/>
+                </div>
+
+                <div class="o_aida_answer">
+                    <!--
+                      I passi: durante il turno sono l'attesa, dopo sono il riassunto
+                      ripiegato. Un componente solo, perché è la stessa cosa in due
+                      momenti — e due componenti che disegnano lo stesso elenco
+                      divergono il giorno in cui se ne tocca uno.
+                    -->
+                    <AidaSteps turn="turn" t-if="turn.steps and turn.steps.length"/>
+                    <t t-if="turn.pending and (!turn.steps or !turn.steps.length)">
+                        <!--
+                          Nessun passo ancora: il turno è stato accettato e non è
+                          partito, oppure gli avanzamenti non arrivano. L'attesa si
+                          vede lo stesso, perché non deve dipendere da un messaggio
+                          che si può perdere.
+                        -->
+                        <p class="o_aida_thinking" aria-live="polite">
+                            <span class="o_aida_morph" aria-hidden="true"/>
+                            <span class="o_aida_shimmer" t-if="!turn.slow">Sto pensando…</span>
+                            <span class="o_aida_shimmer" t-else="">Ci sto ancora pensando…</span>
+                        </p>
+                    </t>
+
+                    <t t-if="!turn.pending">
+                        <t t-if="turn.outcome === 'refused'">
+                            <p class="o_aida_notice o_aida_notice_warn">
+                                Non ho preso in carico la domanda:
+                                <t t-esc="turn.interpretation and turn.interpretation.refusal"/>.
+                                Riprova fra poco.
+                            </p>
+                        </t>
+                        <t t-elif="turn.interpretation and turn.interpretation.parts">
+                            <!--
+                              Il conteggio c'è **sempre** per un turno eseguito, zero
+                              compreso: «nessun record» è una risposta, e senza di essa
+                              una tabella vuota si legge come un guasto invece che come
+                              un dato.
+                            -->
+                            <p class="o_aida_count" t-if="turn.query">
+                                <t t-esc="recordsLabel(turn)"/>
+                            </p>
+
+                            <!--
+                              `00` §23: la tabella è la vista lista di Odoo,
+                              incorporata. Ricerca, ordinamento, filtri, colonne e
+                              paginazione arrivano da lì invece di essere riscritte.
+                            -->
+                            <div class="o_aida_records" t-if="turn.query">
+                                <AidaRecords query="turn.query"/>
+                            </div>
+
+                            <!--
+                              **Come ho letto la domanda**, chiuso di suo.
+                              L'interpretazione in parti (`09` §3) è il modo in cui una
+                              risposta sbagliata si può *vedere* sbagliata. Aperta di
+                              default riempiva ogni risposta di «first 80», «as list»,
+                              «dedotto: default_list» — che non è trasparenza, è il
+                              registro tecnico messo in faccia a chi ha fatto una
+                              domanda. Chi guarda vede la risposta, chi dubita ha
+                              ancora tutto.
+                            -->
+                            <details class="o_aida_reading">
+                                <summary>Come ho letto la domanda</summary>
+                                <ul class="o_aida_parts">
+                                    <t t-foreach="turn.interpretation.parts" t-as="part" t-key="part_index">
+                                        <li t-att-class="partClass(part)">
+                                            <span t-esc="part.text"/>
+                                            <small class="o_aida_rule" t-if="part.rule">
+                                                dedotto: <t t-esc="part.rule"/>
+                                            </small>
+                                        </li>
+                                    </t>
+                                </ul>
+                            </details>
+                        </t>
+                        <t t-elif="turn.outcome === 'clarification'">
+                            <!--
+                              D106: un rifiuto che propone. Le letture vengono dal
+                              catalogo, mai dal modello — un modello che ha appena
+                              inventato una condizione è l'ultimo a cui chiedere le
+                              alternative. D121: cliccarne una **scrive la sua etichetta
+                              nella casella e la invia**, così il clic non ha una strada
+                              propria da tenere allineata.
+                            -->
+                            <p class="o_aida_lead"
+                               t-esc="clarificationOf(turn).question || 'Ho bisogno di una precisazione.'"/>
+                            <ul class="o_aida_options">
+                                <t t-foreach="clarificationOf(turn).options or []" t-as="opt" t-key="opt_index">
+                                    <li>
+                                        <button class="o_aida_option"
+                                                type="button"
+                                                t-if="isAnswerable(turn)"
+                                                t-on-click="() => this.chooseOption(opt)">
+                                            <i class="fa fa-level-down o_aida_option_mark" aria-hidden="true"/>
+                                            <span t-esc="opt.label"/>
+                                        </button>
+                                        <span class="o_aida_option o_aida_option_past"
+                                              t-else=""
+                                              t-esc="opt.label"/>
+                                    </li>
+                                </t>
+                            </ul>
+                            <p class="o_aida_rule" t-if="isAnswerable(turn)">
+                                Scegli una lettura, o riscrivi la domanda.
+                            </p>
+                        </t>
+                        <t t-elif="turn.outcome === 'out_of_scope'">
+                            <p class="o_aida_lead">Questo non lo so ancora fare.</p>
+                        </t>
+                        <t t-elif="turn.outcome === 'unavailable'">
+                            <!--
+                              §11 di `04`: il modello non disponibile è uno stato
+                              dichiarato. All'utente si dice cosa fare, non com'è fatto
+                              il prodotto: «non ho capito» inviterebbe a riformulare, e
+                              riformulare non serve se il modello non c'è.
+                            -->
+                            <p class="o_aida_notice o_aida_notice_warn">
+                                Non riesco a rispondere in questo momento. Riprova fra poco.
+                            </p>
+                        </t>
+                        <t t-elif="turn.outcome === 'failed'">
+                            <!-- §12.7: un guasto è un difetto nostro, e si dice così. -->
+                            <p class="o_aida_notice o_aida_notice_warn">
+                                Qualcosa non ha funzionato. Riprova.
+                            </p>
+                        </t>
+                        <t t-elif="turn.outcome === 'expired'">
+                            <!--
+                              L4: una domanda che ha aspettato troppo viene scartata
+                              perché la coda possa riprendersi. Dirlo con «non ho
+                              capito» sarebbe una bugia con una conseguenza: invita a
+                              riformulare, e riformulare non serve a niente quando la
+                              frase era giusta e non è mai stata letta.
+                            -->
+                            <p class="o_aida_notice o_aida_notice_warn">
+                                Non sono riuscito a rispondere in tempo. Riprova.
+                            </p>
+                        </t>
+                        <t t-elif="turn.outcome === 'superseded'">
+                            <p class="o_aida_notice">Sostituita dalla domanda successiva.</p>
+                        </t>
+                        <t t-elif="turn.outcome === 'not_understood'">
+                            <p class="o_aida_lead">Non ho capito. Puoi dirlo in un altro modo?</p>
+                        </t>
+                        <t t-else="">
+                            <!--
+                              Nessun esito: il turno non è arrivato in fondo. Prima
+                              questo ramo diceva «non ho capito», che è la risposta a
+                              una domanda letta — e questa non lo è stata.
+                            -->
+                            <p class="o_aida_notice o_aida_notice_warn">
+                                Non sono arrivato a una risposta. Riprova.
+                            </p>
+                        </t>
+                    </t>
+
+                    <!--
+                      La riga dei comandi. Nel riferimento ci sono pollice su, pollice
+                      giù e copia: qui i due pollici non ci sono, perché non esiste
+                      nessun posto dove quel giudizio andrebbe a finire, e un comando
+                      che non fa niente è peggio di un comando assente.
+                    -->
+                    <div class="o_aida_actions" t-if="hasActions(turn)">
+                        <button class="o_aida_action"
+                                type="button"
+                                t-if="turn.query"
+                                t-on-click="() => this.openFull(turn)">
+                            <i class="fa fa-external-link" aria-hidden="true"/>
+                            <span>Apri a tutta pagina</span>
+                        </button>
+                        <button class="o_aida_action"
+                                type="button"
+                                t-att-aria-label="ui.copiedId === turn.id ? 'Copiato' : 'Copia la risposta'"
+                                t-on-click="() => this.copyAnswer(turn)">
+                            <i t-att-class="ui.copiedId === turn.id ? 'fa fa-check' : 'fa fa-clone'"
+                               aria-hidden="true"/>
+                            <span t-esc="ui.copiedId === turn.id ? 'Copiato' : 'Copia'"/>
+                        </button>
+                    </div>
+
+                    <!--
+                      D123: la modalità diagnostica. Chiusa di suo, perché è uno
+                      strumento e non parte della risposta. Il server la manda solo se
+                      qualcuno l'ha accesa e solo a un amministratore.
+                    -->
+                    <details class="o_aida_debug" t-if="turn.debug">
+                        <summary>Come è stato costruito</summary>
+
+                        <ul class="o_aida_debug_phases">
+                            <t t-foreach="phasesOf(turn)" t-as="fase" t-key="fase.key">
+                                <li>
+                                    <span t-esc="fase.label"/>
+                                    <strong t-if="fase.seconds !== undefined">
+                                        <t t-esc="fase.seconds"/> s
+                                    </strong>
+                                    <em t-if="fase.note" t-esc="fase.note"/>
+                                </li>
+                            </t>
+                        </ul>
+
+                        <t t-if="turn.debug.path === 'chosen_reading'">
+                            <p class="o_aida_rule">
+                                Lettura scelta: applicata senza chiamare il modello (D121).
+                            </p>
+                        </t>
+
+                        <t t-if="envelopeOf(turn)">
+                            <h6>DSL — la busta che il modello ha restituito</h6>
+                            <pre t-esc="envelopeOf(turn)"/>
+                        </t>
+
+                        <t t-if="stateOf(turn)">
+                            <h6>Stato dopo l'applicazione</h6>
+                            <pre t-esc="stateOf(turn)"/>
+                        </t>
+
+                        <t t-if="planOf(turn)">
+                            <h6>Query — come Odoo è stato interrogato</h6>
+                            <p class="o_aida_rule">
+                                Dominio: <code t-esc="domainOf(turn)"/>
+                            </p>
+                            <pre t-esc="planOf(turn)"/>
+                        </t>
+
+                        <t t-if="turn.debug.validation_failures and turn.debug.validation_failures.length">
+                            <h6>Livelli 3-5 — cosa ha rifiutato</h6>
+                            <ul>
+                                <t t-foreach="turn.debug.validation_failures" t-as="f" t-key="f_index">
+                                    <li t-esc="f"/>
+                                </t>
+                            </ul>
+                        </t>
+
+                        <t t-if="turn.debug.failures and turn.debug.failures.length">
+                            <h6>Perché il turno è finito così</h6>
+                            <ul>
+                                <t t-foreach="turn.debug.failures" t-as="f" t-key="f_index">
+                                    <li t-esc="f"/>
+                                </t>
+                            </ul>
+                        </t>
+                    </details>
+                </div>
+            </article>
+        </t>
+    </div>
+</t>
+
+<t t-name="nli_web.AidaRecords">
+    <View t-props="viewProps"/>
+</t>
+
+</templates>

@@ -20,12 +20,14 @@
  * costringerebbe l'interfaccia a ri-analizzare ciò che il server sa già.
  */
 
-import { Component, useEffect, useRef, onPatched, onMounted } from "@odoo/owl";
+import { Component, useEffect, useRef, useState, onPatched, onMounted } from "@odoo/owl";
+import { useService } from "@web/core/utils/hooks";
 import { AidaRecords } from "./aida_records";
+import { AidaSteps } from "./aida_steps";
 
 export class AidaThread extends Component {
     static template = "nli_web.AidaThread";
-    static components = { AidaRecords };
+    static components = { AidaRecords, AidaSteps };
     static props = {
         store: Object,
         state: Object,
@@ -33,6 +35,11 @@ export class AidaThread extends Component {
 
     setup() {
         this.scroller = useRef("scroller");
+        this.action = useService("action");
+        // Quale risposta ha appena risposto «copiato». Non reattivo per turno ma uno
+        // solo: due conferme insieme non hanno senso, e tenerne una sola evita di
+        // sporcare ogni turno con un campo che vive due secondi.
+        this.ui = useState({ copiedId: null });
         this._eraAlFondo = true;
         this._altezzaPrima = 0;
 
@@ -211,5 +218,78 @@ export class AidaThread extends Component {
         // colori deve poter distinguere lo stesso una condizione che ha chiesto lui da
         // una che ha dedotto il sistema.
         return part.origin === "inferred" ? "o_aida_part o_aida_part_inferred" : "o_aida_part";
+    }
+
+    // --- che cosa si può fare di una risposta -----------------------------
+
+    /**
+     * Aprire i risultati a tutta pagina.
+     *
+     * **Il pannello è largo quattrocentoquaranta pixel e una tabella no.** La vista
+     * lista incorporata resta — è la funzione che c'è, e toglierla per fare spazio
+     * all'estetica sarebbe un peggioramento travestito — ma dentro una colonna
+     * stretta si consulta male, e per otto colonne di dati serve la pagina.
+     *
+     * Si passa **il dominio**, non i record: la vista li rilegge da sola con i
+     * diritti di chi guarda, esattamente come fa quella incorporata. È la stessa
+     * regola di record applicata dalla stessa vista, e non c'è nessuna seconda
+     * strada verso quei dati da tenere allineata.
+     *
+     * Il pannello resta aperto: chi apre la tabella intera sta ancora ragionando
+     * sulla conversazione, e chiudergliela sotto sarebbe togliergli il contesto
+     * proprio mentre lo usa.
+     */
+    openFull(turn) {
+        const query = turn.query;
+        if (!query || !query.model) {
+            return;
+        }
+        this.action.doAction({
+            type: "ir.actions.act_window",
+            name: turn.utterance,
+            res_model: query.model,
+            domain: query.domain || [],
+            views: [[false, query.view === "pivot" || query.view === "graph"
+                ? query.view : "list"], [false, "form"]],
+            target: "current",
+        });
+    }
+
+    /**
+     * Copiare la risposta come testo.
+     *
+     * Copia **quello che si legge**, non il JSON: l'interpretazione a parole e il
+     * conteggio. Chi copia una risposta la incolla in un messaggio o in un ticket, e
+     * lì una struttura tecnica non serve a niente.
+     *
+     * `navigator.clipboard` può non esserci (contesto non sicuro, browser vecchio) e
+     * può essere negato dall'utente: in entrambi i casi non succede niente e non si
+     * mostra nessun errore. È un comando accessorio, e un errore per un comando
+     * accessorio pesa più del comando.
+     */
+    async copyAnswer(turn) {
+        const righe = [turn.utterance, ""];
+        if (turn.query) {
+            righe.push(this.recordsLabel(turn));
+        }
+        for (const parte of (turn.interpretation && turn.interpretation.parts) || []) {
+            righe.push(`— ${parte.text}`);
+        }
+        try {
+            await navigator.clipboard.writeText(righe.join("\n"));
+            this.ui.copiedId = turn.id;
+            setTimeout(() => {
+                if (this.ui.copiedId === turn.id) {
+                    this.ui.copiedId = null;
+                }
+            }, 1800);
+        } catch {
+            // Niente da fare e niente da dire: vedi il commento sopra.
+        }
+    }
+
+    /** Vero quando la risposta ha qualcosa su cui si può agire. */
+    hasActions(turn) {
+        return !turn.pending && Boolean(turn.query || (turn.interpretation || {}).parts);
     }
 }

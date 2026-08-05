@@ -1,0 +1,399 @@
+// =============================================================================
+// AIDA — il pannello
+// =============================================================================
+//
+// Nessun colore scritto qui: tutto viene da `--aida-*`, che è il solo file che sa
+// dei tre temi.
+//
+// ## La larghezza sta sul `body`, e non è un dettaglio
+//
+// `--aida-panel-width` la scrive il componente sul `body`, e la leggono **due**
+// regole: la larghezza del pannello e il rientro del contenuto. Una scrittura muove
+// entrambi. L'alternativa — misurare il pannello in JavaScript e applicare il
+// rientro a mano — vuol dire due numeri che devono restare uguali, e due numeri che
+// devono restare uguali sono un numero che prima o poi non lo è.
+
+// Il fondo di riserva serve al primo fotogramma, prima che il componente scriva.
+body.o_web_client {
+    --aida-panel-width: 440px;
+}
+
+// -----------------------------------------------------------------------------
+// Il rientro del contenuto
+// -----------------------------------------------------------------------------
+// **Il rientro sta sul gestore delle azioni, non sul `body`.**
+//
+// La prima versione lo metteva sul `body`, che in Odoo 18 contiene tre figli:
+// `header.o_navbar`, `div.o_action_manager` e il contenitore dei componenti
+// principali. Un `padding-right` lì restringeva **anche la barra in alto**: aprendo
+// AIDA il menu applicazioni, il titolo e il systray scivolavano verso sinistra, e
+// chiudendola tornavano indietro. La barra è l'unica cosa dello schermo che deve
+// restare ferma qualunque cosa succeda sotto — è il punto di riferimento con cui si
+// ritrova tutto il resto.
+//
+// Il pannello parte sotto la barra e affianca **solo** il contenuto, che è l'unica
+// cosa con cui compete per lo spazio.
+//
+// **Le posizioni fisse non le tocca il rientro**, e vanno rimesse a mano: un dialogo
+// o una notifica ancorati a `right: 0` finirebbero sotto il pannello. Si spostano
+// dello stesso valore, che è l'unico modo perché restino dove l'occhio se li aspetta.
+body.o_web_client.o_aida_has_panel {
+    > .o_action_manager {
+        padding-right: var(--aida-panel-width);
+        transition: padding-right var(--aida-base, 180ms) var(--aida-ease, ease);
+    }
+
+    .o_notification_manager,
+    .o_dialog_container .o_dialog:not(.o_inactive_modal) {
+        margin-right: var(--aida-panel-width);
+    }
+}
+
+// Durante il trascinamento la transizione va spenta: una transizione che insegue il
+// dito lo fa sempre in ritardo, e il ritardo si legge come lentezza. Anche la
+// selezione del testo, perché trascinare una maniglia non deve evidenziare mezza
+// pagina.
+body.o_aida_resizing {
+    user-select: none;
+    cursor: col-resize;
+
+    &.o_aida_has_panel > .o_action_manager { transition: none; }
+    .o_aida_panel { transition: none; }
+}
+
+// -----------------------------------------------------------------------------
+// Il pannello
+// -----------------------------------------------------------------------------
+.o_aida_panel {
+    position: fixed;
+    // Misurata sulla barra vera dal componente (`--aida-top`), non indovinata: è 46px
+    // in Classic e 48 in Premium, e un giorno sarà un altro numero ancora. Il ripiego
+    // serve al primo fotogramma, prima che la misura arrivi.
+    top: var(--aida-top, var(--pui-navbar-height, 46px));
+    right: 0;
+    bottom: 0;
+    z-index: 1035; // sopra il contenuto, sotto i dialoghi (1055) e i tooltip
+    width: var(--aida-panel-width);
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+
+    background: var(--aida-bg);
+    color: var(--aida-text);
+    font-family: var(--aida-font);
+    border-left: 1px solid var(--aida-border);
+
+    // **Il confinamento è la riga che fa la differenza sul ridimensionamento.**
+    //
+    // `layout` promette al browser che niente qui dentro può cambiare il layout di
+    // ciò che sta fuori; `paint` che niente sborda. Con queste due, muovere la
+    // maniglia ridisegna il pannello e basta — senza, il motore rimette in dubbio
+    // l'albero intero a ogni fotogramma, e con una conversazione lunga si vede.
+    contain: layout paint;
+
+    // L'apertura non anima la larghezza. Animarla vorrebbe dire far ricalcolare il
+    // layout dell'intera pagina a ogni fotogramma, ed è esattamente ciò che il
+    // riferimento evita: nei suoi fotogrammi il pannello è già largo prima che il
+    // contenuto compaia. Si anima quello che la scheda grafica muove gratis.
+    animation: o-aida-panel-in var(--aida-base) var(--aida-ease-out);
+}
+
+@keyframes o-aida-panel-in {
+    from { opacity: 0; transform: translateX(8px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+// -----------------------------------------------------------------------------
+// La maniglia
+// -----------------------------------------------------------------------------
+// Larga sei pixel e sporgente di tre sul contenuto: la linea che si vede è di uno,
+// ma il bersaglio del puntatore è sei volte tanto. Una maniglia larga quanto la sua
+// linea si prende al terzo tentativo.
+.o_aida_resizer {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -3px;
+    width: 6px;
+    cursor: col-resize;
+    z-index: 1;
+    // Il tocco non deve far scorrere la pagina mentre si trascina lateralmente.
+    touch-action: none;
+
+    &::after {
+        content: "";
+        position: absolute;
+        inset: 0 auto 0 3px;
+        width: 2px;
+        background: var(--aida-accent);
+        opacity: 0;
+        transition: opacity var(--aida-fast) var(--aida-ease);
+    }
+
+    &:hover::after,
+    &:focus-visible::after { opacity: 1; }
+
+    &:focus-visible {
+        outline: none; // la linea blu **è** l'indicatore di fuoco, e si vede meglio
+    }
+}
+
+// -----------------------------------------------------------------------------
+// L'intestazione
+// -----------------------------------------------------------------------------
+.o_aida_head {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 8px 8px 12px;
+    min-height: 44px;
+    border-bottom: 1px solid var(--aida-border-subtle);
+}
+
+.o_aida_head_title {
+    font-weight: 600;
+    color: var(--aida-heading);
+    white-space: nowrap;
+}
+
+// Il titolo della conversazione, in secondo piano e troncato: dice dove si è senza
+// competere con il nome del prodotto, e non spinge mai fuori i comandi a destra.
+.o_aida_head_sub {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--aida-muted);
+    font-size: 0.8125rem;
+
+    &::before { content: "·"; margin: 0 6px; }
+}
+
+.o_aida_head_spacer { flex: 1 1 auto; }
+
+.o_aida_icon {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--aida-radius-sm);
+    background: none;
+    color: var(--aida-muted);
+    cursor: pointer;
+    transition: background var(--aida-fast) var(--aida-ease),
+                color var(--aida-fast) var(--aida-ease);
+
+    &:hover { background: var(--aida-hover); color: var(--aida-text); }
+
+    &:focus-visible {
+        outline: 2px solid var(--aida-accent);
+        outline-offset: 1px;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// Il corpo
+// -----------------------------------------------------------------------------
+// `position: relative` perché la cronologia entra qui sopra, e `min-height: 0`
+// perché senza, un figlio che scorre dentro un contenitore flessibile non si
+// restringe mai e lo scorrimento finisce sulla pagina.
+.o_aida_body {
+    position: relative;
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.o_aida_foot {
+    flex: 0 0 auto;
+    padding: 8px 12px 10px;
+    border-top: 1px solid var(--aida-border-subtle);
+    background: var(--aida-bg);
+}
+
+.o_aida_disclaimer {
+    margin: 6px 0 0;
+    text-align: center;
+    font-size: 0.6875rem;
+    line-height: 1.4;
+    color: var(--aida-muted);
+}
+
+// -----------------------------------------------------------------------------
+// Il pulsante nella barra
+// -----------------------------------------------------------------------------
+// **Il colore lo dice la barra, con la variabile che è già il suo contratto.**
+//
+// `color: inherit` non bastava, e il perché si vede solo guardando: la `.o_main_navbar`
+// calcola `color: rgb(73,80,87)` — scuro — e mette il bianco sulle proprie **voci**,
+// una per una. Ereditando si prendeva quindi il grigio scuro, su un fondo viola.
+//
+// `--NavBar-entry-color` è la variabile con cui Odoo stesso colora le voci della
+// barra, ed è il contratto giusto da usare: `ui_premium_shell` la ridefinisce
+// (`navbar.premium.scss`) e con lei si ribalta anche il nostro pulsante, chiaro o
+// scuro che sia la barra Premium. In Classic non è definita e vale il ripiego, che è
+// il bianco tenue che Odoo usa davvero sulla sua barra viola — misurato:
+// `rgba(255, 255, 255, 0.9)`.
+.o_aida_launcher {
+    display: flex;
+    align-items: center;
+    color: var(--NavBar-entry-color, rgba(255, 255, 255, 0.9));
+}
+
+// **Tutto in `currentColor`, e non nei nostri token.**
+//
+// Il pulsante sta nella barra di Odoo, e la barra decide il proprio colore di primo
+// piano: viola con testo bianco in Classic, superficie chiara con testo scuro in
+// Premium. Un bordo preso da `--aida-border-strong` sarebbe calcolato sul tema del
+// **pannello**, che è un'altra superficie — e sulla barra scura diventava un filo
+// scuro invisibile.
+//
+// `currentColor` mescolato con trasparente dà un bordo che è sempre una versione
+// tenue del testo che gli sta accanto: giusto su qualunque barra, senza sapere quale.
+.o_aida_launch_btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 30px;
+    padding: 0 10px;
+    border: 1px solid;
+    border-color: color-mix(in srgb, currentColor 35%, transparent);
+    border-radius: var(--aida-radius-pill);
+    background: transparent;
+    color: inherit;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background var(--aida-fast) var(--aida-ease),
+                border-color var(--aida-fast) var(--aida-ease);
+
+    &:hover {
+        background: color-mix(in srgb, currentColor 12%, transparent);
+        border-color: color-mix(in srgb, currentColor 55%, transparent);
+    }
+
+    &.o_aida_launch_active {
+        background: color-mix(in srgb, currentColor 16%, transparent);
+        border-color: currentColor;
+    }
+
+    &:focus-visible {
+        outline: 2px solid currentColor;
+        outline-offset: 2px;
+    }
+}
+
+// Nella barra il segno segue il testo invece dell'accento: su una barra viola un
+// segno viola non esiste, e su una barra scura un blu di marca è l'unica macchia
+// che stona. Nel pannello, dove il fondo è nostro, resta l'accento.
+.o_aida_launcher .o_aida_mark {
+    background: currentColor;
+
+    &::after {
+        background: transparent;
+        border-color: currentColor;
+    }
+}
+
+// Sotto i 1200px resta il solo segno: la barra di Odoo è già affollata, e un'
+// etichetta che manda a capo la barra è peggio di un'icona da imparare una volta.
+@media (max-width: 1199.98px) {
+    .o_aida_launch_label { display: none; }
+    .o_aida_launch_btn { padding: 0 8px; }
+}
+
+// Il segno di AIDA: due gettoni che si sovrappongono, costruiti in CSS invece che
+// con un'immagine. Nessuna richiesta di rete, e i colori seguono il tema.
+//
+// Il margine a destra è per il cerchietto, che sporge di quattro pixel oltre il
+// riquadro: il `gap` del contenitore misura la scatola e non ciò che ne esce, quindi
+// senza questo il cerchio tocca la lettera che segue.
+.o_aida_mark {
+    position: relative;
+    flex: 0 0 auto;
+    width: 14px;
+    height: 14px;
+    margin-right: 4px;
+    border-radius: 4px;
+    background: var(--aida-accent);
+
+    &::after {
+        content: "";
+        position: absolute;
+        right: -4px;
+        bottom: -3px;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--aida-surface);
+        border: 2px solid var(--aida-accent);
+    }
+}
+
+.o_aida_launch_dot {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    animation: o-aida-blink 1.6s var(--aida-ease) infinite;
+}
+
+@keyframes o-aida-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+}
+
+// Testo per i soli lettori di schermo: annuncia ciò che il puntino mostra.
+.o_aida_sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+// -----------------------------------------------------------------------------
+// Schermi stretti
+// -----------------------------------------------------------------------------
+// Sotto i 992px non c'è spazio per due colonne: il pannello si prende tutto e il
+// contenuto non si restringe, perché restringerlo darebbe due colonne inutilizzabili
+// invece di una utilizzabile.
+@media (max-width: 991.98px) {
+    body.o_web_client.o_aida_has_panel { padding-right: 0; }
+
+    .o_aida_panel {
+        width: 100%;
+        max-width: 100%;
+        box-shadow: var(--aida-shadow);
+    }
+
+    .o_aida_resizer { display: none; }
+}
+
+// -----------------------------------------------------------------------------
+// Chi ha chiesto meno movimento
+// -----------------------------------------------------------------------------
+// Il pannello compare e basta, il puntino resta acceso. Nessuna informazione si
+// perde: erano entrambi modi di dire una cosa che è scritta anche altrove.
+@media (prefers-reduced-motion: reduce) {
+    .o_aida_panel { animation: none; }
+    .o_aida_launch_dot { animation: none; }
+    body.o_web_client.o_aida_has_panel { transition: none; }
+}

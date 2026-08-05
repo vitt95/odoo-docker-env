@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="nli_web.AidaChat">
+    <div class="o_aida_scope o_aida_action">
+        <div class="o_aida_action_card">
+            <span class="o_aida_mark o_aida_mark_lg" aria-hidden="true"/>
+            <h1>AIDA è qui accanto</h1>
+            <p>
+                Adesso AIDA vive in un pannello a destra, così resta aperta mentre
+                lavori: puoi chiedere una cosa senza perdere di vista quello che stai
+                guardando.
+            </p>
+            <button class="btn btn-primary" type="button" t-on-click="() => this.focusComposer()">
+                Scrivi ad AIDA
+            </button>
+            <p class="o_aida_action_hint">
+                La riapri quando vuoi dal pulsante <strong>Chiedi ad AIDA</strong> in
+                alto a destra, o con <t t-foreach="shortcut" t-as="tasto" t-key="tasto"><kbd t-esc="tasto"/><t t-if="!tasto_last"> + </t></t>.
+            </p>
+        </div>
+    </div>
+</t>
+
+</templates>
