@@ -898,8 +898,30 @@ per poter guidare il browser. L'originale non la conosceva nessuno in sessione.
 
 2. **Il fine tuning, deciso dall'Architect il 3 agosto.** I due documenti sono scritti e
    sono la specifica: `ai/18` per la modalita' (LoRA a 16 bit, RunPod, ~$40) e `ai/19`
-   per il modello (Qwen3.5-4B principale, 2B in parallelo, 9B riserva). Manca il lavoro,
-   ed e' in quest'ordine:
+   per il modello (Qwen3.5-4B principale, 2B in parallelo, 9B riserva). Manca il lavoro.
+
+   **Dove siamo nell'ordine di `18` §12**: il passo 1 (alzare la finestra a 8 192) e'
+   **fatto**, ed e' D133. Il passo 2 — rimisurare la linea di partenza col contratto di
+   oggi — **non e' fatto, ed e' bloccato dal punto 1c di questa lista**: la batteria
+   inventa fallimenti e nasconde successi, quindi qualunque numero produca oggi non e'
+   utilizzabile come linea di partenza. `18` §12 lo dice a modo suo — *«i passi 1 e 2
+   vanno fatti comunque, anche se il fine tuning non si facesse mai»* — e la
+   conseguenza e' che **il punto 1 e il punto 2 di questa lista condividono lo stesso
+   primo ostacolo**. Riparare la batteria li sblocca tutti e due.
+
+   Senza la linea di partenza il cancello di `18` §9 non e' verificabile: le dieci
+   soglie di `18` §1 si leggono contro un «oggi» che dev'essere un numero fresco, e
+   quattro di quelle righe dicono gia' *«non misurata»*.
+
+   **Cosa si puo' fare in parallelo, senza aspettare la batteria** — sono lavori sui
+   dati e non sulle misure:
+
+   * la pulizia dell'atlante e la seconda raccolta senza italiano (i primi due punti
+     qui sotto);
+   * lo strato dei sinonimi;
+   * e soprattutto **D85**, che dipende da persone e ha i tempi piu' lunghi di tutto.
+
+   Il resto — generatore, prova di fumo, corse — arriva dopo, ed e' in quest'ordine:
 
    * **pulire l'atlante**: `tools/finetuning/atlante.json` porta 333 entita' e 7 918
      attributi, ma i termini delle entita' contengono le **voci di menu filtrate**
@@ -944,21 +966,49 @@ per poter guidare il browser. L'originale non la conosceva nessuno in sessione.
      mancano `not_equals` e `ends_with`. Sono contratto: vanno numerate prima di
      scrivere codice.
 
-4. **Non esiste nessuna prova del lato client.** E' il rischio piu' grande aperto, ed e'
-   quello che ha prodotto due dei sette difetti di `00` §38: un componente OWL dichiarato
-   e non importato ha fatto sparire l'intera chat con 147 prove verdi. Il quinto
-   controllo dei confini prende quella sola classe di errore. Serve un banco vero — tour
-   Odoo o prove di componente.
+4. **Non esiste nessuna prova del lato client nella suite.** *(ridotto il 5 agosto,
+   non chiuso.)* E' il rischio che ha prodotto due dei sette difetti di `00` §38: un
+   componente OWL dichiarato e non importato ha fatto sparire l'intera chat con 147
+   prove verdi. Il quinto controllo dei confini prende quella sola classe di errore.
 
-5. **La chat non e' mai stata guardata in un browser da chi l'ha scritta.** Le viste di
-   risposta (vista lista di Odoo incorporata), il blocco diagnostico, «Come ho letto la
-   domanda»: tutto verificato lato server, niente visto girare. Da guardare per primi
-   l'altezza del contenitore e due tabelle nella stessa conversazione.
+   Dal 5 agosto c'e' **`tools/ui/verify_panel.py`**: 47 asserzioni in un browser vero —
+   token risolti nei tre temi, confini del ridimensionamento, la barra che non si
+   muove, la bozza che sopravvive alla chiusura, e ogni errore JavaScript della pagina.
+   Ha gia' preso cinque difetti che 256 prove verdi non vedevano.
 
-6. **La tabella non ha la paginazione.** Il pannello di controllo e' spento perche'
-   `Nuovo` e la barra di ricerca non devono stare in una risposta (`00` §33.6), e con lui
-   se n'e' andato il selettore di pagina che `15` chiede. Si riaccende tenendo spente le
-   parti di sinistra e destra: una riga, ma dipende da nomi interni di Odoo.
+   **Ma sta fuori dalla suite** (serve Playwright) e va lanciato a mano, quindi dipende
+   da chi se lo ricorda — e le verifiche che dipendono dalla memoria spariscono. Serve
+   ancora un banco vero: un `tour` Odoo che apra il pannello, mandi una frase e
+   controlli che i passi arrivino girerebbe con tutto il resto.
+
+5. **Una risposta riuscita non e' mai stata vista disegnata.** *(riformulato il 5
+   agosto: la meta' che restava e' piu' importante di quella chiusa.)*
+
+   Il **contenitore** adesso e' stato guardato: pannello, intestazione, casella,
+   cronologia, schermata iniziale, attesa e passi, nei tre temi, con dieci difetti
+   trovati (`ai/20-ux-pannello-aida.md` §7).
+
+   Il **contenuto di una risposta** no. I turni di `nli_test` erano tutti fermi in
+   `pending` dalle batterie di carico, quindi la vista lista incorporata, la riga del
+   conteggio, «Come ho letto la domanda», le opzioni di chiarimento di D121 e la riga
+   dei comandi **non li ha visti disegnare nessuno, nemmeno una volta**. Lo stile c'e',
+   la prova che regga no — ed e' proprio la parte che il pannello stretto mette alla
+   prova piu' della pagina intera.
+
+   Costa mezz'ora: modello acceso, una banca dati con dati veri, una frase, e si
+   guarda. Va fatto **prima** di dichiarare finita l'interfaccia, e prima del punto 6,
+   che dipende da cosa si vede qui.
+
+6. **La tabella non ha la paginazione, e adesso conta di piu'.** Il pannello di
+   controllo e' spento perche' `Nuovo` e la barra di ricerca non devono stare in una
+   risposta (`00` §33.6), e con lui se n'e' andato il selettore di pagina che `15`
+   chiede. Si riaccende tenendo spente le parti di sinistra e destra: una riga, ma
+   dipende da nomi interni di Odoo.
+
+   **Il pannello alza la posta**: in una colonna da 440 px una lista senza selettore di
+   pagina si consulta peggio che a tutta pagina. C'e' un'attenuante nuova — «Apri a
+   tutta pagina» lancia l'azione Odoo con lo stesso dominio, dove la paginazione c'e' —
+   ma e' un rimedio, non la risposta. Da decidere dopo il punto 5.
 
 7. **I nomi delle entita' non sono misurati su un'installazione vera.** Il corpus gira su
    un pacchetto scritto a mano: i suoi «0 determinazioni sbagliate» **non coprono**
