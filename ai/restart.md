@@ -5,6 +5,16 @@ riprende sopra la base UI corrente (`master`). Il lavoro continua qui.
 
 # Da leggere per primo
 
+> **Prima di ogni altra cosa in questo file: la sezione «Stato al 4 agosto 2026 — la
+> sessione del catalogo».** Contiene la scoperta che vale più di tutte le altre in
+> lista, e in alcuni punti **contraddice** quanto scritto sotto «Stato al 29 luglio
+> 2026». In una riga: il problema non è quanto è grande il `context`, è **cosa ci
+> mettiamo dentro**.
+>
+> Poi «**Stato al 5 agosto 2026 — AIDA diventa un pannello**», che è la più recente ma
+> parla d'altro: è tutta interfaccia e non tocca il motore. Leggila se lavori sul lato
+> client, saltala se lavori sul catalogo. Le due cose non si contraddicono.
+
 - ai/00-registro-decisioni.md — cosa è deciso. Il changelog in fondo è la cronologia
   reale; §18 sono le sette delibere della qualificazione del profilo (D97–D103), §19
   le cinque del perimetro guidato (D104–D108), §20 la delibera della ripresa (D109) più
@@ -360,6 +370,14 @@ contratto e corpus 918/918 con copertura al 100%, **cinque** controlli dei confi
   argomento che il registro porta *accanto* a D2, non ciò che D2 stabilisce. Dal
   1 agosto 2026 la regola vale **ovunque**: chat, documenti di `ai/`, commenti del
   codice, messaggi di commit (`ai/CLAUDE.md`, sezione «Documenti e sigle»).
+- **dal 4 agosto 2026, obbligo: spiegare come a un ragazzino sveglio ma inesperto.**
+  Frasi corte. Un'analogia concreta quando il meccanismo non e' ovvio — il catalogo da
+  60 attributi si spiega come un menu' da 60 piatti di cui 43 non sono piatti. Prima il
+  «perche'», poi il dettaglio. Vale in chat **e nei documenti**, e vale anche quando
+  l'argomento e' profondo: si allunga la spiegazione, non si alza il registro.
+  **Le parole chiave tecniche restano in inglese e non si traducono**: `envelope` (non
+  «busta»), `context` (non «finestra»), `token` (non «gettoni»). Il termine esatto e'
+  un'ancora; tradurlo la toglie.
 - cerca sempre prima l'opzione che NON modifica il contratto, e scartala solo con un
   argomento. Così sono nate D87, D98, D101 e D106.
 - **prima di attribuire un esito al fornitore, verifica che non sia stato il prompt a
@@ -394,13 +412,17 @@ stessa porta, non due configurazioni in conflitto.
 
     NLI_ALLOWED_HOSTS=127.0.0.1:11434 python3 ai/corpus/misura_accuratezza.py \
       --endpoint http://127.0.0.1:11434/v1 --profilo qwen3.5:9b \
-      --vincolata --ragionamento none --finestra 4096 --casi 444
+      --vincolata --ragionamento none --finestra 8192 --casi 444 --attesa 300
 
 Senza `--vincolata` la generazione vincolata è spenta e si misura il vuoto; senza
 `--ragionamento none` il modello spende la finestra dentro il pensiero e non risponde;
 `NLI_ALLOWED_HOSTS` è obbligatoria (D77, fallimento chiuso: senza, ogni chiamata è
-rifiutata e l'esito è `not_understood`). La finestra dichiarata è 4096 perché è quella
-che il server serve davvero.
+rifiutata e l'esito è `not_understood`). La finestra dichiarata è **8192** perché è
+quella che il server serve davvero da D133 (la decisione che alza la finestra sulle due
+metà insieme, server e profilo): scriverne 4096 rimette il catalogo tagliato dentro la
+misura. `--attesa 300` sostituisce il default di 60 s, che è il valore d'esercizio di
+D5 e non un limite della misura: con la finestra piena una chiamata può superarlo, e un
+tempo scaduto contato come errore misura il portatile, non il modello.
 
 **Durate e affidabilità.** 444 aperture ≈ 65 minuti, 80 ≈ 12, 40 ≈ 6. σ della misura è
 **zero** (D48 verificata con K=5): due esecuzioni sullo stesso campione danno lo stesso
@@ -434,32 +456,445 @@ da `nli_core`: sono funzioni dei loro argomenti, e ciò che serve si passa.
 | D107 | Modello di riferimento `qwen3.5:9b`, con il confronto interrotto dichiarato |
 | D108 | Registro delle voci approvate + traduzione condizione tipizzata → dominio |
 
+# Stato al 4 agosto 2026 — la sessione del catalogo
+
+Questa sezione e' la piu' recente e va letta **prima** di quelle datate 28-29 luglio,
+che in alcuni punti contraddice. Quattro cose, in ordine di quanto contano.
+
+## 1. Il prodotto era rotto per intero, e non lo sapeva nessuno
+
+Il profilo in servizio portava `reasoning_effort = 'high'`, **scritto il 3 agosto alle
+22:48**, cioe' dentro la stessa modifica che alzava il `context` per D133 (la decisione
+che impone di alzare il `context` sulle due meta' insieme, server e profilo).
+
+**D98** (la decisione per cui il profilo dichiara lo sforzo di ragionamento, e la chiave
+viaggia solo se nominata) era stata adottata misurando esattamente il contrario: col
+ragionamento acceso il modello spende il `context` dentro il pensiero e l'`envelope`
+torna **vuoto** — 2 397 token e nessuna risposta; con `none`, 179 token e `envelope`
+valido.
+
+Misurato sul prodotto vero, non dedotto:
+
+| frase | `high` | `none` |
+|---|---|---|
+| *«mostrami i lead»* | `not_understood`, **41,2 s** | **ok, 4,9 s** |
+
+**Corretto**: `reasoning_effort` riportato a `none` sul profilo attivo del database `db`.
+
+**La lezione, che vale piu' della correzione.** Il profilo e' **dato**, non codice:
+nessun diff lo mostra, e il commit `80ec214` dice il vero e nasconde questo. D133 esiste
+perche' il `context` ha due meta' che vanno mosse insieme; il guasto e' della stessa
+famiglia, con una terza meta' che nessuno stava guardando. **Serve un controllo che
+confronti il profilo in servizio con i valori qualificati**, invece di fidarsi.
+
+## 2. La misura sul corpus, e perche' non dice quello che sembra
+
+Fatta, 414 aperture, `context` 8192, generazione vincolata, ragionamento `none`:
+complessiva **75,8%** (era 70,0%), `filter` **85,0%** (era 79,5%), le altre sette sezioni
+fra 88,6% e 98,6%. **D44** (la soglia dell'85% richiesta su ciascuna sezione, non sulla
+complessiva) e' superata su tutte e otto **per la prima volta**, e `filter` la tocca
+esatta: nessun margine.
+
+**Il numero non e' attribuibile.** La linea del 70,0% precede sia D113-D120 sia D133,
+quindi due cause stanno dentro una misura sola, e la coincidenza con la previsione di
+`00` §22.3 (~75,3% e ~84,8%, scritta per D113-D120 **a `context` invariato**) non la
+conferma. Si separa rifacendo le stesse 414 con il codice di oggi e `--finestra 4096`.
+**Non ancora fatto.**
+
+**E soprattutto: il corpus non descrive il prodotto.** Il corpus misura il modello contro
+un catalogo **sintetico**, scritto da noi, pulito. Il prodotto gli mostra il catalogo
+**Odoo vero**. Lo scarto misurato il 4 agosto e' enorme: 75,8% in palestra, **2 casi su
+49** sul campo. D86 (la decisione che dichiara il corpus sintetico e percio' non
+sigillabile) lo diceva; adesso sappiamo di quanto.
+
+## 3. Il catalogo intero affoga il modello — e il catalogo tagliato mentiva
+
+Prima misura del prodotto vero, otto frasi, unica variabile la larghezza del catalogo:
+
+| catalogo | attributi | prompt | `operations` | qualita' delle risposte |
+|---|---|---|---|---|
+| `context` 4096 | 17 | 2 940 token | 8/8 | **inventate** |
+| `context` 8192 | 60 | 4 041 token | 2/8 | — |
+| segnale forte | **27** | **3 156 token** | 6/8 | corrette |
+
+Il caso che decide tutto:
+
+    «i lead con ricavo atteso sopra 1000»
+      con 17 attributi  ->  [["campaign_id", "!=", false]]      inventato
+      con 27 attributi  ->  [["expected_revenue", ">", 1000]]   giusto
+
+**Quindi D133 non ha peggiorato il prodotto: ha reso visibile un guasto che c'era gia'
+ed era nascosto.** A 4096 il modello non capiva meglio, mentiva meglio — e' **D29** (una
+delle sette decisioni portanti, che esiste per rendere impossibile «la modalita' di
+guasto che non produce errori ma numeri diversi, tutti plausibili»).
+
+**Perche' i 17 di 4096 erano quelli sbagliati.** Le prime 50 voci entrano tutte con la
+stessa regola (`in_default_views`) e la stessa priorita'; a parita' di priorita' il
+criterio di spareggio e' **il nome tecnico in ordine alfabetico**. I 17 sopravvissuti
+erano i primi 17 dell'alfabeto, da `active` a `email_state`. Fuori restavano `name`,
+`partner_id`, `user_id`, `stage_id`, `expected_revenue`: le cinque cose che uno chiede
+per prime.
+
+**Il segnale migliore, e generalizza.** Odoo non ha «le viste predefinite»: ne ha quattro
+tipi e dicono cose diverse. La **vista di ricerca** e' «ecco cosa la gente cerca»; i
+**filtri di raggruppamento** sono «ecco per cosa raggruppa»; la **vista elenco** sono le
+colonne che si vedono ogni giorno; la **vista scheda** mostra tutto di un record, ed e'
+da li' che entra il rumore (`probabilita' automatica`, `giorni per chiudere`, `e-mail in
+cc`). Oggi la regola 8 le unisce tutte e quattro in un mucchio solo, e la regola 9
+(`residual`, «tutto il resto — esposto con priorita' bassa») non e' una selezione: e' una
+resa.
+
+| entita' | esposti oggi | segnale forte |
+|---|---|---|
+| `res.partner` | 93 | 16 |
+| `sale.order` | 52 | 17 |
+| `sale.order.line` | 54 | 11 |
+| `account.move` | 100 | 34 |
+| `account.move.line` | 69 | 36 |
+| `product.template` | 45 | 13 |
+| `crm.lead` | 66 | 27 |
+| `hr.employee` | 82 | 17 |
+
+Da ~70 in media a ~21. `res.partner`, `account.move` e `hr.employee` sfondano gia' il
+tetto di 60 di **D31** (il massimo di attributi per entita'), quindi li' il taglio
+alfabetico sta gia' buttando via cose importanti a caso. Con `crm.lead` a 27 attributi:
+**0 rifiutati per budget**.
+
+**Regola proposta** — sostituire la regola 8 con tre regole graduate e capovolgere la 9:
+
+| segnale | priorita' |
+|---|---|
+| vista di ricerca | 1 |
+| filtri di raggruppamento | 1 |
+| vista elenco | 2 |
+| solo vista scheda | 3 |
+| nessuna vista | **nascosto** |
+
+**Verifica sulla batteria**, stessi primi 20 casi, stesso modello, cambia solo il
+catalogo:
+
+| catalogo | ok | diversi | saltati |
+|---|---|---|---|
+| 60 attributi | **2** | 14 | 4 |
+| 27 attributi | **10** | 6 | 4 |
+
+Otto frasi passate da sbagliate a giuste, **nessuna peggiorata**. Dal 12,5% al 62,5% sui
+casi eseguiti, **senza toccare il modello e senza una riga di codice nuova**. I 27
+termini di `crm.lead`: `addetto vendite, attivo, azienda, campagna, chiusura attesa,
+citta', cliente, data chiusura, data creazione, e-mail, etichette, fase, mezzo, motivo
+perdita, nazione, nome contatto, opportunita', origine, priorita', probabilita',
+proprieta', ricavo atteso, segnalato da, stato, team di vendita, telefono,
+telefono/cellulare`.
+
+**Il rischio da misurare prima di adottare**: nascondere i residui puo' far scendere la
+**copertura**, che oggi e' al 100% e che **D34** vuole almeno al 99%.
+
+**I 6 casi ancora sbagliati non c'entrano con gli attributi**: sono le domande con una
+**misura** (*«somma il ricavo atteso»*, *«qual e' il piu' alto»*, *«il ricavo medio per
+stato»*). Il modello trova l'attributo giusto e poi non costruisce l'aggregazione. Fronte
+diverso, adesso isolato invece che sepolto sotto il rumore.
+
+## 4. Lo strumento di misura mente in tutte e due le direzioni
+
+**La batteria sul campo non era mai stata eseguita per intero.** Il 4 agosto e' il primo
+giro completo, ed e' quindi la linea di partenza, non una regressione.
+
+**Difetto 1 — salta casi che funzionano.** `_manca` (`tools/campo/batteria.py:59`)
+confronta per contenimento delle stringhe che `frasi.py` dichiara a mano contro le
+etichette Odoo vere:
+
+| la batteria cerca | l'etichetta vera | si incontrano? |
+|---|---|---|
+| `data di creazione` | `Data creazione` | no — un «di» di troppo |
+| `email` | `E-mail` | no — manca il trattino |
+| `commerciale` | `Addetto vendite` | no |
+
+**Ventuno frasi su 54 non sono mai state eseguite, a nessun `context`, in nessun giro** —
+e sono tutte le domande sulle date. Il commento della funzione afferma che «il catalogo
+dice *Data di creazione*»: e' falso, e lo e' sempre stato.
+
+**E il salto nasconde successi veri**: il prodotto risponde **giusto** a quelle frasi.
+
+    «i lead senza commerciale»        ->  [["user_id", "=", false]]           giusto
+    «i lead che hanno un commerciale» ->  [["user_id", "!=", false]]          giusto
+    «i lead senza email»              ->  [["email_from", "in", [false, ""]]] giusto
+
+Il modello legge `Addetto vendite` e `E-mail` nel catalogo, sente `commerciale` e
+`email`, e capisce da solo. **Il 10 su 20 e' quindi pessimista.**
+
+**Difetto 2 — la coda ferma la batteria.** `QueueRefusal: «In questo momento ci sono
+molte richieste in corso»`. La protezione e' giusta per utenti veri, ma la batteria e'
+uno strumento che parla col proprio prodotto: si e' fermata al caso 50 il primo giro e al
+caso 21 il secondo.
+
+## 5. L'indice dei termini e la robustezza a trattini e parole di servizio
+
+Chiesto dall'Architect. Stato di fatto misurato sull'indice vero (`dictionary/index.py`):
+
+| la frase dice | il sistema trova |
+|---|---|
+| `e-mail`, `e mail` | ✅ `email_from` |
+| **`email`** | ❌ **niente** |
+| `data creazione` | ✅ `create_date` |
+| **`data di creazione`** | ❌ **niente** |
+| `addetto vendite` | ✅ `user_id` |
+| **`commerciale`**, **`creati`** | ❌ niente |
+
+**Oggi funziona solo se dici l'etichetta esattamente come l'ha scritta Odoo.** La causa:
+il normalizzatore trasforma la punteggiatura in **spazi** (`index.py:44`), quindi
+`E-mail` diventa due token e `email` uno solo; e il confronto vuole finestre contigue
+della **stessa larghezza**, quindi un «di» in mezzo spezza tutto.
+
+**Dove fa male davvero, e dove no.** Il modello decide quale attributo nomina la frase, e
+li' i trattini non contano — l'ha dimostrato su `commerciale`. Lo strato deterministico
+e' l'unica autorita' su tre cose: la **Fase A** (quale entita', corsia veloce, 86,2%),
+**D105** (se un frammento nomina una condizione del dizionario) e **D135** (se l'utente
+la data l'ha gia' detta). **E' D135 che ci costa oggi**:
+
+    «i lead creati oggi»                    ->  clarification
+    «i lead con data di creazione di oggi»  ->  clarification
+
+Due domande *«quale data intendi?»* a chi l'ha appena detta. Non e' una risposta
+sbagliata: e' una domanda inutile, che fa sembrare il prodotto ottuso.
+
+**Tre problemi distinti, tre rimedi diversi:**
+
+1. **Punteggiatura** (`email` / `e-mail`) → **indicizzare anche la forma attaccata**,
+   cosi' `E-mail` produce sia `["e","mail"]` sia `["email"]`. E' un'**aggiunta**, non un
+   allentamento: non puo' creare corrispondenze che un termine vero non avrebbe gia'
+   creato. Costo zero token, rischio zero.
+2. **Parole di servizio** (`data di creazione`) → permettere di **saltare** dentro la
+   corrispondenza una lista chiusa e cortissima (`di, del, della, dei, delle, da, a, al,
+   in, per, con`). Questo **allarga** il confronto, e `03` §3.9 vieta gli allargamenti
+   scelti a intuito: si implementa, si rimisura la Fase A sul corpus, e passa solo se la
+   risoluzione non peggiora.
+3. **Sinonimi veri** (`creati` / `Data creazione`, `commerciale` / `Addetto vendite`) →
+   nessuna regola meccanica ci arriva, `creat` e `creazion` sono radici diverse. Serve il
+   livello L1, cioe' **D108** (il registro delle voci approvate del dizionario). La lista
+   e' corta, e con 27 attributi invece di 60 si riduce di due terzi.
+
+**Non delegare al modello.** La ragione e' scritta in cima al modulo: la corsia veloce
+dev'essere deterministica, o diventa «una seconda componente probabilistica davanti
+all'interprete, e RC3 peggiora invece di migliorare». Il modello e' gia' dove serve — sui
+sinonimi veri, l'unico dei tre che richiede di capire il significato.
+
+## Cosa e' cambiato su disco, e cosa no
+
+- **Modificato**: `ai/restart.md` (questo file). **Nient'altro nel repository.**
+- **Cambiato nel database `db`**: `reasoning_effort` da `high` a `none` sul profilo
+  attivo. Correzione, non scelta: allinea il prodotto a D98.
+- **Non toccato**: il `context` resta 8192 su server e profilo. Rimetterlo a 4096
+  sarebbe una decisione, non una correzione, e i dati dicono che il bersaglio non e' la
+  larghezza del `context` ma **quali** attributi entrano.
+- **L'esperimento del catalogo forte e' una sostituzione fatta a runtime** dentro una
+  shell, con la transazione annullata. Nessuna regola di esposizione e' stata cambiata.
+- `aida.debug` acceso per le sonde e **rispento**.
+
+---
+
+# Stato al 5 agosto 2026 — AIDA diventa un pannello
+
+Sessione di sola interfaccia. **Il motore non è stato toccato**: nessuna regola di
+esposizione, nessun prompt, nessuna soglia. Quello che è cambiato è dove AIDA vive e
+cosa racconta mentre pensa.
+
+Il documento completo è **`ai/20-ux-pannello-aida.md`** — analisi del riferimento con
+le misure, decisioni e alternative scartate, protocollo degli avanzamenti, sistema dei
+token, budget di prestazioni, accessibilità, debito residuo. Qui c'è solo quello che
+serve a una sessione fredda per non ripartire da zero.
+
+## 1. Le due decisioni
+
+**AIDA non è più una pagina, è una colonna a destra.** Un'azione client sostituisce
+quello che si stava guardando, ma la domanda tipica di AIDA è *«quali di questi sono
+scaduti?»* e ha senso solo se **questi** sono ancora sullo schermo. Larghezza di
+partenza 440 px (la misura reale del riferimento Jira Rovo, ricavata dai pixel del
+video), ridimensionabile fra 360 e metà finestra.
+
+**Il turno dice a che punto è, con passi veri.** Sette passi che corrispondono alle
+fasi che il pipeline percorre davvero. Inventarne di decorativi sarebbe stato mostrare
+qualcosa che ha l'aria di essere vero e non lo è — lo stesso principio di **D2** (la
+decisione che vieta qualunque scrittura sui dati finché la Fase 2 non è misurata e
+superata), applicato all'interfaccia.
+
+## 2. Il vincolo che ha deciso tutto il backend
+
+`core/addons/bus/models/bus.py:106` — `bus.bus._sendone` **non manda niente subito**:
+accoda su `cr.precommit` e sveglia il processo del bus su `cr.postcommit`. Parte tutto
+al `commit`. E `runtime/worker.py` fa girare l'intero turno **dentro una sola
+transazione**, con un `commit` alla fine.
+
+Quindi un avanzamento mandato sul cursore del lavoratore arriverebbe **insieme alla
+risposta**: un'animazione che racconta un'attesa già finita.
+
+**L'unica soluzione che funziona è un cursore proprio per ogni evento**, aperto,
+scritto e committato subito. È tutto ciò che `runtime/progress.py` fa, e l'unica
+ragione per cui quel file esiste.
+
+Tre proprietà blindate, provate senza base dati in `pure_tests/test_progress.py`: non
+solleva mai, strozzato a 250 ms, tetto di 12 eventi per turno. **Deroga architetturale
+dichiarata** in `tools/arch/spec.py` — il controllo statico l'aveva intercettata al
+primo tentativo.
+
+## 3. Le due scoperte che valgono per chiunque tocchi lo SCSS
+
+Sono la stessa famiglia di guasto vista tre volte in questo progetto — *un nome che
+sembra collegato e non lo è* — e nessuna delle due dava un errore da nessuna parte.
+
+**`--o-view-background-color` non esiste.** Era il gradino intermedio del fallback in
+tutto lo SCSS di AIDA. `$o-view-background-color` è una variabile **SCSS**, risolta a
+compilazione: come variabile CSS non arriva mai al browser. In tutto `web/static/src`
+ci sono 38 variabili CSS con prefisso `--o-` e nessuna è quella.
+
+**E `--bs-body-bg` non esiste neanche.** Era la correzione ovvia, ed era sbagliata pure
+lei: `web/static/src/scss/bootstrap_overridden.scss:51` imposta `$variable-prefix: ''`,
+quindi Bootstrap emette **`--body-bg`**, `--primary`, `--border-color`, senza prefisso.
+Verificato contando nel pacchetto servito: occorrenze di `--bs-`, **zero**.
+
+È il modo di fallire di un fallback: non c'è nessun errore, perché il gradino
+successivo funziona sempre. **L'unica prova possibile è guardare il browser.**
+
+**Corollario da ricordare**: Odoo 18 Community **non ha un tema scuro vero**.
+`web.assets_web_dark` aggiunge tre file di componente e lascia la tavolozza dov'è
+(nessun `*.dark.scss` fra gli SCSS principali; con il cookie `color_scheme=dark` i
+valori a `:root` sono identici). Con la skin Classic AIDA è chiara perché *Odoo* è
+chiaro. `enterprise/` è vuota su questa macchina.
+
+## 4. La lezione di metodo
+
+Dieci difetti trovati in una giornata. **Cinque sono passati indenni sotto 256 prove
+verdi**, e sono usciti solo compilando gli asset e aprendo un browser:
+
+- `min(300px, 88%)` in SCSS: Sass ha un `min()` suo, provava a calcolarlo, e l'errore
+  di unità **fermava la compilazione di tutto `web.assets_backend`** — lo stile
+  dell'intera piattaforma, non solo il nostro;
+- lo shimmer **cancellava** le prime lettere di «Sto pensando…» (un gradiente ritagliato
+  fuori intervallo non sbiadisce il testo: con `color: transparent` lo rende invisibile);
+- il segno animato diventava magenta acceso in tema scuro;
+- il pulsante era grigio scuro su barra viola;
+- la scorciatoia non chiudeva il pannello, perché il fuoco è nella casella.
+
+Per questo esiste **`tools/ui/verify_panel.py`**: il guardare, reso ripetibile. 47
+asserzioni — i token risolti nei tre temi, i confini del ridimensionamento, la barra
+che non si muove, la bozza che sopravvive alla chiusura, e **ogni** errore JavaScript
+della pagina. Non è nella suite (serve Playwright), va lanciato a mano:
+
+```bash
+python3 tools/ui/verify_panel.py --db nli_test --password <password>
+```
+
+## 5. Cosa è cambiato su disco
+
+**Nuovi**
+- `ai/20-ux-pannello-aida.md` — il documento dell'interfaccia
+- `custom_addons/nli_dispatch/runtime/progress.py` + `pure_tests/test_progress.py`
+- `custom_addons/nli_web/static/src/aida_tokens.scss` — i tre gradini, in un posto solo
+- `custom_addons/nli_web/static/src/panel/` — servizio, pannello, pulsante nel systray
+- `custom_addons/nli_web/static/src/chat/`: `aida_steps.{js,xml,scss}`,
+  `aida_welcome.js`, `aida_history.js` (sostituisce `aida_sidebar.js`, rimosso),
+  `aida_thread.xml` e `aida_action.xml` (scorporati da `aida_chat.xml`)
+- `tools/ui/verify_panel.py`
+- `ai/screenvideo/screen-capture.webm` — il riferimento, 9,4 MB. **Untracked**: se non
+  lo vuoi nel repository va in `.gitignore` prima del commit, ma senza di lui le
+  misure del documento non sono più riproducibili
+
+**Modificati**
+- `runtime/pipeline.py` (sette punti di emissione), `runtime/worker.py`
+- `tests/test_dispatch.py` — `TestTheProgressSteps`, 7 prove
+- `tools/arch/spec.py` — la deroga per il cursore di `progress.py`
+- `tools/pure/bootstrap.py` — pacchetti sintetici per le sotto-cartelle, così le tre
+  proprietà si provano senza base dati
+- `nli_web/__manifest__.py` — elenco esplicito, non più un glob: i token devono
+  caricarsi **per primi**, e con `**/*` l'ordine lo decideva l'alfabeto
+
+**Non toccato**: motore, prompt, regole di esposizione, soglie, profilo.
+
+**Nel database `nli_test`**: la password di `admin` è stata cambiata in `aidatest123`
+per poter guidare il browser. L'originale non la conosceva nessuno in sessione.
+
+## 6. Stato delle verifiche
+
+| Verifica | Esito |
+|---|---|
+| Controlli architetturali | **5 / 5** |
+| Prove pure | **504**, 0 fallite |
+| Prove Odoo | **256**, 0 fallite (`nli_dispatch` da 101 a 108) |
+| `verify_panel.py` | **47 asserzioni** verdi |
+| Compilazione pacchetti | backend, Premium, dark — tutti e tre |
+| Errori JavaScript nei tre temi | nessuno |
+
+**Niente è stato committato**: tutto è nel working tree del branch `new-ai-agent`.
+
+## 7. Cosa resta aperto sull'interfaccia
+
+1. **Nessuna prova automatica del lato client nella suite.** `verify_panel.py` va
+   lanciato a mano e dipende da chi se lo ricorda — e le verifiche che dipendono dalla
+   memoria spariscono. Un `tour` Odoo che apra il pannello, mandi una frase e controlli
+   che i passi arrivino girerebbe con tutto il resto.
+2. **Il ritardo dei passi non è misurato.** Sappiamo che arrivano; non quanto dopo
+   l'istante in cui il turno li raggiunge. Una misura fra `report()` e la comparsa
+   direbbe se lo strozzamento a 250 ms è il numero giusto.
+3. **La cronologia non ha ricerca.** Con quindici conversazioni non serve; con
+   trecento sì.
+4. **Fuori scope per scelta**: streaming del testo (non esiste), pollice su/giù
+   (nessun modello dati), cambio agente (ce n'è uno), bottone di stop (il turno non è
+   annullabile).
+
+---
+
 # Aperto, in ordine di quanto sblocca
 
-1. **Rimisurare tutto, adesso che il catalogo e' intero.** E' il primo perche' senza di
-   questo non sappiamo dove siamo: ogni numero che il progetto porta e' stato preso con
-   17 attributi su 66. Tre misure, tutte automatizzate, mezza giornata di macchina:
+1. **La selezione degli attributi.** E' il primo perche' vale piu' di qualunque altra
+   cosa in lista: otto frasi su venti passate da sbagliate a giuste, **senza toccare il
+   modello e senza una riga di codice nuova**. La proposta e la sua prova stanno qui
+   sopra, in «Stato al 4 agosto 2026» §3. Quattro passi, in quest'ordine.
 
-   * **la linea di partenza sul corpus** (`ai/corpus/misura_accuratezza.py`): l'ultima
-     e' 70,0% complessiva e 79,5% su `filter`, ed e' di venti delibere fa;
-   * **la batteria sul campo per intero** (`./manage.sh campo db`): 54 frasi. Con 60
-     attributi le domande su *stato*, *ricavo atteso* e *commerciale* smettono di essere
-     saltate;
-   * **gli stessi tre candidati di `19`** — `qwen3.5:2b`, `:4b`, `:9b` — con la
-     generazione vincolata accesa, che il banco di `19` §2 non aveva.
+   **1a. Misurare la copertura con i residui nascosti.** E' un **cancello**: se scende
+   sotto il 99% che **D34** pretende, la regola non e' adottabile cosi' com'e' e va
+   ammorbidita. Sto per togliere 16 attributi a `crm.lead` e 33 a `res.partner`, e sono
+   quasi certo che siano rumore — ma «quasi certo» non e' un numero, e il guadagno lo
+   vedrei mentre il danno resterebbe invisibile.
 
-   **L'attesa scritta prima di misurare**, cosi' che una previsione sbagliata si veda:
-   D135 (`00` §40.8) dice che *«mostrami i lead creati quest'anno»* deve finire in una
-   domanda con le date invece che in `not_understood`, e il clic deve rispondere in un
-   decimo di secondo. E il catalogo intero dovrebbe alzare `filter`, che e' la sezione
-   dove mancavano gli attributi.
+   **1b. Togliere il blocco della coda** che ferma la batteria (`QueueRefusal`). La
+   protezione e' giusta per utenti veri; la batteria e' uno strumento che parla col
+   proprio prodotto. Senza questo, il numero riguarda solo le prime venti frasi — tutte
+   della stessa famiglia, e le altre trentaquattro (date, operatori, limiti) sono le
+   difficili.
 
-   **Il modo in cui D135 puo' peggiorare le cose**, da guardare per primo: la regola
-   misura se il frammento nomina la data con i termini che il dizionario ha (T1). Se
-   `create_date` non ha fra i suoi termini la parola che l'utente usa — *«creati»* —
-   allora *«i lead creati quest'anno»* diventa una domanda inutile, perche' la data
-   l'utente l'aveva gia' detta. Non e' un difetto della regola: e' una voce mancante, e
-   la strada e' **D108**.
+   **1c. Riparare le attese della batteria** (`_manca` e le stringhe di `frasi.py`).
+   Non e' manutenzione: lo strumento **inventa fallimenti e nasconde successi**, ed e'
+   la ragione per cui 21 frasi su 54 non sono mai partite. Vedi §4 qui sopra.
+
+   **1d. Deliberare**, con i numeri in mano. Serve perche' fra sei mesi chi trovera' i
+   residui nascosti li rimettera' dentro alla prima frase che non funziona — e perche'
+   il 4 agosto abbiamo avuto la prova di cosa costa una scelta non scritta: il
+   `reasoning_effort` a `high` e' stato trovato **solo** perche' D98 stava nel registro.
+
+   **In parallelo, perche' tocca solo la zona pura** (nessun database, nessun modello,
+   prove deterministiche): la robustezza dell'indice dei termini a trattini e parole di
+   servizio, §5 qui sopra. Chiesta dall'Architect il 4 agosto.
+
+   **Restano da fare, dalla vecchia lista:**
+
+   * **il controllo del corpus a `--finestra 4096`** con il codice di oggi, per separare
+     il contributo di D113-D120 da quello di D133. ~70 minuti di macchina, nessuna
+     attesa umana;
+   * **la batteria per intero**, dopo 1b e 1c;
+   * **i tre candidati di `19`** — `qwen3.5:2b`, `:4b`, `:9b` — con la generazione
+     vincolata accesa, che il banco di `19` §2 non aveva. **Da rifare col catalogo
+     selezionato**, non con quello da 60: misurarli sul catalogo rumoroso direbbe che
+     sono tutti scarsi, e non e' quello che vogliamo sapere.
+
+   **Attese scritte prima di misurare**, cosi' che una previsione sbagliata si veda:
+
+   * il 10 su 20 della batteria e' **pessimista**, perche' fra i 4 casi «saltati» ce ne
+     sono che il prodotto risponde giusto (misurato: `commerciale`, `email`);
+   * i **6 casi ancora sbagliati** sono tutti di aggregazione (*somma*, *media*, *piu'
+     alto*) e **non** si muoveranno con la selezione degli attributi: se si muovono,
+     l'ipotesi «fronte separato» era sbagliata;
+   * la copertura di 1a **non** dovrebbe scendere sotto il 99%. Se scende, i residui
+     coprivano qualcosa che nessuno aveva notato, ed e' un risultato piu' interessante
+     del passaggio del cancello.
 
 2. **Il fine tuning, deciso dall'Architect il 3 agosto.** I due documenti sono scritti e
    sono la specifica: `ai/18` per la modalita' (LoRA a 16 bit, RunPod, ~$40) e `ai/19`
@@ -542,9 +977,12 @@ da `nli_core`: sono funzioni dei loro argomenti, e ciò che serve si passa.
    il predicato possibile ma sbagliato, il valore preso male, le due condizioni fuse in
    una.
 
-   **La misura dopo D113–D120 non e' stata fatta.** L'attesa scritta prima di misurare
-   e' in `00` §22.3: complessiva ~75,3%, `filter` ~84,8%, ancora sotto la soglia di
-   D44. Se il numero si muove meno, dira' quale ipotesi era sbagliata.
+   ~~**La misura dopo D113–D120 non e' stata fatta.**~~ **Fatta il 4 agosto 2026**, ma
+   **non e' attribuibile**: contiene anche D133, perche' la linea del 70,0% precede tutte
+   e due. Misurato 75,8% e `filter` 85,0% contro un'attesa di ~75,3% e ~84,8% scritta in
+   `00` §22.3 **per D113-D120 soli, a `context` invariato**. Sembra un centro perfetto e
+   non lo e': due cause dentro una misura sola. Si separa col controllo a
+   `--finestra 4096`, che resta da fare. Vedi «Stato al 4 agosto 2026» §2.
 
 10. **Il secondo tentativo non puo' esistere.** Il cron di recupero rimette in coda un
    turno rimasto orfano perche' ci riprovi (`MAX_ATTEMPTS`), e **L4 garantisce che il
@@ -622,12 +1060,20 @@ che è la degradazione descritta da D42.
 # Se vuoi solo ripartire senza rileggere tutto
 
 Riprendi il progetto AIDA: leggi ai/00-registro-decisioni.md e
-ai/12-piano-implementazione.md, verifica con ./manage.sh check, poi vai con il punto 1
-degli aperti — **rimisurare tutto adesso che la finestra e' a 8192 e il catalogo e'
-intero**: la linea di partenza sul corpus, la batteria sul campo per intero, e i tre
-candidati di `19` con la generazione vincolata accesa — oppure con quello che ti indico.
+ai/12-piano-implementazione.md, **poi la sezione «Stato al 4 agosto 2026» qui sopra, che
+e' la piu' recente e in alcuni punti contraddice quelle di luglio**. Verifica con
+./manage.sh check, poi vai con il punto 1 degli aperti — **la selezione degli
+attributi**, che vale piu' di tutto il resto in lista: si comincia misurando la copertura
+coi residui nascosti, che e' un cancello — oppure con quello che ti indico.
+
+**In una riga: il problema non e' quanto e' grande il `context`, e' cosa ci mettiamo
+dentro.** Il catalogo intero da 60 attributi affoga il modello (2 frasi giuste su 20);
+selezionato a 27 con le viste di Odoo ne prende 10. E il catalogo tagliato a 17 di prima
+non era meglio: rispondeva sempre, e si inventava le risposte.
 
 Il punto 2 e' il fine tuning, gia' specificato in `ai/18` e `ai/19`: li' manca il
-lavoro, non le decisioni. E leggi `00` §38 prima di
+lavoro, non le decisioni — ma va rifatto **dopo** la selezione, o misura il rumore.
+E leggi `00` §38 prima di
 dichiarare finita qualunque cosa. Stesse regole di prima: deliberi tu le questioni che emergono e le
-registri in ai/00, e mi spieghi le cose in modo non tecnico.
+registri in ai/00, e mi spieghi le cose in modo semplice — come a un ragazzino sveglio ma
+inesperto, con le parole chiave tecniche in inglese (`envelope`, `context`, `token`).
