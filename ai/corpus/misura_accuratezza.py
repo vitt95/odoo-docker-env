@@ -65,6 +65,7 @@ from nli_core.validation import contextual  # noqa: E402
 from nli_engine.adapters.base import Capabilities  # noqa: E402
 from nli_engine.adapters.openai_compatible import OpenAICompatibleAdapter  # noqa: E402
 from nli_engine.interpreter import interpret  # noqa: E402
+from nli_semantics import scope_lexicon, temporal_lexicon  # noqa: E402
 from nli_semantics.catalogue import build as build_module  # noqa: E402
 from nli_semantics.dictionary import grounding  # noqa: E402
 from nli_semantics.platform_types import (  # noqa: E402
@@ -158,9 +159,17 @@ def misura(casi: list[dict], dizionario, adapter, *, verboso: bool) -> Accuratez
         catalogo = _catalogo(dizionario, modello)
 
         partito = time.monotonic()
+        # Gli stessi riconoscitori che la conduttura inietta, per la stessa ragione
+        # con cui `mentions` sta qui: **questa misura deve esercitare lo stesso
+        # prodotto**. Senza `scope_justifies` il metro non vede D119 (il rifiuto per
+        # portata dev'essere guadagnato dalle parole citate) e senza `names_period`
+        # non vede D144 (il periodo nominato dev'essere quello che l'envelope dice) —
+        # e il numero descriverebbe un prodotto che nessuno ha in servizio.
         interpretazione = interpret(adapter, utterance=caso["testo"],
                                     catalogue=catalogo, state=None,
-                                    mentions=mentions)
+                                    mentions=mentions,
+                                    scope_justifies=scope_lexicon.justifies,
+                                    names_period=temporal_lexicon.names_period)
         esito.millisecondi += int((time.monotonic() - partito) * 1000)
         esito.casi += 1
         esito.riparazioni += interpretazione.repairs
@@ -213,6 +222,16 @@ def misura(casi: list[dict], dizionario, adapter, *, verboso: bool) -> Accuratez
             esito.sbagliati.append((caso["id"], caso["testo"][:60], diverse))
             if verboso:
                 print(f"  {caso['id']} {caso['testo'][:60]!r} -> sezioni {diverse}")
+
+        # **Un avanzamento che sopravvive a un'interruzione.** Una corsa sulle 444
+        # aperture dura oltre un'ora, e il 6 agosto 2026 una e' stata interrotta a
+        # tre quarti lasciando **zero byte**: tutto il rapporto si stampava alla
+        # fine. Quarantacinque minuti di macchina buttati per un difetto dello
+        # strumento, non della misura. Su `stderr` e ogni venti casi, cosi' anche una
+        # corsa uccisa lascia un numero parziale invece di niente.
+        if esito.casi % 20 == 0:
+            print(f"  ...{esito.casi}/{len(casi)}  esatti {esito.esatti} "
+                  f"({esito.esatti / esito.casi:.1%})", file=sys.stderr, flush=True)
 
     return esito
 
