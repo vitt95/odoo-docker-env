@@ -509,3 +509,120 @@ class TestIlFrammentoDeveDirlo(unittest.TestCase):
         fallimenti = structural.validate_scope_grounding(
             envelope("not_understood"), justifies=lambda nota, testo: False)
         self.assertEqual(fallimenti, [])
+
+
+def _con_periodo(expression, frammento, **parametri):
+    """Un envelope con una sola condizione temporale e il frammento che la cita."""
+    valore = {"kind": "temporal", "expression": expression}
+    valore.update(parametri)
+    return envelope(
+        "operations",
+        confidence=0.9,
+        operations=[
+            {"op": "set_target", "ref": "ordini",
+             "provenance": {"text": "ordini"}},
+            {"op": "add_condition", "combine": "all",
+             "condition": {"ref": "ordini.data", "predicate": "within",
+                           "value": valore},
+             "provenance": {"text": frammento}},
+        ],
+    )
+
+
+class TestIlPeriodoDeveEssereQuelloDetto(unittest.TestCase):
+    """Il controllo che usa il lessico iniettato (**D144**).
+
+    Chiude la classe di guasto di `00` §46.7: quando la parola manca, il modello
+    ripiega su quella vicina invece di rifiutare, **in silenzio**.
+    """
+
+    def test_a_period_no_symbol_can_say_is_refused(self):
+        """*«Nel primo bimestre»* risposto con un trimestre: il ripiego, esattamente
+        come il semestre di §46.7."""
+        fallimenti = structural.validate_temporal_grounding(
+            _con_periodo("quarter_of_year", "nel primo bimestre", n=1),
+            names_period=lambda testo: (None, 1))
+        self.assertEqual([f.code for f in fallimenti], ["temporal_not_expressible"])
+        self.assertEqual([f.level for f in fallimenti], [2])
+
+    def test_the_wrong_period_of_the_right_kind_is_refused(self):
+        """Il difetto originale di D141: *«nel primo trimestre»* risposto con il
+        terzo, ventisei record sbagliati e nessun segnale."""
+        fallimenti = structural.validate_temporal_grounding(
+            _con_periodo("quarter_of_year", "nel primo trimestre", n=3),
+            names_period=lambda testo: ("quarter_of_year", 1))
+        self.assertEqual([f.code for f in fallimenti], ["temporal_period_mismatch"])
+
+    def test_the_wrong_kind_of_period_is_refused(self):
+        """Un mese al posto di un trimestre: sempre ripiego, un'unita' piu' in la'."""
+        fallimenti = structural.validate_temporal_grounding(
+            _con_periodo("month_of_year", "nel primo trimestre", n=1),
+            names_period=lambda testo: ("quarter_of_year", 1))
+        self.assertEqual([f.code for f in fallimenti], ["temporal_period_mismatch"])
+
+    def test_the_right_period_passes(self):
+        fallimenti = structural.validate_temporal_grounding(
+            _con_periodo("quarter_of_year", "nel primo trimestre", n=1),
+            names_period=lambda testo: ("quarter_of_year", 1))
+        self.assertEqual(fallimenti, [])
+
+    def test_a_year_nobody_wrote_is_refused(self):
+        """**D105** applicato al valore: *«a gennaio»* non nomina un anno, e un anno
+        che l'utente non ha scritto e' indovinato. Un frammento che nominasse anche
+        l'anno nominerebbe **due** periodi, e il lessico si asterrebbe — quindi questo
+        puo' scattare solo su un anno che nessuno ha detto."""
+        fallimenti = structural.validate_temporal_grounding(
+            _con_periodo("month_of_year", "a gennaio", n=1, year=2019),
+            names_period=lambda testo: ("month_of_year", 1))
+        self.assertEqual([f.code for f in fallimenti], ["temporal_year_not_grounded"])
+
+    def test_a_fragment_naming_nothing_is_left_alone(self):
+        """*«Negli ultimi 30 giorni»* non nomina un periodo, e il controllo tace."""
+        fallimenti = structural.validate_temporal_grounding(
+            _con_periodo("last_n_days", "negli ultimi 30 giorni", n=30),
+            names_period=lambda testo: None)
+        self.assertEqual(fallimenti, [])
+
+    def test_a_written_out_date_is_left_alone(self):
+        """`absolute` porta una data che l'utente ha **scritto**, non un periodo che ha
+        nominato: e' la stessa ragione per cui D105 non giudica i confronti."""
+        fallimenti = structural.validate_temporal_grounding(
+            _con_periodo("absolute", "il 1 gennaio 2025", date="2025-01-01"),
+            names_period=lambda testo: ("month_of_year", 1))
+        self.assertEqual(fallimenti, [])
+
+    def test_non_temporal_conditions_are_left_alone(self):
+        candidato = envelope(
+            "operations", confidence=0.9,
+            operations=[{
+                "op": "add_condition", "combine": "all",
+                "condition": {"ref": "ordini.importo", "predicate": "greater_than",
+                              "value": {"kind": "number", "value": 2025}},
+                "provenance": {"text": "sopra 2025"}}])
+        fallimenti = structural.validate_temporal_grounding(
+            candidato, names_period=lambda testo: ("year_of", 2025))
+        self.assertEqual(fallimenti, [])
+
+    def test_every_condition_is_judged_on_its_own_fragment(self):
+        """Due condizioni, un frammento ciascuna: il controllo non deve mescolarle."""
+        candidato = envelope(
+            "operations", confidence=0.9,
+            operations=[
+                {"op": "add_condition", "combine": "all",
+                 "condition": {"ref": "ordini.data", "predicate": "within",
+                               "value": {"kind": "temporal",
+                                         "expression": "last_n_days", "n": 30}},
+                 "provenance": {"text": "negli ultimi 30 giorni"}},
+                {"op": "add_condition", "combine": "all",
+                 "condition": {"ref": "ordini.consegna", "predicate": "within",
+                               "value": {"kind": "temporal",
+                                         "expression": "quarter_of_year", "n": 2}},
+                 "provenance": {"text": "nel primo bimestre"}},
+            ])
+        fallimenti = structural.validate_temporal_grounding(
+            candidato,
+            names_period=lambda testo: (None, 1) if "bimestre" in testo else None)
+        self.assertEqual([f.code for f in fallimenti], ["temporal_not_expressible"])
+        self.assertEqual([f.path for f in fallimenti],
+                         ["operations[1].condition.value"])
+

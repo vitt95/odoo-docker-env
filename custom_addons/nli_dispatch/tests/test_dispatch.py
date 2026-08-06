@@ -1455,3 +1455,102 @@ class TestTheDateThatWasNotChosen(DispatchCase):
                       "provenance": {"text": "che si chiamano Alfa"}}),
         ])
         self.assertEqual(outcome.outcome, "operations", outcome.failures)
+
+
+class TestTheNearestPeriodIsNotTheAnsweredOne(DispatchCase):
+    """D144 — un periodo che il frammento non nomina non passa la conduttura.
+
+    **Il fallimento che questa classe chiude.** Sessione del 6 agosto 2026, modello e
+    banca dati veri: appena D141 ha dato al modello `quarter_of_year`, *«nel secondo
+    semestre»* e' tornata con il **secondo trimestre**, tre giri su tre. Una riga di
+    prompt che lo vietava per nome non ha retto. La classe di guasto non e' il simbolo
+    che manca: e' il **ripiego silenzioso** su quello vicino.
+
+    **La prova che §38 chiede** — quella che diventa rossa se qualcuno scollega — e' la
+    coppia: il ripiego non passa, e una risposta giusta passa lo stesso. Togliere
+    `names_period` dalla conduttura fa cadere la prima; scrivere una rete troppo larga
+    fa cadere la seconda, che e' il modo peggiore di sbagliare.
+
+    Il banco usa `res.partner` di proposito: espone **una sola** data, quindi la
+    domanda sull'ancora del tempo di **D135** non si mette di mezzo e cio' che si
+    misura e' solo questa rete.
+    """
+
+    ENTITY = "res_partner"
+
+    def setUp(self):
+        super().setUp()
+        self.scope = ("res.partner",)
+
+    def _catalogue(self):
+        semantics = self.user_env["nli.semantics"].semantics(self.scope)
+        return self.user_env["nli.semantics"].catalogue_for(
+            semantics, self.ENTITY, context_window=32_000)
+
+    def _date(self):
+        for attribute in self._catalogue().attributes:
+            if attribute.type in ("date", "datetime"):
+                return attribute.ref
+        return None
+
+    def _period(self, expression, text, **parameters):
+        value = {"kind": "temporal", "expression": expression}
+        value.update(parameters)
+        return {"op": "add_condition", "combine": "all",
+                "condition": {"ref": self._date(), "predicate": "within",
+                              "value": value},
+                "provenance": {"text": text}}
+
+    def _ask(self, utterance, replies):
+        item = self.accept(utterance)
+        outcome = pipeline_module.run(
+            self.user_env, item.with_env(self.user_env),
+            adapter=RecordedAdapter([envelope(target(self.ENTITY)), *replies]),
+            scope=self.scope, context_window=32_000)
+        worker_module._persist(
+            self.user_env, item.with_env(self.user_env), outcome)
+        return outcome
+
+    # --- il banco non passa vuoto -------------------------------------------
+
+    def test_the_entity_this_bench_uses_exposes_a_date(self):
+        """Nessun controllo passa vuoto: senza una data nel catalogo ogni asserzione
+        qui sotto misurerebbe l'assenza dell'attributo invece della rete."""
+        self.assertTrue(self._date(), "il catalogo non espone alcuna data")
+
+    def test_the_entity_this_bench_uses_exposes_only_one_date(self):
+        """Se `res.partner` un domani ne esponesse due, la domanda di D135 arriverebbe
+        prima e queste prove misurerebbero quella invece di questa rete."""
+        self.assertFalse(
+            (self._catalogue().time_anchor or {}).get("choices"),
+            "l'entita' del banco ha piu' di una data: D135 si mette di mezzo")
+
+    # --- la coppia -----------------------------------------------------------
+
+    def test_the_nearest_period_does_not_pass(self):
+        """*«Nel secondo semestre»* risposto con il secondo trimestre: il caso
+        misurato in §46.7. Il modello ha il giro di riparazione di **D15**, insiste, e
+        la conduttura esce con un rifiuto — che e' l'esito onesto di partenza."""
+        sbagliata = self._period("quarter_of_year", "nel secondo semestre", n=2)
+        outcome = self._ask("mostrami quelli del secondo semestre", [
+            envelope(target(self.ENTITY), sbagliata),
+            envelope(target(self.ENTITY), sbagliata),
+        ])
+        self.assertEqual(outcome.outcome, "not_understood")
+
+    def test_the_period_the_words_carry_passes(self):
+        """La meta' che conta di piu': `half_of_year(2)` sullo stesso frammento e' la
+        risposta giusta, e la rete non deve toccarla."""
+        outcome = self._ask("mostrami quelli del secondo semestre", [
+            envelope(target(self.ENTITY),
+                     self._period("half_of_year", "nel secondo semestre", n=2)),
+        ])
+        self.assertEqual(outcome.outcome, "operations", outcome.failures)
+
+    def test_a_relative_window_is_left_alone(self):
+        """Una finestra relativa non nomina un periodo, e la rete tace."""
+        outcome = self._ask("mostrami quelli degli ultimi 30 giorni", [
+            envelope(target(self.ENTITY),
+                     self._period("last_n_days", "negli ultimi 30 giorni", n=30)),
+        ])
+        self.assertEqual(outcome.outcome, "operations", outcome.failures)

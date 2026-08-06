@@ -901,3 +901,85 @@ def validate_scope_grounding(candidate: dict, *, justifies) -> list[Failure]:
         f"the quoted fragment {frammento!r} does not ask for {nota!r}: a refusal has "
         "to be earned by the words the user actually wrote (D119)",
     )]
+
+
+#: Expressions that carry a date the user wrote instead of a period they named.
+#:
+#: D105 already says why they are out: a comparison carries a value the user said, and
+#: there is no vocabulary to check it against. *"dal 1 gennaio 2025"* names a month and
+#: a year on its way to an explicit date, and judging it as a named period would refuse
+#: a correct answer.
+_TEMPORAL_WRITTEN_OUT = frozenset({"absolute", "absolute_range"})
+
+
+def validate_temporal_grounding(candidate: dict, *, names_period) -> list[Failure]:
+    """The period the fragment **names** has to be the period the envelope says (D144).
+
+    D105 applied to the value instead of to the reference. The failure this closes is
+    not a missing symbol, it is the fallback: when the word is not in the vocabulary the
+    model reaches for the nearest one and says nothing. *"nel secondo semestre"* came
+    back as the second **quarter**, three runs out of three, against a prompt line that
+    forbade it by name (§46.7).
+
+    `names_period(fragment)` arrives as an argument and not as an import: the lexicon is
+    language and `nli_core` has none, exactly as for D119 and D105. Omitted, the check
+    does not apply.
+
+    Three failures, all level 2:
+
+    * **the fragment names a period no symbol can say** — *"nel primo bimestre"*. Any
+      expression at all is a fallback, and the honest answer is a clarification;
+    * **the fragment names a different period** — *"nel primo trimestre"* answered with
+      `quarter_of_year(3)`, or with `month_of_year`;
+    * **the value carries a year the fragment does not name.** A fragment naming both a
+      period and a year names two periods, and then the check abstains — so this can
+      only fire on a year nobody wrote.
+    """
+    failures: list[Failure] = []
+    for index, operation in enumerate(candidate.get("operations") or []):
+        if not isinstance(operation, dict):
+            continue
+        condition = operation.get("condition")
+        if not isinstance(condition, dict):
+            continue
+        value = condition.get("value")
+        if not isinstance(value, dict) or value.get("kind") != "temporal":
+            continue
+        expression = value.get("expression")
+        if expression in _TEMPORAL_WRITTEN_OUT:
+            continue
+
+        fragment = (operation.get("provenance") or {}).get("text") or ""
+        claim = names_period(fragment)
+        if claim is None:
+            continue
+        symbol, parameter = claim
+        path = f"operations[{index}].condition.value"
+
+        if symbol is None:
+            failures.append(Failure(
+                2,
+                "temporal_not_expressible",
+                path,
+                f"the fragment {fragment!r} names a period no expression can say: "
+                f"{expression!r} is the nearest one, not the one asked for. Answer "
+                "clarification instead of the closest period (D144)",
+            ))
+        elif (expression, value.get("n")) != (symbol, parameter):
+            failures.append(Failure(
+                2,
+                "temporal_period_mismatch",
+                path,
+                f"the fragment {fragment!r} names {symbol}({parameter}), the envelope "
+                f"says {expression}({value.get('n')!r}): the period has to be the one "
+                "the words carry (D144)",
+            ))
+        elif "year" in value:
+            failures.append(Failure(
+                2,
+                "temporal_year_not_grounded",
+                f"{path}.year",
+                f"the fragment {fragment!r} names no year, the envelope says "
+                f"{value.get('year')!r}: a year nobody wrote is a guess (D144)",
+            ))
+    return failures

@@ -68,8 +68,8 @@ def not_understood() -> dict:
 
 
 def interpret(adapter, *, utterance: str, catalogue, state: dict | None = None,
-              mentions=None, scope_justifies=None, pending=None,
-              max_repairs: int = 1) -> Interpretation:
+              mentions=None, scope_justifies=None, names_period=None,
+              pending=None, max_repairs: int = 1) -> Interpretation:
     """Ask the model, validate, allow one repair, and never return anything else.
 
     `max_repairs` is an argument only so a test can assert that zero and two behave as
@@ -113,6 +113,13 @@ def interpret(adapter, *, utterance: str, catalogue, state: dict | None = None,
                 # D15 scatta e il modello risponde invece di uscire.
                 failures = structural.validate_scope_grounding(
                     candidate, justifies=scope_justifies)
+            if not failures and names_period is not None:
+                # D144: il periodo che il frammento nomina dev'essere quello che
+                # l'envelope dice. Qui accanto a D119 e per la stessa ragione: la
+                # riparazione di D15 scatta, e il modello ha un giro per correggersi
+                # invece di uscire con un rifiuto.
+                failures = structural.validate_temporal_grounding(
+                    candidate, names_period=names_period)
             if not failures:
                 failures = coherence.validate_envelope_coherence(
                     candidate.get("operations") or [], state=state)
