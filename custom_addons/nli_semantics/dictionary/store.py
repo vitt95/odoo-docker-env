@@ -118,6 +118,30 @@ class Dictionary:
         # is what governs who may edit it (D38).
         merged["level"] = ordered[0]["level"]
         merged["contributing_levels"] = sorted({entry["level"] for entry in ordered})
+
+        # **Il nome con cui si parla all'utente, che non e' la prima parola con cui lo
+        # si riconosce.** Sono due cose diverse e fino al 5 agosto 2026 erano una sola.
+        #
+        # Quel giorno sono entrate al livello L1 le forme verbali delle date —
+        # `creati`, `chiusi`, `assegnati` — perche' una persona dice *«i lead creati
+        # questo mese»* e non *«con data creazione»*. Servono a **capire**. Ma
+        # prendendosi il primo posto fra i termini si sono prese anche il posto di
+        # cio' che si mostra, e la domanda di chiarimento ha iniziato a proporre
+        # *«creazione»* e *«chiusura»* al posto di `Data creazione` e `Data chiusura`.
+        #
+        # La regola: si mostra il nome che **qualcuno ha scelto per questa cosa** —
+        # quello del cliente (L2) se c'e', altrimenti quello della piattaforma (L0),
+        # che per giunta Odoo traduce gia' da solo. L1 e' un livello di dominio: porta
+        # sinonimi e flessioni, cioe' parole per riconoscere, e non nomina niente.
+        for livello in ("L2", "L0"):
+            per_livello = [entry for entry in ordered if entry["level"] == livello]
+            if per_livello and per_livello[0].get("terms"):
+                merged["display"] = per_livello[0]["terms"][0]
+                break
+        else:
+            # Solo L1: nessuno ha dato un nome a questa cosa, e la prima parola con
+            # cui la si riconosce e' meglio di un riferimento tecnico.
+            merged["display"] = (merged.get("terms") or [""])[0]
         return merged
 
     # -- lookups ------------------------------------------------------------
@@ -134,6 +158,18 @@ class Dictionary:
     def terms_of(self, ref: str) -> list[str]:
         entry = self.entry("T1", ref)
         return list(entry.get("terms", [])) if entry else []
+
+    def display_of(self, ref: str) -> str:
+        """Il nome da mostrare a una persona, che non e' `terms_of(ref)[0]`.
+
+        I termini servono a riconoscere cio' che l'utente scrive; questo serve a
+        parlargli. Vedi `_merge`: il nome e' quello del cliente (L2) o quello della
+        piattaforma (L0), mai un sinonimo di dominio (L1).
+        """
+        entry = self.entry("T1", ref)
+        if not entry:
+            return ""
+        return entry.get("display") or (entry.get("terms") or [""])[0]
 
     def categories_of(self, entity_ref: str) -> list[dict]:
         return [

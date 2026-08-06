@@ -35,6 +35,12 @@ class CatalogueAttribute:
     ref: str
     terms: tuple[str, ...]
     type: str
+    #: Il nome con cui si parla all'utente, che non e' `terms[0]`. I termini sono le
+    #: parole con cui lo si riconosce — sinonimi e flessioni compresi — e la prima non
+    #: e' per forza un nome: dal 5 agosto 2026 al livello L1 ci sono `creati`,
+    #: `chiusi`, `assegnati`. Mostrarli indietro fa proporre *«creazione»* dove
+    #: l'utente si aspetta `Data creazione`. Vedi `store._merge`.
+    label: str = ""
     #: Admitted values for enumerated attributes (T2). Schema metadata, not record
     #: content: it is what lets the catalogue give the model the valid values
     #: **without showing it a single record** (§3.3, A6).
@@ -142,6 +148,7 @@ def build(
         CatalogueAttribute(
             ref=_ref_of(entity, decision.attribute),
             terms=tuple(dictionary.terms_of(_ref_of(entity, decision.attribute))),
+            label=dictionary.display_of(_ref_of(entity, decision.attribute)),
             type=type_map.get(decision.attribute.type, decision.attribute.type),
             values=_enum_values(dictionary, _ref_of(entity, decision.attribute)),
         )

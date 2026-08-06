@@ -241,6 +241,47 @@ class TestPrecedence(unittest.TestCase):
         self.assertEqual(dictionary.terms_of("clienti"), ["clienti"])
         self.assertTrue(dictionary.problems)
 
+    # --- il nome mostrato non e' il primo termine -------------------------
+    #
+    # **Difetto misurato il 5 agosto 2026.** Erano appena entrate al livello L1 le
+    # forme verbali delle date — `creati`, `chiusi`, `assegnati` — perche' una persona
+    # dice *«i lead creati questo mese»*. Servono a capire. Ma prendendosi il primo
+    # posto fra i termini si sono prese anche il posto di cio' che si mostra, e la
+    # domanda di chiarimento ha iniziato a offrire *«creazione»* e *«chiusura»* dove
+    # l'utente sullo schermo legge `Data creazione` e `Data chiusura`.
+    #
+    # Le due nozioni sono separate: i **termini** riconoscono, l'**etichetta** nomina.
+
+    def test_a_domain_synonym_never_becomes_the_displayed_name(self):
+        dictionary = Dictionary.build([
+            naming("lead.create_date", ["Data creazione"], level="L0"),
+            naming("lead.create_date", ["creazione", "creati"], level="L1"),
+        ])
+        self.assertEqual(dictionary.terms_of("lead.create_date")[0], "creazione",
+                         "l'ordine dei termini resta quello della precedenza")
+        self.assertEqual(dictionary.display_of("lead.create_date"), "Data creazione",
+                         "ma il nome mostrato e' quello della piattaforma")
+
+    def test_the_customer_s_own_word_is_the_displayed_name(self):
+        """L2 e' una scelta di chi usa il prodotto, e vince: e' la regola di prima."""
+        dictionary = Dictionary.build([
+            naming("ordini_vendita", ["Ordini di vendita"], level="L0"),
+            naming("ordini_vendita", ["ordini cliente"], level="L1"),
+            naming("ordini_vendita", ["pratiche"], level="L2"),
+        ])
+        self.assertEqual(dictionary.display_of("ordini_vendita"), "pratiche")
+
+    def test_with_only_a_domain_entry_its_first_term_is_the_name(self):
+        """Se nessuno ha dato un nome alla cosa, la prima parola con cui la si
+        riconosce e' meglio di un riferimento tecnico."""
+        dictionary = Dictionary.build([
+            naming("lead.create_date", ["creazione", "creati"], level="L1"),
+        ])
+        self.assertEqual(dictionary.display_of("lead.create_date"), "creazione")
+
+    def test_an_unknown_reference_has_no_name(self):
+        self.assertEqual(Dictionary.build([]).display_of("lead.create_date"), "")
+
     def test_the_merged_entry_reports_its_contributing_levels(self):
         dictionary = Dictionary.build([
             naming("clienti", ["clienti"], level="L0"),
