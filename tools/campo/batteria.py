@@ -46,8 +46,20 @@ GRIGIO = "\033[90m"
 FINE = "\033[0m"
 
 
+def _catalogo_riferimenti(catalogo):
+    """I riferimenti che il modello vede per questa entita'."""
+    riferimenti = {attributo.ref for attributo in catalogo.attributes}
+    riferimenti.update(categoria.ref for categoria in catalogo.categories)
+    return riferimenti
+
+
 def _catalogo_termini(catalogo):
-    """Tutte le parole che il modello vede per questa entita', in minuscolo."""
+    """Tutte le parole che il modello vede per questa entita', in minuscolo.
+
+    Non serve piu' a decidere chi salta — serve a **stampare** il catalogo in testa
+    al giro, che e' l'unico modo per capire, leggendo un esito, cosa il modello aveva
+    davanti.
+    """
     parole = set()
     for attributo in catalogo.attributes:
         parole.update(termine.casefold() for termine in attributo.terms)
@@ -56,16 +68,32 @@ def _catalogo_termini(catalogo):
     return parole
 
 
-def _manca(serve, termini):
-    """Le parole che la frase richiede e che il catalogo non ha.
+def _manca(serve, riferimenti):
+    """I riferimenti che la frase richiede e che il catalogo non espone.
 
-    Il confronto e' per contenimento e non per uguaglianza: il catalogo dice
-    *«Data di creazione»* e la frase chiede *«data di creazione»*, ma anche
-    *«Ricavo atteso»* contro *«ricavo atteso»*. Una parola contenuta in un termine
-    basta, perche' e' cosi' che il riconoscitore del dizionario lavora.
+    **Il confronto e' sui `ref`, non sulle etichette, e la ragione e' un difetto
+    misurato.** Fino al 4 agosto 2026 qui si confrontavano per contenimento le
+    stringhe che `frasi.py` dichiarava a mano contro le etichette Odoo vere, e le
+    due non si incontravano quasi mai:
+
+        la batteria cercava   l'etichetta vera    si incontravano?
+        data di creazione     Data creazione      no, un «di» di troppo
+        email                 E-mail              no, manca il trattino
+        commerciale           Addetto vendite     no, sono parole diverse
+        citta'                Citta'              no, l'apostrofo non e' l'accento
+
+    Ventuno frasi su 54 — tutte le date — non sono mai state eseguite, in nessun
+    giro, e il salto **nascondeva successi veri**: il modello legge `Addetto
+    vendite` nel catalogo, sente «commerciale» e capisce da solo.
+
+    Il `ref` invece e' cio' che il catalogo pubblica davvero, non una traduzione
+    che qualcuno ha scritto a mano in un altro file. Chiedere «`crm_lead.user_id`
+    e' nel catalogo?» ha una risposta sola, e la domanda che `serve` vuole fare e'
+    esattamente questa: *l'attributo, il budget di D79 glielo ha mostrato oppure
+    no?* Se il modello poi lo riconosca dalle parole e' cio' che la batteria
+    misura, e non deve deciderlo il filtro d'ingresso.
     """
-    return [parola for parola in serve
-            if not any(parola in termine for termine in termini)]
+    return [riferimento for riferimento in serve if riferimento not in riferimenti]
 
 
 def _condizioni(stato):
@@ -146,8 +174,21 @@ def esegui(env, famiglia=None, massimo=None, scrivi=False):
     # distinguere «il modello ha sbagliato» da «l'attributo non gliel'ha mostrato
     # nessuno», che con la finestra a 4096 e' la meta' dei casi (D79, D133).
     semantiche = semantica.semantics(scope)
-    entita = "crm_lead" if "crm_lead" in semantiche.bindings else scope[0]
+    # **Le frasi parlano di lead, quindi senza lead non si misura niente.** Prima qui
+    # c'era un ripiego — `scope[0]` se `crm_lead` mancava — e su una banca dati senza
+    # CRM la batteria chiedeva «mostrami i lead» al catalogo dei contatti e chiamava
+    # sbagliato il modello per averlo detto. Un ripiego silenzioso in uno strumento di
+    # misura non e' robustezza: e' un terzo modo di mentire, dopo i due di `ai/restart`
+    # §4. Meglio fermarsi e dirlo.
+    entita = "crm_lead"
+    if entita not in semantiche.bindings:
+        print(f"\n  {ROSSO}Questa banca dati non espone `crm_lead`{FINE}: il perimetro "
+              f"e' {', '.join(scope)}.\n  Le frasi di `frasi.py` parlano di lead, e "
+              f"misurarle su un'altra entita' non direbbe niente\n  del prodotto. "
+              f"Serve un database con il CRM installato e dentro il perimetro.\n")
+        return []
     catalogo = semantica.catalogue_for(semantiche, entita, context_window=finestra)
+    riferimenti = _catalogo_riferimenti(catalogo)
     termini = _catalogo_termini(catalogo)
     print(f"  catalogo di {entita}: {len(catalogo.attributes)} attributi tenuti, "
           f"{catalogo.refused_for_budget} rifiutati per budget")
@@ -158,7 +199,7 @@ def esegui(env, famiglia=None, massimo=None, scrivi=False):
     righe = []
 
     for indice, (nome_famiglia, frase, attesa, serve) in enumerate(casi, start=1):
-        mancanti = _manca(serve, termini)
+        mancanti = _manca(serve, riferimenti)
         if mancanti:
             esiti["saltato"] += 1
             righe.append((nome_famiglia, frase, "saltato",
@@ -175,12 +216,25 @@ def esegui(env, famiglia=None, massimo=None, scrivi=False):
                                         context_window=finestra, debug=True)
         except Exception as errore:  # noqa: BLE001
             secondi = time.monotonic() - partito
+            item.fail(type(errore).__name__)
             esiti["diverso"] += 1
             righe.append((nome_famiglia, frase, "errore", repr(errore), secondi, None))
             print(f"  {indice:3}/{len(casi)}  {ROSSO}errore {FINE}  {frase[:58]:<58} "
                   f"{secondi:5.1f}s  {errore!r}")
             continue
         secondi = time.monotonic() - partito
+        # **Chiudere l'elemento di coda e' obbligatorio, non educazione.** `pipeline.run`
+        # interpreta il turno e non tocca la coda: nel prodotto e' `worker._persist` a
+        # chiamare `complete()`, e la batteria — che il worker non lo usa — non lo
+        # chiamava nessuno. Cosi' ogni frase lasciava la sua riga in `pending`, e
+        # `_queued` le contava tutte: al venticinquesimo caso si supera **L3** (la
+        # profondita' della coda, pool 8 x 3 = 24) e `accept` rifiuta. Il giro moriva
+        # li' con «ci sono molte richieste in corso», che era vero e voleva dire
+        # soltanto che nessuno aveva sparecchiato.
+        #
+        # `complete()` scrive l'esito sul turno solo se il turno e' ancora vuoto,
+        # quindi non sovrascrive cio' che la pipeline ha appena prodotto.
+        item.complete()
 
         differenze = _differenze(attesa, esito)
         record = esito.record_count if esito.outcome == "operations" else ""

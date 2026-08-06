@@ -21,11 +21,27 @@ dati invece del prodotto. Si guarda la **forma** di cio' che e' uscito — c'e' 
 raggruppamento? c'e' una misura di conteggio? c'e' una condizione temporale? — che e'
 esattamente cio' che la frase chiede.
 
-`serve` elenca le parole che il catalogo deve contenere perche' la frase sia
-rispondibile. Se mancano, il caso e' **saltato** invece che contato come sbagliato: con
-la finestra a 4096 il budget di **D79** tiene 17 attributi su 66 (`00` §39.5), e
-addossare al modello un attributo che nessuno gli ha mostrato falserebbe la misura nella
-direzione peggiore — quella che fa lavorare sul pezzo giusto per il motivo sbagliato.
+`serve` elenca i **riferimenti** del catalogo che devono essere esposti perche' la
+frase sia rispondibile — `crm_lead.user_id`, non «commerciale». Se mancano, il caso e'
+**saltato** invece che contato come sbagliato: con la finestra a 4096 il budget di
+**D79** tiene 17 attributi su 66 (`00` §39.5), e addossare al modello un attributo che
+nessuno gli ha mostrato falserebbe la misura nella direzione peggiore — quella che fa
+lavorare sul pezzo giusto per il motivo sbagliato.
+
+**Perche' i `ref` e non le parole.** Qui c'erano le parole, ed erano quelle che una
+persona direbbe: «data di creazione», «email», «commerciale». Il filtro le confrontava
+con le etichette Odoo vere — `Data creazione`, `E-mail`, `Addetto vendite` — e non si
+incontravano: 21 frasi su 54, tutte le date, non sono mai state eseguite in nessun giro
+(`ai/restart.md` §4). Peggio: fra le saltate c'erano frasi a cui il prodotto risponde
+**giusto**, perche' il modello quelle parole le collega da solo alle etichette. Il
+`ref` toglie di mezzo la traduzione a mano: e' cio' che il catalogo pubblica.
+
+Questo non contraddice la regola qui sopra — un'**attesa** continua a non nominare
+riferimenti. `serve` non e' un'attesa: non dice cosa deve uscire, dice cosa il modello
+deve aver visto per poter rispondere, e quello e' un fatto del catalogo.
+
+I riferimenti sono di `crm_lead` perche' le frasi parlano di lead. Su una banca dati
+senza CRM la batteria si ferma e lo dice, invece di ripiegare su un'altra entita'.
 """
 
 #: Le famiglie, nell'ordine di `ai/16`.
@@ -48,98 +64,105 @@ FRASI = [
     # -- INTENTI ---------------------------------------------------------------
     (INTENTI, "mostrami i lead", {}, ()),
     (INTENTI, "mostrami i lead con nome e telefono", {"colonne": 2},
-     ("telefono",)),
+     ("crm_lead.phone",)),
     (INTENTI, "cerca i lead che hanno milano nel nome", {"condizioni": 1},
-     ("nome",)),
+     ("crm_lead.name",)),
     (INTENTI, "quanti lead ci sono", {"misure": {"count"}}, ()),
     (INTENTI, "dammi il numero di lead di oggi",
      {"misure": {"count"}, "periodo": True}, ()),
+    # **«per stato» e' una trappola, e va guardata.** Sul catalogo vero di `crm_lead`
+    # `Stato` e' `state_id`, cioe' la **provincia**, mentre la fase di vendita si
+    # chiama `Fase` (`stage_id`). Chi ha scritto queste frasi intendeva la fase, e
+    # `serve` dichiara `stage_id`; ma l'attesa conta *quanti* raggruppamenti, non su
+    # cosa, quindi un raggruppamento per provincia passerebbe lo stesso. Sono due
+    # decisioni da prendere insieme all'Architect: se la frase va detta «per fase», e
+    # se l'attesa debba nominare il riferimento del raggruppamento almeno qui.
     (INTENTI, "dammi il numero di lead per stato",
-     {"misure": {"count"}, "raggruppa": 1}, ("stato",)),
+     {"misure": {"count"}, "raggruppa": 1}, ("crm_lead.stage_id",)),
     (INTENTI, "dammi il numero di lead per stato che sono stati creati quest'anno",
      {"misure": {"count"}, "raggruppa": 1, "periodo": True},
-     ("stato", "data di creazione")),
+     ("crm_lead.stage_id", "crm_lead.create_date")),
     (INTENTI, "qual e' il ricavo atteso medio dei lead",
-     {"misure": {"avg"}}, ("ricavo atteso",)),
+     {"misure": {"avg"}}, ("crm_lead.expected_revenue",)),
     (INTENTI, "somma il ricavo atteso dei lead", {"misure": {"sum"}},
-     ("ricavo atteso",)),
+     ("crm_lead.expected_revenue",)),
     (INTENTI, "qual e' il ricavo atteso piu' alto", {"misure": {"max"}},
-     ("ricavo atteso",)),
+     ("crm_lead.expected_revenue",)),
     (INTENTI, "qual e' il ricavo atteso piu' basso", {"misure": {"min"}},
-     ("ricavo atteso",)),
+     ("crm_lead.expected_revenue",)),
     (INTENTI, "il ricavo atteso medio per stato",
-     {"misure": {"avg"}, "raggruppa": 1}, ("stato", "ricavo atteso")),
+     {"misure": {"avg"}, "raggruppa": 1}, ("crm_lead.stage_id", "crm_lead.expected_revenue")),
     (INTENTI, "quanti lead per stato e per commerciale",
-     {"misure": {"count"}, "raggruppa": 2}, ("stato", "commerciale")),
+     {"misure": {"count"}, "raggruppa": 2}, ("crm_lead.stage_id", "crm_lead.user_id")),
     (INTENTI, "i lead ordinati per ricavo atteso", {"ordina": 1},
-     ("ricavo atteso",)),
+     ("crm_lead.expected_revenue",)),
     (INTENTI, "i 10 lead con il ricavo atteso piu' alto",
-     {"ordina": 1, "limite": 10}, ("ricavo atteso",)),
+     {"ordina": 1, "limite": 10}, ("crm_lead.expected_revenue",)),
     (INTENTI, "i primi 5 lead", {"limite": 5}, ()),
     (INTENTI, "i lead che hanno un commerciale", {"condizioni": 1},
-     ("commerciale",)),
-    (INTENTI, "i lead senza commerciale", {"condizioni": 1}, ("commerciale",)),
+     ("crm_lead.user_id",)),
+    (INTENTI, "i lead senza commerciale", {"condizioni": 1}, ("crm_lead.user_id",)),
 
     # -- OPERATORI -------------------------------------------------------------
     (OPERATORI, "i lead con ricavo atteso uguale a 1000", {"condizioni": 1},
-     ("ricavo atteso",)),
+     ("crm_lead.expected_revenue",)),
     (OPERATORI, "i lead con ricavo atteso sopra 1000", {"condizioni": 1},
-     ("ricavo atteso",)),
+     ("crm_lead.expected_revenue",)),
     (OPERATORI, "i lead con ricavo atteso sotto 1000", {"condizioni": 1},
-     ("ricavo atteso",)),
+     ("crm_lead.expected_revenue",)),
     (OPERATORI, "i lead con ricavo atteso di almeno 1000", {"condizioni": 1},
-     ("ricavo atteso",)),
+     ("crm_lead.expected_revenue",)),
     (OPERATORI, "i lead con ricavo atteso al massimo di 1000", {"condizioni": 1},
-     ("ricavo atteso",)),
+     ("crm_lead.expected_revenue",)),
     (OPERATORI, "i lead con ricavo atteso fra 1000 e 5000", {"condizioni": 1},
-     ("ricavo atteso",)),
+     ("crm_lead.expected_revenue",)),
     (OPERATORI, "i lead che contengono spa nel nome", {"condizioni": 1},
-     ("nome",)),
-    (OPERATORI, "i lead che iniziano per ross", {"condizioni": 1}, ("nome",)),
-    (OPERATORI, "i lead senza email", {"condizioni": 1}, ("email",)),
-    (OPERATORI, "i lead che hanno una email", {"condizioni": 1}, ("email",)),
+     ("crm_lead.name",)),
+    (OPERATORI, "i lead che iniziano per ross", {"condizioni": 1}, ("crm_lead.name",)),
+    (OPERATORI, "i lead senza email", {"condizioni": 1}, ("crm_lead.email_from",)),
+    (OPERATORI, "i lead che hanno una email", {"condizioni": 1}, ("crm_lead.email_from",)),
     (OPERATORI, "i lead sopra 1000 e senza commerciale", {"condizioni": 2},
-     ("ricavo atteso", "commerciale")),
+     ("crm_lead.expected_revenue", "crm_lead.user_id")),
     (OPERATORI, "i lead sopra 1000 oppure senza email", {"condizioni": 2},
-     ("ricavo atteso", "email")),
+     ("crm_lead.expected_revenue", "crm_lead.email_from")),
 
     # -- DATE ------------------------------------------------------------------
     # Su `crm.lead` le date esposte sono piu' d'una, quindi una frase che non ne
     # nomina nessuna deve finire in una domanda: e' **D135**, ed e' l'esito giusto,
     # non un fallimento.
     (DATE, "i lead di oggi", {"esito": "clarification"}, ()),
-    (DATE, "i lead creati oggi", {"periodo": True}, ("data di creazione",)),
-    (DATE, "i lead creati ieri", {"periodo": True}, ("data di creazione",)),
+    (DATE, "i lead creati oggi", {"periodo": True}, ("crm_lead.create_date",)),
+    (DATE, "i lead creati ieri", {"periodo": True}, ("crm_lead.create_date",)),
     (DATE, "i lead creati questa settimana", {"periodo": True},
-     ("data di creazione",)),
+     ("crm_lead.create_date",)),
     (DATE, "i lead creati la settimana scorsa", {"periodo": True},
-     ("data di creazione",)),
+     ("crm_lead.create_date",)),
     (DATE, "i lead creati questo mese", {"periodo": True},
-     ("data di creazione",)),
+     ("crm_lead.create_date",)),
     (DATE, "i lead creati il mese scorso", {"periodo": True},
-     ("data di creazione",)),
+     ("crm_lead.create_date",)),
     (DATE, "i lead creati negli ultimi 7 giorni", {"periodo": True},
-     ("data di creazione",)),
+     ("crm_lead.create_date",)),
     (DATE, "i lead creati negli ultimi 30 giorni", {"periodo": True},
-     ("data di creazione",)),
+     ("crm_lead.create_date",)),
     (DATE, "i lead creati negli ultimi 90 giorni", {"periodo": True},
-     ("data di creazione",)),
+     ("crm_lead.create_date",)),
     (DATE, "i lead creati quest'anno", {"periodo": True},
-     ("data di creazione",)),
+     ("crm_lead.create_date",)),
     (DATE, "i lead creati l'anno scorso", {"periodo": True},
-     ("data di creazione",)),
+     ("crm_lead.create_date",)),
     (DATE, "i lead creati questo trimestre", {"periodo": True},
-     ("data di creazione",)),
+     ("crm_lead.create_date",)),
     (DATE, "i lead creati il trimestre scorso", {"periodo": True},
-     ("data di creazione",)),
+     ("crm_lead.create_date",)),
     (DATE, "i lead creati da inizio anno", {"periodo": True},
-     ("data di creazione",)),
+     ("crm_lead.create_date",)),
     (DATE, "i lead creati prima di questo mese", {"periodo": True},
-     ("data di creazione",)),
+     ("crm_lead.create_date",)),
     (DATE, "i lead creati dopo il mese scorso", {"periodo": True},
-     ("data di creazione",)),
+     ("crm_lead.create_date",)),
     (DATE, "quanti lead creati oggi", {"misure": {"count"}, "periodo": True},
-     ("data di creazione",)),
+     ("crm_lead.create_date",)),
 
     # -- LIMITI DICHIARATI -----------------------------------------------------
     # Queste frasi chiedono cose che il contratto **non ammette** (`ai/17` §3, e la
@@ -147,13 +170,13 @@ FRASI = [
     # onesto o una domanda: cio' che non deve succedere e' una risposta plausibile.
     # Si contano a parte, e un `operations` qui e' un **allarme**, non un successo.
     (LIMITI, "gli stati con piu' di 10 lead", {"esito": "clarification"},
-     ("stato",)),
+     ("crm_lead.stage_id",)),
     (LIMITI, "i secondi 20 lead", {"esito": "clarification"}, ()),
     (LIMITI, "esportami i lead in excel", {"esito": "out_of_scope"}, ()),
     (LIMITI, "i lead che non sono di milano", {"esito": "clarification"},
-     ("citta'",)),
+     ("crm_lead.city",)),
     (LIMITI, "i lead creati nel primo trimestre", {"esito": "clarification"},
-     ("data di creazione",)),
+     ("crm_lead.create_date",)),
     (LIMITI, "i lead creati a gennaio", {"esito": "clarification"},
-     ("data di creazione",)),
+     ("crm_lead.create_date",)),
 ]
