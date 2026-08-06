@@ -140,7 +140,9 @@ def carries_period(state: dict) -> bool:
                for condition in state_module.conditions(state.get("filter")))
 
 
-def validate_anchoring(state: dict, *, names, time_anchor: dict | None) -> list[Failure]:
+def validate_anchoring(state: dict, *, names, time_anchor: dict | None,
+                       utterance: str = "",
+                       already_judged: frozenset = frozenset()) -> list[Failure]:
     """Level 3 — a period must sit on the date the user named (**D135**).
 
     **The failure this exists for.** Measured on the real database on 3 August 2026:
@@ -171,8 +173,46 @@ def validate_anchoring(state: dict, *, names, time_anchor: dict | None) -> list[
     choices = frozenset((time_anchor or {}).get("choices") or ())
     if not choices:
         return []
+
+    # **La data che la frase nomina, quando ne nomina una sola.** Misurato il 5 agosto
+    # 2026 sulla batteria intera: 18 frasi su 18 della famiglia `date` finivano in
+    # chiarimento, e in tutte e 18 il modello aveva gia' scelto la data giusta. La
+    # frase dice *«i lead **creati** negli ultimi 30 giorni»*; la provenienza che il
+    # modello dichiara e' *«negli ultimi 30 giorni»*, che e' il pezzo che porta il
+    # tempo, e la parola che ancora resta fuori. Il periodo era ancorato, dal punto di
+    # vista di chi ha scritto la frase: solo non li'.
+    #
+    # E' una via d'uscita **in accettazione**: nessun turno che oggi passa comincia a
+    # fallire. E' questo che la tiene compatibile con la ragione per cui il livello 3
+    # guarda il frammento e non la frase (§ qui sopra, D105): un turno di raffinamento
+    # porta condizioni di frasi che nessuno sta piu' dicendo, e verificarle contro la
+    # frase corrente le rifiuterebbe tutte.
+    #
+    # **Una sola**, e non «almeno una»: se la frase nomina creazione *e* scadenza,
+    # quale delle due porti il periodo torna a essere una scelta, e a farla e' stato il
+    # modello — cioe' esattamente il caso che la regola esiste per prendere.
+    nominate = {riferimento for riferimento in choices
+                if utterance and names(riferimento, utterance)}
+    ancora_della_frase = next(iter(nominate)) if len(nominate) == 1 else None
+
     failures: list[Failure] = []
     for condition in state_module.conditions(state.get("filter")):
+        # **Una condizione ereditata non si rigiudica**, e non e' clemenza: e' l'unico
+        # esito possibile. Lo stato salvato non ha i frammenti — `strip_provenance` li
+        # toglie di proposito finche' D54 non li pseudonimizza — quindi la condizione
+        # che arriva dal turno prima non puo' portare la prova che questo livello
+        # pretende, e rigiudicarla ogni volta vuol dire condannarla sempre.
+        #
+        # Trovato al primo uso vero del pannello, 5 agosto 2026: dopo una risposta
+        # filtrata per data, *«ordinameli per email»* rispondeva «non ho capito», e il
+        # rifiuto parlava del filtro di prima. Dopo un filtro sulle date **ogni**
+        # raffinamento moriva.
+        #
+        # E' cio' che D135 dice gia' a parole: si giudica la data che **il modello ha
+        # appena scelto**. Quella accettata in un turno passato e' stata giudicata
+        # allora, con le prove che allora c'erano.
+        if condition.get("id") in already_judged:
+            continue
         reference = condition.get("ref", "")
         if reference not in choices:
             continue
@@ -180,6 +220,8 @@ def validate_anchoring(state: dict, *, names, time_anchor: dict | None) -> list[
             continue
         text = ((condition.get("provenance") or {}).get("text") or "").strip()
         if text and names(reference, text):
+            continue
+        if reference == ancora_della_frase:
             continue
         failures.append(_failure(
             3, "unanchored_period", reference,
@@ -288,6 +330,8 @@ def validate(
     mentions=None,
     names=None,
     time_anchor: dict | None = None,
+    utterance: str = "",
+    already_judged: frozenset = frozenset(),
     limits: Limits = DEFAULT_LIMITS,
 ) -> list[Failure]:
     """Levels 3, 4 and 5 in sequence; the first that fails stops the chain (§12.2).
@@ -318,7 +362,9 @@ def validate(
         # domanda e' se l'utente ha chiesto quello che lo stato dice. La categoria
         # inventata e la data indovinata sono la stessa forma di fallimento, e per
         # tutt'e due la risposta e' una domanda con le opzioni gia' pronte.
-        anchoring = validate_anchoring(state, names=names, time_anchor=time_anchor)
+        anchoring = validate_anchoring(state, names=names, time_anchor=time_anchor,
+                                       utterance=utterance,
+                                       already_judged=already_judged)
         if anchoring:
             return anchoring
     # **Le due meta' del livello 4, e per un anno ne e' corsa una sola.**

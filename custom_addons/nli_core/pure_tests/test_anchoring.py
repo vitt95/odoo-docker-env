@@ -22,6 +22,7 @@ from __future__ import annotations
 import unittest
 
 from ..application import alternatives
+from ..contract import state as state_module
 from ..validation import contextual
 
 #: I termini di due date, come il dizionario li porta. Riconoscitore letterale di
@@ -122,6 +123,119 @@ class TestAnchoring(unittest.TestCase):
                    _period("lead.create_date", "di quest'anno", "c2")),
             names=names, time_anchor=ANCHOR)
         self.assertEqual([failure.path for failure in failures], ["lead.create_date"])
+
+    # --- la data nominata dalla frase, fuori dal frammento -----------------
+    #
+    # Misurato il 5 agosto 2026, batteria intera sul database vero: **diciotto frasi
+    # su diciotto** della famiglia `date` finivano in chiarimento, e in tutte e
+    # diciotto il modello aveva gia' scelto la data giusta. Il motivo e' sempre lo
+    # stesso: la frase dice *«i lead **creati** negli ultimi 30 giorni»*, il modello
+    # dichiara come provenienza *«negli ultimi 30 giorni»* — che e' il pezzo che porta
+    # il tempo — e la parola che ancora resta fuori.
+    #
+    # La via d'uscita e' in **accettazione**, non in rifiuto: nessun turno che oggi
+    # passa comincia a fallire. Questo e' cio' che la tiene compatibile con la ragione
+    # per cui D105 guarda il frammento e non la frase — un turno di raffinamento porta
+    # condizioni di frasi che nessuno sta piu' dicendo, e verificarle contro la frase
+    # corrente le rifiuterebbe tutte.
+    #
+    # Ed e' stretta: la frase deve nominare **una sola** data fra quelle in scelta, e
+    # dev'essere quella su cui il periodo e' caduto. Con due date nominate torna a
+    # decidere il frammento, perche' li' la scelta e' di nuovo del modello.
+
+    def test_the_sentence_names_the_date_outside_the_fragment(self):
+        """*«i lead con creazione degli ultimi 30 giorni»*: il frammento porta il
+        tempo, la frase porta la data, e insieme dicono cosa l'utente ha chiesto."""
+        self.assertEqual(
+            contextual.validate_anchoring(
+                _state(_period("lead.create_date", "degli ultimi 30 giorni")),
+                names=names, time_anchor=ANCHOR,
+                utterance="i lead con creazione degli ultimi 30 giorni"),
+            [])
+
+    def test_two_dates_named_by_the_sentence_leave_the_choice_to_the_fragment(self):
+        """Se la frase nomina creazione **e** scadenza, quale delle due porti il
+        periodo torna a essere una scelta, e la fa il modello: si chiede."""
+        failures = contextual.validate_anchoring(
+            _state(_period("lead.create_date", "degli ultimi 30 giorni")),
+            names=names, time_anchor=ANCHOR,
+            utterance="i lead con creazione e scadenza degli ultimi 30 giorni")
+        self.assertEqual([failure.code for failure in failures], ["unanchored_period"])
+
+    def test_a_sentence_naming_another_date_does_not_anchor_this_one(self):
+        """La frase nomina la scadenza, il periodo e' caduto sulla creazione: e'
+        esattamente il caso in cui la data l'ha scelta il modello."""
+        failures = contextual.validate_anchoring(
+            _state(_period("lead.create_date", "degli ultimi 30 giorni")),
+            names=names, time_anchor=ANCHOR,
+            utterance="i lead con scadenza negli ultimi 30 giorni")
+        self.assertEqual([failure.code for failure in failures], ["unanchored_period"])
+
+    def test_without_the_sentence_the_rule_is_what_it_was(self):
+        """La frase e' un argomento con un valore predefinito: chi non la passa —
+        ogni chiamante che non e' stato aggiornato — ottiene la regola di prima."""
+        failures = contextual.validate_anchoring(
+            _state(_period("lead.create_date", "degli ultimi 30 giorni")),
+            names=names, time_anchor=ANCHOR)
+        self.assertEqual([failure.code for failure in failures], ["unanchored_period"])
+
+    def test_the_chain_carries_the_sentence_through(self):
+        """**Fallisce se qualcuno la scollega**: se `validate` smette di passare la
+        frase, questa torna rossa."""
+        state = _state(_period("lead.create_date", "degli ultimi 30 giorni"))
+        known = frozenset({"lead", "lead.create_date", "lead.date_deadline"})
+        types = {"lead.create_date": "datetime", "lead.date_deadline": "date"}
+        self.assertEqual(
+            contextual.validate(state, known_refs=known, types=types, names=names,
+                                time_anchor=ANCHOR,
+                                utterance="i lead con creazione degli ultimi 30 giorni"),
+            [])
+
+    # --- la condizione che c'era gia' non si rigiudica ----------------------
+    #
+    # **Trovato al primo uso vero del pannello, il 5 agosto 2026 sera.** Dopo una
+    # risposta filtrata per data, *«ordinameli per email»* rispondeva *«non ho
+    # capito»* — e il rifiuto non parlava dell'ordinamento: parlava del filtro del
+    # turno prima, *«carries no provenance»*.
+    #
+    # E' un vicolo cieco per costruzione. Lo stato salvato **non ha** i frammenti:
+    # `strip_provenance` li toglie di proposito finche' D54 non li pseudonimizza. Una
+    # condizione ereditata quindi non puo' portare la prova che il livello 3 pretende,
+    # e rigiudicarla ogni turno vuol dire condannarla sempre. Il risultato era che
+    # dopo un filtro sulle date **ogni** raffinamento moriva: l'ordinamento, una
+    # colonna in piu', un altro filtro.
+    #
+    # La regola giusta e' quella che D135 gia' dice a parole: il livello 3 giudica
+    # cio' che **il modello ha appena scelto**. Una condizione accettata in un turno
+    # passato e' stata giudicata allora, con le prove che allora c'erano.
+
+    def test_a_condition_from_an_earlier_turn_is_not_judged_again(self):
+        """Il filtro c'era gia' e non ha provenienza: e' stato accettato prima."""
+        stato = _state(_period("lead.create_date", ""))
+        self.assertEqual(
+            contextual.validate_anchoring(
+                stato, names=names, time_anchor=ANCHOR,
+                utterance="ordinameli per email",
+                already_judged=frozenset(state_module.condition_ids(stato))),
+            [])
+
+    def test_a_condition_of_this_turn_is_still_judged(self):
+        """Con l'insieme vuoto — un turno che non eredita niente — nulla cambia."""
+        failures = contextual.validate_anchoring(
+            _state(_period("lead.create_date", "")),
+            names=names, time_anchor=ANCHOR, already_judged=frozenset())
+        self.assertEqual([failure.code for failure in failures], ["unanchored_period"])
+
+    def test_only_the_inherited_one_is_spared(self):
+        """Due condizioni, una vecchia e una nuova: si giudica la nuova."""
+        stato = _state(_period("lead.create_date", ""),
+                       _period("lead.date_deadline", "entro fine mese",
+                               identifier="c2"))
+        failures = contextual.validate_anchoring(
+            stato, names=names, time_anchor=ANCHOR,
+            already_judged=frozenset({"c1"}))
+        self.assertEqual([(f.code, f.path) for f in failures],
+                         [("unanchored_period", "lead.date_deadline")])
 
     # --- quando vale la pena di costruire il catalogo ----------------------
     def test_a_state_with_a_period_says_so(self):

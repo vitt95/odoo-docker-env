@@ -24,8 +24,9 @@ from __future__ import annotations
 import time
 from dataclasses import dataclass, field
 
-from odoo import _, fields as odoo_fields
+from odoo import fields as odoo_fields
 from odoo.addons.nli_core.application import alternatives, applicator, completion
+from odoo.addons.nli_core.contract import state as state_module
 from odoo.addons.nli_core.contract.vocabulary import DSL_VERSION
 from odoo.addons.nli_core.execution import executor
 from odoo.addons.nli_core.presentation import presenter
@@ -47,7 +48,7 @@ TERMINAL_OUTCOMES = ("clarification", "out_of_scope", "not_understood")
 MIN_CLARIFICATION_OPTIONS = 2
 
 
-def _anchor_clarification(failures, operations, catalogue) -> dict | None:
+def _anchor_clarification(env, failures, operations, catalogue) -> dict | None:
     """La domanda su quale data, con le opzioni costruite dall'ancora (**D135**).
 
     E' `_clarification_for` con una data al posto di una categoria, e la differenza
@@ -63,7 +64,11 @@ def _anchor_clarification(failures, operations, catalogue) -> dict | None:
         return None
     reference = failures[0].path
 
-    labels = {attribute.ref: (attribute.terms[0] if attribute.terms else attribute.ref)
+    # `label` e non `terms[0]`: i termini riconoscono, l'etichetta nomina (D108 e
+    # `store._merge`). Un'opzione che dicesse «creazione» invece di `Data creazione`
+    # chiederebbe all'utente di scegliere fra parole che non ha mai visto sullo schermo.
+    labels = {attribute.ref: (attribute.label or (attribute.terms[0] if attribute.terms
+                                                  else attribute.ref))
               for attribute in catalogue.attributes}
     readings = alternatives.for_unanchored(
         operations, reference=reference, choices=choices)
@@ -90,14 +95,14 @@ def _anchor_clarification(failures, operations, catalogue) -> dict | None:
         "dsl_version": DSL_VERSION,
         "outcome": "clarification",
         "clarification": {
-            "question": (_("Which date do you mean by “%s”?") % fragment if fragment
-                         else _("Which date do you mean?")),
+            "question": (env._("Which date do you mean by “%s”?") % fragment if fragment
+                         else env._("Which date do you mean?")),
             "options": options,
         },
     }
 
 
-def _clarification_for(failures, operations, catalogue) -> dict | None:
+def _clarification_for(env, failures, operations, catalogue) -> dict | None:
     """The envelope of a question, when the refusal has a remedy the user can act on.
 
     **D106 and D135.** Two failures qualify — a named condition the fragment does not
@@ -115,7 +120,7 @@ def _clarification_for(failures, operations, catalogue) -> dict | None:
     unanchored = [failure for failure in failures
                   if failure.code == "unanchored_period"]
     if unanchored and len(unanchored) == len(failures):
-        return _anchor_clarification(unanchored, operations, catalogue)
+        return _anchor_clarification(env, unanchored, operations, catalogue)
 
     ungrounded = [failure.path for failure in failures
                   if failure.code == "ungrounded_category"]
@@ -138,8 +143,8 @@ def _clarification_for(failures, operations, catalogue) -> dict | None:
     options = []
     for reading in readings:
         if reading.kind == "without":
-            label = (_("without filtering by “%s”") % fragment if fragment
-                     else _("without that filter"))
+            label = (env._("without filtering by “%s”") % fragment if fragment
+                     else env._("without that filter"))
             operations = reading.operations
         else:
             label = labels.get(reading.ref, reading.ref)
@@ -154,9 +159,9 @@ def _clarification_for(failures, operations, catalogue) -> dict | None:
         "dsl_version": DSL_VERSION,
         "outcome": "clarification",
         "clarification": {
-            "question": (_("I am not sure I understood “%s” as a filter. Did you mean:")
+            "question": (env._("I am not sure I understood “%s” as a filter. Did you mean:")
                          % fragment if fragment
-                         else _("I am not sure which filter you meant. Did you mean:")),
+                         else env._("I am not sure which filter you meant. Did you mean:")),
             "options": options,
         },
     }
@@ -275,7 +280,7 @@ def _run(env, item, *, adapter, scope, context_window: int,
             env, semantics, state, chosen,
             catalogue_of=lambda ref: _phase_c(env, semantics, ref, context_window),
             entity_ref=(state.get("target") or {}).get("ref"),
-            collector=collector, reporter=reporter)
+            utterance=utterance, collector=collector, reporter=reporter)
 
     trace(collector, "path", "model")
     entity_ref, outcome, riparte = _determine_entity(
@@ -381,7 +386,7 @@ def _run(env, item, *, adapter, scope, context_window: int,
         # has no catalogue and usually needs none, avoid building one for nothing.
         catalogue_of=lambda ref: catalogue,
         entity_ref=entity_ref, outcome=outcome, mentions=mentions,
-        reporter=reporter)
+        utterance=utterance, reporter=reporter)
 
 
 def _entity_label(catalogue) -> str:
@@ -401,7 +406,7 @@ def _entity_label(catalogue) -> str:
 
 def _apply_and_present(env, semantics, state, operations, *, catalogue_of,
                        entity_ref=None, outcome=None, mentions=None, names=None,
-                       collector=None, reporter=None) -> Outcome:
+                       utterance: str = "", collector=None, reporter=None) -> Outcome:
     """From operations to a presented result: applicator, levels 3-5, resolver,
     executor, presenter.
 
@@ -452,6 +457,19 @@ def _apply_and_present(env, semantics, state, operations, *, catalogue_of,
         # nominate (T5); l'ancora dice se questo utente aveva davvero una scelta.
         names=names,
         time_anchor=getattr(catalogue, "time_anchor", None),
+        # D135, la frase intera: la parola che ancora il periodo sta quasi sempre fuori
+        # dal frammento che il modello dichiara come provenienza — dice «i lead
+        # **creati** negli ultimi 30 giorni» e dichiara «negli ultimi 30 giorni». La
+        # regola la usa solo quando la frase nomina una data sola, e solo per
+        # **accettare**: vedi `validate_anchoring`.
+        utterance=utterance,
+        # Le condizioni che c'erano **prima** che questo turno applicasse le sue
+        # operazioni: sono gia' state giudicate nel turno che le ha introdotte, e i
+        # loro frammenti non esistono piu' — `strip_provenance` li toglie quando lo
+        # stato si salva. Senza questo, dopo un filtro sulle date ogni raffinamento
+        # veniva rifiutato, e il rifiuto parlava di una condizione che l'utente non
+        # aveva appena chiesto.
+        already_judged=frozenset(state_module.condition_ids(state)),
         # V-D87-2: quanto costa ogni condizione nominata. Il parametro c'e' da sempre e
         # non lo passava nessuno, quindi valeva `{}` e il livello 5 sulle categorie non
         # poteva scattare — una regola scritta, provata e mai eseguita, come `coherence`
@@ -466,7 +484,7 @@ def _apply_and_present(env, semantics, state, operations, *, catalogue_of,
         # detail going to the register and never to the user.
         if catalogue is None and asked:
             catalogue = catalogue_of(asked)
-        question = (_clarification_for(failures, operations, catalogue)
+        question = (_clarification_for(env, failures, operations, catalogue)
                     if catalogue is not None else None)
         if question is not None:
             outcome.outcome = "clarification"
