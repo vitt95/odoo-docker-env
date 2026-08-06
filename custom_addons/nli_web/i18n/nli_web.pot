@@ -1,0 +1,928 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* nli_web
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-06 08:26+0000\n"
+"PO-Revision-Date: 2026-08-06 08:26+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_interpretation.py:0
+msgid "%(function)s of %(what)s"
+msgstr ""
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_interpretation.py:0
+msgid "%(predicate)s %(value)s"
+msgstr ""
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_interpretation.py:0
+msgid "%(text)s (%(granularity)s)"
+msgstr ""
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_perimeter.py:0
+msgid "%s above …"
+msgstr ""
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_interpretation.py:0
+msgid "(period not resolved)"
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/chat/aida_thread.xml:0
+msgid ""
+".\n"
+"                                Riprova fra poco."
+msgstr ""
+
+#. module: nli_web
+#: model_terms:ir.ui.view,arch_db:nli_web.res_config_settings_view_form
+msgid "<span class=\"ms-2\">Sa rispettare uno schema JSON imposto</span>"
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/panel/aida_panel.xml:0
+#: model:ir.actions.client,name:nli_web.action_aida_chat
+#: model:ir.ui.menu,name:nli_web.menu_aida_root
+#: model_terms:ir.ui.view,arch_db:nli_web.res_config_settings_view_form
+msgid "AIDA"
+msgstr ""
+
+#. module: nli_web
+#: model:ir.model,name:nli_web.model_nli_perimeter
+msgid "AIDA guided perimeter — what the user may say"
+msgstr ""
+
+#. module: nli_web
+#: model:ir.model,name:nli_web.model_nli_interpretation
+msgid "AIDA interpretation, written for a person"
+msgstr ""
+
+#. module: nli_web
+#: model:ir.model,name:nli_web.model_nli_interrogation
+msgid "AIDA interrogation state"
+msgstr ""
+
+#. module: nli_web
+#: model:ir.model,name:nli_web.model_nli_turn
+msgid "AIDA interrogation turn"
+msgstr ""
+
+#. module: nli_web
+#: model_terms:ir.ui.view,arch_db:nli_web.res_config_settings_view_form
+msgid ""
+"AIDA parla con un modello che espone il protocollo OpenAI. L'indirizzo e' "
+"quello che il server Odoo riesce a raggiungere: da dentro un contenitore, "
+"`localhost` e' il contenitore stesso."
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/panel/aida_panel.xml:0
+msgid ""
+"AIDA può sbagliare: sotto ogni risposta trovi come ha letto la domanda."
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/panel/aida_panel.xml:0
+msgid "AIDA sta elaborando una risposta."
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/chat/aida_action.xml:0
+msgid "AIDA è qui accanto"
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/panel/aida_panel.xml:0
+msgid "AIDA — assistente conversazionale"
+msgstr ""
+
+#. module: nli_web
+#: model_terms:ir.ui.view,arch_db:nli_web.res_config_settings_view_form
+msgid ""
+"Accesa, sotto ogni risposta compare un blocco richiudibile con la busta DSL "
+"uscita dal modello, lo stato che ne è derivato e la query con cui Odoo è "
+"stato interrogato, più il tempo di ogni fase. Serve a rispondere alla sola "
+"domanda che conta quando un turno va storto: se è andato storto nel modello "
+"o dopo."
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/chat/aida_action.xml:0
+msgid ""
+"Adesso AIDA vive in un pannello a destra, così resta aperta mentre\n"
+"                lavori: puoi chiedere una cosa senza perdere di vista quello che stai\n"
+"                guardando."
+msgstr ""
+
+#. module: nli_web
+#: model:ir.model.fields.selection,name:nli_web.selection__res_config_settings__aida_reasoning_effort__high
+msgid "Alto"
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/chat/aida_thread.xml:0
+msgid "Apri a tutta pagina"
+msgstr ""
+
+#. module: nli_web
+#: model:ir.model.fields.selection,name:nli_web.selection__res_config_settings__aida_reasoning_effort__low
+msgid "Basso"
+msgstr ""
+
+#. module: nli_web
+#: model:ir.model.fields.selection,name:nli_web.selection__res_config_settings__aida_profile_state__draft
+msgid "Bozza"
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/chat/aida_thread.xml:0
+msgid "Carico i messaggi precedenti…"
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/chat/aida_chat.xml:0
+msgid "Carico…"
+msgstr ""
+
+#. module: nli_web
+#: model_terms:ir.ui.view,arch_db:nli_web.res_config_settings_view_form
+msgid "Che cosa il modello sa fare"
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/chat/aida_chat.xml:0
+msgid "Che cosa vuoi sapere?"
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/chat/aida_action.xml:0
+#: code:addons/nli_web/static/src/panel/aida_panel.xml:0
+msgid "Chiedi ad AIDA"
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/chat/aida_chat.xml:0
+msgid "Chiedi in italiano quello che cerchi nei tuoi dati."
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/panel/aida_panel.xml:0
+msgid "Chiudi (Esc)"
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/panel/aida_panel.xml:0
+msgid "Chiudi AIDA"
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/chat/aida_chat.xml:0
+msgid "Chiudi le conversazioni"
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/chat/aida_steps.xml:0
+#: code:addons/nli_web/static/src/chat/aida_thread.xml:0
+msgid "Ci sto ancora pensando…"
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/chat/aida_thread.xml:0
+msgid "Come ho letto la domanda"
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/chat/aida_thread.xml:0
+msgid "Come è stato costruito"
+msgstr ""
+
+#. module: nli_web
+#: model:ir.model,name:nli_web.model_res_config_settings
+msgid "Config Settings"
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/chat/aida_chat.xml:0
+#: code:addons/nli_web/static/src/panel/aida_panel.xml:0
+msgid "Conversazioni"
+msgstr ""
+
+#. module: nli_web
+#: model:ir.model.fields,help:nli_web.field_res_config_settings__aida_reasoning_effort
+msgid ""
+"D98: dichiararlo e' obbligatorio per i modelli che ragionano. Con una "
+"finestra stretta, un ragionamento alto consuma lo spazio della risposta e la"
+" busta torna vuota."
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/chat/aida_thread.xml:0
+msgid "DSL — la busta che il modello ha restituito"
+msgstr ""
+
+#. module: nli_web
+#: model_terms:ir.ui.view,arch_db:nli_web.res_config_settings_view_form
+msgid ""
+"Da tenere spenta quando non serve: accesa, ogni turno conserva\n"
+"                                la frase dell'utente dentro la busta. La traccia resta scritta\n"
+"                                sui turni già eseguiti anche dopo averla spenta, e in ogni caso\n"
+"                                la vede solo un amministratore."
+msgstr ""
+
+#. module: nli_web
+#: model_terms:ir.ui.view,arch_db:nli_web.res_config_settings_view_form
+msgid "Diagnostica"
+msgstr ""
+
+#. module: nli_web
+#: model_terms:ir.ui.view,arch_db:nli_web.res_config_settings_view_form
+msgid "Dichiara eseguita la qualificazione"
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/chat/aida_thread.xml:0
+msgid "Dominio:"
+msgstr ""
+
+#. module: nli_web
+#: model_terms:ir.ui.view,arch_db:nli_web.res_config_settings_view_form
+msgid "Dove sta il modello"
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/chat/aida_chat.xml:0
+msgid "Elimina conversazione"
+msgstr ""
+
+#. module: nli_web
+#: model:ir.ui.menu,name:nli_web.menu_aida_chat
+msgid "Fai una domanda"
+msgstr ""
+
+#. module: nli_web
+#: model:ir.model.fields,field_description:nli_web.field_res_config_settings__aida_context_window
+msgid "Finestra di contesto"
+msgstr ""
+
+#. module: nli_web
+#: model:ir.model.fields,field_description:nli_web.field_res_config_settings__aida_constrained_generation
+msgid "Generazione vincolata"
+msgstr ""
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_interpretation.py:0
+msgid "I am showing:"
+msgstr ""
+
+#. module: nli_web
+#: model:ir.model.fields,help:nli_web.field_res_config_settings__aida_constrained_generation
+msgid ""
+"Il modello sa rispettare uno schema JSON imposto. Senza, l'interprete riceve"
+" testo libero e la maggior parte dei turni fallisce."
+msgstr ""
+
+#. module: nli_web
+#: model:ir.model.fields.selection,name:nli_web.selection__res_config_settings__aida_profile_state__active
+msgid "In servizio"
+msgstr ""
+
+#. module: nli_web
+#: model:ir.model.fields,field_description:nli_web.field_res_config_settings__aida_endpoint
+msgid "Indirizzo del modello"
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/chat/aida_action.xml:0
+msgid "La riapri quando vuoi dal pulsante"
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/panel/aida_panel.xml:0
+msgid "Larghezza del pannello"
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/chat/aida_thread.xml:0
+msgid "Lettura scelta: applicata senza chiamare il modello (D121)."
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/chat/aida_thread.xml:0
+msgid "Livelli 3-5 — cosa ha rifiutato"
+msgstr ""
+
+#. module: nli_web
+#: model:ir.model.fields.selection,name:nli_web.selection__res_config_settings__aida_reasoning_effort__medium
+msgid "Medio"
+msgstr ""
+
+#. module: nli_web
+#: model_terms:ir.ui.view,arch_db:nli_web.res_config_settings_view_form
+msgid "Messa in servizio"
+msgstr ""
+
+#. module: nli_web
+#: model_terms:ir.ui.view,arch_db:nli_web.res_config_settings_view_form
+msgid "Metti in servizio questo modello"
+msgstr ""
+
+#. module: nli_web
+#: model:ir.model.fields.selection,name:nli_web.selection__res_config_settings__aida_reasoning_effort__minimal
+msgid "Minimo"
+msgstr ""
+
+#. module: nli_web
+#: model:ir.model.fields,field_description:nli_web.field_res_config_settings__aida_debug
+msgid "Modalità diagnostica"
+msgstr ""
+
+#. module: nli_web
+#: model_terms:ir.ui.view,arch_db:nli_web.res_config_settings_view_form
+msgid "Modello con cui AIDA parla"
+msgstr ""
+
+#. module: nli_web
+#: model_terms:ir.ui.view,arch_db:nli_web.res_config_settings_view_form
+msgid "Mostra come è stata costruita ogni risposta"
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/panel/aida_panel.xml:0
+msgid "Mostra le conversazioni"
+msgstr ""
+
+#. module: nli_web
+#: model_terms:ir.ui.view,arch_db:nli_web.res_config_settings_view_form
+msgid ""
+"Nessun profilo ancora: compila l'indirizzo e il nome del modello e salva."
+msgstr ""
+
+#. module: nli_web
+#: model:ir.model.fields.selection,name:nli_web.selection__res_config_settings__aida_reasoning_effort__none
+msgid "Nessuno"
+msgstr ""
+
+#. module: nli_web
+#: model:ir.model.fields,field_description:nli_web.field_res_config_settings__aida_model_name
+msgid "Nome del modello"
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/chat/aida_chat.xml:0
+msgid "Non hai ancora nessuna conversazione."
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/chat/aida_thread.xml:0
+msgid "Non ho capito. Puoi dirlo in un altro modo?"
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/chat/aida_thread.xml:0
+msgid "Non ho preso in carico la domanda:"
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/chat/aida_thread.xml:0
+msgid "Non riesco a rispondere in questo momento. Riprova fra poco."
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/chat/aida_thread.xml:0
+msgid "Non sono arrivato a una risposta. Riprova."
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/chat/aida_thread.xml:0
+msgid "Non sono riuscito a rispondere in tempo. Riprova."
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/panel/aida_panel.xml:0
+msgid "Nuova conversazione"
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/chat/aida_chat.xml:0
+msgid "Nuovo nome della conversazione"
+msgstr ""
+
+#. module: nli_web
+#: model:ir.model.fields,help:nli_web.field_res_config_settings__aida_debug
+msgid ""
+"Ogni turno conserva e mostra come è stato costruito: la busta DSL che il "
+"modello ha restituito, lo stato che ne è uscito e **la query** con cui Odoo "
+"è stato interrogato, con i tempi di ogni fase (D123). Serve a capire se un "
+"turno è andato storto nel modello o dopo. Da tenere spenta quando non serve:"
+" accesa, ogni turno conserva la frase dell'utente dentro la busta, e la "
+"traccia la vede solo un amministratore."
+msgstr ""
+
+#. module: nli_web
+#: model_terms:ir.ui.view,arch_db:nli_web.res_config_settings_view_form
+msgid ""
+"Per capire come AIDA ha costruito una risposta, quando qualcosa non torna."
+msgstr ""
+
+#. module: nli_web
+#: model:ir.model.fields,help:nli_web.field_res_config_settings__aida_endpoint
+msgid ""
+"Per esempio http://host.docker.internal:11434/v1 per un ollama che gira "
+"sulla macchina che ospita Odoo."
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/chat/aida_thread.xml:0
+msgid "Perché il turno è finito così"
+msgstr ""
+
+#. module: nli_web
+#: model:ir.model.fields,field_description:nli_web.field_res_config_settings__aida_profile_id
+msgid "Profilo del modello"
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/chat/aida_thread.xml:0
+msgid "Qualcosa non ha funzionato. Riprova."
+msgstr ""
+
+#. module: nli_web
+#: model:ir.model.fields.selection,name:nli_web.selection__res_config_settings__aida_profile_state__qualified
+msgid "Qualificato"
+msgstr ""
+
+#. module: nli_web
+#: model:ir.model.fields,help:nli_web.field_res_config_settings__aida_context_window
+msgid ""
+"Quanti gettoni regge il modello (D78). Da qui si ricava il budget del "
+"catalogo, quindi un valore ottimistico si paga in risposte troncate."
+msgstr ""
+
+#. module: nli_web
+#: model:ir.model.fields,help:nli_web.field_res_config_settings__aida_timeout_seconds
+msgid ""
+"Quanto si aspetta una risposta del modello (D122). Un modello da nove "
+"miliardi di parametri sul processore di un portatile impiega minuti; uno "
+"ospitato altrove impiega secondi. Se questo valore e' piu' corto di quanto "
+"il modello impiega davvero, **ogni** domanda finisce con «il modello non ha "
+"risposto»."
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/chat/aida_thread.xml:0
+msgid "Query — come Odoo è stato interrogato"
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/chat/aida_thread.xml:0
+msgid "Questo non lo so ancora fare."
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/chat/aida_chat.xml:0
+msgid "Rinomina conversazione"
+msgstr ""
+
+#. module: nli_web
+#: model:ir.model.fields.selection,name:nli_web.selection__res_config_settings__aida_profile_state__retired
+msgid "Ritirato"
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/chat/aida_thread.xml:0
+msgid "Scegli una lettura, o riscrivi la domanda."
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/chat/aida_action.xml:0
+msgid "Scrivi ad AIDA"
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/chat/aida_chat.xml:0
+msgid "Scrivi la tua domanda"
+msgstr ""
+
+#. module: nli_web
+#: model:ir.model.fields,field_description:nli_web.field_res_config_settings__aida_reasoning_effort
+msgid "Sforzo di ragionamento"
+msgstr ""
+
+#. module: nli_web
+#: model_terms:ir.ui.view,arch_db:nli_web.res_config_settings_view_form
+msgid ""
+"Sono le capacita' dichiarate del profilo (D78). Dichiararle sbagliate non "
+"rende il modello piu' capace: rende sbagliato il budget che se ne ricava."
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/chat/aida_thread.xml:0
+msgid "Sostituita dalla domanda successiva."
+msgstr ""
+
+#. module: nli_web
+#: model:ir.model.fields,field_description:nli_web.field_res_config_settings__aida_profile_state
+msgid "Stato"
+msgstr ""
+
+#. module: nli_web
+#: model_terms:ir.ui.view,arch_db:nli_web.res_config_settings_view_form
+msgid "Stato del profilo"
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/chat/aida_thread.xml:0
+msgid "Stato dopo l'applicazione"
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/chat/aida_steps.xml:0
+#: code:addons/nli_web/static/src/chat/aida_thread.xml:0
+msgid "Sto pensando…"
+msgstr ""
+
+#. module: nli_web
+#: model:ir.model.fields,field_description:nli_web.field_res_config_settings__aida_timeout_seconds
+msgid "Tempo concesso per rispondere (secondi)"
+msgstr ""
+
+#. module: nli_web
+#: model:ir.model.fields,field_description:nli_web.field_nli_interrogation__title
+msgid "Title"
+msgstr ""
+
+#. module: nli_web
+#: model_terms:ir.ui.view,arch_db:nli_web.res_config_settings_view_form
+msgid "Un modello si configura qui, ma non entra in servizio da qui."
+msgstr ""
+
+#. module: nli_web
+#: model_terms:ir.ui.view,arch_db:nli_web.res_config_settings_view_form
+msgid ""
+"Un profilo nasce in bozza. Diventa qualificato quando qualcuno dichiara di "
+"aver eseguito le otto verifiche di D51, fra cui la prova di isolamento, e "
+"solo allora puo' essere attivato. D80 rifiuta l'attivazione di un profilo "
+"mai qualificato: e' una regola strutturale, non un promemoria, perche' un "
+"modello non verificato puo' rallentare l'ERP per tutti e non solo per chi lo"
+" ha scelto."
+msgstr ""
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_interpretation.py:0
+msgid "above %s"
+msgstr ""
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_interpretation.py:0
+msgid "after %s"
+msgstr ""
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_interpretation.py:0
+msgid "among %s"
+msgstr ""
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_interpretation.py:0
+msgid "around %s"
+msgstr ""
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_interpretation.py:0
+msgid "as %s"
+msgstr ""
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_interpretation.py:0
+msgid "before %s"
+msgstr ""
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_interpretation.py:0
+msgid "below %s"
+msgstr ""
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_interpretation.py:0
+msgid "between %s"
+msgstr ""
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_perimeter.py:0
+msgid "columns"
+msgstr ""
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_perimeter.py:0
+msgid "comparisons"
+msgstr ""
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_interpretation.py:0
+msgid "containing %s"
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/chat/aida_thread.xml:0
+msgid "dedotto:"
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/chat/aida_steps.xml:0
+msgid "e"
+msgstr ""
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_interpretation.py:0
+msgid "empty"
+msgstr ""
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_interpretation.py:0
+msgid "equal to %s"
+msgstr ""
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_interpretation.py:0
+msgid "filled in"
+msgstr ""
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_interpretation.py:0
+msgid "first %s"
+msgstr ""
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_interpretation.py:0
+msgid "from %s upwards"
+msgstr ""
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_interpretation.py:0
+msgid "grouped by %s"
+msgstr ""
+
+#. module: nli_web
+#: model_terms:ir.ui.view,arch_db:nli_web.res_config_settings_view_form
+msgid "http://host.docker.internal:11434/v1"
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/chat/aida_action.xml:0
+msgid ""
+"in\n"
+"                alto a destra, o con"
+msgstr ""
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_interpretation.py:0
+msgid "in %s"
+msgstr ""
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_perimeter.py:0
+msgid "last month"
+msgstr ""
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_perimeter.py:0
+msgid "last quarter"
+msgstr ""
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_perimeter.py:0
+msgid "last week"
+msgstr ""
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_perimeter.py:0
+msgid "last year"
+msgstr ""
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_interpretation.py:0
+msgid "newest first"
+msgstr ""
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_interpretation.py:0
+msgid "no"
+msgstr ""
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_interpretation.py:0
+msgid "not among %s"
+msgstr ""
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_interpretation.py:0
+msgid "oldest first"
+msgstr ""
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_interpretation.py:0
+msgid "on %s"
+msgstr ""
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_interpretation.py:0
+msgid "ordered by %(what)s, %(direction)s"
+msgstr ""
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_perimeter.py:0
+msgid "periods"
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/chat/aida_steps.xml:0
+msgid "prima"
+msgstr ""
+
+#. module: nli_web
+#: model_terms:ir.ui.view,arch_db:nli_web.res_config_settings_view_form
+msgid "qwen3.5:9b"
+msgstr ""
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_perimeter.py:0
+msgid "ready conditions"
+msgstr ""
+
+#. module: nli_web
+#. odoo-javascript
+#: code:addons/nli_web/static/src/chat/aida_thread.xml:0
+msgid "s"
+msgstr ""
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_interpretation.py:0
+msgid "showing %s"
+msgstr ""
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_perimeter.py:0
+msgid "since the start of the year"
+msgstr ""
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_interpretation.py:0
+msgid "starting with %s"
+msgstr ""
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_perimeter.py:0
+msgid "this month"
+msgstr ""
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_perimeter.py:0
+msgid "this quarter"
+msgstr ""
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_perimeter.py:0
+msgid "this week"
+msgstr ""
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_perimeter.py:0
+msgid "this year"
+msgstr ""
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_perimeter.py:0
+msgid "today"
+msgstr ""
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_perimeter.py:0
+msgid "tomorrow"
+msgstr ""
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_interpretation.py:0
+msgid "up to %s"
+msgstr ""
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_interpretation.py:0
+msgid "yes"
+msgstr ""
+
+#. module: nli_web
+#. odoo-python
+#: code:addons/nli_web/models/nli_perimeter.py:0
+msgid "yesterday"
+msgstr ""

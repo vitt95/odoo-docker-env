@@ -1,0 +1,195 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* nli_core
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-06 08:26+0000\n"
+"PO-Revision-Date: 2026-08-06 08:26+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: nli_core
+#: model:ir.model.constraint,message:nli_core.constraint_nli_turn_companies_required
+msgid "A turn without a company context is refused, never executed (D40)."
+msgstr ""
+
+#. module: nli_core
+#: model:ir.model,name:nli_core.model_nli_interrogation
+msgid "AIDA interrogation state"
+msgstr ""
+
+#. module: nli_core
+#: model:ir.model,name:nli_core.model_nli_turn
+msgid "AIDA interrogation turn"
+msgstr ""
+
+#. module: nli_core
+#: model:ir.model.fields,field_description:nli_core.field_nli_turn__company_ids
+msgid "Company"
+msgstr ""
+
+#. module: nli_core
+#: model:ir.model.fields,field_description:nli_core.field_nli_interrogation__create_uid
+#: model:ir.model.fields,field_description:nli_core.field_nli_turn__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: nli_core
+#: model:ir.model.fields,field_description:nli_core.field_nli_interrogation__create_date
+#: model:ir.model.fields,field_description:nli_core.field_nli_turn__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: nli_core
+#: model:ir.model.fields,field_description:nli_core.field_nli_turn__debug_json
+msgid "Debug Json"
+msgstr ""
+
+#. module: nli_core
+#: model:ir.model.fields,field_description:nli_core.field_nli_interrogation__display_name
+#: model:ir.model.fields,field_description:nli_core.field_nli_turn__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: nli_core
+#: model:ir.model.fields,field_description:nli_core.field_nli_interrogation__dsl_version
+msgid "Dsl Version"
+msgstr ""
+
+#. module: nli_core
+#: model:ir.model.fields,field_description:nli_core.field_nli_turn__executed_at
+msgid "Executed At"
+msgstr ""
+
+#. module: nli_core
+#: model:ir.model.fields,field_description:nli_core.field_nli_interrogation__id
+#: model:ir.model.fields,field_description:nli_core.field_nli_turn__id
+msgid "ID"
+msgstr ""
+
+#. module: nli_core
+#: model:ir.model.fields,field_description:nli_core.field_nli_turn__interpretation_json
+msgid "Interpretation Json"
+msgstr ""
+
+#. module: nli_core
+#: model:ir.model.fields,field_description:nli_core.field_nli_turn__interrogation_id
+msgid "Interrogation"
+msgstr ""
+
+#. module: nli_core
+#: model:ir.model.fields,field_description:nli_core.field_nli_turn__lang
+msgid "Lang"
+msgstr ""
+
+#. module: nli_core
+#: model:ir.model.fields,field_description:nli_core.field_nli_interrogation__write_uid
+#: model:ir.model.fields,field_description:nli_core.field_nli_turn__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: nli_core
+#: model:ir.model.fields,field_description:nli_core.field_nli_interrogation__write_date
+#: model:ir.model.fields,field_description:nli_core.field_nli_turn__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: nli_core
+#: model:ir.model.fields,field_description:nli_core.field_nli_interrogation__name
+msgid "Name"
+msgstr ""
+
+#. module: nli_core
+#: model:ir.model.fields,field_description:nli_core.field_nli_turn__outcome
+msgid "Outcome"
+msgstr ""
+
+#. module: nli_core
+#: model:ir.model.fields,field_description:nli_core.field_nli_turn__plan_json
+msgid "Plan Json"
+msgstr ""
+
+#. module: nli_core
+#: model:ir.model.fields,help:nli_core.field_nli_turn__utterance
+msgid ""
+"Quello che l'utente ha scritto, in chiaro (D115). La coda ne tiene una copia"
+" cifrata e transitoria per il solo passaggio al processo cron."
+msgstr ""
+
+#. module: nli_core
+#: model:ir.model.fields,field_description:nli_core.field_nli_turn__record_count
+msgid "Record Count"
+msgstr ""
+
+#. module: nli_core
+#: model:ir.model.fields,field_description:nli_core.field_nli_turn__sequence
+msgid "Sequence"
+msgstr ""
+
+#. module: nli_core
+#: model:ir.model.fields,help:nli_core.field_nli_interrogation__name
+msgid ""
+"Set when the user saves the interrogation. An unnamed one is a live "
+"conversation; a named one is what §9.5 calls a saved query."
+msgstr ""
+
+#. module: nli_core
+#: model:ir.model.fields,field_description:nli_core.field_nli_interrogation__state_json
+#: model:ir.model.fields,field_description:nli_core.field_nli_turn__state_json
+msgid "State Json"
+msgstr ""
+
+#. module: nli_core
+#: model:ir.model.fields,help:nli_core.field_nli_interrogation__state_json
+msgid ""
+"The Interrogation State in the normative form of 03 §5, without provenance "
+"fragments (D54)."
+msgstr ""
+
+#. module: nli_core
+#: model:ir.model.fields,help:nli_core.field_nli_turn__state_json
+msgid "The state this turn produced, without provenance fragments (D54)."
+msgstr ""
+
+#. module: nli_core
+#: model:ir.model.fields,help:nli_core.field_nli_turn__company_ids
+msgid "The user's active companies at the moment of the request (D40)."
+msgstr ""
+
+#. module: nli_core
+#: model:ir.model.fields,help:nli_core.field_nli_turn__record_count
+msgid "Total matching records, counted before retrieval (D68)."
+msgstr ""
+
+#. module: nli_core
+#: model:ir.model.fields,field_description:nli_core.field_nli_interrogation__turn_ids
+msgid "Turn"
+msgstr ""
+
+#. module: nli_core
+#: model:ir.model.fields,field_description:nli_core.field_nli_interrogation__turn_count
+msgid "Turn Count"
+msgstr ""
+
+#. module: nli_core
+#: model:ir.model.fields,field_description:nli_core.field_nli_turn__tz
+msgid "Tz"
+msgstr ""
+
+#. module: nli_core
+#: model:ir.model.fields,field_description:nli_core.field_nli_interrogation__user_id
+#: model:ir.model.fields,field_description:nli_core.field_nli_turn__user_id
+msgid "User"
+msgstr ""
+
+#. module: nli_core
+#: model:ir.model.fields,field_description:nli_core.field_nli_turn__utterance
+msgid "Utterance"
+msgstr ""

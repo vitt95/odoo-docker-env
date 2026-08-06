@@ -1,0 +1,194 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* nli_semantics
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-06 08:26+0000\n"
+"PO-Revision-Date: 2026-08-06 08:26+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: nli_semantics
+#: model:ir.model,name:nli_semantics.model_nli_dictionary_entry
+msgid "AIDA approved dictionary entry"
+msgstr ""
+
+#. module: nli_semantics
+#: model:ir.model,name:nli_semantics.model_nli_semantics
+msgid "AIDA dictionary and catalogue for the current user"
+msgstr ""
+
+#. module: nli_semantics
+#: model:ir.model.fields,field_description:nli_semantics.field_nli_dictionary_entry__active
+msgid "Active"
+msgstr ""
+
+#. module: nli_semantics
+#: model:ir.model.constraint,message:nli_semantics.constraint_nli_dictionary_entry_ref_unique_per_type
+msgid "An entry already exists for this reference at this level."
+msgstr ""
+
+#. module: nli_semantics
+#: model:ir.model.fields,field_description:nli_semantics.field_nli_dictionary_entry__approved_on
+msgid "Approved On"
+msgstr ""
+
+#. module: nli_semantics
+#: model:ir.model.fields,field_description:nli_semantics.field_nli_dictionary_entry__approved_uid
+msgid "Approved by"
+msgstr ""
+
+#. module: nli_semantics
+#: model:ir.model.fields,field_description:nli_semantics.field_nli_dictionary_entry__condition
+msgid "Condition"
+msgstr ""
+
+#. module: nli_semantics
+#: model:ir.model.fields,field_description:nli_semantics.field_nli_dictionary_entry__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: nli_semantics
+#: model:ir.model.fields,field_description:nli_semantics.field_nli_dictionary_entry__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: nli_semantics
+#: model:ir.model.fields,field_description:nli_semantics.field_nli_dictionary_entry__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: nli_semantics
+#: model:ir.model.fields,field_description:nli_semantics.field_nli_dictionary_entry__entity_ref
+msgid "Entity"
+msgstr ""
+
+#. module: nli_semantics
+#: model:ir.model.fields.selection,name:nli_semantics.selection__nli_dictionary_entry__entry_type__t2
+msgid "Enumerated value"
+msgstr ""
+
+#. module: nli_semantics
+#: model:ir.model.fields,help:nli_semantics.field_nli_dictionary_entry__condition
+msgid ""
+"For a named condition (T5): the typed condition, as JSON. Written by the "
+"person approving, never derived from the filter's domain."
+msgstr ""
+
+#. module: nli_semantics
+#: model:ir.model.fields,field_description:nli_semantics.field_nli_dictionary_entry__id
+msgid "ID"
+msgstr ""
+
+#. module: nli_semantics
+#: model:ir.model.fields.selection,name:nli_semantics.selection__nli_dictionary_entry__level__l1
+msgid "L1 — domain"
+msgstr ""
+
+#. module: nli_semantics
+#: model:ir.model.fields.selection,name:nli_semantics.selection__nli_dictionary_entry__level__l2
+msgid "L2 — installation"
+msgstr ""
+
+#. module: nli_semantics
+#: model:ir.model.fields,field_description:nli_semantics.field_nli_dictionary_entry__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: nli_semantics
+#: model:ir.model.fields,field_description:nli_semantics.field_nli_dictionary_entry__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: nli_semantics
+#: model:ir.model.fields,field_description:nli_semantics.field_nli_dictionary_entry__level
+msgid "Level"
+msgstr ""
+
+#. module: nli_semantics
+#: model:ir.model.fields.selection,name:nli_semantics.selection__nli_dictionary_entry__entry_type__t5
+msgid "Named condition"
+msgstr ""
+
+#. module: nli_semantics
+#: model:ir.model.fields.selection,name:nli_semantics.selection__nli_dictionary_entry__entry_type__t1
+msgid "Naming"
+msgstr ""
+
+#. module: nli_semantics
+#: model:ir.model.fields,help:nli_semantics.field_nli_dictionary_entry__terms
+msgid ""
+"One term per line. These are the words the user may say; the first is the "
+"one shown back to them."
+msgstr ""
+
+#. module: nli_semantics
+#: model:ir.model.fields,field_description:nli_semantics.field_nli_dictionary_entry__ref
+msgid "Ref"
+msgstr ""
+
+#. module: nli_semantics
+#: model:ir.model.fields,field_description:nli_semantics.field_nli_dictionary_entry__source_domain
+msgid "Source Domain"
+msgstr ""
+
+#. module: nli_semantics
+#: model:ir.model.fields,field_description:nli_semantics.field_nli_dictionary_entry__terms
+msgid "Terms"
+msgstr ""
+
+#. module: nli_semantics
+#: model:ir.model.fields,help:nli_semantics.field_nli_dictionary_entry__source_domain
+msgid ""
+"The Odoo domain of the saved filter this entry came from, verbatim. Kept so "
+"the approval can be re-read, never executed from here."
+msgstr ""
+
+#. module: nli_semantics
+#. odoo-python
+#: code:addons/nli_semantics/models/nli_dictionary_entry.py:0
+msgid "The condition is not valid JSON: %s"
+msgstr ""
+
+#. module: nli_semantics
+#. odoo-python
+#: code:addons/nli_semantics/models/nli_dictionary_entry.py:0
+msgid ""
+"The dictionary would refuse this entry:\n"
+"%s"
+msgstr ""
+
+#. module: nli_semantics
+#: model:ir.model.fields,help:nli_semantics.field_nli_dictionary_entry__entity_ref
+msgid "The entity this entry belongs to."
+msgstr ""
+
+#. module: nli_semantics
+#: model:ir.model.fields,help:nli_semantics.field_nli_dictionary_entry__ref
+msgid "The semantic reference, e.g. fatture_cliente.scadute."
+msgstr ""
+
+#. module: nli_semantics
+#. odoo-python
+#: code:addons/nli_semantics/models/nli_dictionary_entry.py:0
+msgid ""
+"The typed condition is not admitted:\n"
+"%s"
+msgstr ""
+
+#. module: nli_semantics
+#: model:ir.model.fields,field_description:nli_semantics.field_nli_dictionary_entry__entry_type
+msgid "Type"
+msgstr ""
+
+#. module: nli_semantics
+#: model:ir.model.fields,field_description:nli_semantics.field_nli_dictionary_entry__version
+msgid "Version"
+msgstr ""

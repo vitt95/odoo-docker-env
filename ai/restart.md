@@ -5,7 +5,11 @@ riprende sopra la base UI corrente (`master`). Il lavoro continua qui.
 
 # I prossimi passi
 
-*(scritto il 5 agosto 2026, dopo la sessione dell'interfaccia)*
+*(riscritto la sera del 5 agosto 2026, dopo la sessione della misura. La versione
+precedente ordinava i lavori attorno a una batteria rotta e a un modello che si
+credeva incapace: tutti e due riparati, vedi «Stato al 5 agosto 2026 (sera)» — e in
+fondo a quello stato c'e' «Da dove si riprende», che e' la versione lunga di questa
+tabella.)*
 
 Sta qui in cima e non a meta' file perche' e' la domanda che si fa per prima. La
 lista lunga, con i motivi, resta sotto in «Aperto, in ordine di quanto sblocca»: qui
@@ -13,44 +17,54 @@ c'e' solo **l'ordine**, e perche' e' quello.
 
 ## Il fatto che decide l'ordine
 
-**Il punto 1 e il fine tuning hanno lo stesso primo ostacolo.**
+**La linea di partenza esiste, ed e' gia' stata mossa una volta: da 25 frasi su 54 (46%)
+a 39 su 54 (72%)**, riparando l'ancora del tempo. Misure pulite tutte e due — 54 su 54
+eseguite, zero saltate, i due context allineati.
 
-`18` §12 dice che prima di addestrare si rimisura la linea di partenza, e le dieci
-soglie di `18` §1 si leggono contro un «oggi» — di cui quattro righe dicono gia' *«non
-misurata»* e le altre sono numeri vecchi. Ma la batteria sul campo **inventa
-fallimenti e nasconde successi** (§4 dello stato del 4 agosto): 21 frasi su 54 non
-sono mai partite. Qualunque numero produca oggi non regge come linea di partenza.
-
-Quindi riparare lo strumento non e' manutenzione: e' la cosa piu' a monte che
-abbiamo, e sblocca due lavori invece di uno.
+Il che sposta la domanda da *«come misuriamo?»* a *«quale difetto costa di piu'?»*. Ora
+la risposta non e' piu' un conteggio, e' una **gravita'**: il prodotto risponde *«i lead
+creati nel primo trimestre»* con i dati del **terzo** trimestre, 26 record, senza dire
+niente. Una risposta sbagliata con l'aria di essere giusta vale piu' di dieci rifiuti,
+ed e' cio' che **D2** esiste per tenere fuori.
 
 ## L'ordine
 
 | | Cosa | Costo | Sblocca |
 |---|---|---|---|
-| **P0** | Guardare **una risposta vera** nel pannello | ~30 min | chiude il punto 5, decide il punto 6 |
-| **P1** | **1c** — riparare le attese della batteria (`_manca`, le stringhe di `frasi.py`) | mezza giornata | il punto 1 **e** il passo 2 di `18` §12 |
-| **P2** | **D85** — avviare l'elicitazione degli enunciati | settimane, non nostre | il dataset del fine tuning |
-| **P3** | **1b** — togliere `QueueRefusal` per la batteria | poco | le 34 frasi difficili (date, operatori, limiti) |
-| **P4** | **1a** — copertura con i residui nascosti | macchina | **cancello D34**: sotto il 99% la regola non e' adottabile |
-| **P5** | **1d** — deliberare la selezione degli attributi | — | otto frasi su venti |
-| **P6** | Corpus a `--finestra 4096` | ~70 min macchina, nessuna attesa umana | separa D113-D120 da D133 |
-| **P7** | Fine tuning: pulizia atlante, seconda raccolta, sinonimi | dati, non misure | in parallelo da subito |
+| **P0** | **La data senza anno**: «primo trimestre» risposto col terzo (§10) | da capire, poi una regola | toglie una **risposta sbagliata**, che vale piu' di dieci rifiuti (D2) |
+| **P1** | Finire i **pacchetti lingua**: 40 stringhe del pannello in inglese, `it.po` per cinque moduli | meccanico, mezza giornata | oggi un utente inglese vede italiano e nessun pacchetto lo corregge (§12.3) |
+| **P1b** | Guardare **con gli occhi** la conversazione 207 nel pannello | ~30 min umani | chiude il punto 5 dell'interfaccia, decide il punto 6 (paginazione) |
+| **P2** | `out_of_scope` su frasi legittime («il ricavo atteso piu' alto») | da capire prima di stimare | 4–5 frasi, ed e' un rifiuto **sbagliato**: il caso peggiore per la fiducia |
+| **P3** | I pezzi di frase lasciati cadere («i secondi 20 lead», «non sono di milano») | da capire | una garanzia dichiarata che non e' mai esistita |
+| **P3b** | Una prova nella suite di `nli_dispatch` sul cablaggio della frase | poco | il difetto di §9 e' passato proprio di li' |
+| **P3c** | Una famiglia di **conversazioni** nella batteria, non solo prime domande | mezza giornata | §11: un difetto che uccideva ogni secondo turno non l'ha visto nessuna misura |
+| **P4** | **D85** — avviare l'elicitazione degli enunciati | settimane, non nostre | il dataset del fine tuning |
+| **P5** | Fine tuning: pulizia atlante, seconda raccolta, sinonimi | dati, non misure | in parallelo da subito |
+| **P6** | **1a** — copertura con i residui nascosti | macchina | **cancello D34**: sotto il 99% la regola non e' adottabile |
+| **P7** | **1d** — selezione degli attributi | — | **premessa da rimisurare**: nasceva da «troppi attributi confondono il modello», che era il prompt tagliato |
 
-**P0 prima di P1** solo perche' condividono l'accensione: per la batteria serve il
-modello acceso e una banca dati con dati veri, e con quelli accesi guardare una
-risposta costa mezz'ora.
+**P0 prima di tutto** perche' non si misura in frasi, si misura in fiducia: finche' il
+prodotto risponde col terzo trimestre a chi chiede il primo, ogni altro numero che
+alziamo lo alziamo sopra una cosa che non regge.
 
-**P2 e P7 partono in parallelo a tutto**, perche' sono lavoro sui dati e su persone,
+**P4 e P5 partono in parallelo a tutto**, perche' sono lavoro sui dati e su persone,
 non sulle misure, e non aspettano niente.
 
-## P0 nel dettaglio, perche' e' il piu' corto e non e' scritto altrove
+**Due voci sono uscite dalla lista.** Il corpus a `--finestra 4096` doveva separare
+D113–D120 da D133: la risposta e' arrivata senza il corpus, era D133. E `1b`
+(`QueueRefusal` nella batteria) e' riparato.
+
+## P1 nel dettaglio, perche' e' il piu' corto e non e' scritto altrove
 
 Il **contenitore** del pannello e' stato guardato nei tre temi. Il **contenuto di una
-risposta** no: i turni di `nli_test` erano tutti fermi in `pending` dalle batterie di
-carico, quindi la vista lista incorporata, la riga del conteggio, «Come ho letto la
-domanda», le opzioni di chiarimento di D121 e la riga dei comandi **non li ha visti
-disegnare nessuno**.
+risposta** no: i turni di `nli_test` erano tutti fermi in `pending` — ora si sa perche',
+quella banca dati non aveva nessun profilo attivo — quindi la vista lista incorporata,
+la riga del conteggio, «Come ho letto la domanda», le opzioni di chiarimento di D121 e
+la riga dei comandi **non li ha visti disegnare nessuno**.
+
+**Il materiale ora c'e'**: su `db`, conversazione **207**, sei turni veri con due
+tabelle nello stesso filo, un conteggio, due chiarimenti e un rifiuto, tutti con la
+traccia diagnostica di D123. Resta solo da aprirla e guardarla.
 
 Da guardare, in quest'ordine:
 
@@ -463,6 +477,21 @@ contratto e corpus 918/918 con copertura al 100%, **cinque** controlli dei confi
   numero bello asserito. Se una previsione si rivela sbagliata, dillo esplicitamente.
 
 # Fatti d'ambiente che una sessione fredda perde per primi
+
+**Il context servito, che e' il primo da controllare.** `ollama` carica il modello con
+il context che ha **lui**, non con quello che il profilo dichiara: il protocollo
+compatibile OpenAI non ha un campo per dirlo (D133). Il 5 agosto 2026 serviva **4096**
+mentre noi dichiaravamo 8192, il prompt arrivava tagliato dentro il catalogo e il
+prodotto rispondeva `not_understood` a quasi tutto — deterministicamente, e senza che
+niente lo segnalasse.
+
+    curl -s http://127.0.0.1:11434/api/ps | grep context_length
+
+Se dice 4096, si riavvia `ollama` (`killall ollama && open -a Ollama`): la variabile
+`OLLAMA_CONTEXT_LENGTH=8192` e' in `launchctl setenv`, che **non sopravvive al riavvio
+del Mac** e che un processo gia' avviato non vede. Va reso permanente con un
+`LaunchAgent`, ed e' aperto. `/api/ps` risponde vuoto se nessun modello e' caricato:
+basta una domanda qualunque per caricarlo.
 
 **Il modello.** Gira su `ollama` **nativo dell'host**, 127.0.0.1:11434, con Metal. Il
 container `ollama` è spento e non va riacceso: dentro Docker non c'è GPU e si va dieci
@@ -913,6 +942,439 @@ per poter guidare il browser. L'originale non la conosceva nessuno in sessione.
 
 ---
 
+# Stato al 5 agosto 2026 (sera) — il context che non c'era
+
+*Sessione partita per fare P0 (guardare una risposta vera nel pannello) e P1 (riparare
+la batteria). Tutti e due fatti. Per strada e' venuto fuori che il prodotto era mezzo
+spento da giorni, e nessuno lo sapeva.*
+
+## 1. Il fatto, in una riga
+
+**Ollama serviva 4096 token di context mentre noi ne dichiaravamo 8192.** Il prompt
+arrivava tagliato a meta', e il modello — che riceveva un catalogo interrotto a meta'
+frase — rispondeva `not_understood`. Non era il modello. Non erano le frasi. Era un
+foglio tagliato.
+
+    curl /api/ps  ->  qwen3.5:9b  context_length 4096
+    launchctl getenv OLLAMA_CONTEXT_LENGTH  ->  8192
+
+La variabile era impostata, ma il processo di `ollama` era partito prima e non l'aveva
+mai vista. Riavviato, serve 8192 (5,8 GB di memoria contro 5,6: mezzo giga in piu').
+
+## 2. La misura, prima e dopo
+
+Tre frasi di difficolta' crescente, tre giri per cella, sulla banca dati `db` col
+modello vero. Ogni cella e' **deterministica**: tre volte lo stesso esito.
+
+| frase | 4096 serviti | 8192 serviti |
+|---|---|---|
+| «mostrami i lead» (solo entita') | 3/3 operations | 3/3 operations |
+| «quanti lead ci sono» (conteggio) | **0/3** — `not_understood` | **3/3 operations** |
+| «i lead senza commerciale» (condizione) | **0/3** — `not_understood` | **3/3 operations** |
+
+Con 8192 dichiarati **e** serviti, il piano e' anche giusto: `[['user_id', '=',
+False]]`, 13 lead su 39, identico nei tre giri. E i tempi sono crollati: **~10 secondi
+a turno** contro i 15–145 documentati il 3 agosto.
+
+La traccia diagnostica di **D123** (la decisione che conserva la busta del modello
+quando la modalita' diagnostica e' accesa) e' cio' che ha reso leggibile la cosa:
+
+    turno 233  finestra 4096  17 attributi  2940 token  ->  add_measure count   giusto
+    turno 235  finestra 8192  60 attributi  4041 token  ->  {"not_understood"}  tagliato
+
+Fra le due celle non cambia altro. 4041 token piu' il messaggio di sistema non stanno
+in 4096, e il taglio cade dentro il catalogo.
+
+## 3. Cosa questo obbliga a rileggere
+
+**Il reperto §3 del 4 agosto — *«il catalogo intero affoga il modello»* — e' stato
+misurato su un prompt tagliato.** Non e' detto che sia falso, ma non e' piu' provato:
+con i due numeri allineati il catalogo da 60 attributi non affoga niente, ed e' l'unico
+che permette di rispondere alla frase con la condizione — a 4096 il budget di **D79**
+(la decisione che ricava dalla finestra quanti attributi mostrare) non espone
+`crm_lead.user_id`, quindi «senza commerciale» non e' fondato in nessun attributo e
+**D121** (la decisione che fa proporre letture invece di indovinare) chiede, giustamente.
+
+Ricadute sull'ordine dei lavori:
+
+* **P5 (`1d`, la selezione degli attributi)** nasceva da *«troppi attributi confondono
+  il modello»*. Quella premessa va rimisurata prima di spendere il lavoro. Sfoltire
+  resta utile per il costo del prompt, ma non e' piu' un'emergenza.
+* **P6 (il corpus a `--finestra 4096`, ~70 minuti macchina)** doveva separare D113–D120
+  da **D133** (la decisione che impone di guardare vicine la finestra dichiarata e
+  quella servita). La risposta e' arrivata da qui, senza il corpus: era D133.
+* **`19` (la scelta del modello)** e' da rileggere con i tempi nuovi: le misure del
+  3 agosto sono state prese con lo stesso taglio.
+
+**La lezione di metodo**: D133 aveva gia' scritto il fenomeno — *«dodicimila token
+mandati, 2050 letti»* — e nessuno aveva ricollegato i `not_understood` a quello. Una
+misura scritta nel registro e non collegata ai sintomi e' una misura che non lavora.
+
+## 4. P1 — la batteria non salta piu' ventuno frasi
+
+`_manca` (`tools/campo/batteria.py`) confrontava per contenimento le stringhe scritte a
+mano in `frasi.py` con le etichette Odoo vere. Non si incontravano: `email` contro
+`E-mail`, `commerciale` contro `Addetto vendite`, `citta'` contro `Citta'`.
+
+Ora `serve` dichiara i **riferimenti** del catalogo — `crm_lead.user_id` — e il
+confronto e' per appartenenza. Il `ref` e' cio' che il catalogo pubblica, non una
+traduzione che qualcuno ha scritto in un altro file.
+
+| finestra | attributi esposti | frasi saltate |
+|---|---|---|
+| 4096 | 17 | 25 / 54 |
+| 8192 | 60 | **0 / 54** (prima: 21, sempre le stesse) |
+
+Il filtro non e' stato annacquato: a 4096 morde ancora, ed e' li' che si vede che il
+budget non espone nemmeno `crm_lead.name`, il nome del lead.
+
+Aggiunta una **guardia**: su una banca dati che non espone `crm_lead` la batteria si
+ferma e lo dice. Prima ripiegava su `scope[0]` e su `nli_test` chiedeva «mostrami i
+lead» al catalogo dei contatti, chiamando sbagliato il modello per aver risposto sui
+contatti. Un ripiego silenzioso in uno strumento di misura e' un terzo modo di mentire.
+
+Lasciato aperto, in un commento dentro `frasi.py`: **«per stato» e' una trappola.** Sul
+catalogo vero `Stato` e' `state_id`, la provincia; la fase di vendita si chiama `Fase`
+(`stage_id`). Chi ha scritto le frasi intendeva la fase, ma l'attesa conta *quanti*
+raggruppamenti e non su cosa, quindi un raggruppamento per provincia passerebbe lo
+stesso. Due decisioni da prendere: se la frase va detta «per fase», e se almeno qui
+l'attesa debba nominare il riferimento del raggruppamento.
+
+## 5. P0 — c'e' finalmente una risposta vera da guardare
+
+Su `db`, **conversazione 207**, a 8192 dichiarati e serviti:
+
+| turno | esito | cosa mostra |
+|---|---|---|
+| 277 | operations, 39 record | la prima tabella |
+| 278 | operations, 39 record | **tabella a quattro colonne** — lo scorrimento orizzontale |
+| 279 | operations | la riga del conteggio |
+| 280 | clarification | «i lead creati negli ultimi 30 giorni» — chiede, e va capito perche' |
+| 281 | clarification | «i lead di oggi» — D135, l'esito giusto |
+| 282 | out_of_scope | il rifiuto onesto |
+
+Due tabelle nello stesso filo: e' il caso del punto 2 di P0, quello in cui l'altezza
+sbaglia. Tutti e sei hanno la traccia diagnostica, quindi anche il blocco di D123 e'
+visibile. Resta da **guardarla con gli occhi**: il pannello del browser non e'
+raggiungibile dalla sessione, quindi il punto 5 di P0 e' consegnato ma non chiuso.
+
+La conversazione **188** e' lo stesso filo a 4096, tenuta per confronto. La **161** e'
+la conversazione delle diciotto risposte tagliate: da tenere, e' la prova del difetto.
+
+## 6. Cosa e' cambiato su disco, e cosa no
+
+**Nel repository**, solo lo strumento di misura — nessuna riga di prodotto:
+
+* `tools/campo/batteria.py` — `_catalogo_riferimenti`, `_manca` sui `ref`, la guardia.
+* `tools/campo/frasi.py` — `serve` in riferimenti, la nota sulla trappola di «per stato».
+
+`./manage.sh check` verde.
+
+**Nelle banche dati**, che non sono nel repository e vanno sapute:
+
+* `db`: profilo attivo con `context_window` **8192**, `aida.debug` **acceso** (spegnerlo
+  quando non serve piu': conserva la frase dell'utente in chiaro), conversazioni 161,
+  188, 207.
+* `nli_test`: profilo `qwen3.5:9b (P0)` creato e attivo, che prima non c'era — e' il
+  motivo per cui i turni erano tutti fermi in `pending`. Il perimetro li' e'
+  `res.partner` e le etichette sono in inglese: non e' una banca dati su cui misurare.
+* I tre cron di AIDA vengono spenti per la durata della batteria e riaccesi dopo — la
+  batteria pilota `pipeline.run` nella shell e il cron lavorerebbe sugli stessi elementi
+  di coda (`expired`, `could not serialize access`).
+
+## 7. La prima misura completa che sia mai esistita
+
+54 frasi su 54 eseguite, **zero saltate**, con lo strumento riparato e i due context
+allineati. Sette minuti di macchina, non un'ora: i turni ora costano 5–10 secondi.
+
+| famiglia | come atteso |
+|---|---|
+| operatori | 11/12 — 92% |
+| intenti | 10/18 — 56% |
+| limiti | 3/6 — 50% |
+| **date** | **1/18 — 6%** |
+| **totale** | **25/54 — 46%** |
+
+Questa e' **la linea di partenza** che `18` §12 (l'ordine di lavoro del fine tuning)
+pretende prima di addestrare. Prima non esisteva: il giro del 4 agosto aveva 21 frasi
+mai eseguite, un prompt tagliato a meta' e si fermava al caso 25 su 54.
+
+**Perche' si fermava al 25**, ed e' il difetto 2 di §4 finalmente capito: la batteria
+chiama `pipeline.run`, che interpreta il turno e non tocca la coda. Nel prodotto e'
+`worker._persist` a chiamare `complete()`; qui non lo chiamava nessuno, ogni frase
+lasciava la sua riga in `pending`, e al venticinquesimo si superava **L3** (la
+profondita' della coda: pool 8 x 3 = 24). Riparato chiudendo l'elemento come fa il
+worker — non alzando il limite, che avrebbe nascosto il difetto invece di toglierlo.
+
+## 8. Il difetto singolo che vale 17 fallimenti su 29
+
+**Le date non sono diciassette difetti: sono uno, ripetuto.** Tutte e diciotto le
+frasi dicono `clarification` invece di rispondere, e il modello non c'entra — risponde
+giusto:
+
+    la busta del modello   crm_lead.create_date  within  last_n_days 30   corretta
+    il prodotto rifiuta    L3 [unanchored_period]
+
+Il messaggio del rifiuto: *«il periodo su `crm_lead.create_date` viene da un frammento
+che non nomina nessuna data (“negli ultimi 30 giorni”); questa entita' ne espone 7 e
+D110 non ne dichiara nessuna principale, quindi l'attributo l'ha scelto il modello»*.
+
+Il controllo guarda il **frammento**, e il frammento davvero non nomina date. Ma la
+frase intera dice *«i lead **creati** negli ultimi 30 giorni»*: la parola che ancora
+c'e', sta solo fuori dal pezzo di frase che il modello ha dichiarato come provenienza.
+
+**E questo tocca la premessa di D110**, che e' scritta a chiare lettere: *«un'espressione
+di tempo non nomina mai il proprio campo, ne' nel corpus ne' in italiano: si dice
+“ordini del mese scorso”»*. Per il corpus sara' vero. Per l'italiano che una persona
+scrive in chat **non lo e'**: diciotto frasi su diciotto nominano la data.
+
+Tre strade, e la scelta e' dell'Architect perche' tocca una decisione adottata:
+
+1. **Il riconoscitore passa sulla frase intera, non sul solo frammento**, e l'ancora
+   vale solo se il termine trovato porta **allo stesso attributo** che il modello ha
+   scelto. Non allarga la garanzia di D111 (un'espressione di tempo che non si colloca
+   si chiede): la sposta da «nominata nel frammento» a «nominata nella frase e
+   concorde». Costo piccolo. Da verificare che il dizionario leghi *«creati»* a
+   `create_date`, che si chiama `Data creazione`: sono due forme diverse della stessa
+   parola, e §5 del 4 agosto dice che l'indice dei termini e' robusto a trattini e
+   parole di servizio, non alle desinenze.
+2. **Il prompt chiede che la provenienza copra la parola che ancora.** Non tocca
+   nessuna regola, ma dipende dall'obbedienza del modello e va misurato.
+3. **Dichiarare una data principale per entita'** (oggi D110 dice esplicitamente che
+   nessuna lo e'). E' la strada che indovina, ed e' quella che D110 ha gia' scartato.
+
+La 1 e' stata deliberata e fatta, la sera stessa. Vedi §9.
+
+**Gli altri diversi**, per completezza: `out_of_scope` su frasi legittime («qual e' il
+ricavo atteso piu' alto», «il ricavo atteso medio per stato») — il prodotto dichiara
+fuori perimetro cose che sa fare; e due limiti dichiarati che **non** vengono piu'
+rifiutati («i secondi 20 lead», «i lead che non sono di milano» rispondono invece di
+chiedere), che va guardato perche' e' una garanzia che si e' allentata.
+
+**Rumore nei log**: `pipeline.py:93` chiama `_()` senza una lingua nel context, e Odoo
+stampa una traccia di stack a ogni chiarimento. Non cambia il comportamento, sporca
+ogni misura.
+
+## 9. L'ancora del tempo, riparata — e serviva riparare due cose
+
+**Pezzo uno: le parole.** Il riconoscitore conosceva l'etichetta Odoo `Data creazione`
+e non la forma verbale «creati», e fra le due c'e' una desinenza che nessuno fa. Sono
+venti voci **T1** nel registro delle voci approvate di **D108**, livello L1 (il
+dominio: che «creati» sia il participio di «creazione» e' un fatto della lingua, non di
+questa installazione). Le voci T1 **si fondono** fra i livelli (`06` §2.2), quindi il
+sinonimo non toglie l'etichetta: la data si chiama in tutti e due i modi.
+
+Stanno in `tools/dizionario/sinonimi_date.py`, con `./manage.sh dizionario <db>` e la
+sua prova a vuoto. Sono dati e non codice, e non sono nel modulo: chi installa in
+inglese non li vuole, chi aggiunge un'entita' al perimetro li rivuole.
+
+**Le date di ordini e fatture sono state lasciate fuori apposta.** Per
+`sale_order.date_order` verrebbe naturale «ordinati», che in italiano vuol dire anche
+*messi in ordine*: *«gli ordini di questo mese ordinati per totale»* nominerebbe una
+data che nessuno ha nominato. Meglio nessun sinonimo che uno che indovina.
+
+**Pezzo due: dove si guarda.** `validate_anchoring` accetta ora l'ancora presa dalla
+**frase intera**, e non solo dal frammento — ma solo quando la frase nomina **una sola**
+data fra quelle in scelta, e quella e' la data su cui il periodo e' caduto. Con due
+nominate decide il frammento come prima, perche' li' la scelta torna a essere del
+modello.
+
+E' una via d'uscita **in accettazione**: nessun turno che prima passava puo' iniziare a
+fallire. E' cio' che la rende compatibile con la ragione — scritta nel codice — per cui
+il livello 3 guarda il frammento: un turno di raffinamento porta condizioni di frasi
+che nessuno sta piu' dicendo, e verificarle contro la frase corrente le rifiuterebbe
+tutte.
+
+Cinque prove nuove in `test_anchoring.py`. Tolta la riga aggiunta, due diventano rosse.
+
+**Serviva davvero tutt'e due?** Si', e i numeri lo dicono: con i soli sinonimi la
+famiglia `date` e' passata da 1/18 a **13/18** — nelle frasi corte il modello mette
+«creati» dentro il frammento da solo — e le tre che restavano erano tutte della forma
+*«negli ultimi N giorni»*, dove il frammento dichiarato porta solo il tempo. Con la
+frase intera anche quelle rispondono: *«i lead creati negli ultimi 30 giorni»* → 25
+record, zero fallimenti.
+
+**Un difetto mio, per memoria di chi tocchera' questa catena.** La prima stesura
+aggiungeva il parametro a `_apply_and_present` e ai suoi due chiamanti, e si fermava
+li': dentro, la chiamata a `contextual.validate` non lo passava. Il valore arrivava e
+moriva. Le prove pure erano verdi lo stesso — provavano la regola, non il cablaggio.
+
+`test_the_chain_carries_the_sentence_through` copre un pezzo del cablaggio: se
+`contextual.validate` smette di passare la frase a `validate_anchoring`, diventa rossa.
+**Il pezzo che si e' rotto davvero — `pipeline` verso `validate` — non e' coperto**, e
+non puo' esserlo da una prova pura: la pipeline vuole Odoo. Va scritta una prova nella
+suite di `nli_dispatch`, ed e' aperta. A trovare il difetto e' stata la misura sul
+campo, il che dice quanto e' costato non averla.
+
+## 10. La misura dopo: 39 su 54, e una maschera caduta
+
+| famiglia | prima | dopo |
+|---|---|---|
+| date | 1/18 — 6% | **17/18 — 94%** |
+| operatori | 11/12 | 11/12 |
+| intenti | 10/18 | 10/18 |
+| limiti | 3/6 | **1/6** |
+| **totale** | **25/54 — 46%** | **39/54 — 72%** |
+
+**I limiti sono scesi, e non e' una regressione: e' una maschera caduta.** Le due frasi
+che hanno smesso di passare sono *«i lead creati nel primo trimestre»* e *«i lead creati
+a gennaio»*. Passavano perche' rispondevano `clarification`, che e' quello che l'attesa
+chiede — ma lo rispondevano **per il motivo sbagliato**: non stavano rifiutando l'anno
+ambiguo, stavano chiedendo *quale data*. Riparata l'ancora, la domanda non c'e' piu' e
+si vede cosa il prodotto fa davvero:
+
+    «i lead creati nel primo trimestre»
+      la busta del modello   within current_quarter
+      il piano risolto       create_date >= 2026-07-01  <  2026-09-30
+      la risposta            26 record, presentati come giusti
+
+**Il primo trimestre risposto col terzo.** `ai/17` dichiara che una data senza anno non
+si puo' dire e va rifiutata; il rifiuto non esiste, e al suo posto c'e' una risposta
+sbagliata con l'aria di essere giusta — la classe di fallimento peggiore che questo
+prodotto possa produrre, e quella che **D2** esiste per tenere fuori.
+
+Il difetto e' vecchio: la busta con `current_quarter` il modello la produceva anche
+prima. E' cambiato solo che ora si vede. Una misura che sale scoprendo un difetto piu'
+grave di quello che ha risolto sta facendo il suo mestiere.
+
+Gli altri quindici diversi restano quelli gia' descritti in §8: il rifiuto sbagliato su
+frasi legittime, i pezzi di frase lasciati cadere («i secondi 20 lead», «i lead che non
+sono di milano»), e qualche caduta del modello.
+
+## 11. Il raffinamento era morto, e la batteria non poteva vederlo
+
+**Trovato al primo uso vero del pannello**, subito dopo aver riparato le date. Sequenza:
+*«i lead creati nel primo trimestre»* → risposta; *«ordinameli per email»* → **«Non ho
+capito»**. E il rifiuto non parlava dell'ordinamento:
+
+    L3 [unanchored_period] crm_lead.create_date: carries no provenance
+
+Parlava del **filtro del turno prima**. Il meccanismo, per intero:
+
+1. Ogni turno rivalida lo stato **completo**, non solo cio' che la frase ha aggiunto.
+2. Lo stato salvato **non ha i frammenti**: `strip_provenance` li toglie di proposito,
+   e resteranno tolti finche' **D54** non li pseudonimizza.
+3. Il livello 3 delle date pretende il frammento. La condizione ereditata non ce l'ha
+   e non potra' mai averlo: rifiuto garantito, ogni turno, per sempre.
+
+Quindi **dopo un filtro sulle date qualunque raffinamento moriva** — l'ordinamento, una
+colonna in piu', un altro filtro. Non era una regressione di oggi: c'era da quando D135
+esiste. Prima non si vedeva perche' il primo turno con una data non rispondeva mai.
+
+**La correzione**: il livello 3 giudica solo le condizioni che **questo turno ha appena
+introdotto**. Gli identificativi di quelle gia' presenti arrivano dallo stato di
+partenza (`state_module.condition_ids`), e si saltano. E' cio' che D135 dice gia' a
+parole — si giudica la data che *il modello ha appena scelto* — e una condizione
+accettata in un turno passato e' stata giudicata allora, con le prove che allora
+c'erano.
+
+Provato sul prodotto, tre turni in fila:
+
+    i lead creati quest'anno        operations   39 record
+    ordinameli per email            operations   39 record   ordine email_from asc
+    solo quelli senza commerciale   operations   13 record   + user_id = false
+
+**La lezione, e vale piu' della correzione.** La batteria apre **una conversazione
+nuova per ogni frase**, di proposito, perche' D120 e D127 (il turno prima fa da
+contesto) falserebbero la misura. Conseguenza: nessun secondo turno viene mai provato,
+e un difetto che uccideva ogni conversazione a partire dalla seconda battuta ha
+attraversato tutte le misure senza lasciare traccia. Le 54 frasi misurano **la prima
+domanda**. Serve una famiglia che misuri **le conversazioni** — ed e' aperta.
+
+## 12. Le parole che AIDA mostra: etichette, lingua, pacchetti
+
+Nato da una prova tua nel pannello: *«mostrami i lead di questo trimestre»* ha risposto
+**`Which date do you mean by “di questo trimestre”?`** con le opzioni `creazione`,
+`Ultima azione`, `chiusura`, `conversione`. Due difetti in una schermata.
+
+### 12.1 Le etichette — un difetto introdotto la sera stessa
+
+Le opzioni mostravano `creazione` invece di `Data creazione`: erano **i sinonimi
+scritti da me poche ore prima** (§9). Il codice mostrava `terms[0]`, e la fusione fra
+livelli mette per primo il livello piu' alto — da quel momento L1, cioe' il mio.
+
+`store._merge` dice a chiare lettere che l'ordine dei termini e' *«quello con cui
+l'interpretazione mostra il riferimento all'utente, cosi' la parola del cliente viene
+prima di quella del fornitore»*. La regola era giusta; erano i miei sinonimi a non
+avere titolo per quel posto: `creati`, `chiusi`, `assegnati` sono **flessioni**, parole
+per riconoscere, non nomi.
+
+**La regola nuova, da mettere a registro**: si mostra il nome che qualcuno ha **scelto**
+per quella cosa — quello del cliente (L2) se c'e', altrimenti quello della piattaforma
+(L0), che per giunta Odoo traduce gia' da se'. **L1 non nomina mai.**
+
+In pratica: il dizionario espone `display_of(ref)` accanto a `terms_of(ref)`, il
+catalogo porta `label` accanto a `terms`, e la domanda di chiarimento usa `label`.
+Quattro prove nuove in `test_dictionary.py`.
+
+    prima   creazione     Ultima azione   chiusura        conversione
+    dopo    Data creazione Ultima azione  Data chiusura   Data conversione
+
+### 12.2 La lingua non era mancante: non arrivava
+
+La domanda usciva in inglese benche' l'utente sia `it_IT`, e a ogni chiarimento il log
+stampava una traccia di stack — *«no translation language detected»*. Le due cose erano
+la stessa cosa.
+
+`_()` di modulo ricava la lingua **dal chiamante**, cercandogli in casa un `self` o un
+`env`. `_anchor_clarification(failures, operations, catalogue)` non aveva ne' l'uno ne'
+l'altro, quindi Odoo rinunciava. Il contesto giusto c'era gia' — `context_for_execution()`
+porta `lang` e `tz` del turno fin dentro il worker: nessuno glielo chiedeva.
+
+Sostituito con `env._()`, che la lingua la prende dal contesto invece che dallo stack.
+Sparita anche la traccia nei log, che sporcava ogni misura.
+
+### 12.3 I pacchetti lingua
+
+Deciso: **sorgente inglese, un pacchetto per lingua, ripiego sulla sorgente.** E' il
+funzionamento nativo di Odoo — lingua dell'utente, e se la traduzione manca esce
+l'inglese — quindi non serve scrivere codice, serve mettere in ordine le stringhe.
+
+Estratti i cataloghi di tutti e sei i moduli in `custom_addons/nli_*/i18n/*.pot`:
+**264 stringhe**. Scritto `nli_dispatch/i18n/it.po` con le frasi che AIDA dice in un
+turno. Provato sul prodotto: *«Quale data intendi con «di questo trimestre»?»*.
+
+**Cosa manca, ed e' il punto da cui si riprende.** Quaranta stringhe del pannello sono
+scritte **in italiano nel sorgente** — `Chiedi ad AIDA`, `Come ho letto la domanda`,
+`Ci sto ancora pensando…`. Finche' stanno li', un utente inglese vede italiano e
+**nessun pacchetto lo puo' correggere**: non esiste una sorgente da cui tradurre. Vanno
+ribaltate in inglese, e l'italiano va nel `it.po`.
+
+I template OWL **sono gia' estraibili**: Odoo li legge da se', e le 134 stringhe di
+`nli_web` nel `.pot` lo dimostrano. Il lavoro e' meccanico: 40 stringhe da ribaltare,
+piu' i `it.po` degli altri cinque moduli (etichette di campi e di menu, che vede
+soprattutto un amministratore).
+
+---
+
+# Da dove si riprende
+
+In ordine, e il primo e' il piu' grave:
+
+1. **La data senza anno** (§10). *«nel primo trimestre»* risponde col **terzo**, 26
+   record, senza dire niente. `ai/17` dichiara che va rifiutata; il rifiuto non esiste.
+   E' la stessa forma di *«i secondi 20 lead»* e *«i lead che non sono di milano»*: un
+   pezzo di frase che il vocabolario chiuso non sa dire e che viene lasciato cadere in
+   silenzio. Una regola sola li copre tutti e tre, ed e' la delibera da prendere:
+   allargare il vocabolario, oppure rifiutare — che e' cio' che gia' promettiamo.
+2. **Finire i pacchetti lingua** (§12.3): 40 stringhe del pannello da ribaltare in
+   inglese, `it.po` per i cinque moduli restanti.
+3. **Guardare il pannello con gli occhi**: conversazione **207** su `db`, sei turni
+   veri. Il punto 5 e il punto 6 dell'interfaccia sono ancora aperti.
+4. **Le due prove che mancano**: il cablaggio `pipeline` → `validate` (§9) e una
+   famiglia di **conversazioni** nella batteria (§11).
+5. `out_of_scope` su frasi legittime (§8), che oggi vale 4–5 casi.
+
+**Prima di misurare qualunque cosa, si controlla che Ollama serva 8192**:
+
+    curl -s http://127.0.0.1:11434/api/ps | grep context_length
+
+`OLLAMA_CONTEXT_LENGTH=8192` sta in `launchctl setenv`, che **non sopravvive al riavvio
+del Mac**. Se dice 4096, tutto torna a rispondere `not_understood` e nessuno lo segnala:
+si riavvia Ollama, e prima o poi si scrive un `LaunchAgent` che la renda permanente.
+
+---
+
 # Aperto, in ordine di quanto sblocca
 
 1. **La selezione degli attributi.** E' il primo perche' vale piu' di qualunque altra
@@ -1181,19 +1643,31 @@ che è la degradazione descritta da D42.
 # Se vuoi solo ripartire senza rileggere tutto
 
 Riprendi il progetto AIDA: leggi ai/00-registro-decisioni.md e
-ai/12-piano-implementazione.md, **poi la sezione «Stato al 4 agosto 2026» qui sopra, che
-e' la piu' recente e in alcuni punti contraddice quelle di luglio**. Verifica con
-./manage.sh check, poi vai con il punto 1 degli aperti — **la selezione degli
-attributi**, che vale piu' di tutto il resto in lista: si comincia misurando la copertura
-coi residui nascosti, che e' un cancello — oppure con quello che ti indico.
+ai/12-piano-implementazione.md, **poi la sezione «Stato al 5 agosto 2026 (sera)» qui
+sopra, che e' la piu' recente e contraddice in piu' punti tutte quelle prima**. Verifica
+con ./manage.sh check, poi vai con «Da dove si riprende», in fondo a quella sezione —
+oppure con quello che ti indico.
 
-**In una riga: il problema non e' quanto e' grande il `context`, e' cosa ci mettiamo
-dentro.** Il catalogo intero da 60 attributi affoga il modello (2 frasi giuste su 20);
-selezionato a 27 con le viste di Odoo ne prende 10. E il catalogo tagliato a 17 di prima
-non era meglio: rispondeva sempre, e si inventava le risposte.
+**Prima di misurare qualunque cosa**, controlla che Ollama serva 8192 token di context:
+`curl -s http://127.0.0.1:11434/api/ps | grep context_length`. Se dice 4096, il prompt
+arriva tagliato e il prodotto risponde `not_understood` a quasi tutto, senza che niente
+lo segnali. Si riavvia Ollama.
 
-Il punto 2 e' il fine tuning, gia' specificato in `ai/18` e `ai/19`: li' manca il
-lavoro, non le decisioni — ma va rifatto **dopo** la selezione, o misura il rumore.
+**In una riga: la misura c'e', e dice 39 frasi su 54.** Quel numero e' arrivato in una
+sera da 25, riparando due cose che non erano il modello — un context servito piu'
+stretto di quello dichiarato, e un controllo sulle date che chiedeva la parola giusta
+nel posto sbagliato.
+
+**Due frasi di luglio e del 4 agosto sono da considerare superate**: che *«il catalogo
+intero da 60 attributi affoga il modello»* — misurato su un prompt tagliato, e con i due
+numeri allineati il catalogo intero e' l'unico che permette di rispondere alle frasi con
+condizioni; e che la selezione degli attributi sia il primo lavoro in lista. Puo' restare
+utile per il costo del prompt, ma la premessa da cui nasceva va rimisurata.
+
+Il fine tuning e' gia' specificato in `ai/18` e `ai/19`: li' manca il lavoro, non le
+decisioni. La linea di partenza che `18` §12 pretende ora esiste (39/54), ma conviene
+riprenderla dopo aver tolto le risposte sbagliate — un dataset costruito su un prodotto
+che risponde col terzo trimestre a chi chiede il primo insegna anche quello.
 E leggi `00` §38 prima di
 dichiarare finita qualunque cosa. Stesse regole di prima: deliberi tu le questioni che emergono e le
 registri in ai/00, e mi spieghi le cose in modo semplice — come a un ragazzino sveglio ma
