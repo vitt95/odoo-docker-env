@@ -1023,12 +1023,19 @@ class TestTheLoadBench(DispatchCase):
             synthetic.SyntheticAdapter.from_environment()
 
     def test_off_the_dispatcher_asks_the_active_profile(self):
-        """Il ramo non deve poter deviare l'esecuzione ordinaria."""
+        """Il ramo non deve poter deviare l'esecuzione ordinaria.
+
+        **Lo stato se lo costruisce.** Prima diceva «nessun profilo attivo su questa
+        base» e lo dava per buono: verde su una base di prova, rosso sulla base dove
+        il prodotto gira davvero, che un profilo attivo ce l'ha per definizione. La
+        transazione del test torna indietro, quindi il ritiro non esce di qui.
+        """
         self.set_bench(None)
+        self.env["nli.profile"].search([("state", "=", "active")]).action_retire()
         factory = self.env["nli.dispatcher"]._adapter_factory()
         with self.assertRaises(Exception):
-            # Nessun profilo attivo su questa base: l'errore che arriva e' quello
-            # del profilo mancante, non un adattatore sintetico silenzioso.
+            # Senza banco e senza profilo, l'errore che arriva e' quello del profilo
+            # mancante, non un adattatore sintetico silenzioso.
             factory(self.env)
 
     def test_on_it_answers_after_the_declared_latency(self):

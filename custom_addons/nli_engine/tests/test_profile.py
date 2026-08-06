@@ -112,8 +112,16 @@ class TestProfile(TransactionCase):
 
     def test_no_active_profile_is_a_declared_state_not_an_exception(self):
         """§11 — the model being unavailable leaves the system partially usable, and
-        raising here would take saved queries down with it."""
-        self.assertFalse(self.env["nli.profile"].active_profile())
+        raising here would take saved queries down with it.
+
+        **The state is built, not assumed.** This used to read the registry as it
+        found it, so it only passed on a database where nobody had ever put a model
+        in service — green on a fresh test database, red on the one the product runs
+        on. A test that passes only on an empty database is not a test.
+        """
+        registry = self.env["nli.profile"]
+        registry.search([("state", "=", "active")]).action_retire()
+        self.assertFalse(registry.active_profile())
 
     # --- D78 ---------------------------------------------------------------
 

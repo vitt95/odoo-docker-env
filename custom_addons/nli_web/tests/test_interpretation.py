@@ -6,6 +6,7 @@ carry — its origin, for the graded salience of D65, and its provenance, for th
 highlighting of §3.4.
 """
 
+from odoo.exceptions import AccessError
 from odoo.tests.common import TransactionCase, new_test_user, tagged
 
 
@@ -160,15 +161,38 @@ class TestTheDebugTraceIsNotForEveryone(TransactionCase):
         super().setUp()
         self.utente = new_test_user(
             self.env, login="aida_lettore", groups="base.group_user")
-        uenv = self.env(user=self.utente)
+        # I due gruppi **nominati tutti e due**: `base.group_system` si porta dietro
+        # `base.group_user` solo in certe installazioni, e da quella differenza
+        # dipendeva se queste prove fossero verdi o rosse.
+        self.amministratore = new_test_user(
+            self.env, login="aida_admin", groups="base.group_system,base.group_user")
+        self.turno = self.turno_di(self.utente)
+
+    def turno_di(self, utente, **valori):
+        """Un turno **posseduto** da `utente`, perche' e' l'unico che potra' leggere.
+
+        La regola dei record `nli_turn_own` dice che un turno lo legge solo chi l'ha
+        fatto, e vale per `base.group_user`, cioe' **anche per un amministratore**: chi
+        amministra il sistema non eredita il diritto di leggere le domande altrui
+        (§5.10 — una conversazione si condivide con un atto esplicito, non per
+        omissione). D123 dice chi puo' vedere la **traccia**; non dice a chi
+        appartiene il turno, e sono due domande diverse.
+
+        Prima queste prove facevano leggere all'amministratore il turno del lettore.
+        Passavano solo dove `base.group_system` non si portava dietro
+        `base.group_user` — cioe' a seconda dei moduli installati: verdi su
+        `nli_test`, `AccessError` su `db`.
+        """
+        uenv = self.env(user=utente)
         interrogazione = uenv["nli.interrogation"].create({})
-        self.turno = uenv["nli.turn"].create({
+        return uenv["nli.turn"].create({
             "interrogation_id": interrogazione.id,
-            "user_id": self.utente.id,
+            "user_id": utente.id,
             "company_ids": [(6, 0, uenv.companies.ids)],
             "utterance": "le aziende di Cittaprova",
             "outcome": "operations",
             "debug_json": '{"plan": {"model": "res.partner", "domain": []}}',
+            **valori,
         })
 
     def test_an_ordinary_user_does_not_receive_it(self):
@@ -176,24 +200,31 @@ class TestTheDebugTraceIsNotForEveryone(TransactionCase):
         self.assertNotIn("debug", payload)
 
     def test_an_administrator_does(self):
-        amministratore = new_test_user(
-            self.env, login="aida_admin", groups="base.group_system")
-        payload = self.turno.with_user(amministratore)._aida_payload()
+        turno = self.turno_di(self.amministratore)
+        payload = turno.with_user(self.amministratore)._aida_payload()
         self.assertEqual(payload["debug"]["plan"]["model"], "res.partner")
 
     def test_a_turn_without_a_trace_carries_no_key_at_all(self):
         """Una chiave `debug: null` su ogni turno farebbe credere al client che la
         modalita' esista sempre e sia sempre vuota."""
-        self.turno.debug_json = False
-        amministratore = new_test_user(
-            self.env, login="aida_admin2", groups="base.group_system")
-        self.assertNotIn("debug", self.turno.with_user(amministratore)._aida_payload())
+        turno = self.turno_di(self.amministratore, debug_json=False)
+        self.assertNotIn(
+            "debug", turno.with_user(self.amministratore)._aida_payload())
+
+    def test_an_administrator_does_not_read_somebody_else_s_turn(self):
+        """La regola dei record viene **prima** della modalita' diagnostica.
+
+        Chi amministra il sistema puo' vedere come e' stata costruita una risposta —
+        ma solo delle proprie. Senza questa prova, la correzione fatta qui sopra
+        (ogni turno letto dal suo proprietario) potrebbe essere disfatta da chiunque
+        allarghi la regola, e nessuno se ne accorgerebbe.
+        """
+        with self.assertRaises(AccessError):
+            self.turno.with_user(self.amministratore).read(["utterance"])
 
     def test_an_unreadable_trace_does_not_take_the_conversation_down(self):
         """E' uno strumento diagnostico, non un pezzo della risposta."""
-        self.turno.debug_json = "{non e' json"
-        amministratore = new_test_user(
-            self.env, login="aida_admin3", groups="base.group_system")
-        payload = self.turno.with_user(amministratore)._aida_payload()
+        turno = self.turno_di(self.amministratore, debug_json="{non e' json")
+        payload = turno.with_user(self.amministratore)._aida_payload()
         self.assertNotIn("debug", payload)
         self.assertEqual(payload["outcome"], "operations")
