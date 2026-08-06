@@ -158,6 +158,70 @@ def fiscal_year_start(instant: Instant, moment: date | None = None) -> date:
     return candidate
 
 
+#: The interval `n` admits, duplicated from the contract on purpose: this module is a
+#: pure zone that computes with dates and imports nothing, and the check here is the
+#: **second** lock. Level 2 refuses `month_of_year(13)` before it ever gets here; if it
+#: one day stopped refusing it, the Resolver would say so instead of picking a window.
+_NAMED_RANGE = {"month_of_year": (1, 12), "quarter_of_year": (1, 4),
+                "half_of_year": (1, 2)}
+
+#: How many months each named period spans. A half is two quarters, and saying so once
+#: here is what keeps the two from drifting apart.
+_NAMED_MONTHS = {"quarter_of_year": 3, "half_of_year": 6}
+
+
+def _exercise_start(instant: Instant, year: int | None) -> date:
+    """The first day of the exercise a named period belongs to.
+
+    Without a year: the exercise in progress. With one: the exercise that **starts**
+    in that year, which for a calendar company is simply that year.
+    """
+    if year is None:
+        return fiscal_year_start(instant)
+    return date(year, instant.fiscal_year_start_month, instant.fiscal_year_start_day)
+
+
+def _named_period(expression: str, value: dict, instant: Instant) -> Range:
+    """`month_of_year`, `quarter_of_year`, `year_of` into a window (D141)."""
+    try:
+        which = int(value["n"])
+    except (KeyError, TypeError, ValueError) as error:
+        raise UnresolvableExpression(
+            f"{expression} needs 'n': level 2 should have refused it") from error
+
+    admitted = _NAMED_RANGE.get(expression)
+    if admitted and not admitted[0] <= which <= admitted[1]:
+        raise UnresolvableExpression(
+            f"{expression}({which}) is outside {admitted[0]}-{admitted[1]}: there is "
+            f"no such period, and a plausible one would be worse than none"
+        )
+
+    year = value.get("year")
+    if year is not None:
+        try:
+            year = int(year)
+        except (TypeError, ValueError) as error:
+            raise UnresolvableExpression(f"{value['year']!r} is not a year") from error
+
+    if expression == "year_of":
+        start = _exercise_start(instant, which)
+        return Range(start, _add_months(start, 12))
+
+    exercise = _exercise_start(instant, year)
+    if expression in _NAMED_MONTHS:
+        span = _NAMED_MONTHS[expression]
+        start = _add_months(exercise, span * (which - 1))
+        return Range(start, _add_months(start, span))
+
+    # A named month is the one that falls **inside** the exercise. For a calendar
+    # company that is the same year; for a July company, January comes six months
+    # after the exercise opened, so it belongs to the following calendar year.
+    start = date(exercise.year, which, 1)
+    if start < exercise:
+        start = date(exercise.year + 1, which, 1)
+    return Range(start, _add_months(start, 1))
+
+
 def resolve(value: dict, instant: Instant) -> Range:
     """A temporal value of the contract into a half-open range of dates.
 
@@ -207,6 +271,14 @@ def resolve(value: dict, instant: Instant) -> Range:
         # D91, and V-D91-1: against the **fiscal** start, like `current_year`. The
         # end is tomorrow because the range is half-open and today counts.
         return Range(fiscal_year_start(instant), today + timedelta(days=1))
+
+    # **D141 — the periods a sentence names.** The fiscal year is the frame for all
+    # three, exactly as it is for `current_year`: in a company whose exercise starts in
+    # July, *"the first quarter"* is July to September and *"January"* is the January
+    # inside the exercise in progress. Answering with the calendar quarter would give a
+    # wrong number of perfectly credible appearance (§9.2's warning, D91's argument).
+    if expression in ("month_of_year", "quarter_of_year", "half_of_year", "year_of"):
+        return _named_period(expression, value, instant)
 
     if expression == "last_n_days":
         days = int(value["n"])

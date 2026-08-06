@@ -109,6 +109,50 @@ class TestValuesAndTemporals(unittest.TestCase):
         )
         self.assertEqual(unknown, [])
 
+    # --- D141: named periods ------------------------------------------------
+
+    def test_a_named_period_is_a_symbol_of_its_own(self):
+        """*"The first quarter"* is not *"this quarter"* (D141).
+
+        Until 6 August 2026 the vocabulary had no way of saying it, and the model —
+        which has to say something — said the nearest shape: the product answered
+        *"the leads created in the first quarter"* with the **third** quarter's data.
+        """
+        for expression in ("month_of_year", "quarter_of_year", "half_of_year",
+                           "year_of"):
+            with self.subTest(expression=expression):
+                self.assertIn(expression, vocabulary_module.TEMPORAL_EXPRESSIONS)
+                self.assertEqual(
+                    vocabulary_module.TEMPORAL_REQUIRED_KEYS[expression],
+                    frozenset({"n"}),
+                )
+
+    def test_a_named_period_declares_the_range_its_parameter_admits(self):
+        """Thirteen is not a month, and five is not a quarter.
+
+        The range is part of the symbol's arity, like `n` itself: without it level 2
+        would pass `month_of_year(13)` on to a Resolver that can only crash.
+        """
+        self.assertEqual(vocabulary_module.TEMPORAL_PARAMETER_RANGE["month_of_year"],
+                         (1, 12))
+        self.assertEqual(vocabulary_module.TEMPORAL_PARAMETER_RANGE["quarter_of_year"],
+                         (1, 4))
+        self.assertEqual(vocabulary_module.TEMPORAL_PARAMETER_RANGE["half_of_year"],
+                         (1, 2))
+
+    def test_only_a_named_period_takes_a_year(self):
+        """*"March 2026"* names its year; *"last 30 days"* cannot.
+
+        `year` is optional on the two that admit it — the sentence often omits it —
+        and unknown everywhere else, so a stray key is caught rather than ignored.
+        """
+        self.assertEqual(
+            sorted(vocabulary_module.TEMPORAL_OPTIONAL_KEYS),
+            ["half_of_year", "month_of_year", "quarter_of_year"],
+        )
+        for expression in vocabulary_module.TEMPORAL_OPTIONAL_KEYS.values():
+            self.assertEqual(expression, frozenset({"year"}))
+
 
 class TestInferenceRules(unittest.TestCase):
     def test_view_rules_are_all_inference_rules(self):

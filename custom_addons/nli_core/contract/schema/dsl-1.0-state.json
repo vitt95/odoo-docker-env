@@ -220,16 +220,20 @@
                 "current_quarter",
                 "current_week",
                 "current_year",
+                "half_of_year",
                 "last_n_days",
                 "last_n_months",
                 "last_n_weeks",
+                "month_of_year",
                 "next_n_days",
                 "previous_month",
                 "previous_quarter",
                 "previous_week",
                 "previous_year",
+                "quarter_of_year",
                 "today",
                 "tomorrow",
+                "year_of",
                 "year_to_date",
                 "yesterday"
               ]
@@ -246,6 +250,9 @@
             },
             "to": {
               "type": "string"
+            },
+            "year": {
+              "type": "number"
             }
           },
           "required": [

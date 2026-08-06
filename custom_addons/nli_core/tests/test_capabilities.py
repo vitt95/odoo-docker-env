@@ -795,17 +795,45 @@ class TestQuelloCheNonSiPuoDire(BancoCapacita):
         self.assertIn("not", vocabulary.CONNECTIVES)
         self.assertEqual(set(structural.COMBINE_VALUES), {"all", "any"})
 
-    def test_i_trimestri_nominati_e_i_mesi_nominati_non_esistono(self):
-        """*«Nel primo trimestre»*, *«a gennaio»*.
+    def test_i_trimestri_nominati_e_i_mesi_nominati_ora_si_dicono(self):
+        """*«Nel primo trimestre»*, *«a gennaio»* — **D141**.
 
-        Ci sono `current_quarter` e `previous_quarter`, che sono un'altra cosa: dicono
-        *«questo»* e *«scorso»*, non *«il primo»*. Un mese nominato si puo' dire con
-        `absolute_range` — provato sopra — ma solo se qualcuno ne calcola gli estremi,
-        e il prompt lo vieta proprio al modello. **E' una contraddizione fra il prompt
-        e il vocabolario**, ed e' da deliberare.
+        Questa prova diceva il contrario fino al 6 agosto 2026, e diceva il vero: il
+        vocabolario aveva `current_quarter` e `previous_quarter`, che dicono *«questo»*
+        e *«scorso»*, e nessun modo di dire *«il primo»*. Il modello, che qualcosa deve
+        dire, diceva la forma piu' vicina, e il prodotto rispondeva *«nel primo
+        trimestre»* con i dati del **terzo** (§46.1).
+
+        Il buco era dichiarato qui e in `ai/17` §3 come contraddizione fra il prompt
+        (*«never resolve a date»*) e il vocabolario. D141 lo chiude dal lato del
+        vocabolario, che e' il lato dove il modello non deve indovinare niente: dice
+        **quale** mese, e chi conosce fuso, settimana ed esercizio fiscale calcola.
         """
-        for nominato in ("q1", "q2", "q3", "q4", "january", "gennaio", "named_month"):
-            self.assertNotIn(nominato, vocabulary.TEMPORAL_EXPRESSIONS)
+        self.assertEqual(
+            sorted(vocabulary.TEMPORAL_NAMED),
+            ["half_of_year", "month_of_year", "quarter_of_year", "year_of"])
+        for nominato in vocabulary.TEMPORAL_NAMED:
+            self.assertIn(nominato, vocabulary.TEMPORAL_EXPRESSIONS)
+
+    def test_i_semestri_sono_entrati_perche_il_prodotto_e_peggiorato(self):
+        """*«Nel secondo semestre»* — entrato per una ragione opposta alle altre tre.
+
+        Le altre mancavano e la frase non si poteva dire. Questa **si poteva gia'
+        rifiutare**, e il rifiuto era l'esito giusto. Poi D141 ha dato al modello
+        `quarter_of_year`, e il modello ha risposto *«secondo semestre»* col secondo
+        **trimestre** — tre mesi dei dati sbagliati, 3 giri su 3, e con una riga del
+        prompt che glielo vietava esplicitamente (§46.6).
+
+        E' §3.9 alla lettera: l'espressivita' si allarga quando i dati la chiedono. La
+        richiesta, qui, e' arrivata sotto forma di risposta sbagliata.
+
+        Cosa resta fuori: bimestri, quadrimestri, decenni. Il rischio che il modello
+        ci ripieghi sopra e' lo stesso, e non e' chiuso da questa decisione — vedi
+        §46.7, la rete deterministica, che resta da deliberare.
+        """
+        self.assertIn("half_of_year", vocabulary.TEMPORAL_EXPRESSIONS)
+        for assente in ("two_month_period", "bimestre", "quadrimestre", "decade"):
+            self.assertNotIn(assente, vocabulary.TEMPORAL_EXPRESSIONS)
 
     def test_le_aggregazioni_annidate_non_esistono(self):
         """*«La media dei totali per cliente»* — aggregazioni annidate.

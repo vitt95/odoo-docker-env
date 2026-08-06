@@ -3539,3 +3539,178 @@ della finestra per il catalogo — e lascia spazio alla risposta.
 
 `ai/19` misura quanto costa in tempo: leggere quei 4 077 gettoni sono 17 secondi sul 9b
 e 3,7 sul 2b, e sono la ragione vera dei tempi di risposta di oggi.
+
+---
+
+## §46 — D141: i periodi nominati entrano nel vocabolario
+
+6 agosto 2026. È il punto P0 di `restart.md`, e la sonda che segue dice che era il punto
+giusto.
+
+### §46.1 — Cosa fa oggi il prodotto
+
+Sei frasi, sul database `db`, col modello vero, `context` 8192 su tutti e due i lati.
+Ogni riga è il periodo che Odoo ha **davvero** interrogato:
+
+| la frase | il periodo interrogato | l'esito |
+|---|---|---|
+| *«i lead creati nel primo trimestre»* | 1 lug – 30 set | il **terzo** trimestre, 26 record |
+| *«i lead creati a gennaio»* | 1 – 31 ago | **agosto**, 0 record |
+| *«i lead creati nel 2025»* | tutto il **2026** | 39 record |
+| *«i lead creati a marzo 2026»* | 1 – 31 ago | **agosto**, 0 record |
+| *«i lead creati nel secondo semestre»* | — | `not_understood` |
+| *«i lead creati questo trimestre»* | 1 lug – 30 set | giusto |
+
+**Quattro risposte sbagliate su sei, e nessuna lo dichiara.** È la forma di guasto che
+**D2** (il cancello che vieta qualunque scrittura sui dati finché la Fase 2 non è
+misurata e superata) esiste per tenere fuori: non un errore, un numero plausibile e
+sbagliato. Chi legge *«26 record»* non ha modo di sapere che ha davanti il terzo
+trimestre.
+
+*«A marzo 2026»* è la peggiore delle quattro, perché l'utente aveva detto **anche
+l'anno**: nessuna ambiguità da risolvere, e il prodotto ha risposto agosto.
+
+### §46.2 — La causa, e non è il modello
+
+Il vocabolario temporale (§9.2) ha `current_quarter` e `previous_quarter`, che dicono
+*«questo»* e *«scorso»*. Non ha modo di dire *«il primo»*. Non ha i mesi nominati né gli
+anni nominati. L'unico mattone che li direbbe è `absolute_range`, che vuole i due
+estremi — e il prompt vieta al modello di calcolarli (*«never resolve a date»*).
+
+**È la contraddizione che `ai/17` §3 aveva già trovato e lasciato da deliberare**: o
+entrano le espressioni nominate, o la regola del prompt fa un'eccezione dichiarata. La
+prova pura `test_capabilities.test_i_trimestri_nominati_e_i_mesi_nominati_non_esistono`
+la teneva scritta e verde.
+
+Messo davanti a una cosa che non può dire, il modello dice quella di forma più vicina:
+`current_month` per *«gennaio»*, `current_quarter` per *«il primo trimestre»*,
+`current_year` per *«nel 2025»*. Non è una caduta del modello, è un vocabolario che non
+contiene la parola.
+
+### §46.3 — La decisione
+
+**D141 — i periodi nominati sono simboli del contratto.** Entrano tre espressioni:
+
+| espressione | parametri | dice |
+|---|---|---|
+| `month_of_year` | `n` 1–12, `year` facoltativo | *«a gennaio»*, *«a marzo 2026»* |
+| `quarter_of_year` | `n` 1–4, `year` facoltativo | *«nel primo trimestre»*, *«nel Q1 2025»* |
+| `year_of` | `n` l'anno, quattro cifre | *«nel 2025»* |
+
+**Perché non l'eccezione al prompt.** Risolvere una data non è un calcolo che si fa a
+mente: dipende dal fuso dell'utente, dal primo giorno della settimana e dall'inizio
+dell'esercizio fiscale — i tre parametri d'installazione di §9.2, che il modello non
+conosce e non deve conoscere. Un modello che scrive `2026-01-01` sta indovinando che
+l'anno dell'azienda cominci a gennaio. Con `month_of_year(1)` il modello dice **quale
+mese**, che è ciò che ha capito dalla frase, e chi conosce i parametri calcola. La
+divisione del lavoro resta quella di tutto il resto del sistema.
+
+**L'anno che la frase non dice è l'anno fiscale corrente.** *«A gennaio»* detto oggi è
+gennaio dell'esercizio in corso, come `current_year` e `year_to_date` (**D91**). In
+un'azienda il cui esercizio parte a luglio, *«il primo trimestre»* è luglio–settembre:
+è ciò che intende chi ci lavora, ed è l'unica scelta coerente con le espressioni che
+già ci sono. Resta **simbolico** come tutto il resto (§9.2): la stessa domanda salvata
+e rieseguita l'anno prossimo risponde per l'anno prossimo.
+
+**L'ambiguità che resta è dichiarata, non nascosta.** *«A gennaio»* detto a dicembre può
+voler dire il gennaio passato o quello che viene; la regola sceglie l'esercizio in
+corso, sempre, e l'interpretazione mostra gli estremi risolti (**D67**, **D136**), quindi
+chi legge vede *«2026-01-01 – 2026-01-31»* e può correggere. Una regola prevedibile che
+si vede è meglio di una regola intelligente che indovina.
+
+### §46.4 — Cosa questo **non** copre, e perché va bene
+
+*«Nel secondo semestre»* resta fuori: i semestri non entrano, perché nessuna misura li
+ha mai chiesti e §3.9 aggiunge espressività quando i dati la chiedono. Oggi quella frase
+risponde `not_understood`, che è il comportamento giusto — un rifiuto, non un numero
+sbagliato.
+
+**La rete contro il ripiego silenzioso non è in questa decisione.** Si potrebbe
+pretendere che l'espressione scelta dal modello sia *fondata* nel frammento — **D105**
+applicato al valore invece che al riferimento — e rifiutare o riparare quando il
+frammento nomina un periodo che l'espressione non è. Serve un lessico deterministico dei
+mesi e dei trimestri, cioè lingua nel codice, subito dopo che i pacchetti lingua l'hanno
+tolta di mezzo. **Si misura prima**: il ripiego di oggi nasce dalla parola che manca, e
+se D141 la mette a disposizione il ripiego non ha più ragione di esistere. Se dopo la
+misura resta, la rete si delibera con i numeri in mano.
+
+### §46.5 — Il rischio che D141 introduce
+
+Un mattone nuovo si può usare male: il modello potrebbe scrivere `month_of_year(8)` dove
+la frase dice *«questo mese»*, che oggi è giusto e diventerebbe sbagliato al primo
+settembre. È la ragione per cui la sonda delle sei frasi si rifà **dopo**, insieme alle
+frasi che oggi funzionano — una misura che guarda solo i casi riparati non è una misura.
+
+### §46.6 — La misura dopo, e la riga di prompt che spostava tutto
+
+Stesse sei frasi, stesso database, `context` 8192, **tre giri per cella** dove il
+risultato contava:
+
+| la frase | prima | dopo |
+|---|---|---|
+| *«nel primo trimestre»* | 1 lug – 30 set (26 rec) | **1 gen – 31 mar**, 3/3 |
+| *«a gennaio»* | 1 – 31 ago | **1 – 31 gen**, 3/3 |
+| *«nel 2025»* | tutto il 2026 | **tutto il 2025**, 3/3 |
+| *«a marzo 2026»* | 1 – 31 ago | **1 – 31 mar 2026**, 3/3 |
+| *«questo trimestre»* | 1 lug – 30 set (giusto) | **invariato**, 3/3 |
+| *«nel secondo semestre»* | `not_understood` | `not_understood` |
+
+**Quattro risposte sbagliate diventano quattro risposte giuste, e nessuna di quelle
+che funzionavano si è mossa.** I tempi sono 5–7 secondi a turno.
+
+**Ma la prima stesura della riga di prompt ha rotto qualcos'altro, e la prova
+controfattuale è il pezzo che vale.** Con quella riga, *«i lead creati questo
+trimestre»* — che rispondeva 26 record — ha cominciato a chiedere *«quale data
+intendi?»*, 3 giri su 3: il modello metteva il periodo su `date_open` invece che su
+`create_date`. Rimesso il prompt vecchio e rimisurato: 3/3 su `create_date`. **Non era
+il modello, era il prompt**, esattamente come impone di verificare la regola di lavoro
+nata da §18.
+
+La causa: la riga stava fra la regola *«never resolve a date»* e la regola dell'ancora
+del tempo, e nominava *«questo»*, *«corrente»*, *«in corso»* — cioè parlava anche di
+**dove** va la condizione, dentro una regola che doveva parlare solo di **quale**
+periodo. Spostata dopo la regola dell'ancora, tolta ogni parola sull'attributo e
+aggiunta la frase *«this chooses WHICH period, never which attribute carries it»*:
+tutte e tre le celle tornano giuste.
+
+**Lezione, oltre al caso:** una riga aggiunta a un prompt non aggiunge soltanto. Un
+prompt è un testo che il modello legge intero, e una regola nuova compete con quelle
+vicine. Un'aggiunta al prompt si misura **anche sulle frasi che già funzionavano**.
+
+### §46.7 — Il semestre: il rischio di §46.5, misurato il giorno stesso
+
+*«Nel secondo semestre»* era `not_understood` prima di D141 — un rifiuto onesto. Appena
+il modello ha avuto `quarter_of_year`, l'ha risposta con il **secondo trimestre**: tre
+mesi dei dati sbagliati, 3 giri su 3. È il rischio scritto in §46.5 due ore prima,
+verificatosi subito: **un mattone nuovo si usa anche dove non va**.
+
+Una riga di prompt che lo vietava per nome (*«un periodo che nessuna espressione sa
+dire è un chiarimento, mai il più vicino»*) **non ha retto**: 3/3 ancora sul trimestre.
+
+Quindi `half_of_year` entra nel vocabolario, con `n` fra 1 e 2 e un semestre che è due
+trimestri esatti — proprietà provata, perché due simboli che descrivono lo stesso
+periodo e divergono darebbero due risposte diverse alla stessa domanda detta in due
+modi. Dopo: *«nel secondo semestre»* torna `not_understood`, cioè al comportamento
+onesto di partenza. Il modello non usa ancora il simbolo nuovo su quella frase, e non è
+un difetto da inseguire oggi: è un rifiuto, non un numero sbagliato.
+
+**Cosa resta aperto, e va deliberato con questi numeri in mano.** Bimestri,
+quadrimestri, decenni: la stessa forma. Aggiungere simboli finché non ne mancano più
+non è una strategia — il ripiego silenzioso è la classe di guasto, e la classe si
+chiude con una **rete**, non con un elenco. La rete è quella descritta in §46.4:
+pretendere che l'espressione scelta sia fondata nel frammento, **D105** applicato al
+valore. Serve un lessico dei periodi, cioè lingua, e va messa dove sta la lingua di
+questo prodotto — il dizionario e i suoi livelli (**D108**), non il sorgente. Costo e
+forma da valutare; l'argomento per farlo ora c'è, ed è questo paragrafo.
+
+### §46.8 — Le verifiche
+
+* **534 test in zona pura** (erano 516): il risolutore dei quattro periodi nominati,
+  l'anno fiscale, il semestre uguale a due trimestri, gli intervalli dei parametri al
+  livello 2, e la prova che il prompt **mostra la forma** di ogni periodo nominato —
+  quella che fallisce se qualcuno lo scollega (§38).
+* **258 test Odoo**, `check` verde, corpus 918/918, copertura 100%.
+* Schemi JSON rigenerati da `tools/dsl/emit_schema.py`: il contratto resta la fonte.
+* La batteria sul campo ha ora sei frasi nuove nella famiglia `date`, e l'attesa dice
+  **quale** periodo: un'attesa che si accontentasse di *«c'è un periodo»* avrebbe
+  contato giuste tutte e quattro le risposte sbagliate di §46.1.

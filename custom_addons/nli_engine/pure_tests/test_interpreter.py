@@ -50,6 +50,29 @@ class TestPrompt(unittest.TestCase):
         for view in vocabulary.VIEWS:
             self.assertIn(view, message)
 
+    def test_a_named_period_is_shown_with_its_shape_not_only_listed(self):
+        """D141 — il simbolo nel vocabolario non basta, deve arrivare al modello.
+
+        Le espressioni entrano nella lista da sole, perche' il prompt la costruisce da
+        `TEMPORAL_EXPRESSIONS`. Ma il difetto di §46.1 non era una lista corta: era che
+        il modello, davanti a *«nel primo trimestre»*, sceglieva la forma piu' vicina
+        che conosceva. Un nome in un elenco di venti simboli non gli dice quando usarlo;
+        la forma scritta si'.
+
+        E' la prova che manca ogni volta che qualcosa in questo progetto viene
+        dichiarato, provato e non collegato (§38): se qualcuno toglie la riga dal
+        prompt, il vocabolario resta perfetto e il prodotto torna a rispondere col
+        terzo trimestre.
+        """
+        message = " ".join(
+            system_message(Request(utterance="x", catalogue={})).split())
+        for expression in vocabulary.TEMPORAL_NAMED:
+            self.assertIn(f'"expression":"{expression}"', message,
+                          f"{expression} e' nel vocabolario ma il prompt non ne mostra "
+                          f"la forma: il modello non sapra' quando usarlo")
+        self.assertIn('"n":1', message)
+        self.assertIn('"year":2026', message)
+
     def test_the_shape_of_an_operation_is_shown_not_implied(self):
         """The measurement that produced this test: without the shape the model
         emitted `type` and `field`, structurally plausible and entirely wrong."""

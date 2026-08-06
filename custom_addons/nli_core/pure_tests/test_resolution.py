@@ -71,6 +71,94 @@ class TestCalendar(unittest.TestCase):
             fiscal_year_start_day=1)
         self.assertEqual(calendar_module.fiscal_year_start(june), date(2025, 7, 1))
 
+    # --- D141: named periods ------------------------------------------------
+
+    def test_a_named_month_is_that_month(self):
+        """*"In January"* — the case that answered with August.
+
+        The reference instant is 15 July 2026, so *"January"* without a year is
+        January 2026: the month inside the fiscal year in progress.
+        """
+        window = self.resolve("month_of_year", n=1)
+        self.assertEqual(window.start, date(2026, 1, 1))
+        self.assertEqual(window.end, date(2026, 2, 1))
+
+    def test_a_named_month_takes_the_year_the_sentence_gave(self):
+        """*"In March 2026"* — the worst of the four failures of §46.1, because the
+        user had said the year and the product still answered August."""
+        window = self.resolve("month_of_year", n=3, year=2025)
+        self.assertEqual(window.start, date(2025, 3, 1))
+        self.assertEqual(window.end, date(2025, 4, 1))
+
+    def test_a_named_quarter_is_that_quarter(self):
+        """*"In the first quarter"* — 26 records of the third quarter, before D141."""
+        window = self.resolve("quarter_of_year", n=1)
+        self.assertEqual(window.start, date(2026, 1, 1))
+        self.assertEqual(window.end, date(2026, 4, 1))
+        fourth = self.resolve("quarter_of_year", n=4)
+        self.assertEqual(fourth.start, date(2026, 10, 1))
+        self.assertEqual(fourth.end, date(2027, 1, 1))
+
+    def test_a_named_half_is_six_months(self):
+        """*"Nel secondo semestre"* — la frase che è **peggiorata** prima di essere
+        riparata: era `not_understood`, e con i trimestri disponibili e i semestri no
+        il modello l'ha risposta col secondo **trimestre** (§46.6)."""
+        first = self.resolve("half_of_year", n=1)
+        self.assertEqual(first.start, date(2026, 1, 1))
+        self.assertEqual(first.end, date(2026, 7, 1))
+        second = self.resolve("half_of_year", n=2)
+        self.assertEqual(second.start, date(2026, 7, 1))
+        self.assertEqual(second.end, date(2027, 1, 1))
+
+    def test_a_named_half_is_two_quarters(self):
+        """La proprietà che tiene insieme i due simboli: se un giorno divergono, il
+        prodotto risponderà due periodi diversi alla stessa domanda detta in due modi."""
+        half = self.resolve("half_of_year", n=2)
+        third = self.resolve("quarter_of_year", n=3)
+        fourth = self.resolve("quarter_of_year", n=4)
+        self.assertEqual(half.start, third.start)
+        self.assertEqual(half.end, fourth.end)
+
+    def test_a_named_year_is_that_year(self):
+        """*"In 2025"* — answered with the whole of 2026 before D141."""
+        window = self.resolve("year_of", n=2025)
+        self.assertEqual(window.start, date(2025, 1, 1))
+        self.assertEqual(window.end, date(2026, 1, 1))
+
+    def test_a_named_period_follows_the_fiscal_year_like_every_other(self):
+        """D141 with D91's argument: in a company whose year starts in July, the
+        **first quarter** is July to September and *"January"* is the January of the
+        year in progress — which, on 15 July 2026, is January **2027**.
+
+        Answering with the calendar quarter would produce a wrong number of perfectly
+        credible appearance, which is the whole reason `current_year` is fiscal.
+        """
+        quarter = self.resolve("quarter_of_year", FISCAL_JULY, n=1)
+        self.assertEqual(quarter.start, date(2026, 7, 1))
+        self.assertEqual(quarter.end, date(2026, 10, 1))
+        january = self.resolve("month_of_year", FISCAL_JULY, n=1)
+        self.assertEqual(january.start, date(2027, 1, 1))
+        self.assertEqual(january.end, date(2027, 2, 1))
+
+    def test_a_named_year_with_a_fiscal_year_is_that_fiscal_year(self):
+        """*"In 2025"* in a July company is the 2025 **exercise**: July 2025 to June
+        2026. It is the same reading `current_year` already gives that company."""
+        window = self.resolve("year_of", FISCAL_JULY, n=2025)
+        self.assertEqual(window.start, date(2025, 7, 1))
+        self.assertEqual(window.end, date(2026, 7, 1))
+
+    def test_a_month_that_is_not_a_month_does_not_reach_a_range(self):
+        """Level 2 refuses `n=13`; this is the second lock, on the Resolver's side.
+
+        A symbol whose parameter is out of range has no window, and returning a
+        plausible one — December, say — would be the failure mode of §46.1 all over
+        again.
+        """
+        for expression, out_of_range in (("month_of_year", 13), ("quarter_of_year", 0)):
+            with self.subTest(expression=expression):
+                with self.assertRaises(calendar_module.UnresolvableExpression):
+                    self.resolve(expression, n=out_of_range)
+
     def test_year_to_date_is_the_partial_year(self):
         """D91 and V-D91-1: from the fiscal start to today, not the whole year."""
         window = self.resolve("year_to_date", FISCAL_JULY)

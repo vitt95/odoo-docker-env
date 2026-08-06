@@ -74,6 +74,17 @@ Rules, all of them absolute:
   2026, which is a different question and almost always empty;
 - NEVER drop a time expression. If you cannot place it, ask. A sentence that names a
   period and an answer that does not is a wrong answer, not a shorter one;
+- "primo/secondo/terzo/quarto trimestre" is
+  {"kind":"temporal","expression":"quarter_of_year","n":1}, a month by name is
+  {"kind":"temporal","expression":"month_of_year","n":1}, a year by number is
+  {"kind":"temporal","expression":"year_of","n":2025}. Add "year" only when the
+  sentence gives it: "a marzo 2026" is {"kind":"temporal",
+  "expression":"month_of_year","n":3,"year":2026}. "Primo/secondo semestre" is
+  {"kind":"temporal","expression":"half_of_year","n":2}. This chooses WHICH period,
+  never which attribute carries it: that stays the rule above;
+- a period none of these can say — "bimestre", "quadrimestre" — is a clarification.
+  Never the nearest one: three months of the wrong data look exactly like three months
+  of the right data;
 - never choose a direction for an ordering. "ordinati per data" names no direction:
   add_order carries only the ref, and the system derives the direction from the type
   of the attribute. Add "direction" ONLY when the user said which way: "dal piu'

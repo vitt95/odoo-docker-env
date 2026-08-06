@@ -145,11 +145,30 @@ def _differenze(attesa, esito):
         differenze.append(
             f"{len(condizioni)} condizioni invece di {attesa['condizioni']}")
 
-    if attesa.get("periodo"):
-        temporali = [condizione for condizione in condizioni
-                     if (condizione.get("value") or {}).get("kind") == "temporal"]
-        if not temporali:
-            differenze.append("nessuna condizione porta un periodo")
+    temporali = [(condizione.get("value") or {}) for condizione in condizioni
+                 if (condizione.get("value") or {}).get("kind") == "temporal"]
+
+    if attesa.get("periodo") and not temporali:
+        differenze.append("nessuna condizione porta un periodo")
+
+    # **Quale** periodo, non solo che ce ne sia uno (D141). E' la differenza fra una
+    # misura che vede il difetto di `00` §46.1 e una che lo conta giusto: *«nel primo
+    # trimestre»* portava un periodo — il terzo — e passava.
+    if "espressione" in attesa:
+        voluta, _, quale = attesa["espressione"].partition(":")
+        trovate = [(valore.get("expression"), valore.get("n"), valore.get("year"))
+                   for valore in temporali]
+        atteso = (voluta, int(quale) if quale else None, attesa.get("anno"))
+        if not any(nome == atteso[0]
+                   and (atteso[1] is None or numero == atteso[1])
+                   and (atteso[2] is None or anno == atteso[2])
+                   for nome, numero, anno in trovate):
+            descritte = ", ".join(
+                f"{nome}({numero})" if numero is not None else str(nome)
+                for nome, numero, _ in trovate) or "nessun periodo"
+            atteso_scritto = attesa["espressione"] + (
+                f" anno {attesa['anno']}" if "anno" in attesa else "")
+            differenze.append(f"periodo {descritte} invece di {atteso_scritto}")
 
     return differenze
 

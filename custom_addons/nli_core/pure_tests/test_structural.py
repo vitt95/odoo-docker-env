@@ -332,6 +332,57 @@ class TestLevel2(unittest.TestCase):
         }])
         self.assertEqual(structural.validate_envelope(candidate), [])
 
+    # --- D141: named periods ------------------------------------------------
+
+    def temporale(self, **value):
+        return envelope("operations", operations=[{
+            "op": "add_condition", "condition": {
+                "ref": "ordini.data", "predicate": "within",
+                "value": {"kind": "temporal", **value},
+            },
+        }])
+
+    def test_a_named_period_passes_with_and_without_its_year(self):
+        """D141 — *"in the first quarter"*, *"in March 2026"*."""
+        self.assertEqual(structural.validate_envelope(
+            self.temporale(expression="quarter_of_year", n=1)), [])
+        self.assertEqual(structural.validate_envelope(
+            self.temporale(expression="month_of_year", n=3, year=2026)), [])
+        self.assertEqual(structural.validate_envelope(
+            self.temporale(expression="year_of", n=2025)), [])
+
+    def test_a_named_period_without_which_one_names_nothing(self):
+        """`quarter_of_year` alone is `current_quarter` with extra steps."""
+        self.assertIn("missing_temporal_parameter", codes(
+            structural.validate_envelope(self.temporale(expression="quarter_of_year"))))
+
+    def test_a_month_outside_the_twelve_is_refused_here(self):
+        """Thirteen is not a month, and five is not a quarter.
+
+        The range belongs to level 2 because it is part of what the symbol means, not
+        of what the data contains: no installation has a thirteenth month. Letting it
+        through would leave the Resolver to either crash or pick something plausible,
+        and §46.1 is a page about what plausible costs.
+        """
+        for expression, out_of_range in (("month_of_year", 13), ("month_of_year", 0),
+                                         ("quarter_of_year", 5)):
+            with self.subTest(expression=expression, n=out_of_range):
+                self.assertIn("temporal_parameter_out_of_range", codes(
+                    structural.validate_envelope(
+                        self.temporale(expression=expression, n=out_of_range))))
+
+    def test_a_year_on_an_expression_that_has_no_year_is_refused(self):
+        """*"the last 30 days of 2025"* is not a period this vocabulary can say, and
+        accepting the key while ignoring it is how a dropped fragment happens."""
+        self.assertIn("unknown_temporal_parameter", codes(
+            structural.validate_envelope(
+                self.temporale(expression="last_n_days", n=30, year=2025))))
+
+    def test_a_year_that_is_not_a_year_is_refused(self):
+        self.assertIn("temporal_parameter_out_of_range", codes(
+            structural.validate_envelope(
+                self.temporale(expression="month_of_year", n=3, year=26))))
+
     def test_invented_aggregation(self):
         candidate = envelope("operations", operations=[
             {"op": "add_measure", "ref": "ordini.importo", "function": "median"},

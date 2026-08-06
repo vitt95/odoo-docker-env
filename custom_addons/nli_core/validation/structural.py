@@ -44,6 +44,8 @@ from ..contract.vocabulary import (
     SELECTORS,
     SUPPORTED_VERSIONS,
     TEMPORAL_EXPRESSIONS,
+    TEMPORAL_OPTIONAL_KEYS,
+    TEMPORAL_PARAMETER_RANGE,
     TEMPORAL_REQUIRED_KEYS,
     VALUE_KINDS,
     VALUE_OPTIONAL_KEYS,
@@ -434,6 +436,56 @@ def _check_symbol(
         )
 
 
+#: A year is four digits. Not a judgement about the data — 1912 is a year and this
+#: system has nothing to say about whether records exist there — only about what is a
+#: year at all: `year: 26` is a typo, and executing it as the year 26 would answer a
+#: question nobody asked.
+_YEAR_RANGE = (1000, 9999)
+
+
+def _named_period_parameters(
+    value: dict, expression: object, path: str, out: _Collector
+) -> None:
+    """The parameters of a named period, D141.
+
+    Two checks, and both are about the **symbol**, not about the data. `n` outside its
+    interval names no period: there is no thirteenth month in any installation, and a
+    `month_of_year(13)` that got through would leave the Resolver to either crash or
+    pick something plausible. And a key an expression does not admit — `year` on
+    `last_n_days` — is a fragment of the sentence that would be silently dropped, which
+    is the one thing **D111** forbids for time.
+    """
+    admitted = TEMPORAL_PARAMETER_RANGE.get(expression)
+    if admitted and "n" in value:
+        low, high = admitted
+        which = value["n"]
+        if not isinstance(which, int) or isinstance(which, bool) or not low <= which <= high:
+            out.add(
+                "temporal_parameter_out_of_range",
+                f"{path}.n",
+                f"'{expression}' admits {low}-{high}, not {which!r}",
+            )
+
+    optional = TEMPORAL_OPTIONAL_KEYS.get(expression, frozenset())
+    if "year" in value:
+        if "year" not in optional:
+            out.add(
+                "unknown_temporal_parameter",
+                f"{path}.year",
+                f"'{expression}' takes no year; only "
+                f"{sorted(TEMPORAL_OPTIONAL_KEYS)} do",
+            )
+        else:
+            year = value["year"]
+            if (not isinstance(year, int) or isinstance(year, bool)
+                    or not _YEAR_RANGE[0] <= year <= _YEAR_RANGE[1]):
+                out.add(
+                    "temporal_parameter_out_of_range",
+                    f"{path}.year",
+                    f"{year!r} is not a four-digit year",
+                )
+
+
 def _level2_value(value: object, path: str, out: _Collector) -> None:
     if not isinstance(value, dict):
         return
@@ -458,6 +510,7 @@ def _level2_value(value: object, path: str, out: _Collector) -> None:
                         f"{path}",
                         f"'{expression}' requires '{key}'",
                     )
+        _named_period_parameters(value, expression, path, out)
     if "resolver" in value:
         resolver = value["resolver"]
         # A resolver is a rule declared in the dictionary (§9.3), not a symbol of

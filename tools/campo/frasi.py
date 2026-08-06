@@ -164,6 +164,26 @@ FRASI = [
     (DATE, "quanti lead creati oggi", {"misure": {"count"}, "periodo": True},
      ("crm_lead.create_date",)),
 
+    # I periodi **nominati** — D141. Qui l'attesa dice **quale** espressione, e non
+    # solo che un periodo ci sia: sono esattamente le frasi a cui il prodotto
+    # rispondeva col trimestre sbagliato senza dirlo (`00` §46.1), e un'attesa che si
+    # accontentasse di «c'e' un periodo» le avrebbe contate giuste tutte e quattro.
+    (DATE, "i lead creati nel primo trimestre", {"espressione": "quarter_of_year:1"},
+     ("crm_lead.create_date",)),
+    (DATE, "i lead creati nel quarto trimestre", {"espressione": "quarter_of_year:4"},
+     ("crm_lead.create_date",)),
+    (DATE, "i lead creati a gennaio", {"espressione": "month_of_year:1"},
+     ("crm_lead.create_date",)),
+    (DATE, "i lead creati a marzo 2026",
+     {"espressione": "month_of_year:3", "anno": 2026}, ("crm_lead.create_date",)),
+    (DATE, "i lead creati nel 2025", {"espressione": "year_of:2025"},
+     ("crm_lead.create_date",)),
+    # Il controllo dell'altro verso: *«questo»* resta `current_*`. Senza, un modello
+    # che traducesse ogni periodo in uno nominato passerebbe la misura peggiorando il
+    # prodotto — al primo settembre `month_of_year(8)` e' il mese sbagliato.
+    (DATE, "i lead creati in questo mese", {"espressione": "current_month"},
+     ("crm_lead.create_date",)),
+
     # -- LIMITI DICHIARATI -----------------------------------------------------
     # Queste frasi chiedono cose che il contratto **non ammette** (`ai/17` §3, e la
     # classe `TestQuelloCheNonSiPuoDire` del banco). L'esito giusto e' un rifiuto
@@ -175,8 +195,15 @@ FRASI = [
     (LIMITI, "esportami i lead in excel", {"esito": "out_of_scope"}, ()),
     (LIMITI, "i lead che non sono di milano", {"esito": "clarification"},
      ("crm_lead.city",)),
-    (LIMITI, "i lead creati nel primo trimestre", {"esito": "clarification"},
-     ("crm_lead.create_date",)),
-    (LIMITI, "i lead creati a gennaio", {"esito": "clarification"},
+    # **I periodi nominati sono usciti da qui il 6 agosto 2026.** Stavano fra i limiti
+    # perche' il vocabolario non li sapeva dire, e l'attesa era un rifiuto. Ma il
+    # prodotto non rifiutava: rispondeva col trimestre corrente, cioe' col trimestre
+    # sbagliato, e queste due righe lo contavano come «diverso» accanto a un limite
+    # dichiarato — la stessa forma di mascheramento di §4. Ora si dicono (D141) e
+    # stanno fra le date, con l'attesa che nomina **quale** periodo.
+    #
+    # Il semestre resta qui, e resta un rifiuto: §3.9 allarga l'espressivita' quando i
+    # dati la chiedono, e i semestri non li ha chiesti nessuna misura.
+    (LIMITI, "i lead creati nel secondo semestre", {"esito": "clarification"},
      ("crm_lead.create_date",)),
 ]

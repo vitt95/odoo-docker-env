@@ -237,7 +237,9 @@ VALUE_OPTIONAL_KEYS: dict[str, frozenset[str]] = {
     "range": frozenset(),
     "enum": frozenset(),
     "boolean": frozenset(),
-    "temporal": frozenset({"n", "date", "from", "to"}),
+    # `year` is here for the named periods of D141; which expressions actually admit
+    # it is a level 2 question, `TEMPORAL_OPTIONAL_KEYS`.
+    "temporal": frozenset({"n", "date", "from", "to", "year"}),
     "reference": frozenset(),
 }
 
@@ -303,6 +305,35 @@ TEMPORAL_PARAMETRIC = frozenset({
     "last_n_days", "last_n_weeks", "last_n_months", "next_n_days",
 })
 
+#: **The periods a sentence names instead of pointing at** — D141. `current_quarter`
+#: says *"this one"*; these say *which one*: `quarter_of_year(1)` is the first quarter,
+#: `month_of_year(3)` is March, `year_of(2025)` is the 2025 exercise.
+#:
+#: They exist because without them the model had nothing to say and said the nearest
+#: shape it had: on 6 August 2026 the product answered *"the leads created in the first
+#: quarter"* with the **third** quarter, 26 records, and *"in January"* with August.
+#: Four wrong answers out of six sentences, none of them declared (§46.1).
+#:
+#: **Why not `absolute_range`, which could already express them.** Because its two
+#: endpoints have to be computed, and computing them needs the time zone, the first day
+#: of the week and the start of the fiscal year — the three installation parameters of
+#: §9.2. The model knows none of the three, which is exactly why the prompt forbids it
+#: to resolve dates. Here the model says *which* month; whoever holds the parameters
+#: turns that into a window.
+#:
+#: `year` is optional on the two that admit it: a sentence names the year less often
+#: than it names the month, and the year it omits is the fiscal year in progress.
+#: `half_of_year` entered on the same day as the other three, and for the opposite
+#: reason: not because a sentence could not be said, but because giving the model
+#: `quarter_of_year` **created** a wrong answer. *"Nel secondo semestre"* used to be
+#: `not_understood`, which is an honest outcome; with quarters available and no halves,
+#: the model answered it with the second **quarter** — three months of the wrong data,
+#: 3/3 runs, and an instruction in the prompt telling it not to did not stop it (§46.6).
+#: §3.9 adds expressiveness when the data asks for it. This is the data asking.
+TEMPORAL_NAMED = frozenset({
+    "month_of_year", "quarter_of_year", "half_of_year", "year_of",
+})
+
 #: Absolute expressions carry `date`, or `from` and `to`. They appear only when
 #: the user gave a date (§9.2).
 TEMPORAL_ABSOLUTE_SINGLE = frozenset({"absolute"})
@@ -314,6 +345,7 @@ TEMPORAL_EXPRESSIONS = (
     | TEMPORAL_PREVIOUS
     | TEMPORAL_TO_DATE
     | TEMPORAL_PARAMETRIC
+    | TEMPORAL_NAMED
     | TEMPORAL_ABSOLUTE_SINGLE
     | TEMPORAL_ABSOLUTE_RANGE
 )
@@ -321,8 +353,30 @@ TEMPORAL_EXPRESSIONS = (
 #: Required extra keys per temporal expression.
 TEMPORAL_REQUIRED_KEYS: dict[str, frozenset[str]] = {
     **{name: frozenset({"n"}) for name in TEMPORAL_PARAMETRIC},
+    **{name: frozenset({"n"}) for name in TEMPORAL_NAMED},
     "absolute": frozenset({"date"}),
     "absolute_range": frozenset({"from", "to"}),
+}
+
+#: Keys an expression **may** carry. Optional is not the same as unknown: a `year` on
+#: `last_n_days` names nothing, and passing it silently would be one more way of
+#: accepting something nobody can execute.
+TEMPORAL_OPTIONAL_KEYS: dict[str, frozenset[str]] = {
+    "month_of_year": frozenset({"year"}),
+    "quarter_of_year": frozenset({"year"}),
+    "half_of_year": frozenset({"year"}),
+}
+
+#: The interval `n` admits, inclusive on both sides — part of the symbol's arity, like
+#: `n` itself. There is no thirteenth month, and a `month_of_year(13)` that reached the
+#: Resolver could only crash or invent a window.
+#:
+#: `year_of` is absent on purpose: any four-digit year is a year, and refusing 1912
+#: would be a judgement about the data, not about the language.
+TEMPORAL_PARAMETER_RANGE: dict[str, tuple[int, int]] = {
+    "month_of_year": (1, 12),
+    "quarter_of_year": (1, 4),
+    "half_of_year": (1, 2),
 }
 
 
