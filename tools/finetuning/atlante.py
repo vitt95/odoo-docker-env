@@ -3,7 +3,23 @@
 Si esegue nella shell di Odoo, su una banca dati con tutte e trentacinque le
 applicazioni installate e l'italiano caricato:
 
-    ./manage.sh atlante atlante
+    ./manage.sh atlante atlante            # etichette italiane
+    ./manage.sh atlante atlante en_US      # le stesse entita', etichette inglesi
+
+## La seconda raccolta, in inglese
+
+`ai/18` §5bis chiede che il 15% degli esempi di addestramento porti un catalogo con le
+etichette **in inglese** e la domanda in italiano: un'installazione Odoo puo' girare in
+inglese e succede spessissimo anche in Italia. E' il caso piu' istruttivo che abbiamo —
+se il modello risolve *«mostrami gli ordini di questo mese»* su un catalogo che dice
+`Order Date`, ha imparato ad agganciare **significati**, non parole.
+
+Quel documento prevedeva **una seconda banca dati senza l'italiano caricato**. Non
+serve: le etichette inglesi sono gia' in questa, perche' l'inglese e' la lingua
+*sorgente* di Odoo e l'italiano e' una traduzione che ci sta sopra. Basta leggere con
+un'altra lingua nel contesto — `ATLANTE_LANG` — e le due versioni sono allineate per
+riferimento **per costruzione**, invece che da un passo di allineamento che potrebbe
+sbagliare. Una banca dati in meno da costruire e da tenere allineata.
 
 ## Perché esiste
 
@@ -145,7 +161,17 @@ def raccogli(env, massimo=None):
 
 
 def main(env):
+    # La lingua con cui si legge il catalogo. Assente, si legge con quella della
+    # shell — l'italiano, che è la raccolta normale. `en_US` dà le stesse entità con
+    # le etichette sorgente di Odoo, allineate per riferimento **per costruzione**:
+    # è lo stesso `ref` a portare due nomi, non due raccolte da far combaciare.
+    lingua = os.environ.get("ATLANTE_LANG") or None
+    if lingua:
+        env = env(context=dict(env.context, lang=lingua))
+        print(f"  lingua            : {lingua}", file=sys.stderr)
+
     atlante = raccogli(env)
+    atlante["lingua"] = lingua or env.context.get("lang") or "it_IT"
     entita = atlante["entita"]
     tipi = {}
     for voce in entita.values():

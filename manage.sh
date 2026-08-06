@@ -142,17 +142,24 @@ cmd_atlante() {
   # Raccoglie l'atlante: tutto quello che AIDA può nominare in un'installazione con
   # tutte le applicazioni Odoo Community. È l'ingresso del dataset di addestramento.
   #
-  #   ./manage.sh atlante atlante
+  #   ./manage.sh atlante atlante            # etichette italiane
+  #   ./manage.sh atlante atlante en_US      # le stesse entità, etichette inglesi
   #
-  # Il documento esce in tools/finetuning/atlante.json.
-  local db="${1:?Usage: ./manage.sh atlante <db>}"
-  log "Raccolgo l'atlante da '${db}' (una entità per volta, ci vuole qualche minuto)..."
-  dc exec -T odoo python3 /opt/odoo/core/odoo-bin shell -c /etc/odoo/odoo.conf \
+  # Il documento esce in tools/finetuning/atlante.json, o atlante_<lingua>.json.
+  # La seconda raccolta serve al 15% di esempi con catalogo inglese di ai/18 §5bis, e
+  # non richiede una banca dati diversa: l'inglese è la lingua sorgente di Odoo.
+  local db="${1:?Usage: ./manage.sh atlante <db> [lingua]}"
+  local lingua="${2:-}"
+  local nome="atlante"
+  [ -n "$lingua" ] && nome="atlante_${lingua%%_*}"
+  log "Raccolgo l'atlante da '${db}'${lingua:+ in ${lingua}} (una entità per volta, ci vuole qualche minuto)..."
+  dc exec -T -e "ATLANTE_LANG=${lingua}" -e "ATLANTE_OUT=/var/lib/odoo/${nome}.json" \
+    odoo python3 /opt/odoo/core/odoo-bin shell -c /etc/odoo/odoo.conf \
     -d "$db" --log-level=warn < "${PROJECT_ROOT}/tools/finetuning/atlante.py"
   docker compose --project-name odoo --env-file "$ENV_FILE" \
     -f "${PROJECT_ROOT}/docker-compose.yml" \
-    cp odoo:/var/lib/odoo/atlante.json "${PROJECT_ROOT}/tools/finetuning/atlante.json"
-  ok "Atlante in tools/finetuning/atlante.json"
+    cp "odoo:/var/lib/odoo/${nome}.json" "${PROJECT_ROOT}/tools/finetuning/${nome}.json"
+  ok "Atlante in tools/finetuning/${nome}.json"
 }
 
 cmd_psql() {
