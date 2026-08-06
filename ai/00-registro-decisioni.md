@@ -3714,3 +3714,277 @@ forma da valutare; l'argomento per farlo ora c'è, ed è questo paragrafo.
 * La batteria sul campo ha ora sei frasi nuove nella famiglia `date`, e l'attesa dice
   **quale** periodo: un'attesa che si accontentasse di *«c'è un periodo»* avrebbe
   contato giuste tutte e quattro le risposte sbagliate di §46.1.
+
+## §47 — Le delibere della ricetta del LoRA (6 agosto 2026)
+
+Nate scrivendo `ai/21-ricetta-lora.md`, che traduce in ricetta eseguibile ciò che
+`ai/18` (la modalità: LoRA a 16 bit, RunPod, ~$40) e `ai/19` (il modello: Qwen3.5-4B
+principale, 2B in parallelo) avevano deciso. Due questioni sono emerse dalla traduzione,
+e nessuna delle due era decisa.
+
+### §47.1 — D142: il messaggio di sistema si sposta nei pesi
+
+**La contraddizione che l'ha fatta nascere.** `ai/18` §2 dice che l'esempio di
+addestramento porta come parte di sistema *«il messaggio di `prompt.system_message()` —
+regole + catalogo»*. `ai/19` §3 conta il guadagno del fine tuning assumendo che dopo
+l'addestramento quelle regole **non si mandino più**, e ricava il *«−58% sul prompt»*.
+Le due cose non possono essere vere insieme.
+
+**Il fatto che rende la scelta facile**, e non l'avevamo costruito per questo: il nostro
+`prompt` è già diviso dove serve. `system_message()` è **costante** — `INSTRUCTIONS` più
+i vocabolari chiusi, 8 099 caratteri ≈ 2 249 `token`, ~2 370 con i vocabolari;
+`user_message()` è **variabile** — catalogo, stato, pending. Su un `prompt` reale da
+4 077 `token` la parte costante è il **58%**, ed è identica a ogni domanda. Toglierla
+significa non chiamare una funzione, non riscrivere niente.
+
+> **D142 — Il dataset di addestramento porta due forme del `prompt`, e il profilo
+> affinato serve quella corta.** Forma lunga: `system_message()` intero, 25% del
+> dataset. Forma corta: una riga che nomina compito e versione del contratto, 75%.
+
+**Perché due e non solo la corta.** Il ritorno indietro deve restare possibile: se
+l'affinato non passa il cancello di **D80** (la decisione che rifiuta di attivare un
+profilo non qualificato), il profilo torna al modello base con **D116** (la decisione
+che fa scegliere il modello dalle impostazioni), e il modello base le regole le vuole.
+Un adapter che funziona *solo* senza regole ci lega le mani. In più, vedere le due forme
+produrre la stessa risposta insegna al modello che il testo lungo è ridondante, non che
+è assente. E costa zero: è lo stesso esempio con un campo diverso.
+
+**Perché la corta domina.** Perché è quella che il prodotto servirà. Al 50/50 si compra
+metà del guadagno.
+
+**Il rischio, dichiarato.** La forma corta nomina la versione del contratto. Se qualcuno
+cambia il contratto e non cambia quella stringa, il modello produce la grammatica di ieri
+e nessuno se ne accorge. Serve una prova che leghi la stringa alla versione — la stessa
+forma della prova di §46.8, quella che fallisce se qualcuno scollega il `prompt` dal
+vocabolario. È §38 (il difetto che si ripete: codice dichiarato, provato e non
+collegato) applicato **prima** invece che dopo.
+
+**L'attesa, scritta prima di misurare**, così che una previsione sbagliata si veda: il
+`prompt` in servizio scende sotto i **2 000 `token`** e la risposta sotto i **250**. Se
+non succede, la proiezione di `ai/19` §6 era sbagliata e va detto.
+
+### §47.2 — D143: il dataset si sceglie, non si genera
+
+`ai/18` §5 dice la cosa giusta — *«la cura conta più del volume»* — e si ferma alle
+quote per famiglia. Le quote non bastano: garantiscono le proporzioni e non le **forme**.
+Diecimila esempi possono rispettare ogni quota e insegnare dieci modelli di frase.
+
+> **D143 — Il dataset si costruisce sovra-generando 4:1 e selezionando per copertura.**
+> Ogni esempio porta una **firma** (entità, forma del catalogo, lingua del catalogo,
+> forma dell'intento, forma linguistica, turno, esito). Si generano ~40 000 esempi, si
+> filtrano, e i 10 000 finali si scelgono avidamente: a ogni giro entra l'esempio che
+> copre il maggior numero di celle di firma ancora scoperte.
+
+Generare è gratis — CPU, nessun modello. Scegliere male costa una corsa e, molto peggio,
+un modello che sembra buono.
+
+**Due vincoli che la selezione da sola non garantisce, e vanno imposti.**
+
+* **Ogni simbolo del vocabolario chiuso compare almeno 50 volte**: le ~20 operazioni,
+  i predicati di ogni tipo, i 7 `kind` di valore, ogni espressione temporale — comprese
+  le quattro di **D141** (la decisione che mette nel vocabolario i periodi che una frase
+  nomina) — le 6 aggregazioni, le viste, i 5 motivi di `SCOPE_NOTES`. Un simbolo visto
+  tre volte è un simbolo non imparato, e sarà quello che il modello sbaglierà in
+  servizio. Costa ~1 000 esempi su 10 000: il 10% del dataset per il 100% della
+  grammatica.
+* **Nessuna entità supera l'1,5% del dataset.** Senza il tetto, `res.partner` e
+  `account.move` — più attributi, più forme — si prendono un quarto del dataset.
+
+**E il dataset si commette con il suo rapporto di copertura** (`ai/21` §4.7): un file
+leggibile che dice quante entità, quante applicazioni, quali simboli e con che
+frequenza, quanti esempi il validatore ha scartato, e **a quale punto la copertura
+satura**. Se satura a 4 000, gli altri 6 000 sono volume e non cura, e la corsa può
+essere più corta. Se una riga dice zero, il dataset non è adottabile. È lo stesso ruolo
+che `verifica_contratto.py` ha per il corpus: un numero che si legge **prima** di
+spendere.
+
+### §47.3 — La dipendenza che blocca, e va detta
+
+**P0b si delibera prima di generare** (§46.7, la rete contro il ripiego silenzioso). Non
+perché cambi un simbolo, ma perché cambia **cosa il dataset deve insegnare a
+rifiutare**: se un periodo inesprimibile va rifiutato, è una famiglia di esempi; se il
+vocabolario si allarga, sono simboli nuovi. Sono due dataset diversi, e rigenerare costa
+poco in dollari e molto in curatela.
+
+**Il fine tuning è anche una rete contro il ripiego, e non sostituisce quella
+deterministica.** Addestrare *«periodo che il vocabolario non sa dire → clarification»*
+mette la rete nei pesi e ne riduce la frequenza; ma una rete statistica non è una
+garanzia, e §46.7 chiede una garanzia. Le due convivono: il livello deterministico
+garantisce, i pesi fanno sì che la garanzia debba intervenire di rado.
+
+## §48 — D144: il periodo che la frase nomina dev'essere quello che l'envelope dice (6 agosto 2026)
+
+È **P0b**, la rete che §46.7 lasciava aperta *«da deliberare con i numeri in mano»*.
+I numeri ci sono, e sono quelli di §46.7: *«nel secondo semestre»* risposta con il
+secondo **trimestre**, 3 giri su 3, contro una riga di prompt che lo vietava per nome.
+
+### §48.1 — Perché non bastava aggiungere `half_of_year`
+
+Perché la classe di guasto non è *«manca il semestre»*. È che **quando la parola manca
+il modello ripiega su quella vicina invece di rifiutare, e non lo dice.** Bimestri,
+quadrimestri, decenni hanno la stessa forma. Aggiungere simboli finché non ne mancano
+più non è una strategia: un elenco si allunga, una classe si chiude con una **rete**.
+
+E il prompt non è quella rete: §46.7 lo ha misurato — la riga che vietava il ripiego per
+nome non ha retto, 3/3 ancora sul trimestre. Un divieto scritto in un testo che il
+modello legge intero compete con le regole vicine (§46.6). Un controllo deterministico
+no.
+
+> **D144 — Un'espressione temporale è rifiutata quando il frammento che la cita nomina
+> un periodo che quell'espressione non è.**
+>
+> È **D105** (la decisione che pretende che una condizione nominata sia fondata nel
+> proprio frammento) applicato al **valore** invece che al riferimento. Tre fallimenti,
+> tutti di livello 2:
+>
+> * `temporal_not_expressible` — il frammento nomina un periodo che nessun simbolo sa
+>   dire (*«nel primo bimestre»*). Qualunque espressione è un ripiego, e la risposta
+>   onesta è un chiarimento;
+> * `temporal_period_mismatch` — il frammento ne nomina un altro (*«nel primo
+>   trimestre»* risposto con il terzo, o con un mese);
+> * `temporal_year_not_grounded` — il valore porta un anno che il frammento non nomina.
+
+### §48.2 — Dove sta il lessico, e perché §46.7 sbagliava
+
+§46.7 proponeva il dizionario e i suoi livelli (**D108**, il registro delle voci
+approvate). **Non è il posto giusto**, e la ragione era già scritta nel progetto, in
+`scope_lexicon.py`: il dizionario porta la lingua **dell'installazione** — i sinonimi di
+un cliente, le categorie nate dai suoi filtri salvati. *«Gennaio»* e *«trimestre»* non
+sono di un cliente: sono italiano, uguali ovunque, e non cambiano mai.
+
+Metterli lì avrebbe voluto dire un percorso di approvazione, una coda L3 e una schermata
+di amministrazione per delle parole che nessuno approverà mai diversamente. Costo alto,
+beneficio zero.
+
+Il posto giusto c'era già ed è quello di **D119** (la decisione che pretende che il
+frammento di un rifiuto contenga le parole di ciò che si rifiuta):
+`nli_semantics/temporal_lexicon.py`, zona pura, iniettato come funzione perché
+`nli_core` non ha lingua per costruzione. **D144 è D119 con i periodi al posto delle
+portate**, stessa forma in ogni punto: stesso modulo, stessa iniezione, stessa
+normalizzazione indulgente di **D83** su accenti e maiuscole, stesso «omesso, il
+controllo non si applica».
+
+Quando la forma di una decisione nuova è già nel progetto, copiarla vale più che
+inventarne una migliore.
+
+### §48.3 — Le tre scelte di costruzione, ognuna col suo motivo
+
+**Il confronto è con il frammento, non con l'enunciato** — come in D105. Un raffinamento
+porta avanti le condizioni dei turni precedenti, i cui frammenti appartengono a frasi che
+nessuno sta più dicendo.
+
+**Il lessico è al singolare, e niente abbreviazioni.** *«Gli ultimi 3 trimestri»* conta
+unità (`last_n_quarters`), non ne nomina una: il plurale è ciò che distingue le due cose.
+E *«gen»*, *«mar»*, *«ago»*, *«set»* sono corte abbastanza da comparire dentro parole che
+non parlano di mesi. Chi scrive *«a gen»* perde la rete e ottiene il comportamento di
+prima — che è il verso giusto in cui sbagliare.
+
+**Con due periodi nominati il controllo si astiene.** *«Da gennaio a marzo»*, *«dal 2024
+al 2026»*, *«nel primo trimestre 2025»*: non esiste un solo simbolo atteso, e sceglierne
+uno rifiuterebbe risposte giuste. È il limite dichiarato della rete, ed è anche ciò che
+rende impossibile un falso positivo su `temporal_year_not_grounded`: un frammento che
+nomina anche l'anno nomina **due** periodi, quindi quel fallimento può scattare solo su
+un anno che nessuno ha scritto.
+
+**`absolute` e `absolute_range` restano fuori.** Portano una data che l'utente ha
+**scritto**, non un periodo che ha nominato — la stessa ragione per cui D105 non giudica
+i confronti: *«un confronto porta un valore che l'utente ha detto, e non esiste un
+vocabolario contro cui verificarlo»*.
+
+**E il rifiuto passa dalla riparazione di D15.** Il controllo sta accanto a quello di
+D119 nell'interprete e non al livello 3: lì il modello ha un giro per correggersi, e
+esce con `not_understood` solo se insiste. Un ripiego che diventa una domanda è meglio di
+un ripiego che diventa un rifiuto.
+
+### §48.4 — Il verso in cui questa rete deve sbagliare
+
+La misura di D105 è il metro: **undici risposte sbagliate diventate rifiuti, zero
+risposte giuste rifiutate**. Una rete che rifiuta una risposta corretta è peggio del
+difetto che chiude, perché toglie all'utente qualcosa che aveva.
+
+Per questo metà delle prove sono **falsi positivi che non devono scattare**:
+*«negli ultimi 30 giorni»*, *«quest'anno»*, *«questo trimestre»*, *«l'ultimo
+trimestre»*, *«gli ultimi 3 trimestri»*, *«sopra 1500»*, *«dal 1 gennaio 2025»*.
+*«Ultimo»*, *«scorso»* e *«questo»* non sono fra gli ordinali di proposito: sono la
+classe di falso positivo più probabile di tutte, e restano fuori.
+
+### §48.5 — Cosa resta aperto
+
+**La riga di prompt di §46.7 è ora ridondante**, e §46.6 avverte che una riga in più non
+aggiunge soltanto: compete con le regole vicine. Toglierla potrebbe far bene o far male,
+e **non si tocca senza rimisurare** — anche sulle frasi che già funzionano. Va fatto
+insieme alla linea di partenza fresca, non prima.
+
+**La rete non insegna, protegge.** Il modello continuerà a ripiegare e verrà fermato ogni
+volta. Insegnargli a non farlo è materia del dataset di fine tuning: `ai/21` §5.1 mette i
+periodi inesprimibili fra i rifiuti da addestrare. **Le due cose convivono e nessuna
+sostituisce l'altra**: il livello deterministico garantisce, i pesi fanno sì che la
+garanzia debba intervenire di rado.
+
+### §48.6 — Le verifiche
+
+* **568 test in zona pura** (erano 534): diciannove sul lessico — di cui nove sono
+  falsi positivi che non devono scattare — nove sul controllo, e sei che provano
+  **le due metà insieme**, con le parole vere invece che con un lessico finto. Provare
+  il controllo con un finto e il lessico senza controllo lascerebbe scoperto l'unico
+  difetto che conta: che le due metà parlino di simboli diversi.
+* **263 test Odoo** (erano 258), fra cui la coppia che §38 chiede sulla conduttura:
+  il ripiego non passa, e la risposta giusta passa lo stesso.
+* **La falsificazione è stata eseguita, non dichiarata**: scollegato `names_period` da
+  `pipeline.py`, esattamente una prova diventa rossa; ricollegato, 263 su 263 verdi.
+* `check` verde: confini, contratto, corpus 918/918, copertura 100%.
+* La prova che ogni simbolo di **D141** sia raggiungibile da qualche parola italiana:
+  un simbolo che il lessico non sa produrre è un simbolo che la rete non protegge, e
+  nessuno se ne accorgerebbe.
+
+### §48.7 — La linea di partenza fresca, e il metro che non misurava il prodotto
+
+**Il metro era scollegato, e non se n'era accorto nessuno.**
+`ai/corpus/misura_accuratezza.py` chiamava `interpret()` **senza** `scope_justifies` e
+**senza** `names_period`: misurava un prodotto che nessuno ha in servizio — senza D119
+(il rifiuto per portata dev'essere guadagnato dalle parole citate) e senza D144. Il file
+lo argomenta da solo, in un commento scritto per `mentions`: *«questa misura deve
+esercitare lo stesso prodotto, non uno senza il restringimento di D112»*. L'argomento
+vale per tutti e tre i riconoscitori; ne era collegato uno.
+
+È la stessa classe di §38 — codice dichiarato, provato e non collegato — su un metro
+invece che su una funzione, ed è la seconda volta che lo strumento di misura mente (la
+prima è nella sessione del 4 agosto). **Un metro che non esercita il prodotto è peggio
+di nessun metro**: produce un numero che nessuno mette in dubbio.
+
+Corretto, insieme a un difetto minore che è costato quarantacinque minuti di macchina:
+il rapporto si stampava **tutto alla fine**, quindi una corsa interrotta lasciava zero
+byte. Ora un avanzamento ogni venti casi su `stderr`.
+
+**La misura, con il prodotto vero.** 414 aperture, `qwen3.5:9b`, generazione vincolata,
+ragionamento spento, `context` 8192 servito e dichiarato:
+
+| | 4 agosto | **6 agosto** |
+|---|---|---|
+| accuratezza complessiva | 75,8% | **74,6%** (309/414) |
+| `filter` | 85,0% | **85,0%** |
+| `fields` | — | 88,4% |
+| esiti `operations` | — | 412 (99,5%) |
+| `not_understood` | — | 2 (0,5%) |
+| riparazioni (D15) | — | 24 (5,8%) |
+| condizioni infondate (D105) | — | 0 |
+| latenza media | — | 8 855 ms |
+
+Tutte le sezioni sono sopra la soglia di **D44** (85% su ciascuna); `filter` è
+esattamente sulla riga.
+
+**L'1,2% di differenza non è attribuibile alle reti, ed è stato verificato invece che
+supposto.** D144 è stato fatto girare sul **vero atteso del corpus** — 207 condizioni
+temporali che il progetto dichiara corrette, senza chiamare il modello — e **non è
+scattato nemmeno una volta**. D119 non poteva scattare: il modello non ha prodotto
+nessun `out_of_scope`. Resta la variabilità fra due corse dello stesso modello.
+
+Quello zero è il numero che conta più del 74,6%: è la stessa forma della misura di
+**D105** — undici risposte sbagliate diventate rifiuti, **zero** risposte giuste
+rifiutate. Una rete che rifiutasse anche una sola risposta corretta sarebbe peggio del
+difetto che chiude.
+
+**Cosa questa linea di partenza è, e cosa non è.** È il punto da cui si misurerà il fine
+tuning (`ai/21` §1.2). **Non** è il cancello della Fase 2: il corpus è sintetico e non
+sigillabile (**D86**), quindi D42 e D49 restano insoddisfatte, e il numero che conta per
+il prodotto resta quello della batteria sul campo — 39 su 54.

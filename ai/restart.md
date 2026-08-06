@@ -34,12 +34,21 @@ esistono (`month_of_year`, `quarter_of_year`, `half_of_year`, `year_of`), seguon
 l'anno fiscale come `current_year`, e le quattro frasi rispondono giusto 3 giri su 3.
 Quelle che gia' funzionavano non si sono mosse.
 
+**E il rischio che D141 portava con se' e' stato chiuso lo stesso giorno — `00` §48
+(D144).** Un mattone nuovo si usa anche dove non va: appena il modello ha avuto
+`quarter_of_year`, ha risposto *«nel secondo semestre»* con il **secondo trimestre**,
+3 giri su 3, contro una riga di prompt che lo vietava per nome. La classe di guasto non
+e' il simbolo che manca — e' che **quando la parola manca il modello ripiega su quella
+vicina invece di rifiutare, e non lo dice**. Ora un'espressione temporale e' rifiutata
+quando il frammento che la cita nomina un periodo che quell'espressione non e': **D105
+applicato al valore**, con il lessico dei periodi accanto a quello di D119.
+
 ## L'ordine
 
 | | Cosa | Costo | Sblocca |
 |---|---|---|---|
 | ~~**P0**~~ | ~~La data senza anno: «primo trimestre» risposto col terzo~~ | **fatto** (D141, `00` §46) | quattro risposte sbagliate su sei diventate giuste |
-| **P0b** | **La rete contro il ripiego silenzioso** (`00` §46.7) | da valutare | e' la **classe** di guasto: oggi «bimestre» e «quadrimestre» sono ancora ripieghi possibili, e aggiungere simboli finche' non ne mancano piu' non e' una strategia |
+| ~~**P0b**~~ | ~~La rete contro il ripiego silenzioso~~ | **fatto** (D144, `00` §48) | la **classe** e' chiusa: «bimestre» e «quadrimestre» non sono piu' ripieghi possibili, e nessun periodo nominato passa se il frammento non lo dice |
 | **P1** | Finire i **pacchetti lingua**: 40 stringhe del pannello in inglese, `it.po` per cinque moduli | meccanico, mezza giornata | oggi un utente inglese vede italiano e nessun pacchetto lo corregge (§12.3) |
 | **P1b** | Guardare **con gli occhi** la conversazione 207 nel pannello | ~30 min umani | chiude il punto 5 dell'interfaccia, decide il punto 6 (paginazione) |
 | **P2** | `out_of_scope` su frasi legittime («il ricavo atteso piu' alto») | da capire prima di stimare | 4–5 frasi, ed e' un rifiuto **sbagliato**: il caso peggiore per la fiducia |
@@ -128,6 +137,13 @@ c'e' — e' esattamente il modo in cui si sono accumulati i dieci difetti di
   sul portatile col prompt vero**: il 9b legge il prompt in 17 s e risponde in 57, il 4b
   in meta' tempo, il 2b in un quarto. Il consiglio e' affinare **Qwen3.5-4B** con il
   **2B** in parallelo, e comprare una **RTX 3060 usata (~220 €)** per l'inferenza.
+- ai/21-ricetta-lora.md — **la ricetta eseguibile** del fine tuning, scritta il 6 agosto:
+  `18` decide e `19` sceglie il modello, `21` dice come si preme il pulsante. §2 e' la
+  decisione che vale piu' di tutte (**D142**: il messaggio di sistema si sposta nei pesi,
+  −58% sul `prompt`), §4 e' la strategia di selezione del dataset (**D143**: si
+  sovra-genera 4:1 e si sceglie per copertura, non per quota), §6 il file di
+  configurazione vero, §10 l'ordine di lavoro. Il costo non sono i $40: e' `genera_dataset.py`,
+  2-3 giorni, ed e' li' che si decide se il modello diventa performante o solo addestrato.
 - ai/16-controllo-architettura.md — il mandato del controllo di architettura del
   3 agosto, e ai/17-esito-controllo-architettura.md la risposta: sei reperti gravi,
   undici minori, e la raccomandazione principale, che non e' una correzione ma una
