@@ -22,16 +22,24 @@ a 39 su 54 (72%)**, riparando l'ancora del tempo. Misure pulite tutte e due — 
 eseguite, zero saltate, i due context allineati.
 
 Il che sposta la domanda da *«come misuriamo?»* a *«quale difetto costa di piu'?»*. Ora
-la risposta non e' piu' un conteggio, e' una **gravita'**: il prodotto risponde *«i lead
-creati nel primo trimestre»* con i dati del **terzo** trimestre, 26 record, senza dire
-niente. Una risposta sbagliata con l'aria di essere giusta vale piu' di dieci rifiuti,
-ed e' cio' che **D2** esiste per tenere fuori.
+la risposta non e' piu' un conteggio, e' una **gravita'**: il prodotto rispondeva *«i
+lead creati nel primo trimestre»* con i dati del **terzo** trimestre, 26 record, senza
+dire niente. Una risposta sbagliata con l'aria di essere giusta vale piu' di dieci
+rifiuti, ed e' cio' che **D2** esiste per tenere fuori.
+
+**Fatto il 6 agosto 2026 — vedi `00` §46 (D141).** I periodi che una frase *nomina*
+— *«il primo trimestre»*, *«a gennaio»*, *«nel 2025»*, *«a marzo 2026»* — non
+esistevano nel vocabolario, e il modello ripiegava sul periodo **corrente**. Ora
+esistono (`month_of_year`, `quarter_of_year`, `half_of_year`, `year_of`), seguono
+l'anno fiscale come `current_year`, e le quattro frasi rispondono giusto 3 giri su 3.
+Quelle che gia' funzionavano non si sono mosse.
 
 ## L'ordine
 
 | | Cosa | Costo | Sblocca |
 |---|---|---|---|
-| **P0** | **La data senza anno**: «primo trimestre» risposto col terzo (§10) | da capire, poi una regola | toglie una **risposta sbagliata**, che vale piu' di dieci rifiuti (D2) |
+| ~~**P0**~~ | ~~La data senza anno: «primo trimestre» risposto col terzo~~ | **fatto** (D141, `00` §46) | quattro risposte sbagliate su sei diventate giuste |
+| **P0b** | **La rete contro il ripiego silenzioso** (`00` §46.7) | da valutare | e' la **classe** di guasto: oggi «bimestre» e «quadrimestre» sono ancora ripieghi possibili, e aggiungere simboli finche' non ne mancano piu' non e' una strategia |
 | **P1** | Finire i **pacchetti lingua**: 40 stringhe del pannello in inglese, `it.po` per cinque moduli | meccanico, mezza giornata | oggi un utente inglese vede italiano e nessun pacchetto lo corregge (§12.3) |
 | **P1b** | Guardare **con gli occhi** la conversazione 207 nel pannello | ~30 min umani | chiude il punto 5 dell'interfaccia, decide il punto 6 (paginazione) |
 | **P2** | `out_of_scope` su frasi legittime («il ricavo atteso piu' alto») | da capire prima di stimare | 4–5 frasi, ed e' un rifiuto **sbagliato**: il caso peggiore per la fiducia |
@@ -1672,3 +1680,64 @@ E leggi `00` §38 prima di
 dichiarare finita qualunque cosa. Stesse regole di prima: deliberi tu le questioni che emergono e le
 registri in ai/00, e mi spieghi le cose in modo semplice — come a un ragazzino sveglio ma
 inesperto, con le parole chiave tecniche in inglese (`envelope`, `context`, `token`).
+
+---
+
+# Stato al 6 agosto 2026 — i periodi che una frase nomina
+
+*Sessione partita per committare il lavoro della sera prima e fare P0. Fatti tutti e
+due, piu' cinque prove che leggevano il database invece di costruirlo.*
+
+## 1. La suite era verde su una base e rossa sull'altra
+
+`./manage.sh test db` diceva **2 falliti e 3 errori**; su `nli_test`, zero. Non era il
+codice: erano cinque prove che davano per buono lo stato del database.
+
+* due presumevano *«nessun profilo attivo su questa base»* — vero su una base di prova,
+  falso su quella dove il prodotto gira, che un profilo attivo ce l'ha per definizione;
+* tre facevano leggere a un amministratore il turno di **un altro utente**. La regola
+  dei record lo vieta — un turno lo legge chi l'ha fatto, e vale anche per chi
+  amministra — e passavano solo dove `base.group_system` non si porta dietro
+  `base.group_user`, che dipende dai moduli installati.
+
+Corrette costruendosi lo stato invece di leggerlo, piu' **la prova che mancava**: un
+amministratore che legge il turno di un altro riceve `AccessError`. **258 test Odoo,
+verdi su tutte e due le basi.**
+
+## 2. P0 — i periodi nominati (D141, `00` §46)
+
+Sonda di sei frasi sul prodotto vero, prima di toccare niente:
+
+    «nel primo trimestre»  -> 1 lug - 30 set   il TERZO trimestre, 26 record
+    «a gennaio»            -> 1 - 31 ago       agosto, 0 record
+    «nel 2025»             -> tutto il 2026    39 record
+    «a marzo 2026»         -> 1 - 31 ago       agosto, e l'anno l'aveva detto l'utente
+    «nel secondo semestre» -> not_understood   l'unica onesta
+    «questo trimestre»     -> 1 lug - 30 set   giusta
+
+**Quattro risposte sbagliate su sei.** La causa non era il modello: il vocabolario non
+aveva modo di dire *«il primo»*, e il prompt vieta al modello di calcolare date. Entrano
+quattro simboli — `month_of_year`, `quarter_of_year`, `half_of_year`, `year_of` — tutti
+sull'anno **fiscale** come `current_year`. Dopo: le quattro frasi giuste **3 giri su 3**,
+le altre due invariate.
+
+## 3. Le due cose che questa sessione insegna
+
+**Una riga aggiunta a un prompt non aggiunge soltanto.** La prima stesura ha fatto
+smettere di funzionare *«i lead creati questo trimestre»*, che rispondeva da sempre: il
+modello ha iniziato a mettere il periodo su `Data apertura`. Prova controfattuale col
+prompt vecchio, 3/3 su `Data creazione` — **era il prompt, non il modello**. Un prompt e'
+un testo che il modello legge intero, e una regola nuova compete con quelle vicine: si
+misura **anche sulle frasi che gia' funzionavano**.
+
+**Un mattone nuovo si usa anche dove non va.** *«Nel secondo semestre»* era un rifiuto
+onesto; appena il modello ha avuto i trimestri, l'ha risposta col secondo **trimestre**,
+3/3, malgrado una riga di prompt che glielo vietava per nome. Per questo `half_of_year`
+e' entrato lo stesso giorno. Bimestri e quadrimestri restano la stessa forma di rischio:
+e' **P0b**, la rete di `00` §46.7.
+
+## 4. Cosa e' cambiato su disco
+
+Sei commit: l'ancora del tempo, le etichette del dizionario, il comando `dizionario`, la
+batteria riparata, i pacchetti lingua, le cinque prove, e D141. **Verifiche: 534 test in
+zona pura, 258 Odoo, 51 dei confini, corpus 918/918 con copertura al 100%.**
