@@ -54,6 +54,7 @@ Usage: ./manage.sh <command> [args]
   ${C_BOLD}loadtest${C_RESET} <db> [n] [s]   Isolation proof of D27 on prefork workers
   ${C_BOLD}campo${C_RESET} <db> [famiglia]  Batteria sul campo: le frasi di ai/16 col modello vero
   ${C_BOLD}atlante${C_RESET} <db>           Raccoglie il vocabolario di tutte le app (fine tuning)
+  ${C_BOLD}dizionario${C_RESET} <db> [prova] Scrive i sinonimi delle date nel registro delle voci
   ${C_BOLD}backup${C_RESET}                 Dump all databases + filestore to ./backups
   ${C_BOLD}restore${C_RESET} <timestamp>    Restore a backup (DESTRUCTIVE)
   ${C_BOLD}rotate-secrets${C_RESET}         Regenerate all passwords and apply them live
@@ -116,6 +117,25 @@ cmd_campo() {
     < <(cat "${PROJECT_ROOT}/tools/campo/frasi.py" \
            "${PROJECT_ROOT}/tools/campo/batteria.py")
   ok "Batteria finita."
+}
+
+cmd_dizionario() {
+  # I sinonimi delle date nel registro delle voci approvate (D108).
+  #
+  # Perche' un comando e non un file di dati del modulo: sono parole di una lingua e
+  # di un'installazione, non struttura. Chi installa in inglese non li vuole, e chi
+  # aggiunge un'entita' al perimetro li rivuole — quindi si esegue quando serve.
+  #
+  #   ./manage.sh dizionario db          scrive
+  #   ./manage.sh dizionario db prova    dice cosa scriverebbe, senza scrivere
+  local db="${1:?Usage: ./manage.sh dizionario <db> [prova]}"
+  local prova=""
+  [ "${2:-}" = "prova" ] && prova="1"
+  log "Sinonimi delle date su '${db}'${prova:+ (prova, non scrive)}..."
+  dc exec -T -e "DIZIONARIO_PROVA=${prova}" \
+    odoo python3 /opt/odoo/core/odoo-bin shell -c /etc/odoo/odoo.conf -d "$db" \
+    --log-level=warn \
+    < "${PROJECT_ROOT}/tools/dizionario/sinonimi_date.py"
 }
 
 cmd_atlante() {
@@ -323,6 +343,7 @@ case "$cmd" in
   upgrade)           cmd_upgrade "$@" ;;
   loadtest)          cmd_loadtest "$@" ;;
   campo)             cmd_campo "$@" ;;
+  dizionario)        cmd_dizionario "$@" ;;
   atlante)           cmd_atlante "$@" ;;
   backup)            cmd_backup "$@" ;;
   restore)           cmd_restore "$@" ;;
