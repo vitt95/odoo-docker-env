@@ -82,7 +82,8 @@ install_odoo_alias()
 from nli_core.application import applicator, completion  # noqa: E402
 from nli_core.contract import state as state_module  # noqa: E402
 from nli_core.contract import vocabulary  # noqa: E402
-from nli_core.validation import structural  # noqa: E402
+from nli_core.contract.state import strip_provenance  # noqa: E402
+from nli_core.validation import coherence, structural  # noqa: E402
 from nli_semantics.catalogue import anchor as anchor_module  # noqa: E402
 
 ATLANTE = QUI / "atlante.json"
@@ -520,9 +521,17 @@ def genera_intento(entita: Entita, famiglia: str, rng: random.Random) -> Intento
         if not raggruppabili:
             return None
         intento.gruppi = [rng.choice(raggruppabili).ref]
-        if numerici and rng.random() < 0.7:
+        distinguibili = [a for a in catalogo.attributi
+                         if a.tipo in ("relation", "enum", "text")]
+        sorte = rng.random()
+        if numerici and sorte < 0.6:
             intento.misure = [{"funzione": rng.choice(("sum", "avg", "max", "min")),
                                "ref": rng.choice(numerici).ref}]
+        elif distinguibili and sorte < 0.8:
+            # *«Quanti clienti diversi»*: conta i valori, non le righe. E' l'unica
+            # aggregazione che chiede un attributo pur essendo un conteggio.
+            intento.misure = [{"funzione": "count_distinct",
+                               "ref": rng.choice(distinguibili).ref}]
         else:
             intento.misure = [{"funzione": "count", "ref": None}]
         return intento
@@ -640,9 +649,30 @@ def _detto(catalogo: Catalogo, ref: str, rng: random.Random) -> str:
     return rng.choice(termini).lower()
 
 
+#: Il verso di un confronto, detto a parole. Una sola tabella: il frammento **e'** la
+#: provenienza, e D105, D119 e D144 ci verificano sopra. Un frammento che dicesse
+#: *«importo 5000»* per `less_than` insegnerebbe a citare male, e le reti fermerebbero
+#: in servizio proprio cio' che l'addestramento ha insegnato.
+VERSO = {"greater_than": "sopra", "less_than": "sotto", "equals": "uguale a",
+         "greater_or_equal": "da", "less_or_equal": "fino a",
+         "is_one_of": "", "is_not_one_of": "diverso da", "contains": "che contiene",
+         "starts_with": "che comincia per", "between": ""}
+
+
+def _frammento_confronto(catalogo: Catalogo, condizione: dict,
+                         rng: random.Random) -> str:
+    """*«con importo sopra 5000»*: attributo, verso, valore."""
+    nome = _detto(catalogo, condizione["attributo"].ref, rng)
+    if condizione["valore"] is None:
+        return nome
+    verso = VERSO.get(condizione["predicato"], "")
+    return " ".join(p for p in (nome, verso, condizione["parola"]) if p)
+
+
 def _parola_misura(funzione: str) -> str:
     return {"sum": "il totale", "avg": "la media", "max": "il massimo",
-            "min": "il minimo", "count": "quanti sono"}.get(funzione, funzione)
+            "min": "il minimo", "count": "quanti sono",
+            "count_distinct": "quanti diversi"}.get(funzione, funzione)
 
 
 # ---------------------------------------------------------------------------
@@ -685,11 +715,8 @@ def verbalizza(intento: Intento, envelope: dict, rng: random.Random) -> str:
             pezzi.append(condizione["parola"])
         elif condizione["valore"] is None:
             pezzi.append(f"con {_detto(catalogo, condizione['attributo'].ref, rng)}")
-        elif condizione["valore"]["kind"] == "number":
-            verso = {"greater_than": "sopra", "less_than": "sotto",
-                     "equals": "uguale a"}.get(condizione["predicato"], "con")
-            pezzi.append(f"con {_detto(catalogo, condizione['attributo'].ref, rng)} "
-                         f"{verso} {condizione['parola']}")
+        elif condizione["valore"]["kind"] in ("number", "range"):
+            pezzi.append("con " + _frammento_confronto(catalogo, condizione, rng))
         else:
             pezzi.append(f"{condizione['parola'].lower()}")
 
@@ -710,6 +737,314 @@ def verbalizza(intento: Intento, envelope: dict, rng: random.Random) -> str:
         pezzi.append(f"solo i primi {intento.limite}")
 
     return " ".join(p for p in pezzi if p)
+
+
+# ---------------------------------------------------------------------------
+# §4bis — Il secondo turno: i raffinamenti
+# ---------------------------------------------------------------------------
+
+def _condizioni_di(stato: dict) -> list[dict]:
+    """Le condizioni di uno stato, comunque il filtro sia scritto.
+
+    Con una sola condizione il filtro **e'** quella condizione; con piu' di una
+    diventa un nodo con `connective` e `conditions`. Due forme, un solo significato:
+    chi legge lo stato deve saperle entrambe o si accorgera' della seconda per via di
+    un guasto.
+    """
+    filtro = stato.get("filter") or {}
+    if not filtro:
+        return []
+    if filtro.get("conditions"):
+        return [c for c in filtro["conditions"] if isinstance(c, dict)]
+    return [filtro] if filtro.get("ref") else []
+
+
+def _prima_voce(stato: dict, chiave: str) -> dict | None:
+    voci = stato.get(chiave) or []
+    return voci[0] if voci else None
+
+
+def raffinamento_di(stato: dict, catalogo: Catalogo, rng: random.Random
+                    ) -> tuple[list[dict], str] | None:
+    """Le operazioni del secondo turno e la frase ellittica che le chiede.
+
+    **Ogni raffinamento deve avere davvero su cosa agire.** Le possibilita' si
+    costruiscono da quello che lo stato contiene, non da un elenco fisso: un
+    *«togli il filtro»* generato su uno stato senza filtri sarebbe un esempio che
+    insegna un'operazione che il prodotto rifiuta.
+    """
+    condizioni = _condizioni_di(stato)
+    possibili: list[str] = ["aggiungi_condizione", "limite", "vista", "ricomincia",
+                            "annulla", "apri"]
+    if condizioni:
+        possibili += ["togli_condizione", "sostituisci_condizione", "svuota_filtro"]
+    if stato.get("fields"):
+        # `add_field` **aggiunge a una selezione che esiste**. Su uno stato senza
+        # colonne scelte l'applicatore lo rifiuta, e ha ragione: le colonne di
+        # partenza non sono una selezione, sono l'assenza di una selezione. Chi
+        # sceglie da zero dice `set_fields`.
+        possibili += ["togli_campo", "svuota_campi", "aggiungi_campo"]
+    else:
+        possibili += ["imposta_campi"]
+    if stato.get("group_by"):
+        possibili += ["togli_gruppo", "svuota_gruppi"]
+    else:
+        possibili += ["aggiungi_gruppo"]
+    if stato.get("measures"):
+        possibili += ["togli_misura"]
+    if stato.get("order_by"):
+        possibili += ["svuota_ordine", "cambia_ordine"]
+    else:
+        possibili += ["aggiungi_ordine"]
+
+    quale = rng.choice(possibili)
+
+    if quale == "aggiungi_condizione":
+        condizione = _condizione_confronto(catalogo, rng)
+        if condizione is None:
+            return None
+        corpo = {"ref": condizione["attributo"].ref,
+                 "predicate": condizione["predicato"]}
+        if condizione["valore"] is not None:
+            corpo["value"] = condizione["valore"]
+        parola = ("e solo quelli con "
+                  + _frammento_confronto(catalogo, condizione, rng))
+        return ([{"op": "add_condition", "combine": "all", "condition": corpo,
+                  "provenance": {"text": parola}}], parola)
+
+    if quale == "togli_condizione":
+        bersaglio = rng.choice(condizioni)
+        # Le due vie di indirizzamento di §6.3, una per volta: l'identificativo che
+        # lo stato mostra, o il riferimento. Mai tutt'e due — sarebbe ambiguo, e il
+        # livello 1 lo rifiuta.
+        if rng.random() < 0.5 and bersaglio.get("id"):
+            indirizzo = {"id": bersaglio["id"]}
+        else:
+            indirizzo = {"ref": bersaglio["ref"]}
+        parola = f"togli il filtro su {_detto(catalogo, bersaglio['ref'], rng)}"
+        return ([{"op": "remove_condition", **indirizzo,
+                  "provenance": {"text": parola}}], parola)
+
+    if quale == "sostituisci_condizione":
+        bersaglio = rng.choice(condizioni)
+        if not bersaglio.get("id"):
+            return None
+        nuova = _condizione_confronto(catalogo, rng)
+        if nuova is None:
+            return None
+        corpo = {"ref": nuova["attributo"].ref, "predicate": nuova["predicato"]}
+        if nuova["valore"] is not None:
+            corpo["value"] = nuova["valore"]
+        parola = "anzi, " + _frammento_confronto(catalogo, nuova, rng)
+        return ([{"op": "replace_condition", "id": bersaglio["id"],
+                  "condition": corpo, "provenance": {"text": parola}}], parola)
+
+    if quale == "svuota_filtro":
+        parola = rng.choice(("togli tutti i filtri", "senza filtri",
+                             "leva ogni filtro"))
+        return ([{"op": "clear_filter", "provenance": {"text": parola}}], parola)
+
+    if quale == "aggiungi_campo":
+        gia_scelti = {v["ref"] for v in stato.get("fields") or []}
+        candidati = [a.ref for a in catalogo.attributi if a.ref not in gia_scelti]
+        if not candidati:
+            return None
+        ref = rng.choice(candidati)
+        parola = f"mostrami anche {_detto(catalogo, ref, rng)}"
+        return ([{"op": "add_field", "ref": ref,
+                  "provenance": {"text": parola}}], parola)
+
+    if quale == "imposta_campi":
+        candidati = [a.ref for a in catalogo.attributi]
+        if len(candidati) < 2:
+            return None
+        refs = rng.sample(candidati, 2)
+        parola = ("fammi vedere solo "
+                  + " e ".join(_detto(catalogo, r, rng) for r in refs))
+        return ([{"op": "set_fields", "refs": refs,
+                  "provenance": {"text": parola}}], parola)
+
+    if quale == "apri":
+        # Solo per posizione: *«apri il terzo»*. La selezione per attributo esiste nel
+        # contratto, ma su un catalogo qualunque non sappiamo quale valore ci sia
+        # davvero fra i risultati, e un esempio che apre un record inesistente
+        # insegnerebbe a inventare (§6.6 vieta anche di scegliere per identificativo,
+        # per la stessa ragione).
+        posizione = rng.randint(1, 5)
+        parola = rng.choice((f"apri il {posizione}",
+                             f"aprimi il numero {posizione}",
+                             f"fammi vedere il {posizione}"))
+        return ([{"op": "open_record",
+                  "selector": {"by": "position", "value": posizione},
+                  "provenance": {"text": parola}}], parola)
+
+    if quale == "togli_campo":
+        voce = _prima_voce(stato, "fields")
+        if not voce:
+            return None
+        parola = f"togli {_detto(catalogo, voce['ref'], rng)}"
+        return ([{"op": "remove_field", "ref": voce["ref"],
+                  "provenance": {"text": parola}}], parola)
+
+    if quale == "svuota_campi":
+        parola = rng.choice(("torna alle colonne di prima", "togli le colonne"))
+        return ([{"op": "clear_fields", "provenance": {"text": parola}}], parola)
+
+    if quale == "aggiungi_gruppo":
+        candidati = [a.ref for a in catalogo.attributi
+                     if a.tipo in ("enum", "relation")]
+        if not candidati:
+            return None
+        ref = rng.choice(candidati)
+        parola = f"raggruppa per {_detto(catalogo, ref, rng)}"
+        return ([{"op": "add_group", "ref": ref,
+                  "provenance": {"text": parola}}], parola)
+
+    if quale == "togli_gruppo":
+        voce = _prima_voce(stato, "group_by")
+        if not voce:
+            return None
+        parola = f"non raggruppare per {_detto(catalogo, voce['ref'], rng)}"
+        return ([{"op": "remove_group", "ref": voce["ref"],
+                  "provenance": {"text": parola}}], parola)
+
+    if quale == "togli_misura":
+        voce = _prima_voce(stato, "measures")
+        if not voce:
+            return None
+        # Le due vie di §6.3 anche qui: `count` non ha attributo, quindi una misura
+        # si indirizza per funzione quando il riferimento non c'e'.
+        if voce.get("ref") and rng.random() < 0.5:
+            indirizzo = {"ref": voce["ref"]}
+            parola = f"togli {_detto(catalogo, voce['ref'], rng)}"
+        else:
+            indirizzo = {"function": voce["function"]}
+            parola = f"togli {_parola_misura(voce['function'])}"
+        return ([{"op": "remove_measure", **indirizzo,
+                  "provenance": {"text": parola}}], parola)
+
+    if quale == "svuota_gruppi":
+        parola = rng.choice(("senza raggruppamenti", "togli i raggruppamenti"))
+        return ([{"op": "clear_groups", "provenance": {"text": parola}}], parola)
+
+    if quale == "aggiungi_ordine":
+        candidati = [a.ref for a in catalogo.attributi
+                     if a.tipo in ("number", "date", "datetime", "text")]
+        if not candidati:
+            return None
+        ref = rng.choice(candidati)
+        parola = f"ordina per {_detto(catalogo, ref, rng)}"
+        return ([{"op": "add_order", "ref": ref,
+                  "provenance": {"text": parola}}], parola)
+
+    if quale == "cambia_ordine":
+        voce = _prima_voce(stato, "order_by")
+        if not voce:
+            return None
+        verso = "asc" if voce.get("direction") == "desc" else "desc"
+        parola = ("dal piu' grande al piu' piccolo" if verso == "desc"
+                  else "dal piu' piccolo al piu' grande")
+        return ([{"op": "set_order", "ref": voce["ref"], "direction": verso,
+                  "provenance": {"text": parola}}], parola)
+
+    if quale == "svuota_ordine":
+        parola = rng.choice(("non ordinarli", "togli l'ordinamento"))
+        return ([{"op": "clear_order", "provenance": {"text": parola}}], parola)
+
+    if quale == "vista":
+        vista = rng.choice(sorted(vocabulary.VIEWS))
+        parola = {"list": "mettilo in elenco", "chart": "fammi un grafico",
+                  "pivot": "mettilo in tabella incrociata",
+                  "kanban": "mettilo a schede"}.get(vista, f"vista {vista}")
+        return ([{"op": "set_view", "view": vista,
+                  "provenance": {"text": parola}}], parola)
+
+    if quale == "limite":
+        n = rng.choice((5, 10, 20, 50))
+        parola = f"solo i primi {n}"
+        return ([{"op": "set_limit", "value": n,
+                  "provenance": {"text": parola}}], parola)
+
+    if quale == "ricomincia":
+        # **`reset` non viaggia da solo.** Da solo lascia uno stato senza bersaglio,
+        # che il validatore rifiuta — giustamente: non e' un'interrogazione. Il
+        # vocabolario lo dice gia' (§4.5): *«una sola intenzione produce `reset`
+        # seguito da `set_target`»*, ed e' anche la frase che una persona dice davvero.
+        entita_detta = rng.choice(catalogo.etichetta_entita).lower()
+        parola = rng.choice(("ricominciamo", "azzera tutto", "riparti da capo"))
+        frase = f"{parola}, mostrami {entita_detta}"
+        return ([{"op": "reset", "provenance": {"text": parola}},
+                 {"op": "set_target", "ref": catalogo.entita.chiave,
+                  "provenance": {"text": entita_detta}}], frase)
+
+    if quale == "annulla":
+        parola = rng.choice(("annulla l'ultima cosa", "torna indietro",
+                             "no, disfa quello che ho appena detto"))
+        return ([{"op": "revert_last", "provenance": {"text": parola}}], parola)
+
+    return None
+
+
+def genera_raffinamento(entita: Entita, rng: random.Random,
+                        scarti: Counter) -> "Esempio | None":
+    """Un esempio di secondo turno: stato di partenza, frase ellittica, operazioni.
+
+    **La trappola specifica di questa famiglia**, e la ragione per cui non e' stata
+    scritta di fretta: lo stato che il prodotto manda al modello **non ha i
+    frammenti** — `strip_provenance` li toglie quando lo stato si salva, finche'
+    **D54** non li pseudonimizza. Un esempio con le provenienze dentro insegnerebbe al
+    modello a lavorare con un'informazione che in servizio non arriva mai, e il difetto
+    si vedrebbe solo dal secondo turno in poi — cioe' dove nessuna delle nostre misure
+    guarda (`00` §46, la lezione del 5 agosto).
+    """
+    # Anche le aggregazioni: senza uno stato che porti raggruppamenti e misure,
+    # `remove_group`, `clear_groups` e `remove_measure` non avrebbero mai su cosa
+    # agire, e sarebbero simboli che il dataset non insegna mai.
+    famiglia_base = rng.choice(("semplice", "tempo", "presentazione",
+                                "aggregazione"))
+    intento = genera_intento(entita, famiglia_base, rng)
+    if intento is None:
+        return None
+    primo = envelope_di(intento, rng)
+    motivo, stato = valida(primo, intento.catalogo)
+    if motivo or stato is None:
+        scarti["raffinamento_primo_turno"] += 1
+        return None
+
+    # Esattamente cio' che la conduttura manda: lo stato salvato, senza frammenti.
+    stato_mostrato = strip_provenance(stato)
+
+    proposta = raffinamento_di(stato, intento.catalogo, rng)
+    if proposta is None:
+        scarti["raffinamento_non_costruibile"] += 1
+        return None
+    operazioni, frase = proposta
+
+    envelope = {"dsl_version": DSL_VERSION, "outcome": "operations",
+                "confidence": round(rng.uniform(0.85, 0.98), 2),
+                "operations": operazioni}
+    motivo, _ = valida(envelope, intento.catalogo, stato)
+    if motivo:
+        scarti[motivo.split(":")[0]] += 1
+        return None
+
+    celle = set(firma(intento, envelope))
+    celle.add(("turno", "raffinamento"))
+    celle.discard(("famiglia", famiglia_base))
+    celle.add(("famiglia", "raffinamento"))
+
+    return Esempio(
+        entita=entita.chiave,
+        applicazione=entita.applicazione,
+        famiglia="raffinamento",
+        lingua=intento.catalogo.lingua,
+        frase=frase,
+        catalogo=intento.catalogo.payload(),
+        envelope=envelope,
+        celle=tuple(sorted(celle)),
+        modello_frase=f"raffinamento:{operazioni[0]['op']}",
+        stato=stato_mostrato,
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -745,7 +1080,23 @@ def firma(intento: Intento, envelope: dict) -> tuple[tuple[str, str], ...]:
             celle.add(("tempo", valore["expression"]))
         if operazione.get("function"):
             celle.add(("aggregazione", operazione["function"]))
-    return tuple(sorted(celle))
+
+    # **Le coppie, e sono la parte che rende il numero onesto.** Con le sole celle
+    # singole la copertura satura appena ogni entita' e ogni simbolo si sono visti una
+    # volta — cioe' intorno al numero delle entita', qualunque cosa il dataset
+    # contenga. Ma il compito non e' «vedere `add_group`» e «vedere un catalogo
+    # inglese»: e' vedere `add_group` **su** un catalogo inglese. Quel che si vuole
+    # imparare sta nelle combinazioni, e una copertura che non le conta dichiara
+    # «satura» un dataset che non ha ancora visto niente di interessante.
+    famiglia = dict(celle).get("famiglia", "?")
+    lingua = catalogo.lingua
+    coppie = {("famiglia_x_lingua", f"{famiglia}|{lingua}"),
+              ("famiglia_x_forma", f"{famiglia}|{catalogo.forma}")}
+    for chiave, valore in list(celle):
+        if chiave in ("op", "predicato", "kind", "tempo", "aggregazione"):
+            coppie.add((f"{chiave}_x_lingua", f"{valore}|{lingua}"))
+            coppie.add((f"{chiave}_x_famiglia", f"{valore}|{famiglia}"))
+    return tuple(sorted(celle | coppie))
 
 
 # ---------------------------------------------------------------------------
@@ -763,33 +1114,49 @@ class Esempio:
     envelope: dict
     celle: tuple[tuple[str, str], ...]
     modello_frase: str
+    #: Lo stato del turno precedente, gia' senza frammenti. `None` per un'apertura.
+    stato: dict | None = None
 
 
-def valida(envelope: dict, catalogo: Catalogo) -> str | None:
-    """`None` se l'esempio e' buono, altrimenti il motivo dello scarto."""
+def valida(envelope: dict, catalogo: Catalogo,
+           stato_iniziale: dict | None = None) -> tuple[str | None, dict | None]:
+    """`(None, stato)` se l'esempio e' buono, `(motivo, None)` se va scartato.
+
+    Quattro controlli indipendenti, gli stessi che l'interprete e la conduttura fanno
+    su una risposta vera. Il quarto — la **coerenza rispetto allo stato** — esiste solo
+    per i secondi turni: un'operazione puo' essere valida da sola e non avere senso su
+    quello stato, per esempio togliere una condizione che non c'e'.
+    """
     fallimenti = structural.validate_envelope(envelope)
     if fallimenti:
-        return f"envelope:{fallimenti[0].code}"
+        return f"envelope:{fallimenti[0].code}", None
 
     if envelope["outcome"] != "operations":
-        return None
+        return None, None
 
     fuori = [op.get("ref") for op in envelope["operations"]
              if op.get("ref") and op["ref"] not in catalogo.refs]
     if fuori:
-        return f"ref_fuori_catalogo:{fuori[0]}"
+        return f"ref_fuori_catalogo:{fuori[0]}", None
+
+    fallimenti = coherence.validate_envelope_coherence(
+        envelope["operations"], state=stato_iniziale)
+    if fallimenti:
+        codice = getattr(fallimenti[0], "code", "incoerente")
+        return f"coerenza:{codice}", None
 
     try:
         operazioni = completion.fill_inferred_directions(
             envelope["operations"], catalogo.tipi)
-        esito = applicator.apply(state_module.empty_state(), operazioni)
+        partenza = stato_iniziale or state_module.empty_state()
+        esito = applicator.apply(partenza, operazioni)
     except applicator.ApplicationError as errore:
-        return f"applicatore:{str(errore)[:40]}"
+        return f"applicatore:{str(errore)[:40]}", None
 
     fallimenti = structural.validate_state(esito.state)
     if fallimenti:
-        return f"stato:{fallimenti[0].code}"
-    return None
+        return f"stato:{fallimenti[0].code}", None
+    return None, esito.state
 
 
 # ---------------------------------------------------------------------------
@@ -810,8 +1177,10 @@ def genera(entita: list[Entita], quanti: int, seme: int,
            scarti: Counter) -> list[Esempio]:
     rng = random.Random(seme)
     esempi: list[Esempio] = []
-    pesi = {"semplice": 0.35, "tempo": 0.15, "aggregazione": 0.15,
-            "presentazione": 0.20, "rifiuto": 0.15}
+    # Le quote di `ai/18` §5. I raffinamenti sono il 10%, e sono la famiglia che
+    # nessuna misura vede: la batteria apre una conversazione nuova per ogni frase.
+    pesi = {"semplice": 0.30, "tempo": 0.15, "aggregazione": 0.13,
+            "presentazione": 0.17, "raffinamento": 0.10, "rifiuto": 0.15}
     famiglie = list(pesi)
     probabilita = [pesi[f] for f in famiglie]
 
@@ -820,12 +1189,19 @@ def genera(entita: list[Entita], quanti: int, seme: int,
         tentativi += 1
         entita_scelta = rng.choice(entita)
         famiglia = rng.choices(famiglie, probabilita)[0]
+
+        if famiglia == "raffinamento":
+            esempio = genera_raffinamento(entita_scelta, rng, scarti)
+            if esempio is not None:
+                esempi.append(esempio)
+            continue
+
         intento = genera_intento(entita_scelta, famiglia, rng)
         if intento is None:
             scarti["intento_non_costruibile"] += 1
             continue
         envelope = envelope_di(intento, rng)
-        motivo = valida(envelope, intento.catalogo)
+        motivo, _ = valida(envelope, intento.catalogo)
         if motivo:
             scarti[motivo.split(":")[0]] += 1
             continue
@@ -974,6 +1350,15 @@ def rapporto(scelti: list[Esempio], fuori: list[Esempio], entita: list[Entita],
         f"  tenuti fuori              {len(fuori)}  (applicazioni mai viste)",
         f"  copertura satura a        {saturazione} esempi",
         "",
+        "  Cosa vuol dire, e cosa NON vuol dire.",
+        "  E' il punto oltre il quale nessun esempio porta una FORMA nuova — una",
+        "  combinazione di entita', simbolo, lingua e famiglia mai vista. E' un",
+        "  pavimento: sotto quel numero il dataset ha buchi di forma, ed e' un",
+        "  difetto. NON e' un tetto: la firma non guarda quale attributo, quante",
+        "  condizioni, con che parole. Gli esempi oltre la saturazione comprano",
+        "  varieta' di SUPERFICIE, che e' cio' di cui un modello di lingua vive e",
+        "  che questo numero non misura apposta.",
+        "",
         "  scarti",
     ]
     for motivo, quanti in scarti.most_common():
@@ -1015,10 +1400,17 @@ def scrivi(esempi: list[Esempio], percorso: Path, *, quota_corta: float,
             corta = rng.random() < quota_corta
             sistema = (f"AIDA DSL {DSL_VERSION}. Answer one JSON envelope, "
                        "nothing else." if corta else "@@SYSTEM_MESSAGE_LUNGO@@")
-            utente = ("Catalogue:\n"
-                      + json.dumps(esempio.catalogo, ensure_ascii=False,
-                                   separators=(",", ":"))
-                      + f"\nUser: {esempio.frase}")
+            # La stessa forma, nello stesso ordine, di `prompt.user_message()`: il
+            # catalogo, poi lo stato quando c'e'. Un esempio con le chiavi in un
+            # ordine diverso da quello di produzione insegnerebbe a leggere un
+            # messaggio che nessuno manda.
+            parti = ["Catalogue:\n" + json.dumps(
+                esempio.catalogo, ensure_ascii=False, separators=(",", ":"))]
+            if esempio.stato:
+                parti.append("Current state:\n" + json.dumps(
+                    esempio.stato, ensure_ascii=False, separators=(",", ":")))
+            parti.append(f"User: {esempio.frase}")
+            utente = "\n".join(parti)
             # Forma canonica, byte per byte: il modello scrive come gli si insegna, e
             # ogni spazio in piu' e' un token in piu' a ogni risposta (ai/21 §3.1).
             risposta = json.dumps(esempio.envelope, ensure_ascii=False,

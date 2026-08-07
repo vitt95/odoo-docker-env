@@ -11,6 +11,7 @@ from __future__ import annotations
 import unittest
 
 from ..contract import envelope as envelope_module
+from ..contract import state as state_module
 from ..contract import vocabulary as vocabulary_module
 
 
@@ -177,3 +178,44 @@ class TestLimits(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestLoStatoSalvatoNonPortaIFrammenti(unittest.TestCase):
+    """`strip_provenance` in zona pura (**D54**).
+
+    Sta qui dal 7 agosto 2026, spostata dal modello Odoo che la usava per prima. E'
+    una funzione pura su uno stato, e il posto delle funzioni sullo stato e' il
+    contratto — ma ci e' voluto un secondo chiamante per accorgersene: il generatore
+    del dataset di addestramento deve mostrare al modello **esattamente** lo stato che
+    la conduttura gli manda, e una seconda copia scritta li' per comodita' sarebbe
+    divergente il giorno in cui `STRIPPED_KEYS` cresce.
+    """
+
+    def test_it_removes_the_fragment_at_every_depth(self):
+        stato = {
+            "target": {"ref": "ordini", "provenance": {"text": "ordini"}},
+            "filter": {"conditions": [
+                {"ref": "ordini.data", "provenance": {"text": "di oggi"}},
+                {"ref": "ordini.stato", "provenance": {"text": "confermati"}},
+            ]},
+        }
+        pulito = state_module.strip_provenance(stato)
+        self.assertNotIn("provenance", pulito["target"])
+        self.assertTrue(all("provenance" not in c
+                            for c in pulito["filter"]["conditions"]))
+
+    def test_it_leaves_everything_else_alone(self):
+        stato = {"target": {"ref": "ordini", "origin": "user"},
+                 "limit": {"value": 5, "origin": "default"}}
+        self.assertEqual(state_module.strip_provenance(stato), stato)
+
+    def test_it_does_not_touch_the_state_it_is_given(self):
+        """*«in place-safe»*: chi la chiama tiene lo stato con i frammenti, perche'
+        gli servono per la risposta di questo turno. Solo la copia che si salva li
+        perde."""
+        stato = {"target": {"ref": "ordini", "provenance": {"text": "ordini"}}}
+        state_module.strip_provenance(stato)
+        self.assertIn("provenance", stato["target"])
+
+    def test_the_stripped_keys_are_declared_not_hidden(self):
+        self.assertEqual(state_module.STRIPPED_KEYS, ("provenance",))

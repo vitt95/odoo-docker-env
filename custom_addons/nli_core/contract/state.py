@@ -172,3 +172,29 @@ def relation_hops(ref: str) -> int:
     """
     segments = ref.split(".")
     return max(0, len(segments) - 2)
+
+
+#: Le chiavi che uno stato perde quando si salva. `provenance` per **D54** (la
+#: decisione che rimanda la conservazione dei frammenti a quando saranno
+#: pseudonimizzati); il resto non e' toccato.
+STRIPPED_KEYS = ("provenance",)
+
+
+def strip_provenance(node):
+    """Uno stato senza i frammenti della frase che lo ha prodotto.
+
+    **Sta qui e non nel modello Odoo che la usa per primo.** E' una funzione pura su
+    uno stato — nessuna riga di piattaforma, nessun cursore — e il posto delle
+    funzioni sullo stato e' il contratto. Ci e' voluto un secondo chiamante per
+    accorgersene: il generatore del dataset di addestramento gira in zona pura e deve
+    mostrare al modello **esattamente** lo stato che la conduttura gli manda. Una
+    seconda copia, scritta li' per comodita', sarebbe divergente il giorno in cui
+    `STRIPPED_KEYS` cresce — e il difetto si vedrebbe solo dal secondo turno in poi.
+    """
+    if isinstance(node, dict):
+        return {key: strip_provenance(value)
+                for key, value in node.items()
+                if key not in STRIPPED_KEYS}
+    if isinstance(node, list):
+        return [strip_provenance(item) for item in node]
+    return node

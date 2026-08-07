@@ -31,21 +31,11 @@ from odoo.exceptions import ValidationError
 from ..contract import canonical, state as state_module
 from ..validation import structural
 
-#: Keys removed before writing. `provenance` for D54; the rest is unaffected.
-STRIPPED_KEYS = ("provenance",)
-
-
-def strip_provenance(node):
-    """Remove every provenance fragment from a state, in place-safe fashion."""
-    if isinstance(node, dict):
-        return {
-            key: strip_provenance(value)
-            for key, value in node.items()
-            if key not in STRIPPED_KEYS
-        }
-    if isinstance(node, list):
-        return [strip_provenance(item) for item in node]
-    return node
+#: Riesportate dal contratto, dove la funzione e' stata spostata quando le e'
+#: arrivato un secondo chiamante in zona pura. Chi importava da qui continua a
+#: funzionare: spostare una funzione non deve rompere chi la usava.
+STRIPPED_KEYS = state_module.STRIPPED_KEYS
+strip_provenance = state_module.strip_provenance
 
 
 class NliInterrogation(models.Model):
