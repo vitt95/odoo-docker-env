@@ -84,6 +84,7 @@ from nli_core.contract import state as state_module  # noqa: E402
 from nli_core.contract import vocabulary  # noqa: E402
 from nli_core.contract.state import strip_provenance  # noqa: E402
 from nli_core.validation import coherence, structural  # noqa: E402
+from nli_engine import prompt as prompt_module  # noqa: E402
 from nli_semantics.catalogue import anchor as anchor_module  # noqa: E402
 
 ATLANTE = QUI / "atlante.json"
@@ -93,9 +94,34 @@ ATLANTE_EN = QUI / "atlante_en.json"
 #: minimo e' quello dell'atlante — sotto i quattro un'entita' non regge una domanda.
 BUDGET_MIN, BUDGET_MAX = 6, 60
 
+#: Caratteri per gettone, misurato sul nostro `prompt` con il tokenizzatore di Qwen:
+#: 14 763 caratteri = 4 077 gettoni (`ai/19` §1). E' una stima, e basta a decidere se
+#: un esempio sta nella finestra o no — la misura esatta la fara' `axolotl` con il
+#: tokenizzatore vero.
+CARATTERI_PER_TOKEN = 3.6
+
+#: La finestra della ricetta (`ai/21` §6). Un esempio piu' lungo verrebbe **troncato**
+#: durante l'addestramento, e un esempio troncato non insegna una risposta piu' corta:
+#: insegna una risposta che finisce a meta'. Meglio scartarlo e contarlo.
+LUNGHEZZA_MASSIMA = 6144
+
 #: La versione del contratto, ripetuta qui perche' un dataset che non la dichiara e'
 #: un dataset di cui nessuno sapra' mai per quale grammatica e' stato scritto.
 DSL_VERSION = vocabulary.DSL_VERSION
+
+#: Le due forme del `prompt` di **D142**.
+#:
+#: La lunga **non si riscrive qui**: e' quella che `prompt.system_message()` produce,
+#: presa dal prodotto. Una copia scritta a mano sarebbe divergente alla prima delibera
+#: che tocca il vocabolario, e addestrerebbe il modello a leggere un messaggio che
+#: nessuno manda. `system_message` ignora la richiesta che riceve — le regole e i
+#: vocabolari chiusi sono costanti — quindi `None` basta ed e' onesto.
+SISTEMA_LUNGO = prompt_module.system_message(None)
+
+#: La corta nomina il compito e **la versione del contratto**. La versione c'e' perche'
+#: il giorno in cui il contratto cambia il `prompt` deve dirlo invece di lasciarlo
+#: indovinare: la grammatica sta nei pesi, e i pesi non sanno di essere vecchi.
+SISTEMA_CORTO = f"AIDA DSL {DSL_VERSION}. Answer one JSON envelope, nothing else."
 
 
 # ---------------------------------------------------------------------------
@@ -797,7 +823,17 @@ def raffinamento_di(stato: dict, catalogo: Catalogo, rng: random.Random
     else:
         possibili += ["aggiungi_ordine"]
 
-    quale = rng.choice(possibili)
+    # **Non uniforme, e per una ragione misurata.** Sei raffinamenti sono sempre
+    # possibili — un limite, una vista, un annulla si chiedono su qualunque stato —
+    # mentre *«togli il raggruppamento»* richiede uno stato che un raggruppamento ce
+    # l'abbia, e capita in un quarto dei casi. Scegliendo a caso fra le possibilita',
+    # i condizionati escono tre volte meno e restano sotto il minimo di cinquanta
+    # esempi che D143 pretende per ogni simbolo. Il peso ripara lo squilibrio alla
+    # sorgente, invece di generare il triplo di esempi per pescarne abbastanza.
+    sempre = {"aggiungi_condizione", "limite", "vista", "ricomincia", "annulla",
+              "apri"}
+    pesi = [1 if q in sempre else 3 for q in possibili]
+    quale = rng.choices(possibili, pesi)[0]
 
     if quale == "aggiungi_condizione":
         condizione = _condizione_confronto(catalogo, rng)
@@ -1028,6 +1064,12 @@ def genera_raffinamento(entita: Entita, rng: random.Random,
         scarti[motivo.split(":")[0]] += 1
         return None
 
+    lunghezza = _lunghezza_stimata(intento.catalogo.payload(), frase, envelope,
+                                   stato=stato_mostrato)
+    if lunghezza > LUNGHEZZA_MASSIMA:
+        scarti["troppo_lungo"] += 1
+        return None
+
     celle = set(firma(intento, envelope))
     celle.add(("turno", "raffinamento"))
     celle.discard(("famiglia", famiglia_base))
@@ -1173,6 +1215,19 @@ def _cinque_grammi(testo: str) -> set[str]:
     return {" ".join(parole[i:i + 5]) for i in range(max(1, len(parole) - 4))}
 
 
+def _lunghezza_stimata(catalogo: dict, frase: str, envelope: dict,
+                       stato: dict | None) -> int:
+    """I gettoni dell'esempio intero, nella sua forma piu' lunga."""
+    caratteri = len(SISTEMA_LUNGO) + len(frase) + len(
+        json.dumps(catalogo, ensure_ascii=False, separators=(",", ":")))
+    if stato:
+        caratteri += len(json.dumps(stato, ensure_ascii=False,
+                                    separators=(",", ":")))
+    caratteri += len(json.dumps(envelope, ensure_ascii=False,
+                                separators=(",", ":")))
+    return int(caratteri / CARATTERI_PER_TOKEN)
+
+
 def genera(entita: list[Entita], quanti: int, seme: int,
            scarti: Counter) -> list[Esempio]:
     rng = random.Random(seme)
@@ -1206,6 +1261,17 @@ def genera(entita: list[Entita], quanti: int, seme: int,
             scarti[motivo.split(":")[0]] += 1
             continue
         frase = verbalizza(intento, envelope, rng)
+
+        # La forma lunga del `prompt` e' il caso peggiore: se ci sta quella, ci sta
+        # anche la corta. Si misura sul peggiore perche' la quota delle due forme si
+        # sorteggia al momento di scrivere, e un esempio non puo' stare nella
+        # finestra solo a volte.
+        lunghezza = _lunghezza_stimata(intento.catalogo.payload(), frase, envelope,
+                                       stato=None)
+        if lunghezza > LUNGHEZZA_MASSIMA:
+            scarti["troppo_lungo"] += 1
+            continue
+
         esempi.append(Esempio(
             entita=entita_scelta.chiave,
             applicazione=entita_scelta.applicazione,
@@ -1257,8 +1323,63 @@ def filtra(esempi: list[Esempio], scarti: Counter, *, tetto: int) -> list[Esempi
     return tenuti
 
 
+#: Le classi di simbolo su cui **D143** pretende almeno cinquanta esempi. Un simbolo
+#: visto tre volte e' un simbolo non imparato, e sara' quello che il modello sbagliera'
+#: in servizio.
+CLASSI_CON_MINIMO = ("op", "tempo", "kind", "aggregazione", "nota_portata",
+                     "predicato")
+
+MINIMO_PER_SIMBOLO = 50
+
+
+def _ripiana(scelti: list[Esempio], rimasti: list[Esempio], coperte_conta: Counter,
+             per_entita: Counter, *, bersaglio: int, massimo_per_entita: int,
+             minimo: int) -> None:
+    """Porta al minimo i simboli che la selezione avida ha lasciato sotto.
+
+    **Il minimo di D143 e' una garanzia, non una misura.** Prima questo codice non
+    esisteva e il rapporto si limitava a dire *«sotto 50: add_field, clear_fields,
+    …»* — cioe' a constatare che la regola non era rispettata, giro dopo giro. Una
+    regola che il codice dichiara e non fa rispettare e' una regola che si legge nei
+    documenti e non esiste nel prodotto (§38, ancora).
+
+    Il motivo per cui l'avidita' da sola non basta: la copertura si accontenta della
+    **prima** volta che vede un simbolo, e da li' in poi quel simbolo non guadagna
+    piu' niente. Coprire e imparare sono due cose diverse.
+    """
+    indice: dict[tuple[str, str], list[Esempio]] = defaultdict(list)
+    for esempio in rimasti:
+        for cella in esempio.celle:
+            if cella[0] in CLASSI_CON_MINIMO:
+                indice[cella].append(esempio)
+
+    presi: set[int] = set()
+    # Dal piu' scoperto: se il bersaglio finisce, che finisca sui simboli che ne
+    # hanno meno bisogno.
+    da_ripianare = sorted(
+        (cella for cella in indice if coperte_conta[cella] < minimo),
+        key=lambda cella: coperte_conta[cella])
+
+    for cella in da_ripianare:
+        for esempio in indice[cella]:
+            if coperte_conta[cella] >= minimo or len(scelti) >= bersaglio:
+                break
+            if id(esempio) in presi:
+                continue
+            if per_entita[esempio.entita] >= massimo_per_entita:
+                continue
+            presi.add(id(esempio))
+            per_entita[esempio.entita] += 1
+            scelti.append(esempio)
+            for altra in esempio.celle:
+                coperte_conta[altra] += 1
+
+    rimasti[:] = [e for e in rimasti if id(e) not in presi]
+
+
 def seleziona(esempi: list[Esempio], bersaglio: int,
-              *, tetto_entita: float = 0.015) -> tuple[list[Esempio], int]:
+              *, tetto_entita: float = 0.015,
+              minimo: int = MINIMO_PER_SIMBOLO) -> tuple[list[Esempio], int]:
     """La selezione avida di **D143**, e il punto in cui la copertura satura.
 
     A ogni giro entra l'esempio che copre il maggior numero di celle **ancora
@@ -1284,10 +1405,30 @@ def seleziona(esempi: list[Esempio], bersaglio: int,
                 migliore, migliore_guadagno = indice, guadagno
                 if guadagno == len(esempio.celle):
                     break
-        if migliore is None:
+        if migliore is None or migliore_guadagno == 0:
+            # **Saturata: da qui l'avidita' non serve piu' e costa.** Cercare il
+            # massimo fra trentamila esempi che valgono tutti zero e' una scansione
+            # completa per ogni scelta — ore, per prendere lo stesso esempio che
+            # prenderebbe il primo che passa. Il resto si riempie in ordine,
+            # rispettando il tetto per entita', che e' cio' che la decisione dice.
+            if saturazione < 0:
+                saturazione = len(scelti)
+            # Prima il minimo di D143, poi il riempimento: se il bersaglio si
+            # esaurisce, deve esaurirsi sul volume e non sulla garanzia.
+            conta: Counter = Counter()
+            for gia in scelti:
+                for cella in gia.celle:
+                    conta[cella] += 1
+            _ripiana(scelti, rimasti, conta, per_entita, bersaglio=bersaglio,
+                     massimo_per_entita=massimo_per_entita, minimo=minimo)
+            for esempio in rimasti:
+                if len(scelti) >= bersaglio:
+                    break
+                if per_entita[esempio.entita] >= massimo_per_entita:
+                    continue
+                per_entita[esempio.entita] += 1
+                scelti.append(esempio)
             break
-        if migliore_guadagno == 0 and saturazione < 0:
-            saturazione = len(scelti)
         esempio = rimasti.pop(migliore)
         coperte |= set(esempio.celle)
         per_entita[esempio.entita] += 1
@@ -1314,7 +1455,12 @@ def dividi(esempi: list[Esempio], tenute_fuori: set[str]
 
 
 def rapporto(scelti: list[Esempio], fuori: list[Esempio], entita: list[Entita],
-             scarti: Counter, saturazione: int, generati: int) -> str:
+             scarti: Counter, saturazione: int, generati: int,
+             quota_corta: float, minimo: int) -> str:
+    #: Quanti gettoni risparmia la forma corta: tutto il messaggio di sistema meno la
+    #: riga che lo sostituisce.
+    risparmio_corto = int((len(SISTEMA_LUNGO) - len(SISTEMA_CORTO))
+                          / CARATTERI_PER_TOKEN)
     celle: Counter = Counter()
     for esempio in scelti:
         for chiave, valore in esempio.celle:
@@ -1332,14 +1478,14 @@ def rapporto(scelti: list[Esempio], fuori: list[Esempio], entita: list[Entita],
         attesi = attesi - esclusi
         presenti = {v: celle[(chiave, v)] for (k, v) in celle if k == chiave}
         mancanti = sorted(attesi - set(presenti))
-        sotto = sorted(v for v, n in presenti.items() if n < 50)
+        sotto = sorted(v for v, n in presenti.items() if n < minimo)
         riga = f"    {chiave:16} {len(presenti)}/{len(attesi)}"
         if esclusi:
             riga += f"   esclusi apposta: {', '.join(sorted(esclusi))}"
         if mancanti:
             riga += f"   MANCANTI: {', '.join(mancanti)}"
         if sotto:
-            riga += f"   sotto 50: {', '.join(sotto)}"
+            riga += f"   sotto {minimo}: {', '.join(sotto)}"
         return riga
 
     righe = [
@@ -1365,7 +1511,7 @@ def rapporto(scelti: list[Esempio], fuori: list[Esempio], entita: list[Entita],
         righe.append(f"    {motivo:28} {quanti}")
     righe += [
         "",
-        "  simboli del vocabolario chiuso (minimo 50 per simbolo)",
+        f"  simboli del vocabolario chiuso (minimo {minimo} per simbolo)",
         elenco("op", set(vocabulary.OPERATIONS)),
         elenco("tempo", set(vocabulary.TEMPORAL_EXPRESSIONS)),
         # `boolean` non compare fra i valori e non e' una dimenticanza: su un booleano
@@ -1381,6 +1527,32 @@ def rapporto(scelti: list[Esempio], fuori: list[Esempio], entita: list[Entita],
         f"    applicazioni         {len({e.applicazione for e in scelti})}"
         f"   tenute fuori: {len({e.applicazione for e in fuori})}",
     ]
+    # **La distribuzione delle lunghezze, e non solo la media.** `ai/18` §8 fa il conto
+    # dei costi su «10 000 esempi da ~4 200 gettoni»: se la lunghezza vera e' un'altra,
+    # il preventivo e' un altro, e il `sequence_len` della ricetta pure.
+    lunghezze = sorted(_lunghezza_stimata(e.catalogo, e.frase, e.envelope, e.stato)
+                       for e in scelti) or [0]
+
+    def percentile(quanto: float) -> int:
+        return lunghezze[min(len(lunghezze) - 1, int(len(lunghezze) * quanto))]
+
+    righe += [
+        "",
+        "  lunghezza dell'esempio in gettoni (stima, forma lunga del prompt)",
+        f"    mediana {percentile(0.5)}   90° {percentile(0.9)}   "
+        f"99° {percentile(0.99)}   massimo {lunghezze[-1]}",
+        f"    il sequence_len della ricetta e' {LUNGHEZZA_MASSIMA}: "
+        f"gli esempi oltre sono scartati, non troncati",
+        f"    gettoni totali per passata, tutti con il prompt lungo  "
+        f"{sum(lunghezze):,}",
+        # Il numero su cui si fa il preventivo: il prompt corto di D142 toglie i
+        # gettoni del messaggio di sistema a tre esempi su quattro, e sono la meta'
+        # dell'esempio. Un costo calcolato sul caso peggiore e' un costo sbagliato di
+        # un fattore due.
+        f"    gettoni totali per passata, con la quota corta di D142  "
+        f"{sum(lunghezze) - int(quota_corta * len(lunghezze) * risparmio_corto):,}",
+    ]
+
     lingue = Counter(e.lingua for e in scelti)
     totale = max(1, len(scelti))
     righe.append("    lingua del catalogo  " + "  ".join(
@@ -1398,8 +1570,7 @@ def scrivi(esempi: list[Esempio], percorso: Path, *, quota_corta: float,
     with percorso.open("w") as uscita:
         for esempio in esempi:
             corta = rng.random() < quota_corta
-            sistema = (f"AIDA DSL {DSL_VERSION}. Answer one JSON envelope, "
-                       "nothing else." if corta else "@@SYSTEM_MESSAGE_LUNGO@@")
+            sistema = SISTEMA_CORTO if corta else SISTEMA_LUNGO
             # La stessa forma, nello stesso ordine, di `prompt.user_message()`: il
             # catalogo, poi lo stato quando c'e'. Un esempio con le chiavi in un
             # ordine diverso da quello di produzione insegnerebbe a leggere un
@@ -1436,6 +1607,10 @@ def main(argv: list[str]) -> int:
                                                  "website_slides,hr_recruitment,repair,"
                                                  "lunch")
     parser.add_argument("--out", type=Path, default=REPO_ROOT / "data")
+    parser.add_argument("--minimo", type=int, default=MINIMO_PER_SIMBOLO,
+                        help="quante volte ogni simbolo deve comparire (D143). "
+                             "Si abbassa solo per la prova di fumo, dove il "
+                             "bersaglio e' troppo piccolo per contenerlo")
     parser.add_argument("--seme", type=int, default=20260806)
     argomenti = parser.parse_args(argv)
 
@@ -1452,7 +1627,8 @@ def main(argv: list[str]) -> int:
     tenute_fuori = {a.strip() for a in argomenti.tieni_fuori.split(",") if a.strip()}
     dentro, fuori = dividi(filtrati, tenute_fuori)
 
-    scelti, saturazione = seleziona(dentro, argomenti.bersaglio)
+    scelti, saturazione = seleziona(dentro, argomenti.bersaglio,
+                                    minimo=argomenti.minimo)
     print(f"scelti: {len(scelti)}  (satura a {saturazione})", file=sys.stderr)
 
     argomenti.out.mkdir(parents=True, exist_ok=True)
@@ -1464,7 +1640,8 @@ def main(argv: list[str]) -> int:
     scrivi(fuori, argomenti.out / "aida_test_mai_viste.jsonl",
            quota_corta=argomenti.quota_corta, seme=argomenti.seme + 2)
 
-    testo = rapporto(scelti, fuori, entita, scarti, saturazione, len(grezzi))
+    testo = rapporto(scelti, fuori, entita, scarti, saturazione, len(grezzi),
+                     argomenti.quota_corta, argomenti.minimo)
     (argomenti.out / "copertura.txt").write_text(testo + "\n")
     print("\n" + testo)
     return 0

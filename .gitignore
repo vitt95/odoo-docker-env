@@ -34,3 +34,8 @@ __pycache__/
 # intero a ogni ripresa: le misure che contano sono gia' nel documento, il file
 # serve solo a rifarle.
 /ai/screenvideo/
+
+# Il dataset di addestramento: artefatto, non sorgente. Si rigenera dall'atlante
+# con lo stesso seme (tools/finetuning/genera_dataset.py). Il rapporto di copertura
+# invece si commette: e' il pezzo che si legge prima di spendere.
+data/*.jsonl
