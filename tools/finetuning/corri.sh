@@ -4,6 +4,11 @@
 #   ./tools/finetuning/corri.sh fumo      # 500 esempi su A6000, ~$2, verifica la catena
 #   ./tools/finetuning/corri.sh 4b        # la corsa vera sul candidato principale
 #   ./tools/finetuning/corri.sh 2b        # l'obiettivo ambizioso di ai/19 §5
+#   ./tools/finetuning/corri.sh 9b        # la riserva, solo se gli altri due non passano
+#
+# **Il dataset e' lo stesso per tutte e tre.** Nulla in un esempio dipende dalla
+# taglia, e le tre Qwen 3.5 condividono tokenizzatore e schema di conversazione: e'
+# la ragione per cui cambiare candidato costa una riga invece di un progetto.
 #
 # Perche' uno script e non tre comandi a mano: la fatturazione di RunPod e' **al
 # secondo**, e premia la disciplina di preparare tutto in locale, caricare, correre,
@@ -23,7 +28,8 @@ case "$QUALE" in
   fumo) RICETTA=tools/finetuning/ricette/aida-4b-lora.yml; USCITA=out/aida-4b-lora ;;
   4b)   RICETTA=tools/finetuning/ricette/aida-4b-lora.yml; USCITA=out/aida-4b-lora ;;
   2b)   RICETTA=tools/finetuning/ricette/aida-2b-lora.yml; USCITA=out/aida-2b-lora ;;
-  *)    echo "non conosco '$QUALE': usa fumo, 4b o 2b" >&2; exit 2 ;;
+  9b)   RICETTA=tools/finetuning/ricette/aida-9b-lora.yml; USCITA=out/aida-9b-lora ;;
+  *)    echo "non conosco '$QUALE': usa fumo, 4b, 2b o 9b" >&2; exit 2 ;;
 esac
 
 echo "== 1. il dataset =="
@@ -58,8 +64,11 @@ python3 llama.cpp/convert_lora_to_gguf.py \
 
 echo
 echo "Fatto. Scarica $USCITA/adapter.gguf, poi in locale:"
-echo "  printf 'FROM qwen3.5:4b\\nADAPTER ./adapter.gguf\\n' > Modelfile"
-echo "  ollama create aida-dsl -f Modelfile"
+# La base la dice la ricetta, non un valore scritto a mano: un adapter attaccato alla
+# taglia sbagliata e' un guasto che non si annuncia.
+TAGLIA="$(grep '^base_model:' "$RICETTA" | sed 's#.*Qwen3.5-\([0-9]*B\).*#\1#' | tr 'A-Z' 'a-z')"
+echo "  printf 'FROM qwen3.5:${TAGLIA}\\nADAPTER ./adapter.gguf\\n' > Modelfile"
+echo "  ollama create aida-dsl-${TAGLIA} -f Modelfile"
 echo
 echo "E poi il cancello di ai/18 §9, che decide da solo:"
 echo "  NLI_ALLOWED_HOSTS=127.0.0.1:11434 python3 ai/corpus/misura_accuratezza.py \\"

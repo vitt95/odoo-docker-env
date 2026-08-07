@@ -485,8 +485,27 @@ save_total_limit: 8
 seed: 20260806              # una corsa che non si ripete non è una misura
 ```
 
-Per il **2B** cambia una riga: `base_model: Qwen/Qwen3.5-2B-Instruct`. Per il **9B** di
-riserva, `sequence_len` e `micro_batch_size` vanno rivisti alla memoria della scheda.
+### 6.0 — Un dataset solo, per tutte e tre le taglie
+
+**Niente in un esempio dipende dal modello.** Il catalogo, la frase, l'`envelope` e le
+due forme del `prompt` di D142 sono le stesse, e le tre taglie di Qwen 3.5 condividono
+**tokenizzatore e schema di conversazione** (`ai/19` §5). È la ragione per cui cambiare
+candidato costa una riga invece di un progetto — e per cui provare il 2B *e* il 4B non
+raddoppia il lavoro, raddoppia solo il conto della macchina.
+
+Le tre ricette esistono già, in `tools/finetuning/ricette/`:
+
+| file | quando |
+|---|---|
+| `aida-4b-lora.yml` | il candidato principale |
+| `aida-2b-lora.yml` | in parallelo: costa undici dollari saperlo invece di discuterne |
+| `aida-9b-lora.yml` | **solo** se né 4B né 2B passano il cancello |
+
+**Il 9B ha una differenza vera, e non è una riga di comodo.** `ai/18` §3 conta 25-30 GB
+per una LoRA a 16 bit su quella taglia, ma quel conto assume 4-5 mila `token`; a 6 144
+con due esempi per lotto le attivazioni crescono e una A6000 da 48 GB va stretta. La
+ricetta del 9B usa **un esempio per lotto e il doppio di accumulo**: il lotto efficace
+resta 32 — che è ciò che conta per il gradiente — e si paga in tempo, non in qualità.
 
 > **Onestà su questo file**: i nomi dei campi sono quelli di Axolotl come li conosco, e
 > vanno verificati contro la versione che si installa il giorno della corsa — `axolotl`
