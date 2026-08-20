@@ -181,3 +181,53 @@ class IlForno(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestISinonimiApprovatiEntranoNelCatalogo(unittest.TestCase):
+    """D108 nel dataset: le parole scritte a mano per il prodotto valgono anche qui.
+
+    Entrano nel **catalogo** dell'esempio, mai nei pesi da sole: `ai/18` §2 vuole che il
+    modello i riferimenti li legga, perche' uno che li ricordasse comincerebbe a
+    proporre riferimenti non mostrati — e la generazione vincolata (D101, D102) li
+    rifiuterebbe, perdendo la risposta per colpa nostra.
+    """
+
+    @staticmethod
+    def _entita(chiave, termini_it):
+        return g.Entita(
+            chiave=chiave, modello=chiave.replace("_", "."),
+            termini_it=termini_it, termini_en=("Order",),
+            applicazioni=("sale",),
+            attributi=tuple(
+                g.Attributo(ref=f"{chiave}.a{i}", campo=f"a{i}", tipo="text",
+                            termini_it=(f"Campo {i}",), termini_en=(f"Field {i}",))
+                for i in range(8)))
+
+    def _catalogo(self, chiave, termini_it, lingua):
+        """Un catalogo nella lingua chiesta: `costruisci_catalogo` la sorteggia, quindi
+        si prova finche' esce quella — con un tetto, perche' un ciclo senza fine dentro
+        una prova e' peggio di una prova che fallisce."""
+        for seme in range(200):
+            catalogo = g.costruisci_catalogo(
+                self._entita(chiave, termini_it), random.Random(seme))
+            if catalogo.lingua == lingua:
+                return catalogo
+        self.fail(f"nessun catalogo in lingua {lingua} in 200 tentativi")
+
+    def test_una_entita_con_sinonimo_lo_porta_nel_catalogo(self):
+        """Il caso per cui il collegamento esiste: `vendite` sta nei pacchetti, quindi
+        il modello la vede scritta accanto all'etichetta Odoo."""
+        catalogo = self._catalogo("sale_order", ("Ordine di vendita",), "it")
+        self.assertIn("vendite", [t.lower() for t in catalogo.etichetta_entita])
+
+    def test_una_entita_senza_sinonimo_resta_come_sta(self):
+        """Il lato che non deve scattare: nessuno ha scritto parole per i lead, e il
+        catalogo non deve inventarne."""
+        catalogo = self._catalogo("crm_lead", ("Lead",), "it")
+        self.assertEqual(tuple(catalogo.etichetta_entita), ("Lead",))
+
+    def test_il_catalogo_inglese_non_prende_i_sinonimi_italiani(self):
+        """Un catalogo in inglese con dentro `vendite` insegnerebbe un miscuglio che
+        nessuna installazione serve."""
+        catalogo = self._catalogo("sale_order", ("Ordine di vendita",), "en")
+        self.assertNotIn("vendite", [t.lower() for t in catalogo.etichetta_entita])

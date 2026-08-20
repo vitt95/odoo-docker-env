@@ -134,14 +134,21 @@ cmd_dizionario() {
   # Due file, due esecuzioni separate: ognuno chiude la propria transazione
   # (`commit` o `rollback`), e concatenarli come fa `campo` significherebbe che il
   # rollback della prova del primo si porta via anche il secondo.
-  local file
-  for file in sinonimi_date sinonimi_entita; do
-    log "Dizionario — ${file} su '${db}'${prova:+ (prova, non scrive)}..."
-    dc exec -T -e "DIZIONARIO_PROVA=${prova}" \
-      odoo python3 /opt/odoo/core/odoo-bin shell -c /etc/odoo/odoo.conf -d "$db" \
-      --log-level=warn \
-      < "${PROJECT_ROOT}/tools/dizionario/${file}.py"
-  done
+  log "Dizionario — sinonimi delle date su '${db}'${prova:+ (prova, non scrive)}..."
+  dc exec -T -e "DIZIONARIO_PROVA=${prova}" \
+    odoo python3 /opt/odoo/core/odoo-bin shell -c /etc/odoo/odoo.conf -d "$db" \
+    --log-level=warn \
+    < "${PROJECT_ROOT}/tools/dizionario/sinonimi_date.py"
+
+  # `pacchetti.py` e' zona pura e provata da sola; `sinonimi_entita.py` e' la meta'
+  # che legge l'installazione. Si concatenano come `campo` fa con `frasi.py`, perche'
+  # la shell di Odoo riceve un sorgente solo e dentro il container `tools/` non c'e'.
+  log "Dizionario — parole di entita' su '${db}'${prova:+ (prova, non scrive)}..."
+  dc exec -T -e "DIZIONARIO_PROVA=${prova}" \
+    odoo python3 /opt/odoo/core/odoo-bin shell -c /etc/odoo/odoo.conf -d "$db" \
+    --log-level=warn \
+    < <(cat "${PROJECT_ROOT}/tools/dizionario/pacchetti.py" \
+           "${PROJECT_ROOT}/tools/dizionario/sinonimi_entita.py")
 }
 
 cmd_atlante() {
@@ -184,6 +191,8 @@ cmd_check() {
 
   log "Tests of the dataset generator (fine tuning)..."
   python3 -m unittest discover -s "${PROJECT_ROOT}/tools/finetuning/tests" -t "${PROJECT_ROOT}"
+  log "Tests of the dictionary packs..."
+  python3 -m unittest discover -s "${PROJECT_ROOT}/tools/dizionario/tests" -t "${PROJECT_ROOT}"
   log "Contract, pure zone (no Odoo, no database)..."
   python3 "${PROJECT_ROOT}/tools/pure/run.py"
   log "Foundational corpus against the contract..."

@@ -87,6 +87,23 @@ from nli_core.validation import coherence, structural  # noqa: E402
 from nli_engine import prompt as prompt_module  # noqa: E402
 from nli_semantics.catalogue import anchor as anchor_module  # noqa: E402
 
+# **Le parole scritte a mano valgono due volte** (D108). `pacchetti.py` porta i nomi di
+# entita' che la raccolta dall'installazione non puo' derivare — *vendite* per gli ordini
+# di vendita — e sono gli stessi che il prodotto usa in servizio. Entrano nel **catalogo**
+# dell'esempio, non nei pesi: `ai/18` §2 vuole che il modello i riferimenti li **legga**,
+# e un modello che li ricordasse comincerebbe a proporre cio' che non gli e' stato mostrato.
+_RADICE = QUI.parent.parent
+if str(_RADICE) not in sys.path:
+    sys.path.insert(0, str(_RADICE))
+from tools.dizionario.pacchetti import PACCHETTI  # noqa: E402
+
+#: Piatti: `{riferimento: (parola, ...)}`, l'unione di tutti i pacchetti.
+SINONIMI_ENTITA: dict[str, tuple[str, ...]] = {
+    ref: termini
+    for pacchetto in PACCHETTI.values()
+    for ref, termini in pacchetto.items()
+}
+
 ATLANTE = QUI / "atlante.json"
 ATLANTE_EN = QUI / "atlante_en.json"
 
@@ -421,7 +438,12 @@ def costruisci_catalogo(entita: Entita, rng: random.Random) -> Catalogo:
         etichetta_entita = entita.termini_en
     else:
         etichette = {a.ref: a.termini_it for a in scelti}
-        etichetta_entita = entita.termini_it
+        # I sinonimi approvati stanno solo in italiano: sono parole della lingua, e un
+        # catalogo inglese che li portasse insegnerebbe un miscuglio che nessuna
+        # installazione serve.
+        etichetta_entita = entita.termini_it + tuple(
+            t for t in SINONIMI_ENTITA.get(entita.chiave, ())
+            if t.lower() not in {x.lower() for x in entita.termini_it})
 
     etichette, dicibili = _con_varianti(etichette, lingua, rng)
     # L'entita' i sinonimi li aveva gia' (D126), ma non le varianti meccaniche:
