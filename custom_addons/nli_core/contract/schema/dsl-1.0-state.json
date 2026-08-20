@@ -317,6 +317,7 @@
               "measures_multi_group_implies_pivot",
               "measures_single_group_implies_graph",
               "measures_without_group_implies_list",
+              "target_carried_from_previous_turn",
               "text_attribute_implies_asc"
             ]
           }
@@ -371,6 +372,7 @@
               "measures_multi_group_implies_pivot",
               "measures_single_group_implies_graph",
               "measures_without_group_implies_list",
+              "target_carried_from_previous_turn",
               "text_attribute_implies_asc"
             ]
           }
@@ -409,6 +411,7 @@
             "measures_multi_group_implies_pivot",
             "measures_single_group_implies_graph",
             "measures_without_group_implies_list",
+            "target_carried_from_previous_turn",
             "text_attribute_implies_asc"
           ]
         },
@@ -463,6 +466,7 @@
               "measures_multi_group_implies_pivot",
               "measures_single_group_implies_graph",
               "measures_without_group_implies_list",
+              "target_carried_from_previous_turn",
               "text_attribute_implies_asc"
             ]
           }
@@ -511,6 +515,7 @@
               "measures_multi_group_implies_pivot",
               "measures_single_group_implies_graph",
               "measures_without_group_implies_list",
+              "target_carried_from_previous_turn",
               "text_attribute_implies_asc"
             ]
           }
@@ -549,6 +554,7 @@
             "measures_multi_group_implies_pivot",
             "measures_single_group_implies_graph",
             "measures_without_group_implies_list",
+            "target_carried_from_previous_turn",
             "text_attribute_implies_asc"
           ]
         },
@@ -597,6 +603,7 @@
             "measures_multi_group_implies_pivot",
             "measures_single_group_implies_graph",
             "measures_without_group_implies_list",
+            "target_carried_from_previous_turn",
             "text_attribute_implies_asc"
           ]
         }

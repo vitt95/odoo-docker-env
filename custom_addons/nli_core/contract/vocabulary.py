@@ -450,9 +450,24 @@ RULE_LATEST_DESC = "latest_implies_desc_by_date"
 #: set: an inference the interface cannot name is one the user cannot contradict. D88.
 RULE_TEXT_ASC = "text_attribute_implies_asc"
 
+#: **D146** — l'entita' di questo turno non l'ha nominata l'utente: la porta lo stato del
+#: turno prima (D127, chi non nomina la propria entita' continua).
+#:
+#: E' l'inferenza piu' importante che il prodotto faccia, perche' decide **su che cosa**
+#: si risponde, e fino al 21 agosto 2026 era l'unica che non si dichiarava: il bersaglio
+#: ereditato arrivava allo schermo con `origin: user`, cioe' come se l'utente lo avesse
+#: appena detto. Misurato lo stesso giorno: *«mostrami le anagrafiche di Roma»*, chiesta
+#: dopo una domanda sui lead, ha risposto **un record di lead** senza che niente sullo
+#: schermo dicesse che si stava parlando di lead (`00` §49.4).
+#:
+#: Con un nome, l'interfaccia la disegna dedotta — bordo tratteggiato, §10.2 — e chi
+#: legge puo' contraddirla. Senza, non poteva: un'inferenza che l'interfaccia non sa
+#: nominare e' un'inferenza che l'utente non puo' contraddire (D88).
+RULE_TARGET_CARRIED = "target_carried_from_previous_turn"
+
 INFERENCE_RULES = frozenset(
     {identifier for identifier, _ in VIEW_DERIVATION_RULES}
-    | {RULE_LATEST_DESC, RULE_TEXT_ASC}
+    | {RULE_LATEST_DESC, RULE_TEXT_ASC, RULE_TARGET_CARRIED}
 )
 
 

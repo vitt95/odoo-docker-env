@@ -27,6 +27,7 @@ from dataclasses import dataclass, field
 from odoo import fields as odoo_fields
 from odoo.addons.nli_core.application import alternatives, applicator, completion
 from odoo.addons.nli_core.contract import state as state_module
+from odoo.addons.nli_core.contract import vocabulary
 from odoo.addons.nli_core.contract.vocabulary import DSL_VERSION
 from odoo.addons.nli_core.execution import executor
 from odoo.addons.nli_core.presentation import presenter
@@ -304,6 +305,18 @@ def _run(env, item, *, adapter, scope, context_window: int,
     # `_determine_entity`: cambiare la forma di cio' che torna avrebbe toccato ogni suo
     # chiamante per un'informazione che serve a uno solo.
     da_stato = not riparte and entity_ref == (state.get("target") or {}).get("ref")
+
+    # **E si dichiara** (D146). Il bersaglio ereditato arrivava allo schermo con
+    # `origin: user`, cioe' come se l'utente lo avesse appena nominato: per il turno
+    # prima era vero, per questo no. Marcarlo dedotto e' quello che fa disegnare
+    # all'interfaccia il bordo tratteggiato di §10.2, e quindi l'unico rimedio che vale
+    # anche per le parole che il dizionario non ha ancora — comprese quelle su cui il
+    # modello riesce a rispondere lo stesso, che sono il caso pericoloso (§49.4).
+    if da_stato:
+        state = {**state,
+                 "target": {**state["target"],
+                            "origin": "inferred",
+                            "rule": vocabulary.RULE_TARGET_CARRIED}}
 
     def _leggi(entity_ref, state, *, pending):
         """Fasi C e seguenti: prepara il catalogo, chiede al modello, applica.

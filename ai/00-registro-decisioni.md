@@ -4090,4 +4090,33 @@ la metà che si vede. L'altra metà ha due rimedi, nessuno dei quali è un riten
 1. **il dizionario** — se la fase A conosce la parola, l'assunzione non nasce;
 2. **rendere visibile l'assunzione** — l'utente deve leggere *su che cosa* gli si sta
    rispondendo, ed è l'unico rimedio che funziona anche per le parole che non abbiamo
-   ancora scritto. È la famiglia di **D68**, ed è aperto.
+   ancora scritto. È la famiglia di **D68**, ed è **D146**, qui sotto.
+
+## §49.5 — D146: l'entità ereditata si dichiara dedotta
+
+Il bersaglio che arriva dallo stato del turno prima finiva sullo schermo con
+`origin: user` — cioè come se l'utente lo avesse appena nominato. Per il turno di prima
+era vero; per questo no.
+
+**È l'inferenza più importante che il prodotto faccia**, perché decide *su che cosa* si
+risponde, e fino al 21 agosto 2026 era l'unica che non si dichiarava. Le altre — la
+direzione dell'ordinamento, la vista derivata, il limite di default — portano tutte la
+loro regola da §10.2.
+
+> **D146 — Un turno che continua sull'entità del turno precedente marca il bersaglio
+> `inferred`, con la regola `target_carried_from_previous_turn`.**
+
+Il nome entra in `INFERENCE_RULES`, che è un **insieme chiuso**: aggiungerne uno è un
+cambio di contratto (§6.7, §15.2), e gli artefatti dello schema in
+`contract/schema/dsl-1.0-state.json` sono stati rigenerati insieme alla decisione — il
+banco delle prove non li ha fatti passare finché non combaciavano, che è esattamente il
+suo lavoro.
+
+Perché un nome e non solo `inferred`: **un'inferenza che l'interfaccia non sa nominare è
+un'inferenza che l'utente non può contraddire** (D88). Con la regola, la chat disegna il
+bersaglio col bordo tratteggiato di §10.2 e chi legge vede che *«Lead»* non l'ha detto
+lui.
+
+**Cosa non fa.** Non impedisce la risposta sbagliata di §49.4: la rende **leggibile**.
+È il massimo che si può fare per una parola che il dizionario non ha ancora, e va detto
+per non scambiarlo per una riparazione.

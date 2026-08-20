@@ -23,6 +23,7 @@ from odoo.exceptions import AccessError
 from odoo.tests.common import TransactionCase, new_test_user, tagged
 
 from odoo.addons.nli_core.contract import state as state_module
+from odoo.addons.nli_core.contract import vocabulary
 from odoo.addons.nli_engine.adapters import synthetic
 from odoo.addons.nli_engine.adapters.base import AdapterError
 from odoo.addons.nli_engine.adapters.recorded import RecordedAdapter
@@ -1650,3 +1651,64 @@ class TestARefinementReconsiders(DispatchCase):
         ])
         self.assertEqual(outcome.outcome, "not_understood")
         self.assertEqual(len(adapter.requests), 2)
+
+
+@tagged("post_install", "-at_install", "nli_dispatch")
+class TestTheAssumedEntityIsDeclared(DispatchCase):
+    """D146 — l'entita' ereditata arriva allo schermo come dedotta, non come detta.
+
+    E' la meta' di §49.4 che D145 non chiude. *«mostrami le anagrafiche di Roma»*,
+    chiesta dopo una domanda sui lead, il 21 agosto 2026 ha risposto **un record di
+    lead**: il modello e' riuscito a leggere la frase sul catalogo sbagliato — i lead
+    una citta' ce l'hanno — e non c'e' stato nessun rifiuto a cui attaccare una seconda
+    lettura. Un turno cosi' non ha **nessun** segnale d'errore: l'unico rimedio e' che
+    chi legge veda su che cosa gli si sta rispondendo.
+    """
+
+    def setUp(self):
+        super().setUp()
+        self.env["res.partner"].create(
+            {"name": "Alfa SpA", "city": "Cittaprova", "is_company": True})
+        self.scope = ("res.partner",)
+        self.env["nli.dictionary.entry"].create({
+            "entry_type": "T1", "level": "L2", "ref": "res_partner",
+            "entity_ref": "res_partner", "terms": "aziende"})
+        self.env.registry.clear_cache()
+
+    def _run(self, utterance, replies):
+        item = self.accept(utterance)
+        adapter = RecordedAdapter(replies)
+        outcome = pipeline_module.run(
+            self.user_env, item.with_env(self.user_env), adapter=adapter,
+            scope=self.scope, context_window=32_000, debug=True)
+        worker_module._persist(self.user_env, item.with_env(self.user_env), outcome)
+        return outcome, adapter
+
+    def _prima_domanda(self):
+        return self._run("mostrami le aziende", [envelope(target("res_partner"))])
+
+    def test_a_carried_target_is_shown_as_inferred(self):
+        """Il caso per cui D146 esiste: nessuno ha nominato le aziende in questo turno,
+        e l'interpretazione deve dirlo con la regola che l'ha prodotto."""
+        self._prima_domanda()
+        outcome, _adapter = self._run("solo quelli di Cittaprova", [envelope(
+            {"op": "add_condition", "combine": "all",
+             "condition": {"ref": "res_partner.city", "predicate": "equals",
+                           "value": {"kind": "text", "text": "Cittaprova"}},
+             "provenance": {"text": "di Cittaprova"}})])
+        self.assertEqual(outcome.outcome, "operations", outcome.failures)
+        mostrato = outcome.interpretation["target"]
+        self.assertEqual(mostrato["origin"], "inferred")
+        self.assertEqual(mostrato["rule"], vocabulary.RULE_TARGET_CARRIED)
+
+    def test_an_entity_the_sentence_names_is_not_an_inference(self):
+        """Il lato che non deve scattare: qui l'utente l'entita' l'ha detta, e
+        marcarla dedotta sarebbe una bugia nell'altra direzione — chi legge
+        smetterebbe di fidarsi del bordo tratteggiato proprio dove e' vero."""
+        self._prima_domanda()
+        outcome, _adapter = self._run("mostrami le aziende", [envelope(
+            target("res_partner"))])
+        self.assertEqual(outcome.outcome, "operations", outcome.failures)
+        mostrato = outcome.interpretation["target"]
+        self.assertEqual(mostrato["origin"], "user")
+        self.assertNotIn("rule", mostrato)
