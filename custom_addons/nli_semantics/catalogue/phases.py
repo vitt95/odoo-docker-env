@@ -182,12 +182,48 @@ def determine_entity(
         span = (match.start, match.length)
         best_non_entity[span] = max(best_non_entity.get(span, 0.0), match.score)
 
+    # **V-D93-2: una parola che sta dentro il nome di un attributo non nomina
+    # un'entita'.** Il guardiano qui sopra confronta lo **stesso** pezzo di frase, e
+    # per costruzione non vede il caso in cui il nome dell'attributo e' piu' lungo.
+    #
+    # Misurato il 21 agosto 2026, ed e' la prova che ha fermato una riparazione. Per
+    # far risolvere *«mostrami le vendite»* si aggiunge *vendite* come nome di
+    # `sale_order` (`tools/dizionario/sinonimi_entita.py`). Da quel momento
+    # *«i lead raggruppati per addetto vendite»* smetteva di risolvere: `crm_lead` a
+    # 1.00 da *lead* e `sale_order` a 1.00 da *vendite*, pareggio dentro il margine,
+    # e una frase che nomina la propria entita' senza ombra di dubbio finiva in un
+    # chiarimento.
+    #
+    # *Addetto vendite* e' il nome di un attributo, lungo due parole, e **contiene**
+    # il pezzo che l'entita' rivendica. Chi dice *«per addetto vendite»* non sta
+    # nominando le vendite: sta nominando il commerciale. La prova piu' specifica
+    # vince su quella che le sta dentro — e' la stessa idea di V-D93-1 applicata al
+    # contenimento invece che alla coincidenza.
+    #
+    # Non tocca il caso che V-D93-1 protegge: li' i due termini coprono lo stesso
+    # pezzo esatto (*fatture* contro *fatture*), e un pareggio fra prove esatte resta
+    # una ragione per tenere l'entita', non per buttarla.
+    non_entity_spans = tuple(
+        (match.start, match.length, match.score)
+        for match in matches if match.ref not in entity_refs
+    )
+
+    def _is_inside_an_attribute_name(match: Match) -> bool:
+        end = match.start + match.length
+        return any(
+            start <= match.start and start + length >= end
+            and length > match.length and score >= match.score
+            for start, length, score in non_entity_spans
+        )
+
     best_by_ref: dict[str, Match] = {}
     for match in matches:
         if match.ref not in entity_refs:
             continue
         span = (match.start, match.length)
         if best_non_entity.get(span, 0.0) >= match.score and not _is_exact(match):
+            continue
+        if _is_inside_an_attribute_name(match):
             continue
         current = best_by_ref.get(match.ref)
         if current is None or (match.length, match.score) > (current.length, current.score):

@@ -539,11 +539,33 @@ niente lo segnalasse.
 
     curl -s http://127.0.0.1:11434/api/ps | grep context_length
 
-Se dice 4096, si riavvia `ollama` (`killall ollama && open -a Ollama`): la variabile
-`OLLAMA_CONTEXT_LENGTH=8192` e' in `launchctl setenv`, che **non sopravvive al riavvio
-del Mac** e che un processo gia' avviato non vede. Va reso permanente con un
-`LaunchAgent`, ed e' aperto. `/api/ps` risponde vuoto se nessun modello e' caricato:
-basta una domanda qualunque per caricarlo.
+`/api/ps` risponde vuoto se nessun modello e' caricato: basta una domanda qualunque per
+caricarlo.
+
+**Se dice 4096 — e il rimedio che era scritto qui non funziona.** Il 21 agosto 2026 la
+riga precedente diceva di riavviare l'applicazione dopo un `launchctl setenv`. E'
+sbagliata, ed e' costata una diagnosi: **Ollama.app avvia `ollama serve` con un ambiente
+suo e non eredita `launchctl`**. Verificato leggendo l'ambiente del processo vero
+(`ps eww`): dentro c'erano `OLLAMA_MODELS` e `OLLAMA_NO_CLOUD`, non
+`OLLAMA_CONTEXT_LENGTH`. E l'impostazione `settings.context_length` nel database
+dell'applicazione (`~/Library/Application Support/Ollama/db.sqlite`) **vale per la sua
+chat, non per il server**: portata a 8192, `/api/ps` continuava a dire 4096.
+
+L'unico modo verificato e' avviare il server a mano, con la variabile nel suo ambiente:
+
+    osascript -e 'quit app "Ollama"'; pkill -f "ollama serve"
+    OLLAMA_CONTEXT_LENGTH=8192 nohup /usr/local/bin/ollama serve > /tmp/ollama-serve.log 2>&1 &
+
+Poi si **verifica**, non si presume: `/api/ps` deve dire `8192`. Cosi' gira oggi. Muore
+al riavvio del Mac e l'applicazione puo' riprendersi la porta: il `LaunchAgent` resta
+aperto, ed e' l'unica forma che chiude il buco.
+
+**Perche' e' il primo controllo di ogni sessione.** Quando il servito e' 4096 il prodotto
+non e' rotto in modo visibile: risponde `not_understood`, che assomiglia a un limite del
+modello. Il 21 agosto una domanda e' stata diagnosticata come guasto di entita' mentre il
+server serviva 4096 — la diagnosi reggeva lo stesso, ma la misura sotto era inutilizzabile
+e nessuno se n'era accorto. **Il valore dichiarato dal profilo non e' una prova di niente:
+la prova e' `/api/ps`.**
 
 **Il modello.** Gira su `ollama` **nativo dell'host**, 127.0.0.1:11434, con Metal. Il
 container `ollama` è spento e non va riacceso: dentro Docker non c'è GPU e si va dieci

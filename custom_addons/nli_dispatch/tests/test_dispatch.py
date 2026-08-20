@@ -1554,3 +1554,99 @@ class TestTheNearestPeriodIsNotTheAnsweredOne(DispatchCase):
                      self._period("last_n_days", "negli ultimi 30 giorni", n=30)),
         ])
         self.assertEqual(outcome.outcome, "operations", outcome.failures)
+
+
+@tagged("post_install", "-at_install", "nli_dispatch")
+class TestARefinementReconsiders(DispatchCase):
+    """D145 — un raffinamento che non si capisce si ricrede, una volta sola.
+
+    **Il caso, misurato il 20 agosto 2026 sul database vero** (conversazione 964).
+    Dopo *«dammi il numero di lead creati quest'anno»* arriva *«mostrami le vendite con
+    totale superiore a 2000»*. La fase A non conosceva la parola *vendite*, quindi il
+    turno e' stato letto come un raffinamento dei lead: catalogo dei lead, dove *Totale*
+    non esiste, e `not_understood` dopo 67,7 secondi.
+
+    La fase B — che esiste esattamente per «il dizionario non conosce questa parola» —
+    non girava mai, perche' era raggiungibile solo quando non c'era nessuno stato. Il
+    modello, interrogato, risolve *vendite* al primo colpo.
+
+    Queste prove fissano i due lati: dove la seconda lettura deve scattare, e i due
+    casi in cui non deve costare niente.
+    """
+
+    def setUp(self):
+        super().setUp()
+        self.env["res.partner"].create(
+            {"name": "Alfa SpA", "city": "Cittaprova", "is_company": True})
+        self.scope = ("res.partner", "res.country")
+        # `aziende` la fase A la conosce; `paesi` no — ed e' la parola su cui il
+        # dizionario resta muto, come *vendite* nel caso vero.
+        self.env["nli.dictionary.entry"].create({
+            "entry_type": "T1", "level": "L2", "ref": "res_partner",
+            "entity_ref": "res_partner", "terms": "aziende"})
+        self.env.registry.clear_cache()
+
+    def _run(self, utterance, replies):
+        item = self.accept(utterance)
+        adapter = RecordedAdapter(replies)
+        outcome = pipeline_module.run(
+            self.user_env, item.with_env(self.user_env), adapter=adapter,
+            scope=self.scope, context_window=32_000, debug=True)
+        worker_module._persist(self.user_env, item.with_env(self.user_env), outcome)
+        return outcome, adapter
+
+    @staticmethod
+    def _non_capito() -> str:
+        return json.dumps({"dsl_version": "1.0", "outcome": "not_understood"})
+
+    def _prima_domanda(self):
+        return self._run("mostrami le aziende", [envelope(target("res_partner"))])
+
+    # --- dove deve scattare -------------------------------------------------
+
+    def test_a_failed_refinement_asks_the_model_which_entity(self):
+        """Il caso vero: la frase nomina un soggetto che il dizionario non ha, la
+        lettura sull'entita' assunta fallisce, e la fase B la corregge."""
+        self._prima_domanda()
+        outcome, adapter = self._run("mostrami i paesi", [
+            self._non_capito(),                        # la lettura sui contatti
+            envelope(target("res_country")),           # fase B: di che parla la frase
+            envelope(target("res_country")),           # la lettura buona
+        ])
+        self.assertEqual(outcome.outcome, "operations", outcome.failures)
+        self.assertEqual(outcome.state.get("target", {}).get("ref"), "res_country")
+        self.assertEqual(len(adapter.requests), 3)
+
+    def test_the_second_reading_does_not_inherit_the_old_state(self):
+        """Ricominciare vuol dire togliersi di dosso il contesto di prima: portarsi
+        dietro il filtro dei contatti sarebbe il difetto di partenza con un'entita' in
+        piu'."""
+        self._prima_domanda()
+        _outcome, adapter = self._run("mostrami i paesi", [
+            self._non_capito(),
+            envelope(target("res_country")),
+            envelope(target("res_country")),
+        ])
+        self.assertIsNone(adapter.requests[-1].state)
+
+    # --- dove non deve costare niente ---------------------------------------
+
+    def test_a_sentence_that_names_its_entity_does_not_reconsider(self):
+        """Se la fase A ha riconosciuto il soggetto, l'entita' non e' un'assunzione:
+        il rifiuto e' del modello e ripeterlo costerebbe e basta."""
+        self._prima_domanda()
+        outcome, adapter = self._run("mostrami le aziende", [self._non_capito()])
+        self.assertEqual(outcome.outcome, "not_understood")
+        self.assertEqual(len(adapter.requests), 1,
+                         "nessuna seconda lettura: la frase il soggetto lo ha detto")
+
+    def test_when_phase_b_confirms_the_entity_the_first_refusal_stands(self):
+        """La fase B dice la stessa entita': non c'e' niente da ricredersi, e una
+        seconda lettura identica costerebbe un minuto per lo stesso esito."""
+        self._prima_domanda()
+        outcome, adapter = self._run("solo quelli attivi", [
+            self._non_capito(),
+            envelope(target("res_partner")),
+        ])
+        self.assertEqual(outcome.outcome, "not_understood")
+        self.assertEqual(len(adapter.requests), 2)

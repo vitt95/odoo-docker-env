@@ -297,97 +297,155 @@ def _run(env, item, *, adapter, scope, context_window: int,
         state = {"dsl_version": interrogation.dsl_version}
         trace(collector, "state_restarted", entity_ref)
 
-    report(reporter, "catalogue")
-    started = time.monotonic()
-    catalogue = _phase_c(env, semantics, entity_ref, context_window)
-    budget = getattr(catalogue, "budget", None)
-    trace(collector, "phase_c", {
-        "entity": entity_ref,
-        "seconds": round(time.monotonic() - started, 3),
-        "attributes": len(getattr(catalogue, "attributes", ()) or ()),
-        "categories": len(getattr(catalogue, "categories", ()) or ()),
-        # **Quanti attributi il budget ha buttato via** (D79). Il contatore esisteva da
-        # sempre — `refused_for_budget` — e non lo leggeva nessuno. Misurato il 3 agosto
-        # 2026: con la finestra di 4096 dichiarata dal profilo in servizio il budget
-        # vale **17** attributi contro il tetto di 60 di D31, quindi la fase C ne scarta
-        # decine. Cio' toglie a **D32** la proprieta' con cui chiude **RC3** — *«in fase
-        # C non c'e' selezione, la copertura e' esatta per costruzione»* — e nessuna
-        # tabella diagnostica lo diceva, che e' esattamente il guasto per cui D79 esiste.
-        # E' gia' un numero — `build.Catalogue.refused_for_budget` e' un `int`. Ci ho
-        # messo un `len()` intorno e ogni turno moriva con un `TypeError` **prima di
-        # arrivare al modello**, perche' un argomento si valuta anche quando la funzione
-        # che lo riceve non ne fa niente: `trace` esce subito a diagnostica spenta, ma
-        # il dizionario era gia' stato costruito.
-        "refused_for_budget": getattr(catalogue, "refused_for_budget", 0),
-        "budget": {"attributes": budget.attributes, "reason": budget.reason,
-                   "detail": budget.detail} if budget else None,
-    })
-    # D112 (categories admitted narrowed to what the sentence names) and D105 (a
-    # named condition not grounded in its own fragment is refused at level 3) read
-    # the same recognizer: one keeps the ungrounded category from ever being
-    # writable, the other refuses it if it arrives by another route. Building it
-    # twice would mean building two term indexes in the request's path for the
-    # same reply.
-    mentions = grounding.mentions_of(semantics.dictionary)
-    # L'attesa lunga comincia qui: e' la chiamata al modello, mediana 8,8 s e p95
-    # 16,3 s sulle 414 misurate. L'avviso parte **prima** di entrarci, non dopo:
-    # dire «ho interpretato» a cose fatte non toglie un secondo di attesa muta a
-    # nessuno. Porta con se' il nome di casa dell'entita' — «fatture», «lead» —
-    # perche' e' l'unico momento in cui il sistema puo' dire di che cosa ha capito
-    # che si parla mentre lo sta ancora usando.
-    report(reporter, "interpret", detail=_entity_label(catalogue))
-    started = time.monotonic()
-    interpretation = interpreter_module.interpret(
-        adapter, utterance=utterance, catalogue=catalogue,
-        state=state if state.get("target") else None,
-        mentions=mentions,
-        scope_justifies=scope_lexicon.justifies,
-        names_period=temporal_lexicon.names_period,
-        pending=pending,
-    )
-    trace(collector, "interpret", {
-        "seconds": round(time.monotonic() - started, 3),
-        "understood": interpretation.understood,
-        "repairs": interpretation.repairs,
-        # **Quanto ha letto davvero il fornitore, contro quanto il profilo dichiara.**
-        #
-        # Sono due numeri diversi e nessuno li confrontava. `context_window` e' cio' che
-        # il profilo *dichiara* e con cui D79 dimensiona il catalogo; `prompt_tokens` e'
-        # cio' che il server dice di aver letto. Se il secondo si avvicina al primo il
-        # prompt e' sull'orlo, e oltre il primo **il server taglia in silenzio**: HTTP
-        # 200, nessun errore, una risposta plausibile costruita su meta' catalogo.
-        #
-        # Misurato il 3 agosto 2026 su `ollama`: con la finestra a 4096, un prompt da
-        # dodicimila gettoni tornava con `prompt_eval_count` a 2050 e il modello non
-        # sapeva piu' cosa c'era all'inizio. L'adattatore **non manda** la finestra al
-        # server (il protocollo OpenAI non ha un campo per dirla), quindi le due misure
-        # possono divergere e l'unico modo di accorgersene e' guardarle vicine.
-        "prompt_tokens": max((getattr(reply, "prompt_tokens", 0)
-                              for reply in interpretation.replies), default=0),
-        "context_window": context_window,
-        # La busta come il modello l'ha restituita: e' il DSL grezzo, prima che
-        # l'applicatore la trasformi in stato. E' cio' che si guarda per capire se il
-        # turno e' andato storto nel modello o dopo.
-        "envelope": interpretation.envelope,
-    })
-    outcome = Outcome(outcome=interpretation.outcome, repairs=interpretation.repairs)
-    if not interpretation.understood:
-        return _provider_failure(outcome, interpretation)
+    # **`da_stato`: questo turno sta rispondendo su un'entita' che la frase non ha
+    # nominato** — la fase A non ha riconosciuto niente e ci si e' appoggiati allo
+    # stato. E' un'assunzione, non un fatto, ed e' l'unico caso in cui vale la pena
+    # ricredersi (D145). Si calcola qui, dove `known` e' ancora leggibile, e non dentro
+    # `_determine_entity`: cambiare la forma di cio' che torna avrebbe toccato ogni suo
+    # chiamante per un'informazione che serve a uno solo.
+    da_stato = not riparte and entity_ref == (state.get("target") or {}).get("ref")
 
-    envelope = interpretation.envelope
-    outcome.outcome = envelope.get("outcome", "not_understood")
-    if outcome.outcome in TERMINAL_OUTCOMES:
-        return _terminal_outcome(outcome, envelope, collector)
+    def _leggi(entity_ref, state, *, pending):
+        """Fasi C e seguenti: prepara il catalogo, chiede al modello, applica.
 
-    return _apply_and_present(
-        env, semantics, state, envelope.get("operations") or [],
-        collector=collector,
-        # The catalogue for this entity is already built — phase C built it to ask the
-        # question. Handing it over as a callable is what lets the other caller, which
-        # has no catalogue and usually needs none, avoid building one for nothing.
-        catalogue_of=lambda ref: catalogue,
-        entity_ref=entity_ref, outcome=outcome, mentions=mentions,
-        utterance=utterance, reporter=reporter)
+        E' una funzione perche' si percorre **due volte** nel turno che si ricrede, e
+        due copie diverterebbero: e' la stessa ragione per cui `_apply_and_present`
+        non e' la coda di questa funzione.
+        """
+        report(reporter, "catalogue")
+        started = time.monotonic()
+        catalogue = _phase_c(env, semantics, entity_ref, context_window)
+        budget = getattr(catalogue, "budget", None)
+        trace(collector, "phase_c", {
+            "entity": entity_ref,
+            "seconds": round(time.monotonic() - started, 3),
+            "attributes": len(getattr(catalogue, "attributes", ()) or ()),
+            "categories": len(getattr(catalogue, "categories", ()) or ()),
+            # **Quanti attributi il budget ha buttato via** (D79). Il contatore esisteva da
+            # sempre — `refused_for_budget` — e non lo leggeva nessuno. Misurato il 3 agosto
+            # 2026: con la finestra di 4096 dichiarata dal profilo in servizio il budget
+            # vale **17** attributi contro il tetto di 60 di D31, quindi la fase C ne scarta
+            # decine. Cio' toglie a **D32** la proprieta' con cui chiude **RC3** — *«in fase
+            # C non c'e' selezione, la copertura e' esatta per costruzione»* — e nessuna
+            # tabella diagnostica lo diceva, che e' esattamente il guasto per cui D79 esiste.
+            # E' gia' un numero — `build.Catalogue.refused_for_budget` e' un `int`. Ci ho
+            # messo un `len()` intorno e ogni turno moriva con un `TypeError` **prima di
+            # arrivare al modello**, perche' un argomento si valuta anche quando la funzione
+            # che lo riceve non ne fa niente: `trace` esce subito a diagnostica spenta, ma
+            # il dizionario era gia' stato costruito.
+            "refused_for_budget": getattr(catalogue, "refused_for_budget", 0),
+            "budget": {"attributes": budget.attributes, "reason": budget.reason,
+                       "detail": budget.detail} if budget else None,
+        })
+        # D112 (categories admitted narrowed to what the sentence names) and D105 (a
+        # named condition not grounded in its own fragment is refused at level 3) read
+        # the same recognizer: one keeps the ungrounded category from ever being
+        # writable, the other refuses it if it arrives by another route. Building it
+        # twice would mean building two term indexes in the request's path for the
+        # same reply.
+        mentions = grounding.mentions_of(semantics.dictionary)
+        # L'attesa lunga comincia qui: e' la chiamata al modello, mediana 8,8 s e p95
+        # 16,3 s sulle 414 misurate. L'avviso parte **prima** di entrarci, non dopo:
+        # dire «ho interpretato» a cose fatte non toglie un secondo di attesa muta a
+        # nessuno. Porta con se' il nome di casa dell'entita' — «fatture», «lead» —
+        # perche' e' l'unico momento in cui il sistema puo' dire di che cosa ha capito
+        # che si parla mentre lo sta ancora usando.
+        report(reporter, "interpret", detail=_entity_label(catalogue))
+        started = time.monotonic()
+        interpretation = interpreter_module.interpret(
+            adapter, utterance=utterance, catalogue=catalogue,
+            state=state if state.get("target") else None,
+            mentions=mentions,
+            scope_justifies=scope_lexicon.justifies,
+            names_period=temporal_lexicon.names_period,
+            pending=pending,
+        )
+        trace(collector, "interpret", {
+            "seconds": round(time.monotonic() - started, 3),
+            "understood": interpretation.understood,
+            "repairs": interpretation.repairs,
+            # **Quanto ha letto davvero il fornitore, contro quanto il profilo dichiara.**
+            #
+            # Sono due numeri diversi e nessuno li confrontava. `context_window` e' cio' che
+            # il profilo *dichiara* e con cui D79 dimensiona il catalogo; `prompt_tokens` e'
+            # cio' che il server dice di aver letto. Se il secondo si avvicina al primo il
+            # prompt e' sull'orlo, e oltre il primo **il server taglia in silenzio**: HTTP
+            # 200, nessun errore, una risposta plausibile costruita su meta' catalogo.
+            #
+            # Misurato il 3 agosto 2026 su `ollama`: con la finestra a 4096, un prompt da
+            # dodicimila gettoni tornava con `prompt_eval_count` a 2050 e il modello non
+            # sapeva piu' cosa c'era all'inizio. L'adattatore **non manda** la finestra al
+            # server (il protocollo OpenAI non ha un campo per dirla), quindi le due misure
+            # possono divergere e l'unico modo di accorgersene e' guardarle vicine.
+            "prompt_tokens": max((getattr(reply, "prompt_tokens", 0)
+                                  for reply in interpretation.replies), default=0),
+            "context_window": context_window,
+            # La busta come il modello l'ha restituita: e' il DSL grezzo, prima che
+            # l'applicatore la trasformi in stato. E' cio' che si guarda per capire se il
+            # turno e' andato storto nel modello o dopo.
+            "envelope": interpretation.envelope,
+        })
+        outcome = Outcome(outcome=interpretation.outcome, repairs=interpretation.repairs)
+        if not interpretation.understood:
+            return _provider_failure(outcome, interpretation)
+
+        envelope = interpretation.envelope
+        outcome.outcome = envelope.get("outcome", "not_understood")
+        if outcome.outcome in TERMINAL_OUTCOMES:
+            return _terminal_outcome(outcome, envelope, collector)
+
+        return _apply_and_present(
+            env, semantics, state, envelope.get("operations") or [],
+            collector=collector,
+            # The catalogue for this entity is already built — phase C built it to ask the
+            # question. Handing it over as a callable is what lets the other caller, which
+            # has no catalogue and usually needs none, avoid building one for nothing.
+            catalogue_of=lambda ref: catalogue,
+            entity_ref=entity_ref, outcome=outcome, mentions=mentions,
+            utterance=utterance, reporter=reporter)
+
+    esito = _leggi(entity_ref, state, pending=pending)
+
+    # **D145 — un raffinamento che non si capisce si ricrede, una volta sola.**
+    #
+    # Se siamo arrivati qui su un'entita' che la frase non ha nominato (`da_stato`) e la
+    # lettura e' finita in `not_understood`, l'assunzione ha un'alternativa che non
+    # abbiamo ancora provato: chiedere al modello di che cosa parla la frase. E' la fase
+    # B, esiste esattamente per il caso «il dizionario non conosce questa parola», ed era
+    # irraggiungibile appena una conversazione aveva un bersaglio.
+    #
+    # Misurato il 20 agosto 2026 sul database vero: *«mostrami le vendite con totale
+    # superiore a 2000»*, arrivata dopo una domanda sui lead, ha ricevuto il catalogo dei
+    # lead — dove *Totale* non esiste — e ha risposto `not_understood` in 67,7 s. La
+    # stessa frase, con la fase B raggiungibile, risolve `sale_order` in 7,2 s e torna
+    # tre record.
+    #
+    # **Si paga solo dopo aver gia' fallito**: sul percorso buono questo blocco non
+    # esiste. E si paga una volta: la seconda lettura non si ricrede a sua volta, perche'
+    # riparte da uno stato pulito e quindi `da_stato` li' e' falso per costruzione.
+    #
+    # Il rifiuto resta quello di prima se la fase B non porta un'entita' **diversa**:
+    # ripetere la stessa lettura per avere lo stesso esito costerebbe un minuto e non
+    # cambierebbe una parola di cio' che l'utente legge.
+    if da_stato and esito.outcome == "not_understood":
+        rinuncia = esito
+        entity_b, _fallito = _phase_b(
+            env, semantics, utterance, adapter=adapter, context_window=context_window,
+            collector=collector, reporter=reporter, trace_key="phase_b_retry")
+        if entity_b is not None and entity_b != entity_ref:
+            # Ricomincia: la frase porta il proprio soggetto, quindi e' una domanda
+            # nuova e non un raffinamento (D127). Lo stato vecchio non si eredita —
+            # portarselo dietro qui vorrebbe dire chiedere le vendite con il filtro
+            # sull'anno dei lead, che e' il difetto di partenza con un'entita' in piu'.
+            trace(collector, "reconsidered", {
+                "from": entity_ref, "to": entity_b, "was": rinuncia.outcome})
+            stato_nuovo = state_module.empty_state()
+            esito = _leggi(entity_b, stato_nuovo, pending=None)
+            if esito.outcome == "not_understood":
+                # Neanche il secondo tentativo ha capito: si torna il primo rifiuto, che
+                # e' quello costruito sull'entita' di cui l'utente stava parlando.
+                esito = rinuncia
+    return esito
 
 
 def _entity_label(catalogue) -> str:
@@ -582,15 +640,46 @@ def _determine_entity(env, semantics, state, utterance, *, adapter, context_wind
         return decision.entity, None, True
 
     if known:
-        # Nessun soggetto nella frase: e' un raffinamento di quello che c'e' gia'.
-        # E' §17.1, ed e' cio' che fa funzionare «solo quelli confermati» al secondo
-        # turno. **Nell'incertezza si continua**: la fase A che non riconosce e' il caso
-        # frequente, e ripartire per prudenza romperebbe la conversazione ogni volta.
+        # Nessun soggetto **riconosciuto** nella frase: si continua su quello che c'e'
+        # gia'. E' §17.1, ed e' cio' che fa funzionare «solo quelli confermati» al
+        # secondo turno. **Nell'incertezza si continua**: la fase A che non riconosce e'
+        # il caso frequente, e ripartire per prudenza romperebbe la conversazione ogni
+        # volta.
+        #
+        # **Ma «non riconosciuto» non vuol dire «non nominato», ed e' li' che questa
+        # riga costava** (D145). Chi dice *«mostrami le vendite con totale superiore a
+        # 2000»* il soggetto lo ha nominato: e' il dizionario a non avere la parola. Il
+        # turno continuava sui lead, in silenzio, e la fase B — che esiste apposta per
+        # questo caso — non girava mai. Chi chiama guarda `da_stato` e, se la lettura
+        # fallisce, la paga allora.
         return known, None, False
 
-    # Phase B: the entity names alone, and one question — *which entity is this
-    # about?* Small, circumscribed, and the class of task models are most reliable
-    # at. The expensive path is also the narrow one, which is what closes RC3.
+    entity, outcome = _phase_b(
+        env, semantics, utterance, adapter=adapter, context_window=context_window,
+        collector=collector, reporter=reporter)
+    if entity is not None:
+        # La fase B ha determinato il soggetto: e' una domanda nuova come quelle
+        # che risolve la fase A, solo che e' costata un minuto invece di niente.
+        return entity, outcome, True
+    return None, outcome, False
+
+
+def _phase_b(env, semantics, utterance, *, adapter, context_window,
+             collector=None, reporter=None, trace_key: str = "phase_b"):
+    """Phase B: the entity names alone, and one question — *which entity is this
+    about?* Small, circumscribed, and the class of task models are most reliable at.
+    The expensive path is also the narrow one, which is what closes RC3.
+
+    Torna `(entita, None)` quando il modello ha nominato un'entita' del perimetro, e
+    `(None, outcome)` quando non ce l'ha fatta — con l'esito gia' pronto da restituire.
+
+    **Sta in una funzione sua perche' si paga da due punti** (D145): prima di leggere,
+    quando il dizionario non ha riconosciuto niente e non c'e' nessuno stato su cui
+    appoggiarsi; e dopo aver letto, quando un raffinamento e' finito in
+    `not_understood`. Due copie della stessa sequenza andrebbero d'accordo il giorno in
+    cui si scrivono e divergerebbero ogni giorno successivo — e' la stessa ragione per
+    cui `_apply_and_present` e' una funzione e non la coda di `run`.
+    """
     catalogue = env["nli.semantics"].entity_catalogue(
         semantics, context_window=context_window)
     # La strada costosa di D32: il dizionario non ha riconosciuto il soggetto e si
@@ -600,21 +689,19 @@ def _determine_entity(env, semantics, state, utterance, *, adapter, context_wind
     started = time.monotonic()
     interpretation = interpreter_module.interpret(
         adapter, utterance=utterance, catalogue=catalogue, state=None)
-    trace(collector, "phase_b", {
+    trace(collector, trace_key, {
         "seconds": round(time.monotonic() - started, 3),
         "understood": interpretation.understood,
         "envelope": interpretation.envelope,
     })
     outcome = Outcome(outcome=interpretation.outcome, repairs=interpretation.repairs)
     if not interpretation.understood:
-        return None, _provider_failure(outcome, interpretation), False
+        return None, _provider_failure(outcome, interpretation)
 
     envelope = interpretation.envelope
     entity = _target_of(envelope)
     if entity and entity in semantics.entity_refs:
-        # La fase B ha determinato il soggetto: e' una domanda nuova come quelle
-        # che risolve la fase A, solo che e' costata un minuto invece di niente.
-        return entity, outcome, True
+        return entity, outcome
 
     outcome.outcome = envelope.get("outcome", "not_understood")
     if outcome.outcome in TERMINAL_OUTCOMES:
@@ -625,7 +712,7 @@ def _determine_entity(env, semantics, state, utterance, *, adapter, context_wind
         # would run the query against whichever entity happened to be around.
         outcome.outcome = "not_understood"
         outcome.failures = ["phase B produced no entity from the entity catalogue"]
-    return None, outcome, False
+    return None, outcome
 
 
 def _target_of(envelope: dict) -> str | None:

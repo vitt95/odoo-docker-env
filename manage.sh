@@ -131,11 +131,17 @@ cmd_dizionario() {
   local db="${1:?Usage: ./manage.sh dizionario <db> [prova]}"
   local prova=""
   [ "${2:-}" = "prova" ] && prova="1"
-  log "Sinonimi delle date su '${db}'${prova:+ (prova, non scrive)}..."
-  dc exec -T -e "DIZIONARIO_PROVA=${prova}" \
-    odoo python3 /opt/odoo/core/odoo-bin shell -c /etc/odoo/odoo.conf -d "$db" \
-    --log-level=warn \
-    < "${PROJECT_ROOT}/tools/dizionario/sinonimi_date.py"
+  # Due file, due esecuzioni separate: ognuno chiude la propria transazione
+  # (`commit` o `rollback`), e concatenarli come fa `campo` significherebbe che il
+  # rollback della prova del primo si porta via anche il secondo.
+  local file
+  for file in sinonimi_date sinonimi_entita; do
+    log "Dizionario — ${file} su '${db}'${prova:+ (prova, non scrive)}..."
+    dc exec -T -e "DIZIONARIO_PROVA=${prova}" \
+      odoo python3 /opt/odoo/core/odoo-bin shell -c /etc/odoo/odoo.conf -d "$db" \
+      --log-level=warn \
+      < "${PROJECT_ROOT}/tools/dizionario/${file}.py"
+  done
 }
 
 cmd_atlante() {

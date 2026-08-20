@@ -3988,3 +3988,106 @@ difetto che chiude.
 tuning (`ai/21` §1.2). **Non** è il cancello della Fase 2: il corpus è sintetico e non
 sigillabile (**D86**), quindi D42 e D49 restano insoddisfatte, e il numero che conta per
 il prodotto resta quello della batteria sul campo — 39 su 54.
+
+## §49 — D145: un raffinamento che non si capisce si ricrede (21 agosto 2026)
+
+**Il caso, misurato sul database vero.** Conversazione 964, due domande di fila:
+
+    dammi il numero di lead creati quest'anno   -> operations, 39 record
+    mostrami le vendite con totale superiore a 2000  -> not_understood, 67,7 s
+
+La seconda nomina il proprio soggetto — *«le vendite»* — e ha ricevuto **il catalogo dei
+lead**, dove *Totale* non esiste. La traccia lo dice per intero:
+
+    phase_a  {"resolved": false, "entity": null, "known": "crm_lead"}
+    phase_c  {"entity": "crm_lead", "attributes": 60}
+
+### §49.1 Perché il dizionario non poteva saperlo, e perché è giusto così
+
+I nomi di un'entità si **raccolgono** dall'installazione (**D126**, la decisione per cui
+le parole di un'entità si prendono dall'etichetta, dalle azioni e dalle voci di menu
+invece di generarle). Per `sale_order` la raccolta aveva trovato *Ordini*, *Preventivi*,
+*Ordine di vendita*, *Ordini da fatturare*. **Non *vendite***.
+
+E non poteva trovarla: `l0.py` lega un nome a un modello **attraverso l'azione che il
+menu apre**, e il menu radice *Vendite* non ha azione — sotto ci stanno Ordini,
+Prodotti, Clienti e Analisi, quattro modelli diversi. Guardando l'installazione,
+*«vendite»* non ha **una** risposta. Una raccolta che ne scegliesse una sarebbe il
+ripiego silenzioso che `ai/restart` §4 chiama il terzo modo di mentire.
+
+Una persona invece lo sa. È il confine fra ciò che si raccoglie e ciò che si scrive a
+mano, ed è il posto di **D108** (il registro delle voci approvate).
+
+### §49.2 Il difetto vero non è la parola: è che il rimedio era irraggiungibile
+
+**D32** paga una chiamata al modello — la fase B, *«di quale entità si parla?»* — proprio
+per il caso in cui il dizionario non conosce una parola. **D127** (chi nomina la propria
+entità ricomincia, chi non la nomina continua) fa continuare la conversazione quando la
+frase non ha un soggetto.
+
+Le due insieme lasciavano un buco: appena una conversazione ha un bersaglio, la fase B
+**non è più sul percorso**. La regola di D127 legge *«la fase A non ha riconosciuto»* come
+*«la frase non nomina»*, e sono due cose diverse. Il rilevatore è cieco, non la regola.
+
+> **D145 — Un turno che risponde su un'entità che la frase non ha nominato, e che
+> finisce in `not_understood`, chiede una volta al modello di quale entità si tratti;
+> se la risposta è un'altra entità, la domanda ricomincia da lì.**
+
+Tre proprietà, e sono il motivo per cui la decisione è questa e non «la fase B gira
+sempre»:
+
+* **si paga solo dopo aver già fallito.** Sul percorso buono il blocco non esiste, e una
+  conversazione che funziona non costa un secondo in più;
+* **si paga una volta.** La seconda lettura riparte da uno stato pulito, quindi lì
+  l'assunzione non c'è per costruzione e non può ricredersi a sua volta;
+* **lo stato vecchio non si eredita** (D127): portarselo dietro vorrebbe dire chiedere le
+  vendite con il filtro sull'anno dei lead, cioè il difetto di partenza con un'entità in
+  più. Se anche la seconda lettura non capisce, all'utente torna **il primo rifiuto**,
+  che è quello costruito sull'entità di cui stava parlando.
+
+Misurato: la stessa frase, con la fase B raggiungibile, risolve `sale_order` in **7,2 s**
+e torna **tre record**.
+
+### §49.3 V-D93-2: una parola dentro il nome di un attributo non nomina un'entità
+
+Riparare la parola ha aperto un difetto suo, e **l'ha preso una prova prima del prodotto**.
+Aggiunto *vendite* come nome di `sale_order`, la frase *«i lead raggruppati per addetto
+vendite»* smetteva di risolvere: `crm_lead` a 1.00 da *lead* e `sale_order` a 1.00 da
+*vendite*, pareggio dentro il margine, chiarimento su una frase che il proprio soggetto lo
+dice senza ombra di dubbio.
+
+**V-D93-1** confronta le prove che coprono lo **stesso** pezzo di frase, quindi non poteva
+vederlo: *vendite* sta **dentro** *addetto vendite*, che è un pezzo diverso e più lungo.
+
+> **V-D93-2 — L'evidenza di un'entità è scartata quando un termine che entità non è
+> copre un pezzo di frase che la **contiene**, con punteggio non inferiore.**
+
+Chi dice *«per addetto vendite»* non sta nominando le vendite: sta nominando il
+commerciale. La prova più specifica vince su quella che le sta dentro. Non tocca il caso
+che V-D93-1 protegge, dove i due termini coprono lo stesso pezzo esatto e il pareggio
+resta una ragione per **tenere** l'entità.
+
+Corpus invariato: 600 risolti su 696 (86,2%), **determinazioni sbagliate 0**, copertura
+100%.
+
+### §49.4 Quello che D145 **non** chiude, e va detto
+
+D145 si attacca a `not_understood`, cioè a un fallimento **visibile**. Misurato lo stesso
+giorno, sullo stesso prodotto:
+
+    dammi il numero di lead creati quest'anno  -> operations, 39 record
+    mostrami le anagrafiche di Roma           -> operations, 1 record
+
+*Anagrafiche* non è nel dizionario, quindi il turno è di nuovo un raffinamento assunto —
+ma stavolta il modello **ce l'ha fatta** a leggere la frase sul catalogo dei lead: i lead
+hanno una città, *«di Roma»* ci si appoggia, ed esce una risposta sicura alla domanda
+sbagliata. Nessun rifiuto, nessun segnale, niente a cui attaccare una seconda lettura.
+
+È **D29** (la decisione che esiste per rendere impossibile la modalità di guasto che non
+produce errori ma numeri plausibili), ed è la metà pericolosa della classe. D145 chiude
+la metà che si vede. L'altra metà ha due rimedi, nessuno dei quali è un ritentativo:
+
+1. **il dizionario** — se la fase A conosce la parola, l'assunzione non nasce;
+2. **rendere visibile l'assunzione** — l'utente deve leggere *su che cosa* gli si sta
+   rispondendo, ed è l'unico rimedio che funziona anche per le parole che non abbiamo
+   ancora scritto. È la famiglia di **D68**, ed è aperto.
