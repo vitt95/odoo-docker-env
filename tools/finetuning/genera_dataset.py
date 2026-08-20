@@ -94,6 +94,28 @@ ATLANTE_EN = QUI / "atlante_en.json"
 #: minimo e' quello dell'atlante — sotto i quattro un'entita' non regge una domanda.
 BUDGET_MIN, BUDGET_MAX = 6, 60
 
+#: Le fasce di grandezza del catalogo, con la quota che ciascuna prende.
+#:
+#: **Perche' non uniforme.** Il sorteggio uniforme fra il minimo e il massimo produceva
+#: una mediana di **9 attributi**, mentre il prodotto vero ne serve **27-60** (`crm.lead`
+#: ne tiene 60 su 66 da D133, la decisione che alza la finestra sulle due meta' insieme).
+#: Il 61% degli esempi viveva sotto i dieci attributi, e solo l'11% arrivava a
+#: ventisette: l'addestramento era piu' magro proprio dove il compito e' piu' difficile —
+#: trovare **un** attributo giusto fra sessanta. La sessione del 4 agosto lo aveva gia'
+#: misurato: con 17 attributi il modello inventava `campaign_id != false`, con 27
+#: azzeccava `expected_revenue > 1000`.
+#:
+#: Le fasce restano quattro perche' un catalogo piccolo esiste davvero — un'entita' con
+#: sei attributi non e' un caso di laboratorio — ma la massa si sposta dove sta il
+#: prodotto. Quando l'entita' non ha abbastanza attributi la fascia **cede**: si prende
+#: tutto quello che c'e', invece di stringere ancora.
+FASCE_CATALOGO = (
+    ((4, 9), 0.15),
+    ((10, 24), 0.25),
+    ((25, 45), 0.40),
+    ((46, 60), 0.20),
+)
+
 #: Caratteri per gettone, misurato sul nostro `prompt` con il tokenizzatore di Qwen:
 #: 14 763 caratteri = 4 077 gettoni (`ai/19` §1). E' una stima, e basta a decidere se
 #: un esempio sta nella finestra o no — la misura esatta la fara' `axolotl` con il
@@ -217,6 +239,93 @@ def _parola_inventata(rng: random.Random) -> str:
                    for _ in range(rng.randint(2, 3))).capitalize()
 
 
+#: Le parole di servizio che una frase italiana infila e un'etichetta Odoo no.
+#: L'elenco e' **chiuso e cortissimo** di proposito: `03` §3.9 vieta gli allargamenti
+#: scelti a intuito, e una lista lunga comincia a fabbricare corrispondenze che nessun
+#: termine vero avrebbe prodotto.
+#: **Una sola, e non e' una svista.** `del`, `della`, `dei`, `delle` chiedono di sapere
+#: genere e numero della parola che segue, e su 333 entita' quel lessico non esiste:
+#: la prima prova ha prodotto *«aggiornamento dei progetto»* e *«transazione della di
+#: pagamento»*. `di` non chiede accordo a nessuno, ed e' esattamente la preposizione
+#: del caso che ci interessa — `Data creazione` -> `data di creazione`.
+PAROLE_DI_SERVIZIO_IT = ("di",)
+#: **In inglese: nessuna.** La prima prova ha prodotto `Work of Order` e
+#: `Opening of Balance`. Un composto inglese non si lega con una preposizione — la
+#: regola italiana applicata all'inglese fabbrica etichette che nessuno scrive.
+#: Restano le varianti di punteggiatura, che valgono in tutt'e due le lingue.
+PAROLE_DI_SERVIZIO_EN = ()
+
+#: Le parole che, se gia' ci sono, dicono che l'etichetta la sua preposizione ce l'ha.
+#: Infilarne una seconda produce *«metodi del di spedizione»*.
+#: Ci sono anche gli **articoli**: `I miei rendiconti` non diventa `I di miei
+#: rendiconti`. Un articolo dice che l'etichetta e' gia' un sintagma finito.
+GIA_LEGATE = frozenset((
+    "di", "del", "della", "dei", "delle", "dell", "da", "dal", "a", "al", "in", "per",
+    "con", "su", "of", "the", "for", "to", "on", "by", "and", "e",
+    "il", "lo", "la", "i", "gli", "le", "un", "uno", "una", "l",
+))
+
+
+def varianti_meccaniche(termine: str, lingua: str) -> tuple[str, ...]:
+    """I modi in cui la gente dice un'etichetta senza dirla come l'ha scritta Odoo.
+
+    **Perche' esiste.** Nel dataset del 7 agosto ogni attributo aveva **un termine
+    solo** — 123 363 su 123 363 — cioe' l'etichetta Odoo grezza. L'entita' i sinonimi
+    li aveva (D126: un'entita' si chiama come la chiama la gente, da uno a nove
+    termini), l'attributo no. Il dataset insegnava quindi che l'utente dice
+    *«Data creazione»*, quando `restart.md` §5 ha misurato che dice *«data di
+    creazione»*, *«email»* per `E-mail`, *«commerciale»* per `Addetto vendite`.
+    Affinare su quel dataset non lasciava il difetto dov'era: **lo scriveva nei pesi**.
+
+    **Cosa questa funzione fa e cosa non fa.** Fa le due trasformazioni meccaniche,
+    quelle che non inventano niente:
+
+    1. **la punteggiatura** — `E-mail` -> `email`, `e mail`. Costo zero, rischio zero:
+       sono le stesse lettere nello stesso ordine.
+    2. **le parole di servizio** — `Data creazione` -> `data di creazione`. Questo
+       **allarga** il confronto, e per questo la lista e' chiusa e cortissima.
+
+    Non fa i **sinonimi veri** (`creati` per `Data creazione`, `commerciale` per
+    `Addetto vendite`): nessuna regola meccanica ci arriva, `creat` e `creazion` sono
+    radici diverse. Quelli sono il livello L1, cioe' **D108** (il registro delle voci
+    approvate del dizionario), e restano aperti.
+    """
+    if lingua == "inventata":
+        # Una parola inventata non ha morfologia: fabbricarle una variante
+        # insegnerebbe una regola che nella lingua vera non esiste.
+        return ()
+
+    servizio = PAROLE_DI_SERVIZIO_EN if lingua == "en" else PAROLE_DI_SERVIZIO_IT
+    fuori: list[str] = []
+
+    # 1. Punteggiatura. `E-mail` da' `email` (attaccato) e `e mail` (staccato).
+    if any(c in termine for c in "-/&.'"):
+        attaccato = re.sub(r"[-/&.']", "", termine)
+        staccato = re.sub(r"\s+", " ", re.sub(r"[-/&.']", " ", termine)).strip()
+        fuori += [attaccato, staccato]
+
+    # 2. Parole di servizio, ma solo fra due parole vere: `Data creazione` ->
+    #    `data di creazione`. Su un'etichetta di una parola sola non c'e' dove
+    #    infilarle, e su una di quattro il risultato non e' piu' italiano.
+    #
+    #    **E solo se l'etichetta non ne ha gia' una.** `Metodi di spedizione` la sua
+    #    preposizione ce l'ha: aggiungerne una seconda da' *«metodi del di
+    #    spedizione»*, che nessuno ha mai detto.
+    parole = termine.split()
+    if 2 <= len(parole) <= 3 and not any(p.lower() in GIA_LEGATE for p in parole):
+        for p in servizio:
+            fuori.append(" ".join([parole[0], p] + parole[1:]))
+
+    # L'etichetta stessa non e' una variante, e i doppioni non aggiungono niente.
+    visti = {termine.lower()}
+    unici: list[str] = []
+    for v in fuori:
+        if v and v.lower() not in visti:
+            visti.add(v.lower())
+            unici.append(v)
+    return tuple(unici)
+
+
 @dataclass
 class Catalogo:
     """Quello che il modello vede: la stessa forma di `prompt.catalogue_payload`."""
@@ -225,6 +334,13 @@ class Catalogo:
     attributi: tuple[Attributo, ...]
     etichette: dict[str, tuple[str, ...]]
     etichetta_entita: tuple[str, ...]
+    #: Tutti i modi in cui l'utente puo' nominare un `ref` **in questo esempio**.
+    #: E' un soprainsieme di `etichette`: quando una variante meccanica resta fuori dal
+    #: catalogo, la frase la usa lo stesso e il modello deve fare il ponte da solo —
+    #: che e' il compito vero, perche' in servizio nessuno garantisce che l'utente dica
+    #: l'etichetta com'e' scritta.
+    dicibili: dict[str, tuple[str, ...]] = field(default_factory=dict)
+    dicibile_entita: tuple[str, ...] = ()
 
     @property
     def refs(self) -> frozenset[str]:
@@ -279,7 +395,12 @@ def costruisci_catalogo(entita: Entita, rng: random.Random) -> Catalogo:
     # Un'entita' con quattro attributi non ne regge sei: il minimo cede alla realta'
     # del catalogo, il tetto di D31 no.
     tetto = min(BUDGET_MAX, len(disponibili))
-    budget = rng.randint(min(BUDGET_MIN, tetto), tetto)
+    basso, alto = _sorteggia(FASCE_CATALOGO, rng)
+    # La fascia cede quando l'entita' non arriva: meglio un catalogo intero piccolo che
+    # un catalogo grande finto.
+    alto = min(alto, tetto)
+    basso = min(basso, alto)
+    budget = rng.randint(basso, alto)
     scelti = disponibili[:budget]
 
     # Almeno una data quando l'entita' ne ha: le espressioni di tempo sono il 15% del
@@ -302,8 +423,76 @@ def costruisci_catalogo(entita: Entita, rng: random.Random) -> Catalogo:
         etichette = {a.ref: a.termini_it for a in scelti}
         etichetta_entita = entita.termini_it
 
+    etichette, dicibili = _con_varianti(etichette, lingua, rng)
+    # L'entita' i sinonimi li aveva gia' (D126), ma non le varianti meccaniche:
+    # chi cerca `E-commerce` scrive `ecommerce`, e la regola e' la stessa.
+    dicibile_entita = etichetta_entita + tuple(
+        v for t in etichetta_entita for v in varianti_meccaniche(t, lingua)
+        if v.lower() not in {x.lower() for x in etichetta_entita})
+
     return Catalogo(entita=entita, lingua=lingua, attributi=tuple(scelti),
-                    etichette=etichette, etichetta_entita=etichetta_entita)
+                    etichette=etichette, etichetta_entita=etichetta_entita,
+                    dicibili=dicibili, dicibile_entita=dicibile_entita)
+
+
+#: Quante volte una variante meccanica entra **anche** nel catalogo, invece di restare
+#: solo nella frase.
+#:
+#: **Perche' due strade e non una.** Se la variante sta sempre nel catalogo, il compito
+#: resta un confronto esatto contro un elenco e il modello non impara niente di nuovo.
+#: Se non ci sta mai, il dataset descrive un prodotto piu' povero di quello che
+#: `restart.md` §5 propone di costruire (le varianti senza punteggiatura come termini
+#: aggiuntivi dell'indice, «costo zero token, rischio zero»). Con tutt'e due, il modello
+#: vede il caso facile e il caso vero, e impara che il secondo si risolve come il primo.
+QUOTA_VARIANTE_NEL_CATALOGO = 0.5
+
+
+def _con_varianti(etichette: dict[str, tuple[str, ...]], lingua: str,
+                  rng: random.Random
+                  ) -> tuple[dict[str, tuple[str, ...]], dict[str, tuple[str, ...]]]:
+    """Aggiunge i modi di dire meccanici, senza fabbricare ambiguita'.
+
+    Ritorna due mappe: quella che il **catalogo mostra** e quella che la **frase puo'
+    usare**. La seconda contiene la prima.
+
+    **La guardia contro le collisioni.** Una variante che coincide con il termine di un
+    altro attributo dello stesso catalogo non e' un sinonimo: e' un'ambiguita', e
+    l'esempio insegnerebbe a scegliere a caso fra due riferimenti ugualmente nominati.
+    E' la stessa preoccupazione del guardiano di V-D93-1 (§35.1), applicata prima
+    invece che dopo.
+    """
+    occupati: dict[str, str] = {}
+    for ref, termini in etichette.items():
+        for t in termini:
+            occupati.setdefault(_parole(t), ref)
+
+    mostrate: dict[str, tuple[str, ...]] = {}
+    dicibili: dict[str, tuple[str, ...]] = {}
+    for ref, termini in etichette.items():
+        buone: list[str] = []
+        for t in termini:
+            for v in varianti_meccaniche(t, lingua):
+                chiave = _parole(v)
+                padrone = occupati.get(chiave)
+                if padrone is not None and padrone != ref:
+                    continue          # collide con un altro attributo: si butta
+                occupati[chiave] = ref
+                buone.append(v)
+        if not buone:
+            mostrate[ref] = termini
+            dicibili[ref] = termini
+            continue
+        if rng.random() < QUOTA_VARIANTE_NEL_CATALOGO:
+            mostrate[ref] = termini + tuple(buone)
+        else:
+            mostrate[ref] = termini
+        dicibili[ref] = termini + tuple(buone)
+    return mostrate, dicibili
+
+
+def _sorteggia(tabella, rng: random.Random):
+    """Una voce da una tabella `((valore, peso), ...)`, col peso che conta."""
+    return rng.choices([v for v, _ in tabella], [p for _, p in tabella])[0]
 
 
 # ---------------------------------------------------------------------------
@@ -391,8 +580,18 @@ def _valore_per(attributo: Attributo, rng: random.Random) -> tuple[dict, str] | 
     """
     tipo = attributo.tipo
     if tipo == "enum" and attributo.valori:
-        valore, termini = rng.choice(attributo.valori)
-        parola = rng.choice(termini) if termini else valore
+        # **Una voce dev'essere pronunciabile.** Alcuni campi di selezione di Odoo hanno
+        # per etichetta un operatore — `<`, `>`, `<=` — e una frase come *«cerca regole
+        # prezzo di consegna >»* non e' una domanda che qualcuno fa. Sono tre esempi su
+        # quarantamila, e il controllo di §6 li prendeva; ma **D85** dice di correggere
+        # il generatore, non i suoi prodotti.
+        dicibili = [(v, t) for v, t in attributo.valori
+                    if any(re.search(r"\w", x) for x in (t or (v,)))]
+        if not dicibili:
+            return None
+        valore, termini = rng.choice(dicibili)
+        pronunciabili = [t for t in (termini or ()) if re.search(r"\w", t)]
+        parola = rng.choice(pronunciabili) if pronunciabili else valore
         return {"kind": "enum", "items": [valore]}, parola
     if tipo == "number":
         if rng.random() < 0.15:
@@ -589,16 +788,23 @@ def genera_intento(entita: Entita, famiglia: str, rng: random.Random) -> Intento
     return intento
 
 
-def envelope_di(intento: Intento, rng: random.Random) -> dict:
+def envelope_di(intento: Intento, dizione: Dizione, rng: random.Random) -> dict:
     """L'intento nella forma che il modello deve scrivere.
 
     La **provenienza** e' la parte che conta: §10.3 la definisce come *il frammento
     della frase che ha prodotto l'operazione*, ed e' cio' su cui D105, D119 e D144
     verificano. Un dataset con provenienze approssimative insegnerebbe al modello a
     citare a caso, e le tre reti lo fermerebbero in servizio.
+
+    **Per questo non sceglie piu' le parole.** Le sceglie la `Dizione`, una volta sola,
+    e questa funzione le **legge**. Fino al 7 agosto 2026 sceglievano qui e in
+    `verbalizza` due sorteggi indipendenti sullo stesso elenco di sinonimi: il 13,56%
+    delle provenienze (2 484 su 18 316) nominava una parola che nella frase non
+    c'era. Il docstring qui sopra diceva gia' la cosa giusta — il codice faceva
+    un'altra.
     """
     catalogo = intento.catalogo
-    entita_detta = rng.choice(catalogo.etichetta_entita)
+    entita_detta = dizione.entita
 
     if intento.esito == "out_of_scope":
         return {"dsl_version": DSL_VERSION, "outcome": "out_of_scope",
@@ -631,7 +837,7 @@ def envelope_di(intento: Intento, rng: random.Random) -> dict:
     operations = [{"op": "set_target", "ref": catalogo.entita.chiave,
                    "provenance": {"text": entita_detta.lower()}}]
 
-    for condizione in intento.condizioni:
+    for i, condizione in enumerate(intento.condizioni):
         corpo = {"ref": condizione["attributo"].ref}
         if condizione["tipo"] == "tempo":
             corpo["predicate"] = condizione.get("predicato", "within")
@@ -642,28 +848,26 @@ def envelope_di(intento: Intento, rng: random.Random) -> dict:
                 corpo["value"] = condizione["valore"]
         operations.append({"op": "add_condition", "combine": "all",
                            "condition": corpo,
-                           "provenance": {"text": condizione["parola"]}})
+                           "provenance": {"text": dizione.frammento[f"cond:{i}"]}})
 
     for ref in intento.gruppi:
         operations.append({"op": "add_group", "ref": ref,
-                           "provenance": {"text": _detto(catalogo, ref, rng)}})
-    for misura in intento.misure:
+                           "provenance": {"text": dizione.frammento[f"gruppo:{ref}"]}})
+    for i, misura in enumerate(intento.misure):
         corpo = {"op": "add_measure", "function": misura["funzione"]}
         if misura["ref"]:
             corpo["ref"] = misura["ref"]
-        corpo["provenance"] = {"text": _parola_misura(misura["funzione"])}
+        corpo["provenance"] = {"text": dizione.frammento[f"misura:{i}"]}
         operations.append(corpo)
     if intento.campi:
         operations.append({"op": "set_fields", "refs": list(intento.campi),
-                           "provenance": {"text": "mostrami anche " + " e ".join(
-                               _detto(catalogo, r, rng) for r in intento.campi)}})
+                           "provenance": {"text": dizione.frammento["campi"]}})
     for ref in intento.ordine:
         operations.append({"op": "add_order", "ref": ref,
-                           "provenance": {"text": "ordinati per "
-                                                  + _detto(catalogo, ref, rng)}})
+                           "provenance": {"text": dizione.frammento[f"ordine:{ref}"]}})
     if intento.limite is not None:
         operations.append({"op": "set_limit", "value": intento.limite,
-                           "provenance": {"text": f"i primi {intento.limite}"}})
+                           "provenance": {"text": dizione.frammento["limite"]}})
 
     return {"dsl_version": DSL_VERSION, "outcome": "operations",
             "confidence": round(rng.uniform(0.82, 0.98), 2),
@@ -671,7 +875,16 @@ def envelope_di(intento: Intento, rng: random.Random) -> dict:
 
 
 def _detto(catalogo: Catalogo, ref: str, rng: random.Random) -> str:
-    termini = catalogo.etichette.get(ref) or (ref,)
+    """Come si dice `ref`, pescando fra tutti i modi possibili.
+
+    Legge da `dicibili` e non da `etichette`: le varianti meccaniche di §2 stanno anche
+    fuori dal catalogo mostrato, ed e' li' che il modello impara il ponte.
+
+    **Si usa solo dove chi sceglie la parola e chi la cita sono la stessa riga** — cioe'
+    nei raffinamenti, dove la `parola` restituita *e'* la provenienza. Sul primo turno
+    si passa dalla `Dizione`.
+    """
+    termini = catalogo.dicibili.get(ref) or catalogo.etichette.get(ref) or (ref,)
     return rng.choice(termini).lower()
 
 
@@ -695,25 +908,267 @@ def _frammento_confronto(catalogo: Catalogo, condizione: dict,
     return " ".join(p for p in (nome, verso, condizione["parola"]) if p)
 
 
+# ---------------------------------------------------------------------------
+# §4 — La frase, e le cornici in cui si dice
+# ---------------------------------------------------------------------------
+
+#: Le **cornici**: i modi di dire la stessa operazione.
+#:
+#: **Perche' sono tante e perche' e' questo che conta.** Il dataset del 7 agosto aveva
+#: una cornice sola per quasi ogni operazione — `add_order` due su 1 081 esempi,
+#: `add_field` una su 50, `remove_group` una su 50 — e quattro aperture coprivano il
+#: 51% delle frasi. Un modello addestrato cosi' impara una **grammatica**, non una
+#: lingua: risponde bene a *«ordinati per data»* e si perde su *«in ordine di data»*,
+#: che e' la stessa richiesta detta come la dice la gente.
+#:
+#: Costa **zero**: nessun esempio in piu', nessun gettone in piu' per passata. Si
+#: moltiplicano i modi di dire, non le cose dette.
+#:
+#: **Il vincolo che le governa.** Restano le forme che non chiedono **accordo
+#: grammaticale**: su 333 entita' non esiste un lessico che conosca il genere, e
+#: indovinarlo dall'etichetta sbaglierebbe in silenzio. Niente articoli davanti
+#: all'entita', niente participi che debbano concordare con essa.
+CORNICI = {
+    "apertura": (
+        "mostrami", "fammi vedere", "voglio vedere", "elenca", "dammi",
+        "quali sono", "vorrei vedere", "mi servono", "fammi un elenco di",
+        "puoi mostrarmi", "cerca", "trova", "avrei bisogno di", "elencami",
+        "visualizza", "tirami fuori", "mi fai vedere", "vediamo",
+    ),
+    #: Il conteggio si dice **aprendo** la frase, non infilando una parola in mezzo:
+    #: *«quanti mostrami le spese»* non e' italiano, e il dataset del 7 agosto lo
+    #: produceva 611 volte.
+    "conteggio": (
+        "quanti sono", "quanti", "quante sono", "contami", "dimmi quanti",
+        "quanti ci sono", "il numero di",
+    ),
+    #: *«con il»* e' fuori: chiede di sapere il genere dell'attributo, e su 333
+    #: entita' non lo sappiamo. Queste cinque non chiedono accordo a nessuno.
+    "condizione": ("con", "che hanno", "aventi", "dove", "e con"),
+    "ordine": (
+        "ordinati per {x}", "ordina per {x}", "in ordine di {x}",
+        "ordinandoli per {x}", "ordinati in base a {x}", "ordinato per {x}",
+        "mettili in ordine di {x}",
+    ),
+    "gruppo": (
+        "raggruppati per {x}", "raggruppa per {x}", "divisi per {x}",
+        "suddivisi per {x}", "raggruppando per {x}", "raggruppati in base a {x}",
+        "spezzati per {x}",
+    ),
+    "limite": (
+        "solo i primi {n}", "i primi {n}", "al massimo {n}", "solo {n}",
+        "i {n} principali", "non piu' di {n}", "soltanto i primi {n}",
+        "limitati a {n}", "bastano {n}", "i primi {n} e basta",
+    ),
+    "campi": (
+        "con {x}", "mostrami anche {x}", "con le colonne {x}",
+        "facendo vedere {x}", "e anche {x}", "con in piu' {x}",
+        "voglio vedere {x}", "fammi vedere {x}",
+    ),
+}
+
+#: Le cornici del **secondo turno**.
+#:
+#: Quattordici operazioni di raffinamento avevano esattamente 50 esempi — il pavimento
+#: di **D143** (il dataset si sovra-genera 4:1 e si sceglie per copertura) — e una o
+#: due cornici ciascuna. Cinquanta esempi di **una sola frase** rendono l'operazione
+#: raggiungibile, non affidabile. Ed e' la famiglia che nessuna misura vede: la
+#: batteria apre una conversazione nuova per ogni frase.
+#:
+#: Qui la provenienza **e'** la frase, quindi ogni cornice in piu' e' gratis e sicura.
+RAFFINAMENTI_DETTI = {
+    "togli_condizione": ("togli il filtro su {x}", "leva il filtro su {x}",
+                         "senza il filtro su {x}", "non filtrare piu' per {x}",
+                         "elimina il filtro su {x}", "togli la condizione su {x}"),
+    "svuota_filtro": ("togli tutti i filtri", "senza filtri", "leva ogni filtro",
+                      "azzera i filtri", "via tutti i filtri",
+                      "toglimi tutte le condizioni"),
+    "aggiungi_campo": ("mostrami anche {x}", "aggiungi {x}", "voglio vedere anche {x}",
+                       "fammi vedere pure {x}", "metti anche {x}",
+                       "aggiungimi la colonna {x}"),
+    "imposta_campi": ("fammi vedere solo {x}", "solo {x}", "mostrami solo {x}",
+                      "tieni solo {x}", "voglio solo {x}", "lascia solo {x}"),
+    "togli_campo": ("togli {x}", "leva {x}", "senza {x}", "non mostrarmi {x}",
+                    "via {x}", "elimina la colonna {x}"),
+    "svuota_campi": ("torna alle colonne di prima", "togli le colonne",
+                     "rimetti le colonne di prima", "azzera le colonne",
+                     "voglio le colonne normali"),
+    "aggiungi_gruppo": ("raggruppa per {x}", "raggruppali per {x}",
+                        "dividi per {x}", "suddividi per {x}",
+                        "voglio il raggruppamento per {x}", "spezza per {x}"),
+    "togli_gruppo": ("non raggruppare per {x}", "togli il raggruppamento per {x}",
+                     "leva il gruppo {x}", "smetti di raggruppare per {x}",
+                     "senza raggruppare per {x}"),
+    "svuota_gruppi": ("senza raggruppamenti", "togli i raggruppamenti",
+                      "non raggruppare niente", "azzera i raggruppamenti",
+                      "via tutti i gruppi", "tutto insieme senza gruppi"),
+    "togli_misura": ("togli {x}", "leva {x}", "senza {x}", "non calcolare {x}",
+                     "via {x}"),
+    "aggiungi_ordine": ("ordina per {x}", "ordinali per {x}", "mettili in ordine di {x}",
+                        "in ordine di {x}", "ordinali in base a {x}",
+                        "voglio l'ordinamento per {x}"),
+    "svuota_ordine": ("non ordinarli", "togli l'ordinamento", "senza ordinamento",
+                      "lasciali come sono", "azzera l'ordinamento",
+                      "non mi serve l'ordine"),
+    "annulla": ("annulla l'ultima cosa", "torna indietro",
+                "no, disfa quello che ho appena detto", "disfa l'ultima",
+                "no aspetta, torna indietro", "annulla quello che ho detto"),
+    "ricomincia": ("ricominciamo", "azzera tutto", "riparti da capo",
+                   "lascia perdere, ricominciamo", "cancella tutto",
+                   "ripartiamo da zero", "azzera e ricomincia"),
+    "apri": ("apri il {n}", "aprimi il numero {n}", "fammi vedere il {n}",
+             "voglio vedere il {n}", "aprimi il {n}", "dammi il dettaglio del {n}"),
+    "crescente": ("dal piu' piccolo al piu' grande", "in ordine crescente",
+                  "dal minore al maggiore", "partendo dal piu' basso"),
+    "decrescente": ("dal piu' grande al piu' piccolo", "in ordine decrescente",
+                    "dal maggiore al minore", "partendo dal piu' alto"),
+    "sostituisci": ("anzi, {x}", "no, {x}", "cambia in {x}",
+                    "correggo: {x}", "anzi no, {x}", "meglio {x}"),
+    "aggiungi_condizione": ("solo quelli con {x}", "e anche con {x}",
+                            "aggiungi il filtro {x}", "filtra anche per {x}",
+                            "voglio solo quelli con {x}", "restringi a {x}"),
+}
+
+
+def _detto_raffinamento(chiave: str, rng: random.Random, **kw) -> str:
+    return rng.choice(RAFFINAMENTI_DETTI[chiave]).format(**kw)
+
+
 def _parola_misura(funzione: str) -> str:
+    """Il nome corto di una misura, per i raffinamenti: *«togli il totale»*."""
     return {"sum": "il totale", "avg": "la media", "max": "il massimo",
-            "min": "il minimo", "count": "quanti sono",
-            "count_distinct": "quanti diversi"}.get(funzione, funzione)
+            "min": "il minimo", "count": "il conteggio",
+            "count_distinct": "i diversi"}.get(funzione, funzione)
 
 
-# ---------------------------------------------------------------------------
-# §4 — La frase
-# ---------------------------------------------------------------------------
+#: Le misure, dette a parole. Erano sei stringhe fisse — una per funzione — su 1 105
+#: esempi.
+MISURE_DETTE = {
+    "sum": ("il totale di {x}", "la somma di {x}", "quanto fa in tutto {x}",
+            "il totale complessivo di {x}", "sommando {x}"),
+    "avg": ("la media di {x}", "il valore medio di {x}", "la media dei {x}",
+            "mediamente {x}"),
+    "max": ("il massimo di {x}", "il valore massimo di {x}", "il piu' alto {x}",
+            "il massimo che c'e' di {x}"),
+    "min": ("il minimo di {x}", "il valore minimo di {x}", "il piu' basso {x}",
+            "il minimo che c'e' di {x}"),
+    "count_distinct": ("quanti diversi {x}", "quanti {x} distinti",
+                       "il numero di {x} diversi", "quanti {x} diversi ci sono"),
+}
 
-APERTURE = ("mostrami", "fammi vedere", "voglio vedere", "elenca", "dammi",
-            "quali sono", "vorrei vedere")
+#: Quante volte i pezzi in coda alla frase escono dall'ordine canonico.
+#:
+#: **Perche'.** `verbalizza` montava sempre entita' -> condizioni -> misure -> gruppi ->
+#: ordinamento -> campi -> limite. Mai un'inversione, in 9 500 esempi. Il modello
+#: impara la posizione invece del significato, e il primo utente che dice *«ordinati
+#: per data i lead di quest'anno»* esce dalla griglia.
+QUOTA_ORDINE_LIBERO = 0.4
+
+#: Quante volte il limite passa davanti, subito dopo l'apertura: *«mostrami i primi 5
+#: clienti ordinati per fatturato»*. E' la posizione piu' comune nel parlato e non
+#: esisteva.
+QUOTA_LIMITE_DAVANTI = 0.25
 
 
-def _elidi(sintagma: str) -> str:
-    return sintagma
+@dataclass
+class Dizione:
+    """Le parole scelte per questo esempio, scelte **una volta sola**.
+
+    **Perche' esiste.** La provenienza di un'operazione e' il frammento della frase che
+    l'ha prodotta (§10.3), e D105, D119 e D144 ci verificano sopra. Finche' `envelope_di`
+    e `verbalizza` sceglievano le parole per conto proprio, due sorteggi indipendenti
+    sullo stesso elenco di sinonimi producevano frasi e provenienze **diverse**: il
+    13,56% delle provenienze del dataset del 7 agosto nominava qualcosa che nella frase
+    non c'era. Il dataset insegnava esattamente cio' che le tre reti bocciano.
+
+    Qui la parola si sceglie una volta e la leggono tutti e due. Il frammento **e'** il
+    pezzo di frase: non gli somiglia, e' lo stesso oggetto.
+    """
+    entita: str
+    #: chiave di posto -> il frammento reso, che e' insieme pezzo di frase e provenienza
+    frammento: dict[str, str] = field(default_factory=dict)
+    #: chiave di posto -> la parolina che introduce il frammento nella frase.
+    #: Sta **fuori** dalla provenienza: *«con»* non e' parte di cio' che fonda la
+    #: condizione, e tenerla fuori lascia variare la cornice senza toccare cio' che
+    #: D105 legge.
+    cornice: dict[str, str] = field(default_factory=dict)
+    #: le chiavi di posto in coda, nell'ordine in cui entrano nella frase
+    coda: list[str] = field(default_factory=list)
+    apertura: str = ""
+    limite_davanti: bool = False
 
 
-def verbalizza(intento: Intento, envelope: dict, rng: random.Random) -> str:
+def costruisci_dizione(intento: Intento, rng: random.Random) -> Dizione:
+    """Sceglie tutte le parole dell'esempio, prima che qualcuno le usi."""
+    catalogo = intento.catalogo
+    entita = rng.choice(catalogo.dicibile_entita or catalogo.etichetta_entita).lower()
+
+    conteggio = any(m["funzione"] == "count" for m in intento.misure)
+    apertura = (rng.choice(CORNICI["conteggio"]) if conteggio
+                else rng.choice(CORNICI["apertura"]))
+    diz = Dizione(entita=entita, apertura=apertura)
+
+    if intento.esito == "out_of_scope":
+        return diz
+
+    for i, condizione in enumerate(intento.condizioni):
+        chiave = f"cond:{i}"
+        if condizione["tipo"] == "tempo":
+            # L'espressione temporale resta **esattamente** com'e': D144 controlla il
+            # periodo che il frammento nomina, e allargare il frammento sposterebbe
+            # cio' che quel controllo legge.
+            diz.frammento[chiave] = condizione["parola"]
+        elif condizione["valore"] is None:
+            diz.frammento[chiave] = _detto(catalogo, condizione["attributo"].ref, rng)
+        elif condizione["valore"]["kind"] in ("number", "range"):
+            diz.frammento[chiave] = _frammento_confronto(catalogo, condizione, rng)
+        else:
+            diz.frammento[chiave] = condizione["parola"].lower()
+        diz.cornice[chiave] = rng.choice(CORNICI["condizione"])
+        diz.coda.append(chiave)
+
+    for i, misura in enumerate(intento.misure):
+        chiave = f"misura:{i}"
+        if misura["funzione"] == "count":
+            # Il conteggio e' l'apertura: la sua provenienza e' quella.
+            diz.frammento[chiave] = apertura
+            continue
+        diz.frammento[chiave] = rng.choice(MISURE_DETTE[misura["funzione"]]).format(
+            x=_detto(catalogo, misura["ref"], rng))
+        diz.cornice[chiave] = rng.choice(("con", "e", "dammi", "voglio"))
+        diz.coda.append(chiave)
+
+    for ref in intento.gruppi:
+        chiave = f"gruppo:{ref}"
+        diz.frammento[chiave] = rng.choice(CORNICI["gruppo"]).format(
+            x=_detto(catalogo, ref, rng))
+        diz.coda.append(chiave)
+
+    for ref in intento.ordine:
+        chiave = f"ordine:{ref}"
+        diz.frammento[chiave] = rng.choice(CORNICI["ordine"]).format(
+            x=_detto(catalogo, ref, rng))
+        diz.coda.append(chiave)
+
+    if intento.campi:
+        diz.frammento["campi"] = rng.choice(CORNICI["campi"]).format(
+            x=" e ".join(_detto(catalogo, r, rng) for r in intento.campi))
+        diz.coda.append("campi")
+
+    if intento.limite is not None:
+        diz.frammento["limite"] = rng.choice(CORNICI["limite"]).format(
+            n=intento.limite)
+        diz.limite_davanti = rng.random() < QUOTA_LIMITE_DAVANTI
+        if not diz.limite_davanti:
+            diz.coda.append("limite")
+
+    if rng.random() < QUOTA_ORDINE_LIBERO:
+        rng.shuffle(diz.coda)
+
+    return diz
+
+
+def verbalizza(intento: Intento, dizione: Dizione) -> str:
     """Dall'intento a una frase italiana plausibile.
 
     **Meno ricca di quella di `genera_corpus.py`, e per una ragione.** Quella si
@@ -722,45 +1177,40 @@ def verbalizza(intento: Intento, envelope: dict, rng: random.Random) -> str:
     Su trecentotrentatre' entita' quel lessico non esiste, e indovinare il genere
     dall'etichetta sbaglierebbe in silenzio.
 
-    Quindi qui le forme sono quelle che **non chiedono accordo**: l'articolo resta
-    fuori, gli attributi si nominano dopo *«con»*, *«per»*, *«a»*. Una frase un po'
-    piu' piatta, mai una frase sbagliata. La ricchezza la portano le 918 frasi del
-    corpus e — soprattutto — gli enunciati veri di **D85**, che nessun generatore
-    sostituisce.
+    Quindi qui le forme sono quelle che **non chiedono accordo**. Piu' piatta di una
+    frase vera, mai una frase sbagliata. La ricchezza vera la portano le 918 frasi del
+    corpus e — soprattutto — gli enunciati di **D85** (elicitazione di ~200 enunciati
+    presso 8-10 persone di mestiere), che nessun generatore sostituisce.
+
+    **Non sceglie piu' niente**: legge la `Dizione`. E' cio' che rende la provenienza
+    vera per costruzione invece che per fortuna.
     """
-    catalogo = intento.catalogo
-    entita = rng.choice(catalogo.etichetta_entita).lower()
-
     if intento.esito == "out_of_scope":
-        return f"{rng.choice(APERTURE)} {entita} e {intento.frammento_portata}"
+        return (f"{dizione.apertura} {dizione.entita} "
+                f"e {intento.frammento_portata}")
 
-    pezzi = [rng.choice(APERTURE), entita]
+    pezzi = [dizione.apertura]
+    if dizione.limite_davanti:
+        pezzi.append(dizione.frammento["limite"])
+    pezzi.append(dizione.entita)
 
-    for condizione in intento.condizioni:
-        if condizione["tipo"] == "tempo":
-            pezzi.append(condizione["parola"])
-        elif condizione["valore"] is None:
-            pezzi.append(f"con {_detto(catalogo, condizione['attributo'].ref, rng)}")
-        elif condizione["valore"]["kind"] in ("number", "range"):
-            pezzi.append("con " + _frammento_confronto(catalogo, condizione, rng))
-        else:
-            pezzi.append(f"{condizione['parola'].lower()}")
-
-    for misura in intento.misure:
-        if misura["funzione"] == "count":
-            pezzi.insert(0, "quanti")
-        else:
-            pezzi.append(f"con {_parola_misura(misura['funzione'])} "
-                         f"di {_detto(catalogo, misura['ref'], rng)}")
-    for ref in intento.gruppi:
-        pezzi.append(f"raggruppati per {_detto(catalogo, ref, rng)}")
-    for ref in intento.ordine:
-        pezzi.append(f"ordinati per {_detto(catalogo, ref, rng)}")
-    if intento.campi:
-        pezzi.append("con " + " e ".join(_detto(catalogo, r, rng)
-                                         for r in intento.campi))
-    if intento.limite is not None:
-        pezzi.append(f"solo i primi {intento.limite}")
+    for i, chiave in enumerate(dizione.coda):
+        frammento = dizione.frammento[chiave]
+        if chiave.startswith("cond:"):
+            condizione = intento.condizioni[int(chiave.split(":")[1])]
+            if condizione["tipo"] == "tempo" or (
+                    condizione["valore"] is not None
+                    and condizione["valore"]["kind"] not in ("number", "range")):
+                # L'espressione di tempo e il valore nudo entrano senza cornice:
+                # *«nel secondo semestre»*, *«rossi»*.
+                pezzi.append(frammento)
+                continue
+            pezzi.append(f"{dizione.cornice[chiave]} {frammento}")
+            continue
+        if chiave.startswith("misura:"):
+            pezzi.append(f"{dizione.cornice[chiave]} {frammento}")
+            continue
+        pezzi.append(frammento)
 
     return " ".join(p for p in pezzi if p)
 
@@ -843,8 +1293,9 @@ def raffinamento_di(stato: dict, catalogo: Catalogo, rng: random.Random
                  "predicate": condizione["predicato"]}
         if condizione["valore"] is not None:
             corpo["value"] = condizione["valore"]
-        parola = ("e solo quelli con "
-                  + _frammento_confronto(catalogo, condizione, rng))
+        parola = _detto_raffinamento(
+            "aggiungi_condizione", rng,
+            x=_frammento_confronto(catalogo, condizione, rng))
         return ([{"op": "add_condition", "combine": "all", "condition": corpo,
                   "provenance": {"text": parola}}], parola)
 
@@ -857,7 +1308,8 @@ def raffinamento_di(stato: dict, catalogo: Catalogo, rng: random.Random
             indirizzo = {"id": bersaglio["id"]}
         else:
             indirizzo = {"ref": bersaglio["ref"]}
-        parola = f"togli il filtro su {_detto(catalogo, bersaglio['ref'], rng)}"
+        parola = _detto_raffinamento(
+            "togli_condizione", rng, x=_detto(catalogo, bersaglio["ref"], rng))
         return ([{"op": "remove_condition", **indirizzo,
                   "provenance": {"text": parola}}], parola)
 
@@ -871,13 +1323,13 @@ def raffinamento_di(stato: dict, catalogo: Catalogo, rng: random.Random
         corpo = {"ref": nuova["attributo"].ref, "predicate": nuova["predicato"]}
         if nuova["valore"] is not None:
             corpo["value"] = nuova["valore"]
-        parola = "anzi, " + _frammento_confronto(catalogo, nuova, rng)
+        parola = _detto_raffinamento(
+            "sostituisci", rng, x=_frammento_confronto(catalogo, nuova, rng))
         return ([{"op": "replace_condition", "id": bersaglio["id"],
                   "condition": corpo, "provenance": {"text": parola}}], parola)
 
     if quale == "svuota_filtro":
-        parola = rng.choice(("togli tutti i filtri", "senza filtri",
-                             "leva ogni filtro"))
+        parola = _detto_raffinamento("svuota_filtro", rng)
         return ([{"op": "clear_filter", "provenance": {"text": parola}}], parola)
 
     if quale == "aggiungi_campo":
@@ -886,7 +1338,8 @@ def raffinamento_di(stato: dict, catalogo: Catalogo, rng: random.Random
         if not candidati:
             return None
         ref = rng.choice(candidati)
-        parola = f"mostrami anche {_detto(catalogo, ref, rng)}"
+        parola = _detto_raffinamento("aggiungi_campo", rng,
+                                     x=_detto(catalogo, ref, rng))
         return ([{"op": "add_field", "ref": ref,
                   "provenance": {"text": parola}}], parola)
 
@@ -895,8 +1348,9 @@ def raffinamento_di(stato: dict, catalogo: Catalogo, rng: random.Random
         if len(candidati) < 2:
             return None
         refs = rng.sample(candidati, 2)
-        parola = ("fammi vedere solo "
-                  + " e ".join(_detto(catalogo, r, rng) for r in refs))
+        parola = _detto_raffinamento(
+            "imposta_campi", rng,
+            x=" e ".join(_detto(catalogo, r, rng) for r in refs))
         return ([{"op": "set_fields", "refs": refs,
                   "provenance": {"text": parola}}], parola)
 
@@ -907,9 +1361,7 @@ def raffinamento_di(stato: dict, catalogo: Catalogo, rng: random.Random
         # insegnerebbe a inventare (§6.6 vieta anche di scegliere per identificativo,
         # per la stessa ragione).
         posizione = rng.randint(1, 5)
-        parola = rng.choice((f"apri il {posizione}",
-                             f"aprimi il numero {posizione}",
-                             f"fammi vedere il {posizione}"))
+        parola = _detto_raffinamento("apri", rng, n=posizione)
         return ([{"op": "open_record",
                   "selector": {"by": "position", "value": posizione},
                   "provenance": {"text": parola}}], parola)
@@ -918,12 +1370,13 @@ def raffinamento_di(stato: dict, catalogo: Catalogo, rng: random.Random
         voce = _prima_voce(stato, "fields")
         if not voce:
             return None
-        parola = f"togli {_detto(catalogo, voce['ref'], rng)}"
+        parola = _detto_raffinamento("togli_campo", rng,
+                                     x=_detto(catalogo, voce["ref"], rng))
         return ([{"op": "remove_field", "ref": voce["ref"],
                   "provenance": {"text": parola}}], parola)
 
     if quale == "svuota_campi":
-        parola = rng.choice(("torna alle colonne di prima", "togli le colonne"))
+        parola = _detto_raffinamento("svuota_campi", rng)
         return ([{"op": "clear_fields", "provenance": {"text": parola}}], parola)
 
     if quale == "aggiungi_gruppo":
@@ -932,7 +1385,8 @@ def raffinamento_di(stato: dict, catalogo: Catalogo, rng: random.Random
         if not candidati:
             return None
         ref = rng.choice(candidati)
-        parola = f"raggruppa per {_detto(catalogo, ref, rng)}"
+        parola = _detto_raffinamento("aggiungi_gruppo", rng,
+                                     x=_detto(catalogo, ref, rng))
         return ([{"op": "add_group", "ref": ref,
                   "provenance": {"text": parola}}], parola)
 
@@ -940,7 +1394,8 @@ def raffinamento_di(stato: dict, catalogo: Catalogo, rng: random.Random
         voce = _prima_voce(stato, "group_by")
         if not voce:
             return None
-        parola = f"non raggruppare per {_detto(catalogo, voce['ref'], rng)}"
+        parola = _detto_raffinamento("togli_gruppo", rng,
+                                     x=_detto(catalogo, voce["ref"], rng))
         return ([{"op": "remove_group", "ref": voce["ref"],
                   "provenance": {"text": parola}}], parola)
 
@@ -952,15 +1407,17 @@ def raffinamento_di(stato: dict, catalogo: Catalogo, rng: random.Random
         # si indirizza per funzione quando il riferimento non c'e'.
         if voce.get("ref") and rng.random() < 0.5:
             indirizzo = {"ref": voce["ref"]}
-            parola = f"togli {_detto(catalogo, voce['ref'], rng)}"
+            parola = _detto_raffinamento(
+                "togli_misura", rng, x=_detto(catalogo, voce["ref"], rng))
         else:
             indirizzo = {"function": voce["function"]}
-            parola = f"togli {_parola_misura(voce['function'])}"
+            parola = _detto_raffinamento(
+                "togli_misura", rng, x=_parola_misura(voce["function"]))
         return ([{"op": "remove_measure", **indirizzo,
                   "provenance": {"text": parola}}], parola)
 
     if quale == "svuota_gruppi":
-        parola = rng.choice(("senza raggruppamenti", "togli i raggruppamenti"))
+        parola = _detto_raffinamento("svuota_gruppi", rng)
         return ([{"op": "clear_groups", "provenance": {"text": parola}}], parola)
 
     if quale == "aggiungi_ordine":
@@ -969,7 +1426,8 @@ def raffinamento_di(stato: dict, catalogo: Catalogo, rng: random.Random
         if not candidati:
             return None
         ref = rng.choice(candidati)
-        parola = f"ordina per {_detto(catalogo, ref, rng)}"
+        parola = _detto_raffinamento("aggiungi_ordine", rng,
+                                     x=_detto(catalogo, ref, rng))
         return ([{"op": "add_order", "ref": ref,
                   "provenance": {"text": parola}}], parola)
 
@@ -978,13 +1436,13 @@ def raffinamento_di(stato: dict, catalogo: Catalogo, rng: random.Random
         if not voce:
             return None
         verso = "asc" if voce.get("direction") == "desc" else "desc"
-        parola = ("dal piu' grande al piu' piccolo" if verso == "desc"
-                  else "dal piu' piccolo al piu' grande")
+        parola = _detto_raffinamento(
+            "decrescente" if verso == "desc" else "crescente", rng)
         return ([{"op": "set_order", "ref": voce["ref"], "direction": verso,
                   "provenance": {"text": parola}}], parola)
 
     if quale == "svuota_ordine":
-        parola = rng.choice(("non ordinarli", "togli l'ordinamento"))
+        parola = _detto_raffinamento("svuota_ordine", rng)
         return ([{"op": "clear_order", "provenance": {"text": parola}}], parola)
 
     if quale == "vista":
@@ -997,7 +1455,7 @@ def raffinamento_di(stato: dict, catalogo: Catalogo, rng: random.Random
 
     if quale == "limite":
         n = rng.choice((5, 10, 20, 50))
-        parola = f"solo i primi {n}"
+        parola = rng.choice(CORNICI["limite"]).format(n=n)
         return ([{"op": "set_limit", "value": n,
                   "provenance": {"text": parola}}], parola)
 
@@ -1006,16 +1464,16 @@ def raffinamento_di(stato: dict, catalogo: Catalogo, rng: random.Random
         # che il validatore rifiuta — giustamente: non e' un'interrogazione. Il
         # vocabolario lo dice gia' (§4.5): *«una sola intenzione produce `reset`
         # seguito da `set_target`»*, ed e' anche la frase che una persona dice davvero.
-        entita_detta = rng.choice(catalogo.etichetta_entita).lower()
-        parola = rng.choice(("ricominciamo", "azzera tutto", "riparti da capo"))
-        frase = f"{parola}, mostrami {entita_detta}"
+        entita_detta = rng.choice(
+            catalogo.dicibile_entita or catalogo.etichetta_entita).lower()
+        parola = _detto_raffinamento("ricomincia", rng)
+        frase = f"{parola}, {rng.choice(CORNICI['apertura'])} {entita_detta}"
         return ([{"op": "reset", "provenance": {"text": parola}},
                  {"op": "set_target", "ref": catalogo.entita.chiave,
                   "provenance": {"text": entita_detta}}], frase)
 
     if quale == "annulla":
-        parola = rng.choice(("annulla l'ultima cosa", "torna indietro",
-                             "no, disfa quello che ho appena detto"))
+        parola = _detto_raffinamento("annulla", rng)
         return ([{"op": "revert_last", "provenance": {"text": parola}}], parola)
 
     return None
@@ -1041,7 +1499,7 @@ def genera_raffinamento(entita: Entita, rng: random.Random,
     intento = genera_intento(entita, famiglia_base, rng)
     if intento is None:
         return None
-    primo = envelope_di(intento, rng)
+    primo = envelope_di(intento, costruisci_dizione(intento, rng), rng)
     motivo, stato = valida(primo, intento.catalogo)
     if motivo or stato is None:
         scarti["raffinamento_primo_turno"] += 1
@@ -1062,6 +1520,14 @@ def genera_raffinamento(entita: Entita, rng: random.Random,
     motivo, _ = valida(envelope, intento.catalogo, stato)
     if motivo:
         scarti[motivo.split(":")[0]] += 1
+        return None
+
+    # La stessa rete del primo turno. Qui la `parola` **e'** gia' la frase, quindi il
+    # controllo non dovrebbe scattare mai — ed e' proprio per questo che va tenuto:
+    # un controllo che passa solo dove il difetto non c'e' e' l'unico che si puo'
+    # lasciare acceso senza costo.
+    if provenienze_scollegate(envelope, frase):
+        scarti["provenienza_non_fondata"] += 1
         return None
 
     lunghezza = _lunghezza_stimata(intento.catalogo.payload(), frase, envelope,
@@ -1210,6 +1676,62 @@ def _normalizza(testo: str) -> str:
     return "".join(c for c in piatto if not unicodedata.combining(c)).lower()
 
 
+def _parole(testo: str) -> str:
+    """Il testo ridotto alle sue parole, per confrontarlo con un altro testo.
+
+    La punteggiatura diventa spazio e non sparisce: `E-mail` e `e mail` devono
+    incontrarsi, ma `email` e `e mail` **non** devono farlo per sbaglio dentro un
+    confronto che non e' quello dei sinonimi.
+    """
+    return " " + " ".join(re.findall(r"\w+", _normalizza(testo))) + " "
+
+
+def provenienze_scollegate(envelope: dict, frase: str) -> list[tuple[str, str]]:
+    """Le provenienze che la frase non contiene. Vuoto vuol dire tutto a posto.
+
+    **Cos'e' questo controllo.** §10.3 dice che la provenienza e' *il frammento della
+    frase che ha prodotto l'operazione*, e **D105** (una condizione nominata non fondata
+    nel proprio frammento e' rifiutata), **D119** e **D144** ci verificano sopra in
+    servizio. Un esempio la cui provenienza cita parole che nella frase non ci sono
+    insegna al modello a produrre esattamente cio' che le tre reti bocciano: il prodotto
+    rifiuterebbe la risposta che l'addestramento gli ha insegnato a dare.
+
+    **Perche' non c'era.** Perche' il difetto non era nel controllo, era nel
+    generatore: `envelope_di` e `verbalizza` sorteggiavano le parole **due volte** dallo
+    stesso elenco di sinonimi. Finche' ogni attributo aveva un termine solo il difetto
+    era invisibile; con i sinonimi diventa la regola. Misurato sul dataset del 7 agosto
+    2026: **2 484 provenienze su 18 316, il 13,56%** — quasi tutte `set_target`, dove
+    l'entita' i sinonimi li aveva gia' da D126.
+
+    Il controllo resta anche dopo che il generatore e' stato riparato, perche' e' la
+    riparazione a poter tornare indietro, non il difetto: `03` §3.9 vuole che un
+    allargamento sia provato, non ricordato.
+    """
+    testo = _parole(frase)
+    fuori: list[tuple[str, str]] = []
+
+    def guarda(op: str, provenienza) -> None:
+        if not isinstance(provenienza, dict):
+            return
+        citato = provenienza.get("text")
+        if not citato:
+            return
+        # **Gli spazi di guardia restano su tutt'e due.** Togliendoli, `mail`
+        # risulterebbe contenuto in `email` e il controllo passerebbe a vuoto
+        # proprio sui casi che deve prendere: e' il modo tipico in cui un confronto
+        # per sottostringa mente.
+        if _parole(citato) not in testo:
+            fuori.append((op, citato))
+
+    for operazione in envelope.get("operations") or []:
+        guarda(operazione.get("op", "?"), operazione.get("provenance"))
+    guarda("scope_note", envelope.get("scope_provenance"))
+    chiarimento = envelope.get("clarification")
+    if isinstance(chiarimento, dict):
+        guarda("clarification", chiarimento.get("provenance"))
+    return fuori
+
+
 def _cinque_grammi(testo: str) -> set[str]:
     parole = re.findall(r"\w+", _normalizza(testo))
     return {" ".join(parole[i:i + 5]) for i in range(max(1, len(parole) - 4))}
@@ -1239,10 +1761,27 @@ def genera(entita: list[Entita], quanti: int, seme: int,
     famiglie = list(pesi)
     probabilita = [pesi[f] for f in famiglie]
 
+    # **L'entita' si sorteggia pesata sulla sua taglia, non a caso.**
+    #
+    # Le fasce di `FASCE_CATALOGO` chiedono un catalogo grande, ma un'entita' con dodici
+    # attributi non puo' darlo: la fascia cede, e la mediana resta dov'era. Misurato:
+    # con la sola tabella delle fasce la mediana e' passata da 9 a 10, e gli esempi con
+    # almeno ventisette attributi dall'11% al 14%. Non basta, perche' l'atlante ha piu'
+    # entita' piccole che grandi (mediana 12 attributi) e il sorteggio uniforme le
+    # pesca tutte allo stesso modo.
+    #
+    # **La radice quadrata e non il numero.** Pesare per la taglia piena darebbe a
+    # `account.move` (100 attributi) venti volte le possibilita' di un'entita' da
+    # cinque, e il dataset diventerebbe otto entita' grosse — cioe' esattamente cio'
+    # che il tetto dell'1,5% di **D143** vieta e cio' che l'ampiezza (287 entita' su
+    # 328) misura. La radice quadrata da' un rapporto di tre a uno fra la piu' grande e
+    # la piu' piccola: sposta la massa, non chiude la porta a nessuno.
+    peso_entita = [max(len(e.attributi), 1) ** 0.5 for e in entita]
+
     tentativi = 0
     while len(esempi) < quanti and tentativi < quanti * 6:
         tentativi += 1
-        entita_scelta = rng.choice(entita)
+        entita_scelta = rng.choices(entita, peso_entita)[0]
         famiglia = rng.choices(famiglie, probabilita)[0]
 
         if famiglia == "raffinamento":
@@ -1255,12 +1794,24 @@ def genera(entita: list[Entita], quanti: int, seme: int,
         if intento is None:
             scarti["intento_non_costruibile"] += 1
             continue
-        envelope = envelope_di(intento, rng)
+        dizione = costruisci_dizione(intento, rng)
+        envelope = envelope_di(intento, dizione, rng)
         motivo, _ = valida(envelope, intento.catalogo)
         if motivo:
             scarti[motivo.split(":")[0]] += 1
             continue
-        frase = verbalizza(intento, envelope, rng)
+        frase = verbalizza(intento, dizione)
+
+        # **La rete che chiude la classe.** Ogni provenienza dev'essere un pezzo della
+        # frase, alla lettera. Non e' una rifinitura: e' cio' su cui D105, D119 e D144
+        # verificano in servizio, e un dataset che insegna a citare male addestra il
+        # modello a farsi bocciare dalle proprie reti. Fino al 7 agosto 2026 il 13,56%
+        # delle provenienze non passava questo controllo, e nessuno lo sapeva perche'
+        # il controllo non c'era.
+        fuori = provenienze_scollegate(envelope, frase)
+        if fuori:
+            scarti["provenienza_non_fondata"] += 1
+            continue
 
         # La forma lunga del `prompt` e' il caso peggiore: se ci sta quella, ci sta
         # anche la corta. Si misura sul peggiore perche' la quota delle due forme si

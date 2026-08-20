@@ -56,7 +56,11 @@ applicato al valore**, con il lessico dei periodi accanto a quello di D119.
 | **P3b** | Una prova nella suite di `nli_dispatch` sul cablaggio della frase | poco | il difetto di §9 e' passato proprio di li' |
 | **P3c** | Una famiglia di **conversazioni** nella batteria, non solo prime domande | mezza giornata | §11: un difetto che uccideva ogni secondo turno non l'ha visto nessuna misura |
 | **P4** | **D85** — avviare l'elicitazione degli enunciati | settimane, non nostre | il dataset del fine tuning |
-| **P5** | Fine tuning: pulizia atlante, seconda raccolta, sinonimi | dati, non misure | in parallelo da subito |
+| **P4b** | **D108** — trenta o quaranta **sinonimi scritti a mano** (`commerciale`→`Addetto vendite`, `posta`→`E-mail`, `creati`→`Data creazione`) | **mezza giornata** | l'unica cosa rimasta che sposta il risultato sulle **domande vere**, e costa meno di una corsa sbagliata. Le varianti meccaniche sono fatte (§2 dell'8 agosto); i sinonimi veri no, e nessuna regola ci arriva |
+| ~~**P5**~~ | ~~Fine tuning: costruire il dataset~~ | **fatto** il 7 agosto (D142/D143 eseguite) | 10 000 esempi, ogni simbolo pieno, tre ricette e `corri.sh`: **tutto cio' che sta prima della GPU** |
+| ~~**P5a**~~ | ~~Il dataset parlava una lingua sola, e citava frasi che non c'erano~~ | **fatto** l'8 agosto | provenienze scollegate **dal 13,6% a 0**, cornici da 1 a 5 per operazione, sinonimi meccanici, cataloghi meno piccoli. Vedi «Stato all'8 agosto 2026» |
+| **P5b** | La **corsa**: `corri.sh fumo` (~$2), poi 4B e 2B | i tre cancelli di `ai/21` §1, poi macchina | e' l'unico passo rimasto fra il dataset e un modello addestrato — ma la **linea di partenza va rifatta prima**, quella che c'e' precede D144 |
+| **P5c** | Misurare l'addestrato **due volte**: batteria sul campo **e** corpus | il corpus e' gia' scritto, e' una rimisura | se la batteria sale e il corpus no, abbiamo insegnato al modello **il nostro accento**, non la lingua. E' il risultato peggiore possibile perche' sembra un successo |
 | **P6** | **1a** — copertura con i residui nascosti | macchina | **cancello D34**: sotto il 99% la regola non e' adottabile |
 | **P7** | **1d** — selezione degli attributi | — | **premessa da rimisurare**: nasceva da «troppi attributi confondono il modello», che era il prompt tagliato |
 
@@ -65,7 +69,25 @@ prodotto risponde col terzo trimestre a chi chiede il primo, ogni altro numero c
 alziamo lo alziamo sopra una cosa che non regge.
 
 **P4 e P5 partono in parallelo a tutto**, perche' sono lavoro sui dati e su persone,
-non sulle misure, e non aspettano niente.
+non sulle misure, e non aspettano niente. **P5 e' chiuso il 7 agosto**: il `dataset`
+esiste ed e' commesso. Quello che resta e' **P5b**, la corsa, e la sua unica dipendenza
+vera non e' tecnica — e' che la linea di partenza contro cui si misurera' il modello
+addestrato sia **piu' recente dell'ultima delibera che cambia le risposte** (oggi non lo
+e': 39/54 e' del 6 agosto, D144 e' della sera stessa).
+
+**L'8 agosto e' entrato in mezzo un lavoro che non era in lista** (P5a), e non era una
+rifinitura: il dataset insegnava a **citare frammenti che nella frase non c'erano**, nel
+13,6% dei casi. Il modello avrebbe imparato a produrre esattamente cio' che D105, D119 e
+D144 rifiutano — si sarebbe bocciato da solo. Riparato, con la rete che lo tiene chiuso.
+Vedi «Stato all'8 agosto 2026».
+
+**E una cosa che credevamo mancasse c'e' gia'.** L'esame indipendente — domande scritte
+da qualcuno che non ha visto il generatore del dataset — non va costruito: e' il
+**corpus fondativo**, 1 200 casi in `ai/corpus/`, scritti da un altro generatore con un
+lessico compilato a mano. Dice *«estrai anagrafiche clienti operativi raggruppati per
+comune»* dove il dataset dice *«fammi vedere contatti con Citta' uguale a Roma»*: parole
+d'ufficio contro etichette Odoo. Il modello base ci fa **75,8%**, ed e' il confronto che
+rende leggibile il numero dell'addestrato (P5c).
 
 **Due voci sono uscite dalla lista.** Il corpus a `--finestra 4096` doveva separare
 D113–D120 da D133: la risposta e' arrivata senza il corpus, era D133. E `1b`
@@ -144,6 +166,12 @@ c'e' — e' esattamente il modo in cui si sono accumulati i dieci difetti di
   sovra-genera 4:1 e si sceglie per copertura, non per quota), §6 il file di
   configurazione vero, §10 l'ordine di lavoro. Il costo non sono i $40: e' `genera_dataset.py`,
   2-3 giorni, ed e' li' che si decide se il modello diventa performante o solo addestrato.
+  **Il 7 agosto quel costo e' stato pagato**: il generatore, le tre ricette e `corri.sh`
+  sono in `tools/finetuning/`, e `data/copertura.txt` e' il rapporto che si legge **prima**
+  di affittare la macchina. Vedi «Stato al 7 agosto 2026».
+  **L'8 agosto il generatore e' stato riscritto dove parlava una lingua sola**, e ha
+  ricevuto le sue prime prove: `tools/finetuning/tests/test_generatore.py`, 17, dentro
+  `./manage.sh check`. Vedi «Stato all'8 agosto 2026».
 - ai/16-controllo-architettura.md — il mandato del controllo di architettura del
   3 agosto, e ai/17-esito-controllo-architettura.md la risposta: sei reperti gravi,
   undici minori, e la raccomandazione principale, che non e' una correzione ma una
@@ -1667,8 +1695,9 @@ che è la degradazione descritta da D42.
 # Se vuoi solo ripartire senza rileggere tutto
 
 Riprendi il progetto AIDA: leggi ai/00-registro-decisioni.md e
-ai/12-piano-implementazione.md, **poi la sezione «Stato al 5 agosto 2026 (sera)» qui
-sopra, che e' la piu' recente e contraddice in piu' punti tutte quelle prima**. Verifica
+ai/12-piano-implementazione.md, **poi le sezioni «Stato al 5 agosto 2026 (sera)»,
+«Stato al 7 agosto 2026» e «Stato all'8 agosto 2026» qui sopra: sono le piu' recenti e
+contraddicono in piu' punti tutte quelle prima**. Verifica
 con ./manage.sh check, poi vai con «Da dove si riprende», in fondo a quella sezione —
 oppure con quello che ti indico.
 
@@ -1688,10 +1717,26 @@ numeri allineati il catalogo intero e' l'unico che permette di rispondere alle f
 condizioni; e che la selezione degli attributi sia il primo lavoro in lista. Puo' restare
 utile per il costo del prompt, ma la premessa da cui nasceva va rimisurata.
 
-Il fine tuning e' gia' specificato in `ai/18` e `ai/19`: li' manca il lavoro, non le
-decisioni. La linea di partenza che `18` §12 pretende ora esiste (39/54), ma conviene
-riprenderla dopo aver tolto le risposte sbagliate — un dataset costruito su un prodotto
-che risponde col terzo trimestre a chi chiede il primo insegna anche quello.
+**Il fine tuning non e' piu' solo specificato: il `dataset` esiste.** `ai/18` decide la
+modalita', `ai/19` sceglie il modello, `ai/21` e' la ricetta, e dal 7 agosto
+`tools/finetuning/` contiene il generatore, 10 000 esempi riproducibili, le tre ricette e
+`corri.sh`. Manca **solo la corsa**, e prima di lanciarla vanno riletti i tre cancelli di
+`ai/21` §1 — in particolare la linea di partenza: quella che c'e' (39/54) e' del 6 agosto
+e **precede D144**, quindi misurerebbe il modello addestrato contro un prodotto che nel
+frattempo e' cambiato.
+
+**L'8 agosto il dataset e' stato rifatto, e non per rifinirlo.** Insegnava a citare
+frammenti che nella frase non c'erano (13,6%), parlava con una cornice sola per
+operazione, dava a ogni attributo un termine solo e serviva cataloghi grandi la meta' di
+quelli veri. Tutto misurato, tutto riparato, tutto verificato da 17 prove nuove dentro
+`./manage.sh check`. **Il dataset in `data/` va rigenerato prima di usarlo** se qualcuno
+ha una copia precedente all'8 agosto:
+`python3 tools/finetuning/genera_dataset.py --genera 40000 --bersaglio 10000`.
+
+E **misura l'addestrato due volte**, non una: la batteria sul campo (54 frasi nostre) e
+il corpus (1 200 domande scritte da un altro generatore, base al 75,8%). Se sale la prima
+e non la seconda, il modello ha imparato il nostro modo di dire le cose, non il mestiere.
+
 E leggi `00` §38 prima di
 dichiarare finita qualunque cosa. Stesse regole di prima: deliberi tu le questioni che emergono e le
 registri in ai/00, e mi spieghi le cose in modo semplice — come a un ragazzino sveglio ma
@@ -1757,3 +1802,347 @@ e' **P0b**, la rete di `00` §46.7.
 Sei commit: l'ancora del tempo, le etichette del dizionario, il comando `dizionario`, la
 batteria riparata, i pacchetti lingua, le cinque prove, e D141. **Verifiche: 534 test in
 zona pura, 258 Odoo, 51 dei confini, corpus 918/918 con copertura al 100%.**
+
+---
+
+# Stato al 7 agosto 2026 — il dataset esiste, e non e' ancora costato un dollaro
+
+*Sessione partita dalla ricetta scritta la sera prima (`ai/21`) e arrivata al `dataset`
+vero: 10 000 esempi, le tre ricette per la macchina affittata, e lo script che le
+esegue. **Tutto quello che sta prima della GPU e' fatto. La GPU non e' ancora stata
+accesa.***
+
+## 1. Cosa c'e' su disco che ieri non c'era
+
+| file | cos'e' |
+|---|---|
+| `tools/finetuning/genera_dataset.py` | il generatore: **D143** (la decisione per cui il dataset si sovra-genera 4:1 e poi si sceglie per copertura, non per quota) tradotta in codice |
+| `data/copertura.txt` | il rapporto che dice **cosa manca**, e che si legge prima di spendere |
+| `tools/finetuning/ricette/aida-{2b,4b,9b}-lora.yml` | le tre configurazioni Axolotl, una per candidato |
+| `tools/finetuning/corri.sh` | la corsa intera sulla macchina affittata: `fumo`, `4b`, `2b`, `9b` |
+
+**Un solo `dataset` per tutti e tre i candidati.** Niente in un esempio dipende dalla
+taglia del modello — il catalogo, la frase, l'`envelope` e le due forme del `prompt` di
+**D142** (la decisione per cui il messaggio di sistema si sposta dentro i pesi, e il
+`prompt` cala del 58%) sono le stesse — e le tre Qwen 3.5 condividono il tokenizzatore e
+lo schema di conversazione (`ai/19` §5). E' la ragione per cui **provare 2B e 4B non
+raddoppia il lavoro: raddoppia solo il conto della macchina**.
+
+## 2. I numeri del dataset
+
+    generati            40 000
+    scelti              10 000   (addestramento + validazione)
+    tenuti fuori         2 518   applicazioni intere mai viste
+    copertura satura a     295   esempi
+
+    simboli del vocabolario chiuso, minimo 50 per simbolo
+      op 22/22   tempo 22/22   kind 6/6   aggregazione 6/6   nota_portata 5/5
+
+    ampiezza   287 entita' su 328,  57 applicazioni (6 tenute fuori)
+
+**«Satura a 295» non e' un tetto, e' un pavimento.** E' il punto oltre il quale nessun
+esempio porta una **forma** nuova — una combinazione di entita', simbolo, lingua e
+famiglia mai vista. Sotto quel numero il dataset ha buchi ed e' un difetto. Sopra, gli
+esempi comprano varieta' di **superficie** — quante condizioni, con che parole — che e'
+cio' di cui un modello di lingua vive e che quel numero non misura apposta.
+
+**La saturazione ora conta anche le coppie** (simbolo × lingua, simbolo × famiglia).
+Con le sole celle singole saturava intorno al numero delle entita' qualunque cosa il
+dataset contenesse: un numero che sembrava dire una cosa e ne diceva un'altra.
+
+## 3. La famiglia che nessuna misura vede: il secondo turno
+
+Il rapporto al primo giro diceva **op 7 su 22**: mancavano *tutte* le operazioni del
+raffinamento. E' la stessa cecita' di §11 — la batteria apre una conversazione nuova per
+ogni frase, e il 5 agosto un difetto che uccideva ogni conversazione **dalla seconda
+battuta in poi** ha attraversato tutte le misure senza lasciare traccia. Ora **22 su 22**.
+
+**La trappola, ed e' istruttiva.** Lo stato che la conduttura manda al modello **non ha i
+frammenti**: `strip_provenance` li toglie quando lo stato si salva, finche' **D54** (la
+decisione che pseudonimizzera' le parole dell'utente prima di conservarle) non e' fatta.
+Un esempio con le provenienze dentro insegnerebbe a lavorare con un'informazione che in
+servizio **non arriva mai**. Verificato invece che sperato: 538 esempi di secondo turno,
+**zero** stati con i frammenti.
+
+`strip_provenance` si e' spostata da `nli_core/models/nli_interrogation.py` a
+`nli_core/contract/state.py`: e' una funzione pura su uno stato, e il posto delle
+funzioni sullo stato e' il contratto. C'e' voluto un **secondo** chiamante in zona pura
+per accorgersene. Riesportata da dov'era — spostare una funzione non deve rompere chi la
+usava.
+
+E tre difetti trovati **misurando invece che indovinando**: `add_field` su uno stato
+senza colonne e' rifiutato dall'applicatore e ha ragione (chi sceglie da zero dice
+`set_fields`); `reset` da solo lascia uno stato senza bersaglio; e il frammento di un
+confronto ometteva il verso — *«importo 5000»* invece di *«importo sotto 5000»*. Quel
+terzo e' il piu' grave: **il frammento e' la provenienza**, e D105/D119/D144 ci
+verificano sopra. Insegnare a citare male sarebbe insegnare cio' che le reti poi fermano.
+
+## 4. Quattro difetti che si vedono solo alla scala vera
+
+Il generatore girava bene su 4 000 esempi. A 40 000 ha mostrato quattro cose:
+
+1. **Il 25% degli esempi aveva un SEGNAPOSTO al posto del messaggio di sistema.** Ora la
+   forma lunga di D142 e' quella che `prompt.system_message()` produce, **presa dal
+   prodotto**: una copia scritta a mano divergerebbe alla prima delibera che tocca il
+   vocabolario, e insegnerebbe a leggere un messaggio che nessuno manda.
+2. **Il minimo di cinquanta esempi per simbolo era misurato e non fatto rispettare.** Il
+   rapporto si limitava a dire «sotto 50: `add_field`, `clear_fields`, …» giro dopo giro.
+   D143 lo chiama una garanzia: ora la selezione **ripiana i simboli scoperti** prima di
+   riempire a volume. L'avidita' da sola non bastava — la copertura si accontenta della
+   **prima** volta che vede un simbolo, e coprire non e' imparare.
+3. **Esempi oltre la finestra**: il massimo era 15 799 `token` contro un `sequence_len`
+   di 6 144. Ora si scartano e si contano, perche' un esempio troncato non insegna una
+   risposta piu' corta: insegna **una risposta che finisce a meta'**.
+4. **La selezione avida scandiva tutto il serbatoio anche dopo la saturazione**: ore per
+   prendere lo stesso esempio che prenderebbe il primo che passa. Ora quaranta mila
+   generati e selezionati in **quindici secondi**.
+
+## 5. Due numeri che correggono `ai/18` §8
+
+**La lunghezza vera di un esempio**: mediana **3 044 `token`**, 90° percentile 3 690,
+99° **4 658**, massimo 6 075 — non i ~4 200 di media che `18` assumeva.
+
+**Il costo di una passata**: **12,4 milioni di `token`** con la quota corta di D142,
+contro i 42 milioni preventivati. **La corsa costa circa un terzo di quanto scritto.**
+
+## 6. La ricetta del 9B, e l'unica differenza che non e' una riga di comodo
+
+`ai/18` §3 conta 25-30 GB per una LoRA a 16 bit sul 9B, ma quel conto assume 4-5 mila
+`token`. A **6 144** con due esempi per lotto le attivazioni crescono e una A6000 da
+48 GB va stretta. **Un esempio per lotto e il doppio di accumulo** tengono il lotto
+efficace a 32 — che e' cio' che conta per il gradiente — e si paga in **tempo**, non in
+qualita'.
+
+E `corri.sh` stampava `FROM qwen3.5:4b` anche per il 2B e il 9B. La base ora la dichiara
+la ricetta: **un adapter attaccato alla taglia sbagliata e' un guasto che non si
+annuncia** — il modello parte, risponde, e sbaglia in modo plausibile.
+
+## 7. Cosa NON e' stato fatto, ed e' il prossimo passo vero
+
+- **Nessuna corsa e' stata eseguita.** Zero dollari spesi. Il primo passo e'
+  `corri.sh fumo`: 500 esempi su A6000, ~$2, e non misura la copertura — verifica che la
+  catena intera giri (dataset → Axolotl → adapter → GGUF → `ollama`).
+- **I tre cancelli di `ai/21` §1 vanno riletti prima**, non dopo: il contratto dev'essere
+  fermo, la **linea di partenza dev'essere fresca** (oggi e' 39/54 del 6 agosto, ed e'
+  precedente a D144), e il catalogo servito dev'essere quello vero.
+- Il rapporto di copertura **si legge prima di spendere**, ed e' `corri.sh` stesso a
+  stamparlo per primo.
+
+## 8. Cosa e' cambiato su disco
+
+Quattro commit: il generatore, la famiglia dei raffinamenti, il dataset vero con le
+ricette e la corsa, la ricetta del 9B. **Nessuna decisione nuova nel registro**: la
+sessione e' l'esecuzione di D142 e D143, gia' deliberate in `00` §47.
+
+**Verifiche: 572 test in zona pura** (erano 568), **263 Odoo**, `./manage.sh check`
+verde.
+
+---
+
+# Stato all'8 agosto 2026 — il dataset citava frasi che non aveva detto
+
+*Sessione partita da una domanda semplice — «questo dataset basta per arrivare al 95%?»
+— e finita con un difetto che nessuno cercava. La risposta alla domanda e' **no**, ed e'
+scritta in §1. Il difetto e' in §2, e vale piu' della risposta.*
+
+## 1. La risposta alla domanda: no, e perche'
+
+Il `dataset` del 7 agosto insegnava la **grammatica** del contratto, non la **lingua**
+degli utenti. Analogia: e' un cameriere che conosce tutti i piatti e sa scrivere una
+comanda, ma ha sentito i clienti ordinare sempre con le stesse sette frasi. Il primo che
+dice *«mi porti i cinque piu' cari»* invece di *«fammi vedere X ordinati per prezzo solo
+i primi 5»* lo spiazza.
+
+Quattro misure, tutte sul dataset vero:
+
+| | 7 agosto |
+|---|---|
+| cornici per operazione (modi di dire la stessa cosa) | `add_order` **2** su 1 081 esempi, `add_field` **1** su 50, `remove_group` **1** su 50 |
+| quota delle 4 aperture piu' comuni | **51%** |
+| termini per attributo | **1**, su tutti e 123 363 |
+| mediana degli attributi per catalogo | **9**, contro i 27-60 che il prodotto serve |
+
+L'ordine delle parole era **fisso**: entita' -> condizioni -> misure -> gruppi ->
+ordinamento -> campi -> limite, in tutti e 9 500 gli esempi. Mai un'inversione, mai
+un'ellissi, mai un preambolo.
+
+**Il generatore lo diceva gia' di se'**, nel docstring di `verbalizza`: *«una frase un
+po' piu' piatta... La ricchezza la portano le 918 frasi del corpus e — soprattutto — gli
+enunciati veri di D85, che nessun generatore sostituisce»*. Era vero, ed e' rimasto vero.
+
+## 2. Il difetto che la domanda ha fatto emergere
+
+**Il 13,56% delle provenienze citava parole che nella frase non c'erano** — 2 484 su
+18 316.
+
+    [set_target]  provenienza='dipendenti'           frase='vorrei vedere dipendente ...'
+    [set_fields]  provenienza='mostrami anche X e Y' frase='... con X e Y'
+
+Causa: `envelope_di` e `verbalizza` chiamavano `_detto()` **due volte in modo
+indipendente**. Due sorteggi sullo stesso elenco di sinonimi, due parole diverse.
+
+**Perche' conta piu' di tutto il resto.** §10.3 definisce la provenienza come *il
+frammento della frase che ha prodotto l'operazione*, e **D105** (una condizione nominata
+non fondata nel proprio frammento e' rifiutata), **D119** e **D144** ci verificano sopra
+in servizio. Un dataset con provenienze inventate insegna al modello a produrre
+esattamente cio' che le tre reti bocciano: **il prodotto rifiuterebbe la risposta che
+l'addestramento gli ha insegnato a dare**.
+
+**Perche' era invisibile.** Finche' ogni attributo aveva **un termine solo**, due
+sorteggi dallo stesso elenco davano sempre la stessa parola. Il difetto era gia' scritto
+e aspettava i sinonimi per manifestarsi — cioe' proprio il lavoro che stavamo per fare.
+Aggiungere i sinonimi senza accorgersene lo avrebbe portato dal 13% a oltre il 40%.
+
+E' la stessa famiglia di §38 (codice dichiarato, provato e non collegato) e di §46: **una
+cosa che funziona per un motivo che non e' quello per cui dovrebbe funzionare**.
+
+## 3. Cosa e' cambiato, e di quanto
+
+| | 7 agosto | 8 agosto |
+|---|---|---|
+| **provenienze scollegate** | **2 484 / 18 316 = 13,6%** | **0 / 18 526** |
+| mediana attributi per catalogo | 9 | **13** |
+| esempi con >= 27 attributi | 11% | **21%** |
+| esempi con <= 10 attributi | 61% | **42%** |
+| termini per attributo | `{1: 123363}` | `{1: 134008, 2: 25969, 3: 2183, 4: 1139}` |
+| parole distinte nelle frasi | 3 016 | 3 235 |
+| quota delle 4 aperture piu' comuni | 51% | **20%** |
+| cornici per operazione, la piu' povera | 1 | **5** |
+
+Ampiezza tenuta: **287 entita' su 328**, entita' piu' rappresentata allo **0,76%** contro
+il tetto dell'1,5% di **D143** (il dataset si sovra-genera 4:1 e si sceglie per copertura).
+Copertura invariata: op 22/22, tempo 22/22, kind 6/6, aggregazione 6/6, nota_portata 5/5.
+
+### Le quattro riparazioni
+
+**La `Dizione`** — le parole di un esempio si scelgono **una volta sola**, e la frase e
+l'envelope le leggono. Il frammento **e'** il pezzo di frase: non gli somiglia, e' lo
+stesso oggetto. E una rete in §6, `provenienze_scollegate`, rifiuta l'esempio se una
+provenienza non e' contenuta nella frase — perche' e' la riparazione a poter tornare
+indietro, non il difetto.
+
+**Le cornici** — da una a cinque o piu' per operazione, piu' l'ordine delle parole libero
+nel 40% degli esempi e il limite in testa nel 25% (*«mostrami i primi 5 clienti ordinati
+per fatturato»*, che prima era impossibile). Costa **zero**: nessun esempio in piu',
+nessun `token` in piu' per passata. Si moltiplicano i modi di dire, non le cose dette.
+
+**I sinonimi meccanici** — le due trasformazioni che non inventano niente: la
+punteggiatura (`E-mail` -> `email`, `e mail`) e la parola di servizio (`Data creazione`
+-> `data di creazione`). Con una guardia contro le collisioni: una variante che coincide
+col termine di un altro attributo dello stesso catalogo non e' un sinonimo, e' un'
+ambiguita'. Nel 50% dei casi la variante entra **anche** nel catalogo mostrato, nell'altro
+50% resta solo nella frase — e li' il modello deve fare il ponte da solo, che e' il
+compito vero.
+
+**La taglia del catalogo** — quattro fasce pesate invece del sorteggio uniforme, piu' il
+peso sulla taglia dell'entita' (radice quadrata: rapporto 3 a 1 fra la piu' grande e la
+piu' piccola).
+
+## 4. Cio' che non e' arrivato dove doveva, detto com'e'
+
+**La mediana degli attributi e' 13, non i 25-30 che avevo indicato.** Il tetto non e' il
+campionatore, e' l'atlante: solo il **26%** delle entita' Odoo ha almeno 27 attributi, e
+la mediana per entita' e' 12. Per fare cataloghi grandi avrei dovuto usare sempre le
+stesse otto tabelle grosse, e allora il modello avrebbe imparato **quelle otto** invece
+del mestiere — cioe' rotto l'ampiezza che D143 protegge.
+
+Meglio un libro un po' facile ma vario che uno difficile e ripetitivo. Ma **21% contro i
+27-60 che il prodotto serve resta un divario reale**, e per chiuderlo serve un atlante
+diverso, non un campionatore diverso.
+
+**E i sinonimi veri non ci sono.** Le regole meccaniche arrivano da `E-mail` a `email`,
+non da `E-mail` a `posta` — `creat` e `creazion` sono radici diverse, e nessuna regola ci
+arriva. Quelli sono **D108** (il registro delle voci approvate del dizionario), sono
+mezza giornata di lavoro a mano, e sono **P4b**: la cosa rimasta che sposta di piu' il
+risultato sulle domande vere.
+
+## 5. Le prove, che non esistevano
+
+`genera_dataset.py` non aveva **nessuna verifica automatica**. Ora ha
+`tools/finetuning/tests/test_generatore.py`: **17 prove**, dentro `./manage.sh check`.
+Ogni controllo ne ha una che lo mostra **scattare** e una che lo mostra **non scattare** —
+un controllo visto solo passare non e' un controllo, e' una decorazione.
+
+**E hanno subito preso due cose che l'occhio non aveva visto:**
+
+1. **Il mio controllo passava a vuoto.** Confrontavo per sottostringa senza spazi di
+   guardia, quindi `mail` risultava contenuto in `email`: il controllo mentiva proprio
+   sui casi che doveva prendere.
+2. **Enum impronunciabili.** Tre esempi su 40 000 avevano per valore l'operatore `<` o
+   `>`, e producevano *«cerca regole prezzo di consegna >»*. Corretto **alla fonte**
+   secondo **D85** (si corregge il generatore, non i suoi prodotti), non lasciato allo
+   scarto.
+
+E la prima prova a volume ridotto ha mostrato due difetti di lingua che nessuna misura
+avrebbe preso: *«transazione della di pagamento»* (preposizione doppia su un'etichetta
+che ne aveva gia' una) e *«Work of Order»* (la regola italiana applicata all'inglese).
+Ora `di` e' l'unica preposizione italiana ammessa — le altre chiedono genere e numero,
+che su 333 entita' non sappiamo — e l'inglese non ne prende nessuna.
+
+## 6. La cosa che credevamo mancasse, e c'e' gia'
+
+Avevo scritto che manca **un esame scritto da qualcun altro**, e che senza quello il 95%
+non e' verificabile. La prima meta' e' sbagliata: **l'esame esiste**.
+
+E' il **corpus fondativo** — 1 200 casi in `ai/corpus/`, scritti da un generatore
+**diverso**, con un lessico compilato a mano. Parla un'altra lingua:
+
+| il dataset dice | il corpus dice |
+|---|---|
+| *«fammi vedere contatti con Citta' uguale a Roma»* | *«estrai anagrafiche clienti operativi raggruppati per comune»* |
+| *«mostrami prodotti con quantita' sopra 5000»* | *«dammi articoli con giacenza almeno 5000 attivi»* |
+| *«voglio vedere ordini»* | *«tirami fuori prelievi da consegnare»* |
+
+`anagrafiche clienti`, `giacenza`, `prelievi`, `comune`: parole d'ufficio, non etichette
+Odoo. Ci sono perfino i refusi voluti (`cleinti`). E il modello base ci fa **75,8%**
+(misura del 4 agosto), quindi il confronto e' gia' apparecchiato.
+
+Resta vero che il corpus e' **sintetico** — **D86** lo dichiara e per questo non e'
+sigillabile — e che copre 8 entita' contro le 287 del dataset. Non sostituisce D85. Ma
+come secondo esame, indipendente dal generatore che ha scritto il libro di studio, e'
+molto meglio di niente ed e' **gia' pagato**.
+
+## 7. Il 95%, e cosa mi aspetto davvero
+
+Il numero non ha una misura sotto: e' un desiderio, non una previsione. I fatti sono
+39/54 (72%) sulla batteria, **prima di D144**, e 75,8% sul corpus col modello base.
+
+Previsione, da misurare e non da credere:
+
+| esame | previsione | vale? |
+|---|---|---|
+| `aida_test_mai_viste` (applicazioni nuove, frasi nostre) | 90-96% | **no** — misura lo schema, non la lingua |
+| batteria sul campo, 54 frasi | 45-48 su 54 (83-89%) | in parte |
+| corpus, 1 200 casi con parole d'ufficio | **e' quello che risponde alla domanda** | si' |
+
+**Il 95% su domande di un cliente vero non lo vedo**, e preferisco scriverlo prima di
+spendere invece che dopo.
+
+## 8. Cosa e' cambiato su disco
+
+- `tools/finetuning/genera_dataset.py` — `Dizione`, `CORNICI`, `RAFFINAMENTI_DETTI`,
+  `varianti_meccaniche`, `FASCE_CATALOGO`, peso sulla taglia dell'entita', e la rete
+  `provenienze_scollegate` in §6
+- `tools/finetuning/tests/` — **nuovo**, 17 prove
+- `manage.sh` — le prove del generatore entrano in `check`
+- `data/*.jsonl` e `data/copertura.txt` — rigenerati (i `.jsonl` non sono in git: si
+  rigenerano con `--genera 40000 --bersaglio 10000`)
+
+**Nessuna decisione nuova nel registro.** Le riparazioni applicano D105, D143 e D85 a
+codice che gia' avrebbe dovuto rispettarli; la sola cosa che potrebbe meritare una
+delibera e' la quota 50/50 fra varianti dentro e fuori dal catalogo, e per ora e' una
+costante dichiarata nel generatore con la sua argomentazione.
+
+**Verifiche: 51 + 17 + 572 test, `./manage.sh check` verde.**
+
+## 9. Da dove si riprende
+
+1. **Committare**: il codice e il dataset rigenerato non sono ancora commessi.
+2. **Rifare la linea di partenza** — `./manage.sh campo db`. Senza, dopo la corsa non si
+   sapra' se il movimento viene dal fine tuning o da D144. E' pesarsi dopo la dieta
+   usando la foto dell'anno scorso.
+3. **`corri.sh fumo`** (~$2): non misura niente, verifica che i tubi siano collegati.
+4. **P4b, D108** — mezza giornata di sinonimi a mano, prima delle corse vere. E' l'unica
+   cosa rimasta che sposta il risultato sulle domande vere, e costa meno di una corsa
+   sbagliata.
+5. Poi **4B e 2B**, e le **due** misure di P5c.

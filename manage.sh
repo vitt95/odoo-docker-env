@@ -175,6 +175,9 @@ cmd_check() {
   python3 "${PROJECT_ROOT}/tools/arch/run.py"
   log "Tests of the checks themselves..."
   python3 -m unittest discover -s "${PROJECT_ROOT}/tools/arch/tests" -t "${PROJECT_ROOT}"
+
+  log "Tests of the dataset generator (fine tuning)..."
+  python3 -m unittest discover -s "${PROJECT_ROOT}/tools/finetuning/tests" -t "${PROJECT_ROOT}"
   log "Contract, pure zone (no Odoo, no database)..."
   python3 "${PROJECT_ROOT}/tools/pure/run.py"
   log "Foundational corpus against the contract..."

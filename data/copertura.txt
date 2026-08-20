@@ -2,8 +2,8 @@ Copertura del dataset di addestramento (D143)
 
   generati                  40000
   scelti                    10000  (addestramento + validazione)
-  tenuti fuori              2518  (applicazioni mai viste)
-  copertura satura a        295 esempi
+  tenuti fuori              2255  (applicazioni mai viste)
+  copertura satura a        297 esempi
 
   Cosa vuol dire, e cosa NON vuol dire.
   E' il punto oltre il quale nessun esempio porta una FORMA nuova — una
@@ -15,12 +15,12 @@ Copertura del dataset di addestramento (D143)
   che questo numero non misura apposta.
 
   scarti
-    tetto_modello_frase          18766
-    troppo_lungo                 1329
-    doppione_esatto              403
-    doppione_vicino              305
-    intento_non_costruibile      272
-    raffinamento_non_costruibile 24
+    tetto_modello_frase          20170
+    troppo_lungo                 1906
+    intento_non_costruibile      182
+    doppione_vicino              73
+    raffinamento_non_costruibile 15
+    doppione_esatto              7
 
   simboli del vocabolario chiuso (minimo 50 per simbolo)
     op               22/22
@@ -34,9 +34,9 @@ Copertura del dataset di addestramento (D143)
     applicazioni         57   tenute fuori: 6
 
   lunghezza dell'esempio in gettoni (stima, forma lunga del prompt)
-    mediana 3044   90° 3690   99° 4658   massimo 6075
+    mediana 3186   90° 3976   99° 4816   massimo 6036
     il sequence_len della ricetta e' 6144: gli esempi oltre sono scartati, non troncati
-    gettoni totali per passata, tutti con il prompt lungo  31,860,190
-    gettoni totali per passata, con la quota corta di D142  12,427,690
+    gettoni totali per passata, tutti con il prompt lungo  33,360,021
+    gettoni totali per passata, con la quota corta di D142  13,927,521
     lingua del catalogo  en 11%  inventata 11%  it 78%
-    famiglie             aggregazione 12%  presentazione 17%  raffinamento 12%  rifiuto 15%  semplice 27%  tempo 16%
+    famiglie             aggregazione 11%  presentazione 17%  raffinamento 13%  rifiuto 17%  semplice 25%  tempo 16%
