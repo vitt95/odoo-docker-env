@@ -72,8 +72,13 @@ alziamo lo alziamo sopra una cosa che non regge.
 non sulle misure, e non aspettano niente. **P5 e' chiuso il 7 agosto**: il `dataset`
 esiste ed e' commesso. Quello che resta e' **P5b**, la corsa, e la sua unica dipendenza
 vera non e' tecnica — e' che la linea di partenza contro cui si misurera' il modello
-addestrato sia **piu' recente dell'ultima delibera che cambia le risposte** (oggi non lo
-e': 39/54 e' del 6 agosto, D144 e' della sera stessa).
+addestrato sia **piu' recente dell'ultima delibera che cambia le risposte**.
+
+**Quella dipendenza e' soddisfatta dal 21 agosto**: la linea di partenza e' **47 su 59
+(79,7%)**, posteriore a D144 e rifatta due volte con lo stesso risultato, su un ambiente
+per la prima volta verificato a 8192 serviti. Vedi «Stato al 21 agosto 2026». E la stessa
+sessione ha riordinato la lista: **P4b non e' piu' la leva piu' corta** — su 45 frasi vere
+non resta un solo fallimento lessicale, mentre **8 fallimenti su 12 sono aggregazioni**.
 
 **L'8 agosto e' entrato in mezzo un lavoro che non era in lista** (P5a), e non era una
 rifinitura: il dataset insegnava a **citare frammenti che nella frase non c'erano**, nel
@@ -2168,3 +2173,133 @@ costante dichiarata nel generatore con la sua argomentazione.
    cosa rimasta che sposta il risultato sulle domande vere, e costa meno di una corsa
    sbagliata.
 5. Poi **4B e 2B**, e le **due** misure di P5c.
+
+# Stato al 21 agosto 2026 — l'entita' che nessuno aveva nominato
+
+*Sessione partita da una domanda dell'Architect — «perche' questa frase non funziona?»
+— con una traccia incollata in chat. La risposta e' in §2. Ma la prima cosa trovata non
+era nel prodotto: era sotto, ed e' §1.*
+
+## 1. Il context servito era 4096, e il rimedio scritto qui era sbagliato
+
+Primo controllo della sessione, quello che `restart` dice di fare per primo:
+
+    curl -s http://127.0.0.1:11434/api/ps | grep context_length   ->  4096
+
+La riga che stava qui diceva di riavviare l'applicazione dopo un `launchctl setenv`.
+**Non funziona**, e l'ho verificato leggendo l'ambiente del processo vero (`ps eww`):
+Ollama.app avvia `ollama serve` con un ambiente suo, dentro c'erano `OLLAMA_MODELS` e
+`OLLAMA_NO_CLOUD` e **non** `OLLAMA_CONTEXT_LENGTH`. Ho provato anche l'impostazione nel
+database dell'applicazione (`settings.context_length`, portata a 8192): vale per la sua
+chat, `/api/ps` continuava a dire 4096. L'unico modo verificato e' avviare il server a
+mano con la variabile nel suo ambiente. La sezione dei fatti d'ambiente e' corretta.
+
+**Quanto costava.** Il turno che l'Architect ha portato riportava `prompt_tokens: 2050`,
+che non e' la misura del prompt: e' **la firma del taglio**, documentata da tre settimane
+in `pipeline.py:360`. La stessa domanda, con il server a 8192, ne riporta **4388**. Il
+prompt arrivava al modello tagliato a meta' del catalogo, e nessun controllo diceva
+niente — il prodotto rispondeva `not_understood`, che assomiglia a un limite del modello.
+**Il valore dichiarato dal profilo non e' una prova di niente: la prova e' `/api/ps`.**
+
+## 2. La frase, e i due difetti sotto
+
+    dammi il numero di lead creati quest'anno        -> operations, 39 record
+    mostrami le vendite con totale superiore a 2000  -> not_understood, 67,7 s
+
+La seconda **nomina il proprio soggetto**, e ha ricevuto il catalogo dei lead. Traccia:
+
+    phase_a  {"resolved": false, "entity": null, "known": "crm_lead"}
+    phase_c  {"entity": "crm_lead", "attributes": 60}
+
+*Vendite* non era fra i nomi di `sale_order`, e la raccolta di **D126** non poteva
+trovarla: il menu radice *Vendite* non ha azione e sotto porta a quattro modelli diversi.
+Guardando l'installazione quella parola non ha **una** risposta; una persona invece lo sa.
+
+Ma il difetto vero non era la parola: era che **la fase B, che esiste apposta per questo
+caso, era irraggiungibile** appena una conversazione aveva un bersaglio. Tutto in
+`00` §49: **D145** (un raffinamento che non si capisce si ricrede, una volta sola),
+**V-D93-2** (una parola dentro il nome di un attributo non nomina un'entita' — l'ha presa
+una prova prima del prodotto, quando *«i lead per addetto vendite»* ha smesso di
+risolvere), **D146** (l'entita' ereditata si dichiara dedotta).
+
+**§49.4 e' la parte che conta di piu'.** D145 si attacca a `not_understood`, cioe' a un
+fallimento visibile. Misurato lo stesso giorno: *«mostrami le anagrafiche di Roma»*, dopo
+una domanda sui lead, risponde **un record di lead** — il modello ce l'ha fatta a leggere
+la frase sul catalogo sbagliato, i lead una citta' ce l'hanno, e non c'e' nessun rifiuto a
+cui attaccare una seconda lettura. E' **D29**, ed e' la meta' pericolosa della classe. D146
+non la ripara: la rende **leggibile**, ed e' il massimo che si possa fare per una parola
+che il dizionario non ha ancora.
+
+## 3. La linea di partenza, e cosa dice davvero
+
+**47 su 59 (79,7%)**, zero saltati, ambiente verificato a 8192. Rifatta dopo le tre
+delibere: **identica**, famiglia per famiglia. Con un modello non deterministico due giri
+uguali sono di per se' un segnale.
+
+| famiglia | |
+|---|---|
+| intenti | 11/18 — 61,1% |
+| operatori | 11/12 — 91,7% |
+| date | 23/24 — 95,8% |
+| limiti | 2/5 — 40,0% |
+
+**Non confrontabile con il 39/54 del 6 agosto**: la popolazione e' cambiata (59 casi
+contro 54). Questa e' la linea buona — e' posteriore a D144, e serve due volte: per il
+fine tuning (P5b) e come metro del lavoro sulle aggregazioni.
+
+**I 12 fallimenti, per causa** — ed e' il numero che riordina la lista:
+
+| causa | quanti |
+|---|---|
+| **aggregazioni non costruite** | **8** |
+| rifiuti mancati (risponde a cio' che non sa esprimere) | 2 |
+| buchi gia' dichiarati (`inizia per`, HAVING) | 2 |
+| **lessicali** | **0** |
+
+I due rifiuti mancati sono i piu' gravi perche' non si vedono: *«i secondi 20 lead»*
+risponde **39 record** invece di rifiutare, *«i lead che non sono di milano»* risponde
+invece di rifiutare. Un buco dichiarato che non rifiuta e' una risposta sbagliata con
+l'aria di essere giusta.
+
+## 4. I sinonimi: il meccanismo si', le parole no
+
+Avevo scritto che i sinonimi erano la leva piu' corta (P4b). **La misura dice di no**, e
+la lista va riordinata.
+
+Passate alla fase A le **45 frasi distinte** che il prodotto ha davvero ricevuto: 36
+riconosciute, e le altre 9 — *«solo quelli vinti»*, *«ordinameli per email»*, *«Data
+creazione»* — non nominano nessuna entita', cioe' sono raffinamenti, dove la fase A muta
+e' il comportamento voluto. **Dopo *vendite*, nessuna frase vera resta senza entita' per
+colpa di una parola mancante.**
+
+Quindi: `tools/dizionario/pacchetti.py` (zona pura, 9 prove) organizza le voci per modulo
+Odoo, solo L1, caricate se il modulo e' installato, con il **rilevatore di collisioni** —
+provato sul percorso vero: *ordini* e *vendite* chiesti per `crm_lead` vengono bloccati e
+nominati. E dentro c'e' **una parola sola**, perche' riempirli adesso vorrebbe dire
+inventare. Una prova obbliga chi ne aggiunge a portare la propria misura.
+
+**E non si copiano dal corpus fondativo**, per quanto sia allettante: e' l'unico esame
+indipendente che abbiamo, e un modello misurato su parole che gli abbiamo insegnato
+apposta non e' piu' misurato.
+
+Le stesse voci alimentano il generatore del dataset: entrano nel **catalogo** dell'esempio
+italiano, mai nei pesi da sole (`ai/18` §2).
+
+## 5. Da dove si riprende
+
+1. **Le aggregazioni** — 8 fallimenti su 12. Isolate dal 4 agosto (*«fronte diverso,
+   adesso isolato invece che sepolto sotto il rumore»*) e da allora non le ha toccate
+   nessuno. E' la cosa che sposta di piu' su questa batteria;
+2. **I due rifiuti mancati** — pochi, invisibili, e sono D29;
+3. **Le conversazioni nella batteria** (P3c) — oggi tutte e 59 le frasi parlano di
+   `crm_lead` e sono tutte prime domande. E' il motivo per cui questa misura non ha
+   potuto vedere ne' D145 ne' i sinonimi: non e' piu' «sarebbe utile», ci ha nascosto
+   due difetti;
+4. **Il controllo sul context servito** — `prompt_tokens` accanto a `context_window` sono
+   gia' nella diagnostica e **nessuno fallisce** quando divergono. E' la raccomandazione
+   rimasta aperta dal 5 agosto, e oggi ha il suo secondo caso;
+5. **Il `LaunchAgent`** per il context: oggi il server gira avviato a mano e muore al
+   riavvio del Mac.
+
+**Verifiche della sessione**: pure 574, Odoo 269 (erano 267), generatore 20, pacchetti 9,
+corpus 600/696 sulla fase A con **determinazioni sbagliate 0**, copertura 100%.
