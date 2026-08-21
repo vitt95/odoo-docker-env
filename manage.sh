@@ -53,6 +53,7 @@ Usage: ./manage.sh <command> [args]
   ${C_BOLD}upgrade${C_RESET} <db> [mods]    Upgrade modules (default: all) on <db>
   ${C_BOLD}loadtest${C_RESET} <db> [n] [s]   Isolation proof of D27 on prefork workers
   ${C_BOLD}campo${C_RESET} <db> [famiglia]  Batteria sul campo: le frasi di ai/16 col modello vero
+  ${C_BOLD}ollama${C_RESET} [stato]         Avvia il fornitore locale con la finestra giusta
   ${C_BOLD}atlante${C_RESET} <db>           Raccoglie il vocabolario di tutte le app (fine tuning)
   ${C_BOLD}dizionario${C_RESET} <db> [prova] Scrive i sinonimi delle date nel registro delle voci
   ${C_BOLD}backup${C_RESET}                 Dump all databases + filestore to ./backups
@@ -114,9 +115,53 @@ cmd_campo() {
     -e "CAMPO_SCRIVI=${CAMPO_SCRIVI:-}" \
     odoo python3 /opt/odoo/core/odoo-bin shell -c /etc/odoo/odoo.conf -d "$db" \
     --log-level=warn \
-    < <(cat "${PROJECT_ROOT}/tools/campo/frasi.py" \
+    < <(cat "${PROJECT_ROOT}/tools/campo/verifica_finestra.py" \
+           "${PROJECT_ROOT}/tools/campo/frasi.py" \
            "${PROJECT_ROOT}/tools/campo/batteria.py")
   ok "Batteria finita."
+}
+
+cmd_ollama() {
+  # Avvia il fornitore locale con la finestra che il profilo dichiara, e lo verifica.
+  #
+  # Serve perche' `Ollama.app` avvia `ollama serve` con un ambiente suo e **non**
+  # eredita `launchctl setenv`: verificato il 21 agosto 2026 leggendo l'ambiente del
+  # processo vero. L'impostazione `context_length` nel database dell'applicazione vale
+  # per la sua chat, non per il server. L'unico modo e' avviarlo con la variabile.
+  #
+  # Senza, il server ne serve 4096, i prompt arrivano tagliati a meta' catalogo e il
+  # prodotto risponde `not_understood`: sembra un limite del modello. La batteria adesso
+  # si rifiuta di misurare in quel caso, ma il prodotto no.
+  #
+  #   ./manage.sh ollama            avvia (o riavvia) e verifica
+  #   ./manage.sh ollama stato      dice solo che cosa serve adesso
+  local finestra="${OLLAMA_CONTEXT_LENGTH:-8192}"
+  local servita
+  servita="$(curl -s --max-time 5 http://127.0.0.1:11434/api/ps \
+    | python3 -c 'import json,sys
+try:
+    modelli = json.load(sys.stdin).get("models") or []
+except Exception:
+    modelli = []
+print(next((str(m.get("context_length")) for m in modelli if m.get("context_length")), ""))' 2>/dev/null || true)"
+
+  if [ "${1:-}" = "stato" ]; then
+    if [ -z "$servita" ]; then
+      warn "Nessun modello caricato: /api/ps non dice niente finche' non arriva una domanda."
+    else
+      log "Il server serve ${servita} gettoni (il profilo ne vuole ${finestra})."
+    fi
+    return 0
+  fi
+
+  log "Fermo Ollama e lo riavvio con OLLAMA_CONTEXT_LENGTH=${finestra}..."
+  osascript -e 'quit app "Ollama"' 2>/dev/null || true
+  sleep 3
+  pkill -f "ollama serve" 2>/dev/null || true
+  sleep 2
+  OLLAMA_CONTEXT_LENGTH="${finestra}" nohup ollama serve > /tmp/ollama-serve.log 2>&1 &
+  sleep 5
+  ok "Avviato. Verifica con: ./manage.sh ollama stato (dopo una domanda qualunque)."
 }
 
 cmd_dizionario() {
@@ -193,6 +238,8 @@ cmd_check() {
   python3 -m unittest discover -s "${PROJECT_ROOT}/tools/finetuning/tests" -t "${PROJECT_ROOT}"
   log "Tests of the dictionary packs..."
   python3 -m unittest discover -s "${PROJECT_ROOT}/tools/dizionario/tests" -t "${PROJECT_ROOT}"
+  log "Tests of the field battery's own guard..."
+  python3 -m unittest discover -s "${PROJECT_ROOT}/tools/campo/tests" -t "${PROJECT_ROOT}"
   log "Contract, pure zone (no Odoo, no database)..."
   python3 "${PROJECT_ROOT}/tools/pure/run.py"
   log "Foundational corpus against the contract..."
@@ -368,6 +415,7 @@ case "$cmd" in
   upgrade)           cmd_upgrade "$@" ;;
   loadtest)          cmd_loadtest "$@" ;;
   campo)             cmd_campo "$@" ;;
+  ollama)            cmd_ollama "$@" ;;
   dizionario)        cmd_dizionario "$@" ;;
   atlante)           cmd_atlante "$@" ;;
   backup)            cmd_backup "$@" ;;

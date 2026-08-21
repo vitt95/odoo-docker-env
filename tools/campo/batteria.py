@@ -28,8 +28,11 @@ Niente, salvo che glielo si chieda con `CAMPO_SCRIVI=1`. Al termine la transazio
 annullata: una misura non deve lasciare cinquanta turni in una banca dati di lavoro.
 """
 
+import json
 import os
 import time
+import urllib.error
+import urllib.request
 
 from odoo.addons.nli_core.contract import state as state_module
 from odoo.addons.nli_dispatch.runtime import pipeline as pipeline_module
@@ -173,6 +176,30 @@ def _differenze(attesa, esito):
     return differenze
 
 
+def _finestra_servita(endpoint: str):
+    """Quanti gettoni il server dice di servire davvero, o `None` se non sa dirlo.
+
+    **Specifico di `ollama`, e sta qui e non nel prodotto proprio per questo**: `/api/ps`
+    non e' nel contratto dell'adattatore (D78), e infilarcelo vorrebbe dire far dipendere
+    la catena da un fornitore. Uno strumento di misura invece puo' — e deve — sapere
+    contro che cosa sta misurando.
+    """
+    base = (endpoint or "").rstrip("/")
+    if not base:
+        return None
+    if base.endswith("/v1"):
+        base = base[:-3]
+    try:
+        with urllib.request.urlopen(f"{base}/api/ps", timeout=5) as risposta:
+            caricati = json.loads(risposta.read()).get("models") or []
+    except (urllib.error.URLError, ValueError, OSError):
+        return None
+    for modello in caricati:
+        if modello.get("context_length"):
+            return int(modello["context_length"])
+    return None
+
+
 def esegui(env, famiglia=None, massimo=None, scrivi=False):
     dispatcher = env["nli.dispatcher"]
     semantica = env["nli.semantics"]
@@ -186,6 +213,28 @@ def esegui(env, famiglia=None, massimo=None, scrivi=False):
 
     print(f"\n  perimetro   {len(scope)} entita'")
     print(f"  finestra    {finestra} gettoni dichiarati")
+
+    # **Il numero dichiarato non e' una prova.** Il 20 agosto 2026 il profilo diceva
+    # 8192 e il server ne serviva 4096: i prompt arrivavano tagliati a meta' catalogo,
+    # il prodotto rispondeva `not_understood` e la cosa somigliava a un limite del
+    # modello. La firma sta in `pipeline.py:360` da tre settimane e nessun controllo la
+    # leggeva. Una misura presa contro una finestra sbagliata non e' una misura
+    # imprecisa: e' **carta straccia che sembra un risultato**, ed e' il secondo modo di
+    # mentire di `ai/restart` §4.
+    profilo = env["nli.profile"].search([("state", "=", "active")], limit=1)
+    servita = _finestra_servita(profilo.endpoint if profilo else "")
+    decisione = esito_della_finestra(finestra, servita)  # noqa: F821 — concatenato
+    if decisione == NON_VERIFICABILE:  # noqa: F821 — concatenato
+        print(f"  {GIALLO}servita     non verificabile{FINE} — il fornitore non dice "
+              f"quanto serve, e la misura va letta sapendolo")
+    elif decisione == FERMATI:  # noqa: F821 — concatenato
+        print(f"\n  {ROSSO}Il server serve {servita} gettoni, il profilo ne dichiara "
+              f"{finestra}{FINE}.\n  I prompt arriverebbero tagliati e i fallimenti "
+              f"sembrerebbero del modello.\n  Si riparte il fornitore con la finestra "
+              f"giusta e si rilancia — `ai/restart` §1 del 21 agosto.\n")
+        return []
+    else:
+        print(f"  servita     {servita} verificati sul fornitore")
     print(f"  casi        {len(casi)}"
           f"{f' (famiglia {famiglia})' if famiglia else ''}\n")
 
