@@ -47,6 +47,7 @@ from ..contract.vocabulary import (
     TEMPORAL_OPTIONAL_KEYS,
     TEMPORAL_PARAMETER_RANGE,
     TEMPORAL_REQUIRED_KEYS,
+    IDENTITY_REFERENCES,
     VALUE_KINDS,
     VALUE_OPTIONAL_KEYS,
     VIEWS,
@@ -491,6 +492,18 @@ def _level2_value(value: object, path: str, out: _Collector) -> None:
         return
     kind = value.get("kind")
     _check_symbol(kind, frozenset(VALUE_KINDS), "unknown_value_kind", f"{path}.kind", out)
+    if kind == "identity":
+        # Insieme chiuso come i periodi (D147): oggi `current_user` e nient'altro. Un
+        # riferimento inventato — `"boss"`, `"my_team"` — e' un simbolo sconosciuto e si
+        # ferma al livello 2, non al risolutore: e' la stessa ragione per cui i periodi
+        # sono un vocabolario chiuso e non testo libero.
+        _check_symbol(
+            value.get("reference"),
+            IDENTITY_REFERENCES,
+            "unknown_identity_reference",
+            f"{path}.reference",
+            out,
+        )
     if kind == "temporal":
         expression = value.get("expression")
         _check_symbol(

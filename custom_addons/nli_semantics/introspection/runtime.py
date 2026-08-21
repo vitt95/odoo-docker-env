@@ -176,7 +176,12 @@ def semantics(env, scope) -> Semantics:
                 # about. Leaving it bindable would let a query resolve and then fail
                 # at execution, which is the late failure C3 exists to prevent.
                 continue
-            bindings[ref] = _binding(kind="attribute", field=name, type_=contract_type)
+            # **Chi c'e' dall'altra parte**, quando c'e' qualcuno. `fields_get` lo dice
+            # gia' (`relation` porta il comodello) e finora nessuno lo leggeva: serve
+            # al risolutore per sapere su quali campi `current_user` ha senso.
+            bindings[ref] = _binding(
+                kind="attribute", field=name, type_=contract_type,
+                identity="user" if info.get("relation") == "res.users" else "")
 
     # A named condition has no field: its binding carries the domain its typed
     # condition produces (V-D87-3), computed at every build and never stored. An entry
@@ -221,7 +226,7 @@ def _category_binding(domain):
                                 for part in domain))
 
 
-def _binding(*, kind: str, field: str, type_: str):
+def _binding(*, kind: str, field: str, type_: str, identity: str = ""):
     """Built here rather than imported at module scope for one reason.
 
     `nli_semantics` may import from `nli_core` — the graph allows it — but the import
@@ -230,7 +235,7 @@ def _binding(*, kind: str, field: str, type_: str):
     """
     from odoo.addons.nli_core.resolution.plan import Binding
 
-    return Binding(kind=kind, field=field, type=type_)
+    return Binding(kind=kind, field=field, type=type_, identity=identity)
 
 
 def determine_entity(semantics_: Semantics, utterance: str):

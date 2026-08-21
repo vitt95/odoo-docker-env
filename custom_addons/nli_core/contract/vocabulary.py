@@ -226,7 +226,22 @@ VALUE_KINDS: dict[str, frozenset[str]] = {
     "boolean": frozenset({"value"}),
     "temporal": frozenset({"expression"}),
     "reference": frozenset({"text"}),
+    "identity": frozenset({"reference"}),
 }
+
+#: Chi puo' essere nominato senza dirne il nome. **Insieme chiuso**, come i periodi.
+#:
+#: *«i miei lead»* non e' *«i lead di Vittorio»*: la seconda nomina una persona e va
+#: risolta cercandola, la prima nomina **chi sta chiedendo**, ed e' un fatto che il
+#: modello non deve sapere. Il modello scrive il **simbolo**; l'identita' vera la mette
+#: il risolutore al momento dell'esecuzione, esattamente come fa con `current_year`.
+#:
+#: E' la stessa ragione per cui i periodi sono simboli e non date (D141): una busta che
+#: portasse `user_id = 42` sarebbe una fotografia — vera per un utente e falsa per
+#: chiunque altro rieseguisse la stessa domanda — e per scriverla il modello dovrebbe
+#: **conoscere** l'identificatore di una persona, che non gli e' mai stato mostrato e
+#: che non deve poter indovinare.
+IDENTITY_REFERENCES = frozenset({"current_user"})
 
 #: Optional keys per value kind. `resolver` names a vagueness rule defined in the
 #: dictionary (§9.3): the model declares *that* the value is approximate and
@@ -240,13 +255,14 @@ VALUE_OPTIONAL_KEYS: dict[str, frozenset[str]] = {
     # `year` is here for the named periods of D141; which expressions actually admit
     # it is a level 2 question, `TEMPORAL_OPTIONAL_KEYS`.
     "temporal": frozenset({"n", "date", "from", "to", "year"}),
+    "identity": frozenset(),
     "reference": frozenset(),
 }
 
 #: The value kind each predicate expects. Absent from the table means the
 #: predicate takes no value (`PREDICATES_WITHOUT_VALUE`).
 PREDICATE_VALUE_KINDS: dict[str, frozenset[str]] = {
-    "equals": frozenset({"text", "number", "boolean", "reference"}),
+    "equals": frozenset({"text", "number", "boolean", "reference", "identity"}),
     "contains": frozenset({"text"}),
     "starts_with": frozenset({"text"}),
     "is_one_of": frozenset({"enum", "reference"}),

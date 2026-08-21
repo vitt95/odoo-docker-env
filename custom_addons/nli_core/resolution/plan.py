@@ -44,6 +44,15 @@ class Binding:
     domain: tuple = ()
     #: True when the attribute is stored and can therefore be ordered on.
     sortable: bool = True
+    #: For an attribute: **who is on the other side**, when the relation leads to a
+    #: person. Today one value, `"user"`, meaning *this field says which Odoo user*.
+    #:
+    #: Sta qui e non nel catalogo per una ragione precisa: il catalogo dichiara
+    #: `relation` e si ferma, perche' la zona che decide l'esposizione non deve sapere
+    #: di Odoo (`catalogue/build.py` §126). Il **binding** invece lo costruisce chi Odoo
+    #: lo conosce, e il risolutore ne ha bisogno per rifiutare `current_user` su un
+    #: campo che con gli utenti non c'entra niente.
+    identity: str = ""
 
 
 @dataclass(frozen=True)

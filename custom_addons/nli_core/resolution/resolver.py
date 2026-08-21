@@ -58,6 +58,7 @@ def resolve(
     model: str,
     resolvers: dict | None = None,
     limits: Limits = DEFAULT_LIMITS,
+    actor: int | None = None,
 ) -> Resolution:
     """A state and an instant into an Execution Plan.
 
@@ -71,7 +72,7 @@ def resolve(
     periods: list[tuple[str, str]] = []
 
     domain = _filter_domain(state.get("filter"), bindings, instant, resolvers,
-                            failures, periods)
+                            failures, periods, actor)
     fields = _refs(state.get("fields"), bindings, failures)
     groups = _refs(state.get("group_by"), bindings, failures)
     order = _order(state.get("order_by"), bindings, failures)
@@ -143,12 +144,14 @@ def _measures(section, bindings, failures) -> list[tuple[str, str]]:
     return resolved
 
 
-def _filter_domain(node, bindings, instant, resolvers, failures, periods) -> list:
+def _filter_domain(node, bindings, instant, resolvers, failures, periods,
+                   actor=None) -> list:
     if node is None:
         return []
     if state_module.is_connective(node):
         children = [
-            _filter_domain(child, bindings, instant, resolvers, failures, periods)
+            _filter_domain(child, bindings, instant, resolvers, failures, periods,
+                           actor)
             for child in node.get("conditions", [])
         ]
         children = [child for child in children if child]
@@ -163,10 +166,12 @@ def _filter_domain(node, bindings, instant, resolvers, failures, periods) -> lis
         for child in children:
             domain.extend(child)
         return domain
-    return _condition_domain(node, bindings, instant, resolvers, failures, periods)
+    return _condition_domain(node, bindings, instant, resolvers, failures, periods,
+                             actor)
 
 
-def _condition_domain(condition, bindings, instant, resolvers, failures, periods) -> list:
+def _condition_domain(condition, bindings, instant, resolvers, failures, periods,
+                      actor=None) -> list:
     binding = _binding(condition["ref"], bindings, failures)
     if binding is None:
         return []
@@ -181,6 +186,38 @@ def _condition_domain(condition, bindings, instant, resolvers, failures, periods
 
     field = binding.field
     value = condition.get("value") or {}
+
+    # **L'identita' diventa un numero qui, e solo qui** (D147). Il modello ha scritto
+    # un simbolo — `{"kind":"identity","reference":"current_user"}` — e chi lo trasforma
+    # in un identificatore e' il risolutore, con l'utente che sta davvero chiedendo. E'
+    # la stessa divisione dei periodi: il modello dice *«quest'anno»*, il risolutore sa
+    # che giorno e'.
+    #
+    # Due rifiuti, e sono la ragione per cui la cosa e' sicura:
+    #
+    # * **senza un utente non si indovina.** Se chi ha chiamato non ha passato l'attore
+    #   la condizione non si risolve: meglio un turno che fallisce di uno che filtra
+    #   sull'utente sbagliato;
+    # * **non su un campo qualunque.** `current_user` ha senso solo dove dall'altra
+    #   parte c'e' un utente Odoo, e lo dice il binding, non il modello. Su
+    #   `crm_lead.city` e' un errore, e un errore dichiarato — non un dominio che
+    #   confronta una citta' con il numero 2.
+    if value.get("kind") == "identity":
+        if value.get("reference") != "current_user":
+            failures.append(ResolutionFailure(
+                condition["ref"],
+                f"identity {value.get('reference')!r} has no resolution"))
+            return []
+        if binding.identity != "user":
+            failures.append(ResolutionFailure(
+                condition["ref"],
+                "current_user was asked of an attribute that does not name a user"))
+            return []
+        if actor is None:
+            failures.append(ResolutionFailure(
+                condition["ref"], "current_user has no user to resolve to"))
+            return []
+        return [(field, "=", actor)]
 
     if predicate in ("is_true", "is_false"):
         return [(field, "=", predicate == "is_true")]

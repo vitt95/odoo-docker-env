@@ -4120,3 +4120,86 @@ lui.
 **Cosa non fa.** Non impedisce la risposta sbagliata di §49.4: la rende **leggibile**.
 È il massimo che si può fare per una parola che il dizionario non ha ancora, e va detto
 per non scambiarlo per una riparazione.
+
+## §50 — D147: chi sta chiedendo è un simbolo, non un numero (21 agosto 2026)
+
+*«I miei lead»*. Oggi, sul database vero:
+
+    «i lead assegnati a me»  ->  operations, 26 record, domain [["user_id","!=",false]]
+
+Cioè *«i lead che hanno un commerciale»*. La forma è giusta, il contenuto no, e nessuno
+se ne accorge: è **D29** (la decisione che esiste per rendere impossibile la modalità di
+guasto che non produce errori ma numeri plausibili).
+
+### §50.1 Perché non è «aggiungere una regola al prompt»
+
+La tentazione è mappare *miei* → `user_id`. Il problema è cosa ci si scrive dentro: un
+identificatore. E un identificatore nella busta rompe due cose insieme.
+
+**Sarebbe una fotografia.** La busta è lo stato della conversazione e si rilegge: una che
+porti `user_id = 42` è vera per un utente e falsa per chiunque altro rilegga la stessa
+domanda. È esattamente la ragione per cui i periodi sono simboli e non date (**D141**):
+il modello dice *«quest'anno»*, il risolutore sa che giorno è.
+
+**E il modello dovrebbe conoscere l'identificatore di una persona**, che non gli è mai
+stato mostrato e che non deve poter indovinare.
+
+> **D147 — Chi sta chiedendo si nomina con un simbolo:
+> `{"kind":"identity","reference":"current_user"}`. L'identità vera la mette il
+> risolutore, con l'utente con cui il turno è stato accettato.**
+
+`IDENTITY_REFERENCES` è un **insieme chiuso** come i periodi: oggi `current_user` e nulla
+più. Un riferimento inventato — *`boss`*, *`my_team`* — si ferma al livello 2.
+
+### §50.2 Dove sta la sicurezza, e dove non serviva metterla
+
+Il prompt che ha chiesto questo lavoro teme che *«l'LLM possa forzare lo `user_id` di un
+altro utente per aggirare le autorizzazioni»*. **Non è un rischio che questa architettura
+abbia**, e vale la pena scriverlo invece di costruirci contro una difesa inutile:
+l'esecuzione avviene con l'ambiente del chiamante (**D40**, §3.4 — *il dispatcher non gira
+mai con privilegi propri*), quindi ACL, regole di record e isolamento fra aziende di Odoo
+si applicano **comunque**. Un modello che nominasse un altro utente non aggirerebbe
+niente: chiederebbe i lead di Marco, che è una domanda legittima, e Odoo mostrerebbe solo
+ciò che chi chiede può leggere.
+
+Il rischio vero è un altro, ed è **determinismo**: che *«i miei»* diventi *«di qualcuno»*.
+D147 lo toglie alla radice — il modello non scrive un'identità, ne scrive il nome.
+
+Due rifiuti dichiarati nel risolutore, e sono la decisione:
+
+* **senza un utente non si indovina.** Meglio un turno che fallisce di uno che filtra
+  sull'utente sbagliato — la stessa prudenza di D39, dove senza impronta non si riusa;
+* **non su un campo qualunque.** `current_user` ha senso dove dall'altra parte c'è un
+  utente Odoo, e lo dice il **binding**, non il modello. Il catalogo dichiara `relation` e
+  si ferma, perché la zona che decide l'esposizione non deve sapere di Odoo: è
+  `fields_get` a portare il comodello, ed è la zona che Odoo lo conosce a metterlo nel
+  binding.
+
+### §50.3 Cosa è costruito, e cosa **non** funziona ancora
+
+Costruito e provato: il simbolo nel contratto, il controllo di livello 2 sull'insieme
+chiuso, il `Binding` che sa quando una relazione porta a un utente, la risoluzione con i
+tre rifiuti, e l'utente che arriva da `env.uid` e da nessun'altra parte. Prove pure 579.
+
+**Il modello non lo produce.** Misurato tre volte lo stesso giorno, sul 9B in servizio:
+
+| tentativo | esito su *«mostrami i miei lead»* |
+|---|---|
+| regola in prosa nel prompt | `operations` con **39 record** — «miei» lasciato cadere |
+| + la forma nel blocco della busta | `not_understood` |
+| + un esempio svolto | `not_understood`, **e anche *«my leads»* peggiora** |
+
+Ogni aggiunta ha peggiorato la precedente. È **§46.6** misurato di nuovo: *un testo che il
+modello legge intero mette le regole in concorrenza fra loro*. Le tre aggiunte sono state
+**tolte**, per non perdere il 51/59 che le misure avevano appena guadagnato.
+
+Quindi la conclusione, e non è una resa: **il posto dove si insegna questo non è il
+prompt, è il dataset** (D142). Il generatore copre 22 operazioni su 22 e questo simbolo
+non lo conosce ancora; aggiungerlo lì è il passo che rende D147 raggiungibile, ed è
+lavoro fatto, non lavoro sperato — il generatore esiste, è provato, e costa una corsa.
+
+**Fino ad allora il simbolo è nel contratto e nessuno lo scrive.** Lo dico qui perché è
+esattamente la forma di difetto che questo progetto continua a trovare — codice
+dichiarato e non collegato — e la differenza fra quel difetto e questa decisione sta
+tutta nell'averlo scritto: non è dimenticato, è in attesa del suo produttore, e il
+produttore ha un nome.

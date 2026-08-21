@@ -580,6 +580,13 @@ def _apply_and_present(env, semantics, state, operations, *, catalogue_of,
         bindings=semantics.bindings,
         instant=_instant(env),
         model=model_name,
+        # **L'utente arriva da qui e da nessun'altra parte** (D147). `env.uid` e'
+        # l'identita' con cui il turno e' stato accettato: §3.4 dice che il dispatcher
+        # non gira mai con privilegi propri, e D40 ricostruisce questo ambiente dal
+        # turno. Il modello non la vede, non la scrive e non puo' sostituirla — al
+        # massimo puo' nominare *un'altra persona*, che e' una domanda legittima e che
+        # le regole di record di Odoo filtrano comunque.
+        actor=env.uid,
     )
     if not resolution.resolved:
         trace(collector, "resolution_failures",

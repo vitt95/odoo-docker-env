@@ -277,6 +277,33 @@ class TestLevel2(unittest.TestCase):
         }])
         self.assertIn("unknown_value_kind", codes(structural.validate_envelope(candidate)))
 
+    def test_who_is_asking_is_a_closed_set_too(self):
+        """D147: `current_user` passa, un riferimento inventato no.
+
+        Il rischio che questo controllo esiste per togliere non e' un errore di
+        battitura: e' che il modello cominci a scrivere `"boss"`, `"my_team"`,
+        `"reparto"` — cose che **sembrano** identita' e che nessuno risolve. Meglio
+        fermarle al livello 2, dove il rifiuto e' una riga, che al risolutore, dove
+        sarebbe un turno buttato.
+        """
+        buona = envelope("operations", operations=[{
+            "op": "add_condition", "condition": {
+                "ref": "ordini.commerciale", "predicate": "equals",
+                "value": {"kind": "identity", "reference": "current_user"},
+            },
+        }])
+        self.assertNotIn("unknown_identity_reference",
+                         codes(structural.validate_envelope(buona)))
+
+        inventata = envelope("operations", operations=[{
+            "op": "add_condition", "condition": {
+                "ref": "ordini.commerciale", "predicate": "equals",
+                "value": {"kind": "identity", "reference": "my_team"},
+            },
+        }])
+        self.assertIn("unknown_identity_reference",
+                      codes(structural.validate_envelope(inventata)))
+
     def test_invented_temporal_expression(self):
         candidate = envelope("operations", operations=[{
             "op": "add_condition", "condition": {

@@ -512,3 +512,67 @@ class TestContextualValidation(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestChiStaChiedendo(unittest.TestCase):
+    """D147 — `current_user` diventa un identificatore qui, e solo qui.
+
+    Il modello scrive un **simbolo**. Chi lo trasforma in un numero e' il risolutore,
+    con l'utente che sta davvero chiedendo — la stessa divisione dei periodi, dove il
+    modello dice *«quest'anno»* e il risolutore sa che giorno e'.
+
+    Una busta che portasse `user_id = 42` sarebbe una fotografia: vera per un utente e
+    falsa per chiunque altro rieseguisse la stessa domanda. E per scriverla il modello
+    dovrebbe **conoscere** l'identificatore di una persona, che non gli e' mai stato
+    mostrato.
+    """
+
+    @staticmethod
+    def _bindings() -> dict[str, Binding]:
+        legami = bindings_of_orders()
+        legami["ordini_vendita.commerciale"] = Binding(
+            "attribute", "user_id", "many2one", identity="user")
+        return legami
+
+    def _resolve(self, ref, *, actor):
+        stato = state_with(filter={"id": "c1", "ref": ref, "predicate": "equals",
+                                   "origin": "user",
+                                   "value": {"kind": "identity",
+                                             "reference": "current_user"}})
+        return resolver_module.resolve(
+            stato, bindings=self._bindings(), instant=CALENDAR_YEAR,
+            model="sale.order", actor=actor)
+
+    def test_diventa_l_utente_che_sta_chiedendo(self):
+        """Il caso per cui esiste: «i miei ordini» filtra sul commerciale, con
+        l'identificatore che il modello non ha mai visto."""
+        esito = self._resolve("ordini_vendita.commerciale", actor=42)
+        self.assertTrue(esito.resolved, [str(f) for f in esito.failures])
+        self.assertIn(("user_id", "=", 42), esito.plan.domain)
+
+    def test_non_su_un_campo_che_non_nomina_una_persona(self):
+        """Il lato che deve scattare. `current_user` su una data o su un importo non e'
+        una condizione strana: e' un confronto fra un numero e qualcosa che numero non
+        e'. Si ferma qui, dichiarato, invece di arrivare a Odoo."""
+        esito = self._resolve("ordini_vendita.data_ordine", actor=42)
+        self.assertFalse(esito.resolved)
+        self.assertIn("does not name a user", str(esito.failures[0]))
+
+    def test_senza_un_utente_non_si_indovina(self):
+        """Meglio un turno che fallisce di uno che filtra sull'utente sbagliato: e'
+        la stessa prudenza di D39, dove senza impronta non si riusa la cache."""
+        esito = self._resolve("ordini_vendita.commerciale", actor=None)
+        self.assertFalse(esito.resolved)
+        self.assertIn("no user to resolve to", str(esito.failures[0]))
+
+    def test_un_riferimento_inventato_non_si_risolve(self):
+        """Insieme chiuso: il livello 2 prende `boss` e `my_team` prima di qui, ma il
+        risolutore non deve fidarsi di essere il secondo a guardare."""
+        stato = state_with(filter={"id": "c1", "ref": "ordini_vendita.commerciale",
+                                   "predicate": "equals", "origin": "user",
+                                   "value": {"kind": "identity", "reference": "boss"}})
+        esito = resolver_module.resolve(
+            stato, bindings=self._bindings(), instant=CALENDAR_YEAR,
+            model="sale.order", actor=42)
+        self.assertFalse(esito.resolved)
+        self.assertIn("has no resolution", str(esito.failures[0]))
