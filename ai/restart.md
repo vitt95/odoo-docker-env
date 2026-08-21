@@ -2285,11 +2285,52 @@ apposta non e' piu' misurato.
 Le stesse voci alimentano il generatore del dataset: entrano nel **catalogo** dell'esempio
 italiano, mai nei pesi da sole (`ai/18` §2).
 
+## 4bis. Le aggregazioni: 47 -> 51, e la causa era una riga mancante
+
+`add_measure` **non compariva nella forma della busta del prompt**. Sette operazioni
+hanno la loro riga — `set_target`, `add_condition` due volte, `add_group`, `set_fields`,
+`add_order`, `set_limit` — e lei no: esisteva solo come parola nell'elenco dei vocabolari
+chiusi. Il modello ne conosceva il **nome** e non la **forma**.
+
+Si vedeva nelle buste: su *«quanti lead per stato e per commerciale»* emetteva i due
+gruppi e saltava la misura; su *«qual e' il ricavo atteso piu' alto»* restituiva una busta
+**vuota**, che diventa `out_of_scope`. Non rifiutava: non sapeva scrivere.
+
+E' la firma di famiglia di questo progetto, la quarta volta in tre settimane: **capacita'
+dichiarata nel contratto, ammessa dal validatore, coperta dal generatore del dataset, e
+mai insegnata nell'unico posto che il modello legge.** Come `coherence` che non era sul
+percorso, come la fase B irraggiungibile.
+
+Riparato con tre cose: la riga della forma, le regole che legano *quanti / somma / media /
+piu' alto / piu' basso* alle funzioni, e un secondo esempio svolto dove misura e gruppo
+compaiono insieme — perche' il caso che sbagliava di piu' era proprio quello in cui vanno
+emesse tutt'e due.
+
+| | prima | dopo |
+|---|---|---|
+| **totale** | 47/59 — 79,7% | **51/59 — 86,4%** |
+| intenti | 11/18 | **14/18** |
+| operatori | 11/12 | 11/12 |
+| date | 23/24 | **24/24** |
+| limiti | 2/5 | 2/5 |
+
+**Nessuna regressione**, e le date sono andate a posto da sole: il prompt non le nomina,
+quindi il guadagno viene dal non dover piu' indovinare una forma.
+
+**I quattro che restano in `intenti` non sono quattro difetti.** Due —
+*«qual e' il ricavo atteso piu' basso»* e *«il ricavo atteso medio per stato»* — muoiono a
+**180,1 s**, cioe' sul tetto di D122: e' latenza, non comprensione, e le domande con misura
+sono le piu' lente (*«piu' alto»* passa in 33,4 s, *«per stato e per commerciale»* in 15,0).
+Gli altri due chiedono un chiarimento perche' *«di oggi»* non nomina una data e `crm_lead`
+ne espone sette senza che D110 ne dichiari una principale: **e' D135 che funziona**, e
+probabilmente e' l'attesa della batteria a essere vecchia. Va deciso, non aggiustato di
+nascosto.
+
 ## 5. Da dove si riprende
 
-1. **Le aggregazioni** — 8 fallimenti su 12. Isolate dal 4 agosto (*«fronte diverso,
-   adesso isolato invece che sepolto sotto il rumore»*) e da allora non le ha toccate
-   nessuno. E' la cosa che sposta di piu' su questa batteria;
+1. **Le due domande che vanno in timeout** — 180 s sul tetto di D122, su frasi che il
+   modello capisce. E' la latenza delle misure, ed e' cio' che il fine tuning promette
+   di togliere (`ai/21` §2.4);
 2. **I due rifiuti mancati** — pochi, invisibili, e sono D29;
 3. **Le conversazioni nella batteria** (P3c) — oggi tutte e 59 le frasi parlano di
    `crm_lead` e sono tutte prime domande. E' il motivo per cui questa misura non ha

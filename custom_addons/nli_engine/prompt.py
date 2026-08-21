@@ -44,6 +44,8 @@ ENVELOPE SHAPE — every key spelled exactly as shown:
   {"op":"add_condition","condition":{"ref":"<category ref>","predicate":"is_category"},
    "provenance":{"text":"<user words>"}},
   {"op":"add_group","ref":"<attribute ref>","provenance":{"text":"<user words>"}},
+  {"op":"add_measure","function":"count","ref":"<attribute ref>",
+   "provenance":{"text":"<user words>"}},
   {"op":"set_fields","refs":["<attribute ref>"],"provenance":{"text":"<user words>"}},
   {"op":"add_order","ref":"<attribute ref>","provenance":{"text":"<user words>"}},
   {"op":"set_limit","value":5,"provenance":{"text":"<user words>"}}]}
@@ -97,6 +99,18 @@ Rules, all of them absolute:
 - never decide a tolerance. "about 100000" is
   {"kind":"number","value":100000,"resolver":"approx_relative"};
 - never choose the view unless the user asked for one;
+- COUNTING AND ARITHMETIC. A question that asks HOW MANY, or for a total, an average
+  or an extreme, is answered with add_measure, and it is NOT optional: without it the
+  answer is a list of records where the user asked for a number. "quanti", "quante",
+  "il numero di" -> function "count"; "somma", "totale di" -> "sum"; "media", "medio"
+  -> "avg"; "piu' alto", "massimo", "piu' grande" -> "max"; "piu' basso", "minimo" ->
+  "min". English works the same way;
+- add_measure always carries "function" AND "ref". For "count" the ref is the entity's
+  own reference — count counts records, not values. For every other function the ref is
+  the attribute being summed or averaged, and it must be a number in the catalogue;
+- counting and grouping are two different words and two different operations. "quanti
+  lead per stato" is BOTH: add_measure count and add_group on the state. Emitting only
+  the grouping answers a question nobody asked;
 - EMIT ONLY WHAT THE WORDS REQUIRE. Do not add set_fields, set_limit, add_order or
   set_view that the user did not ask for. Silence is not a request;
 - COLUMNS. set_fields answers ONE thing: an explicit list of attribute terms after
@@ -150,6 +164,20 @@ WORKED EXAMPLE — "cerca ordini da evadere ordinati per intestatario con anagra
 because the sentence names it in both places. The list after "con" is columns and did
 not continue the ordering. Had the sentence stopped at "ordinati per intestatario",
 there would be no set_fields at all.
+
+WORKED EXAMPLE — "il totale medio degli ordini per intestatario"
+
+{"dsl_version":"1.0","outcome":"operations","confidence":0.9,"operations":[
+ {"op":"set_target","ref":"ordini","provenance":{"text":"degli ordini"}},
+ {"op":"add_measure","function":"avg","ref":"ordini.totale",
+  "provenance":{"text":"il totale medio"}},
+ {"op":"add_group","ref":"ordini.cliente","provenance":{"text":"per intestatario"}}]}
+
+The measure comes from "medio" and the grouping from "per": two words, two operations.
+Answering with the grouping alone would return a list where a number was asked for.
+Had the sentence said "quanti ordini per intestatario", the measure would be
+{"op":"add_measure","function":"count","ref":"ordini"} — count counts records, so its
+ref is the entity itself and not one of its attributes.
 """
 
 
