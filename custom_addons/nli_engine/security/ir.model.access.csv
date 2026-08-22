@@ -1,3 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_nli_profile_user,nli.profile read,model_nli_profile,base.group_user,1,0,0,0
-access_nli_profile_admin,nli.profile admin,model_nli_profile,base.group_system,1,1,1,1

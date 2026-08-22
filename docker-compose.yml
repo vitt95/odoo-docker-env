@@ -57,13 +57,6 @@ services:
       # bytecode next to the sources.
       PYTHONDONTWRITEBYTECODE: "1"
       PYTHONUNBUFFERED: "1"
-      # AIDA — the two secrets that live in the environment and never in the
-      # database. NLI_ALLOWED_HOSTS is the admitted-endpoint list of D77: absent,
-      # no host is admitted and the interpreter refuses to call anywhere.
-      # NLI_UTTERANCE_KEY seals the user's sentence for its short stay in the
-      # queue (D96): absent, acceptance refuses rather than writing it in clear.
-      NLI_ALLOWED_HOSTS: ${NLI_ALLOWED_HOSTS:-}
-      NLI_UTTERANCE_KEY: ${NLI_UTTERANCE_KEY:-}
     volumes:
       - odoo_filestore:/var/lib/odoo
       - ./config/odoo.conf:/etc/odoo/odoo.conf:ro

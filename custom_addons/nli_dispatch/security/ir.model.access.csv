@@ -1,3 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_nli_queue_item_user,nli.queue.item user,model_nli_queue_item,base.group_user,1,1,1,0
-access_nli_breaker_user,nli.breaker read only,model_nli_breaker,base.group_user,1,0,0,0

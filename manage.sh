@@ -47,15 +47,9 @@ Usage: ./manage.sh <command> [args]
   ${C_BOLD}shell${C_RESET} [svc]            Open a bash shell in a container (default: odoo)
   ${C_BOLD}odoo-shell${C_RESET} <db>        Open an Odoo interactive python shell on <db>
   ${C_BOLD}psql${C_RESET} [db]              Open psql (default db: \$POSTGRES_DB)
-  ${C_BOLD}check${C_RESET}                  Boundary checks (D24), pure-zone tests, corpus
-  ${C_BOLD}test${C_RESET} <db> [tags]       Boundary checks, then Odoo tests on <db>
+  ${C_BOLD}test${C_RESET} <db> <mods> [tags] Install/update <mods> and run their Odoo tests
   ${C_BOLD}update${C_RESET}                 Pull/rebuild images and recreate containers
   ${C_BOLD}upgrade${C_RESET} <db> [mods]    Upgrade modules (default: all) on <db>
-  ${C_BOLD}loadtest${C_RESET} <db> [n] [s]   Isolation proof of D27 on prefork workers
-  ${C_BOLD}campo${C_RESET} <db> [famiglia]  Batteria sul campo: le frasi di ai/16 col modello vero
-  ${C_BOLD}ollama${C_RESET} [stato]         Avvia il fornitore locale con la finestra giusta
-  ${C_BOLD}atlante${C_RESET} <db>           Raccoglie il vocabolario di tutte le app (fine tuning)
-  ${C_BOLD}dizionario${C_RESET} <db> [prova] Scrive i sinonimi delle date nel registro delle voci
   ${C_BOLD}backup${C_RESET}                 Dump all databases + filestore to ./backups
   ${C_BOLD}restore${C_RESET} <timestamp>    Restore a backup (DESTRUCTIVE)
   ${C_BOLD}rotate-secrets${C_RESET}         Regenerate all passwords and apply them live
@@ -95,171 +89,18 @@ cmd_odoo_shell() {
   dc exec odoo python3 /opt/odoo/core/odoo-bin shell -c /etc/odoo/odoo.conf -d "$db"
 }
 
-cmd_campo() {
-  # La batteria sul campo: le frasi di `tools/campo/frasi.py` attraverso il prodotto
-  # vero, sul database indicato e con il modello del profilo in servizio.
-  #
-  # Non e' una prova ed e' apposta fuori da `check` e da `test`: il modello non e'
-  # deterministico, e una suite che dipendesse da lui direbbe cose diverse a ogni
-  # giro. E' una **misura**, e costa tempo di modello — un'ora abbondante per intero.
-  #
-  #   ./manage.sh campo db            tutte le famiglie
-  #   ./manage.sh campo db date       una famiglia sola
-  #   CAMPO_MAX=5 ./manage.sh campo db    le prime cinque
-  local db="${1:?Usage: ./manage.sh campo <db> [intenti|operatori|date|limiti]}"
-  local famiglia="${2:-}"
-  log "Batteria sul campo su '${db}'${famiglia:+ (famiglia: ${famiglia})}..."
-  dc exec -T \
-    -e "CAMPO_FAMIGLIA=${famiglia}" \
-    -e "CAMPO_MAX=${CAMPO_MAX:-}" \
-    -e "CAMPO_SCRIVI=${CAMPO_SCRIVI:-}" \
-    odoo python3 /opt/odoo/core/odoo-bin shell -c /etc/odoo/odoo.conf -d "$db" \
-    --log-level=warn \
-    < <(cat "${PROJECT_ROOT}/tools/campo/verifica_finestra.py" \
-           "${PROJECT_ROOT}/tools/campo/frasi.py" \
-           "${PROJECT_ROOT}/tools/campo/batteria.py")
-  ok "Batteria finita."
-}
-
-cmd_ollama() {
-  # Avvia il fornitore locale con la finestra che il profilo dichiara, e lo verifica.
-  #
-  # Serve perche' `Ollama.app` avvia `ollama serve` con un ambiente suo e **non**
-  # eredita `launchctl setenv`: verificato il 21 agosto 2026 leggendo l'ambiente del
-  # processo vero. L'impostazione `context_length` nel database dell'applicazione vale
-  # per la sua chat, non per il server. L'unico modo e' avviarlo con la variabile.
-  #
-  # Senza, il server ne serve 4096, i prompt arrivano tagliati a meta' catalogo e il
-  # prodotto risponde `not_understood`: sembra un limite del modello. La batteria adesso
-  # si rifiuta di misurare in quel caso, ma il prodotto no.
-  #
-  #   ./manage.sh ollama            avvia (o riavvia) e verifica
-  #   ./manage.sh ollama stato      dice solo che cosa serve adesso
-  local finestra="${OLLAMA_CONTEXT_LENGTH:-8192}"
-  local servita
-  servita="$(curl -s --max-time 5 http://127.0.0.1:11434/api/ps \
-    | python3 -c 'import json,sys
-try:
-    modelli = json.load(sys.stdin).get("models") or []
-except Exception:
-    modelli = []
-print(next((str(m.get("context_length")) for m in modelli if m.get("context_length")), ""))' 2>/dev/null || true)"
-
-  if [ "${1:-}" = "stato" ]; then
-    if [ -z "$servita" ]; then
-      warn "Nessun modello caricato: /api/ps non dice niente finche' non arriva una domanda."
-    else
-      log "Il server serve ${servita} gettoni (il profilo ne vuole ${finestra})."
-    fi
-    return 0
-  fi
-
-  log "Fermo Ollama e lo riavvio con OLLAMA_CONTEXT_LENGTH=${finestra}..."
-  osascript -e 'quit app "Ollama"' 2>/dev/null || true
-  sleep 3
-  pkill -f "ollama serve" 2>/dev/null || true
-  sleep 2
-  OLLAMA_CONTEXT_LENGTH="${finestra}" nohup ollama serve > /tmp/ollama-serve.log 2>&1 &
-  sleep 5
-  ok "Avviato. Verifica con: ./manage.sh ollama stato (dopo una domanda qualunque)."
-}
-
-cmd_dizionario() {
-  # I sinonimi delle date nel registro delle voci approvate (D108).
-  #
-  # Perche' un comando e non un file di dati del modulo: sono parole di una lingua e
-  # di un'installazione, non struttura. Chi installa in inglese non li vuole, e chi
-  # aggiunge un'entita' al perimetro li rivuole — quindi si esegue quando serve.
-  #
-  #   ./manage.sh dizionario db          scrive
-  #   ./manage.sh dizionario db prova    dice cosa scriverebbe, senza scrivere
-  local db="${1:?Usage: ./manage.sh dizionario <db> [prova]}"
-  local prova=""
-  [ "${2:-}" = "prova" ] && prova="1"
-  # Due file, due esecuzioni separate: ognuno chiude la propria transazione
-  # (`commit` o `rollback`), e concatenarli come fa `campo` significherebbe che il
-  # rollback della prova del primo si porta via anche il secondo.
-  log "Dizionario — sinonimi delle date su '${db}'${prova:+ (prova, non scrive)}..."
-  dc exec -T -e "DIZIONARIO_PROVA=${prova}" \
-    odoo python3 /opt/odoo/core/odoo-bin shell -c /etc/odoo/odoo.conf -d "$db" \
-    --log-level=warn \
-    < "${PROJECT_ROOT}/tools/dizionario/sinonimi_date.py"
-
-  # `pacchetti.py` e' zona pura e provata da sola; `sinonimi_entita.py` e' la meta'
-  # che legge l'installazione. Si concatenano come `campo` fa con `frasi.py`, perche'
-  # la shell di Odoo riceve un sorgente solo e dentro il container `tools/` non c'e'.
-  log "Dizionario — parole di entita' su '${db}'${prova:+ (prova, non scrive)}..."
-  dc exec -T -e "DIZIONARIO_PROVA=${prova}" \
-    odoo python3 /opt/odoo/core/odoo-bin shell -c /etc/odoo/odoo.conf -d "$db" \
-    --log-level=warn \
-    < <(cat "${PROJECT_ROOT}/tools/dizionario/pacchetti.py" \
-           "${PROJECT_ROOT}/tools/dizionario/sinonimi_entita.py")
-}
-
-cmd_atlante() {
-  # Raccoglie l'atlante: tutto quello che AIDA può nominare in un'installazione con
-  # tutte le applicazioni Odoo Community. È l'ingresso del dataset di addestramento.
-  #
-  #   ./manage.sh atlante atlante            # etichette italiane
-  #   ./manage.sh atlante atlante en_US      # le stesse entità, etichette inglesi
-  #
-  # Il documento esce in tools/finetuning/atlante.json, o atlante_<lingua>.json.
-  # La seconda raccolta serve al 15% di esempi con catalogo inglese di ai/18 §5bis, e
-  # non richiede una banca dati diversa: l'inglese è la lingua sorgente di Odoo.
-  local db="${1:?Usage: ./manage.sh atlante <db> [lingua]}"
-  local lingua="${2:-}"
-  local nome="atlante"
-  [ -n "$lingua" ] && nome="atlante_${lingua%%_*}"
-  log "Raccolgo l'atlante da '${db}'${lingua:+ in ${lingua}} (una entità per volta, ci vuole qualche minuto)..."
-  dc exec -T -e "ATLANTE_LANG=${lingua}" -e "ATLANTE_OUT=/var/lib/odoo/${nome}.json" \
-    odoo python3 /opt/odoo/core/odoo-bin shell -c /etc/odoo/odoo.conf \
-    -d "$db" --log-level=warn < "${PROJECT_ROOT}/tools/finetuning/atlante.py"
-  docker compose --project-name odoo --env-file "$ENV_FILE" \
-    -f "${PROJECT_ROOT}/docker-compose.yml" \
-    cp "odoo:/var/lib/odoo/${nome}.json" "${PROJECT_ROOT}/tools/finetuning/${nome}.json"
-  ok "Atlante in tools/finetuning/${nome}.json"
-}
-
 cmd_psql() {
   local db="${1:-${POSTGRES_DB:-postgres}}"
   dc exec db psql -U "${POSTGRES_USER}" -d "$db"
 }
 
-# The four checks of D24 are static: no stack, no database, stdlib only. They
-# run here, in CI (.github/workflows/boundaries.yml) and on pre-push, so a
-# boundary violation is caught by whichever of the three comes first.
-cmd_check() {
-  log "Architecture boundaries (D24)..."
-  python3 "${PROJECT_ROOT}/tools/arch/run.py"
-  log "Tests of the checks themselves..."
-  python3 -m unittest discover -s "${PROJECT_ROOT}/tools/arch/tests" -t "${PROJECT_ROOT}"
-
-  log "Tests of the dataset generator (fine tuning)..."
-  python3 -m unittest discover -s "${PROJECT_ROOT}/tools/finetuning/tests" -t "${PROJECT_ROOT}"
-  log "Tests of the dictionary packs..."
-  python3 -m unittest discover -s "${PROJECT_ROOT}/tools/dizionario/tests" -t "${PROJECT_ROOT}"
-  log "Tests of the field battery's own guard..."
-  python3 -m unittest discover -s "${PROJECT_ROOT}/tools/campo/tests" -t "${PROJECT_ROOT}"
-  log "Contract, pure zone (no Odoo, no database)..."
-  python3 "${PROJECT_ROOT}/tools/pure/run.py"
-  log "Foundational corpus against the contract..."
-  python3 "${PROJECT_ROOT}/ai/corpus/verifica_contratto.py"
-  log "Dictionary and catalogue against the corpus..."
-  python3 "${PROJECT_ROOT}/ai/corpus/misura_catalogo.py"
-  ok "Boundaries, contract and catalogue verified."
-}
-
 cmd_test() {
-  local db="${1:?Usage: ./manage.sh test <db> [test-tags]}"
-  local mods="nli_core,nli_semantics,nli_engine,nli_dispatch,nli_web,nli_observability"
-  # Default: every test of every product module. Derived from the module list so
+  local db="${1:?Usage: ./manage.sh test <db> <modules> [test-tags]}"
+  local mods="${2:?Usage: ./manage.sh test <db> <modules> [test-tags]}"
+  # Default: every test of every module named. Derived from the module list so
   # a module that gains tests is covered without editing two places — a tag list
   # that silently stops matching is a suite that silently stops running.
-  local tags="${2:-/${mods//,/,/}}"
-
-  # Static first: it is faster, and a broken boundary makes a green test suite
-  # misleading rather than reassuring.
-  cmd_check
+  local tags="${3:-/${mods//,/,/}}"
 
   log "Installing/updating '${mods}' and running tests (tags: ${tags}) on '${db}'..."
   # Same interpreter and same source tree as the dev override: the image also
@@ -289,33 +130,6 @@ cmd_upgrade() {
   dc run --rm odoo "${ODOO_BIN[@]}" -d "$db" -u "$mods" --stop-after-init
   dc up -d odoo
   ok "Upgrade finished."
-}
-
-# Load bench for the isolation proof of D27 (05 §7.1).
-#
-# Brings the stack up on the prefork override — the only configuration in which
-# the proof means anything, because RA3 *is* the saturation of the worker pool
-# and the dev stack has no pool. Seeds a representative volume, then runs the
-# harness. Returning to dev is `./manage.sh start`.
-cmd_loadtest() {
-  local db="${1:?Usage: ./manage.sh loadtest <db> [users] [seconds]}"
-  local users="${2:-20}"
-  local seconds="${3:-30}"
-
-  log "Bringing the stack up with prefork workers (docker-compose.load.yml)..."
-  docker compose --project-name odoo --env-file "$ENV_FILE" \
-    -f "${PROJECT_ROOT}/docker-compose.yml" \
-    -f "${PROJECT_ROOT}/docker-compose.load.yml" up -d
-  wait_healthy odoo || true
-
-  log "Seeding a representative volume on '${db}'..."
-  python3 "${PROJECT_ROOT}/tools/load/popola.py" --db "$db"
-
-  log "Running the isolation harness (${users} users, ${seconds}s)..."
-  python3 "${PROJECT_ROOT}/tools/load/prova_isolamento.py" \
-    --db "$db" --utenti "$users" --secondi "$seconds"
-
-  warn "The stack is still on the load override. './manage.sh start' returns to ${MODE}."
 }
 
 cmd_backup() {
@@ -409,15 +223,9 @@ case "$cmd" in
   shell)             cmd_shell "$@" ;;
   odoo-shell)        cmd_odoo_shell "$@" ;;
   psql)              cmd_psql "$@" ;;
-  check)             cmd_check "$@" ;;
   test)              cmd_test "$@" ;;
   update)            cmd_update "$@" ;;
   upgrade)           cmd_upgrade "$@" ;;
-  loadtest)          cmd_loadtest "$@" ;;
-  campo)             cmd_campo "$@" ;;
-  ollama)            cmd_ollama "$@" ;;
-  dizionario)        cmd_dizionario "$@" ;;
-  atlante)           cmd_atlante "$@" ;;
   backup)            cmd_backup "$@" ;;
   restore)           cmd_restore "$@" ;;
   rotate-secrets)    cmd_rotate_secrets "$@" ;;
