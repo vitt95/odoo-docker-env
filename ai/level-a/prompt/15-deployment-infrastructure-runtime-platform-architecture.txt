@@ -1,0 +1,2121 @@
+# 15 — DEPLOYMENT, INFRASTRUCTURE & RUNTIME PLATFORM ARCHITECTURE
+## Enterprise AI Agent Platform
+
+======================================================================
+ROLE
+======================================================================
+
+Act as the Principal Infrastructure Architect, Platform Architect,
+Distributed Systems Architect, SRE and AI Infrastructure Architect
+responsible for designing the Deployment, Infrastructure and Runtime
+Platform Architecture of an enterprise-grade AI agent platform.
+
+You have deep expertise in:
+
+- Linux
+- containers
+- container runtimes
+- Docker
+- Kubernetes
+- virtual machines
+- bare-metal systems
+- GPU infrastructure
+- NVIDIA CUDA
+- inference serving
+- workload scheduling
+- orchestration
+- service discovery
+- networking
+- storage
+- databases
+- caching
+- queues
+- CI/CD
+- infrastructure as code
+- deployment strategies
+- reliability engineering
+- capacity planning
+- disaster recovery
+- backups
+- high availability
+- horizontal scaling
+- vertical scaling
+- cloud architecture
+- hybrid architecture
+- edge deployment
+- observability
+- zero-downtime deployments
+- GPU scheduling
+- AI inference infrastructure
+- model serving
+- resource isolation
+- cost optimization
+
+You are working within:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_PLANE.md
+04_AGENT_RUNTIME.md
+05_MODEL_INFERENCE_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+07_KNOWLEDGE_DATA_ARCHITECTURE.md
+08_MEMORY_ARCHITECTURE.md
+09_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+10_AGENT_COMMUNICATION_MULTI_AGENT_ARCHITECTURE.md
+11_EVENTING_WORKFLOW_DURABLE_EXECUTION_ARCHITECTURE.md
+12_OBSERVABILITY_EVALUATION_RELIABILITY_ARCHITECTURE.md
+13_SECURITY_ARCHITECTURE.md
+14_DATA_GOVERNANCE_PRIVACY_COMPLIANCE_ARCHITECTURE.md
+
+These documents provide the current architectural context.
+
+However:
+
+THEY ARE NOT IMMUNE FROM CHALLENGE.
+
+If research demonstrates that an assumption is technically incorrect,
+incomplete, obsolete or operationally suboptimal, explicitly identify
+the conflict and recommend the superior architecture.
+
+======================================================================
+1. PRIMARY OBJECTIVE
+======================================================================
+
+Design the complete Deployment, Infrastructure and Runtime Platform
+Architecture.
+
+The architecture must answer:
+
+WHERE DOES THE PLATFORM RUN?
+
+HOW IS IT STARTED?
+
+HOW ARE SERVICES DEPLOYED?
+
+HOW ARE MODELS SERVED?
+
+HOW IS GPU RESOURCE MANAGED?
+
+HOW ARE WORKERS EXECUTED?
+
+HOW ARE DATABASES DEPLOYED?
+
+HOW ARE FILES STORED?
+
+HOW ARE SECRETS PROVIDED?
+
+HOW ARE NETWORK BOUNDARIES ENFORCED?
+
+HOW ARE UPDATES DEPLOYED?
+
+HOW ARE FAILURES RECOVERED?
+
+HOW DOES THE PLATFORM SCALE?
+
+HOW DOES THE PLATFORM MOVE FROM ONE MACHINE TO MANY?
+
+HOW DOES IT MOVE FROM LOCAL TO CLOUD?
+
+HOW DOES IT MOVE FROM DEVELOPMENT TO PRODUCTION?
+
+WHAT INFRASTRUCTURE IS ACTUALLY REQUIRED?
+
+WHAT INFRASTRUCTURE SHOULD NOT EXIST?
+
+======================================================================
+2. MOST IMPORTANT INSTRUCTION
+## RESEARCH FIRST — SELECT ARCHITECTURE SECOND
+======================================================================
+
+DO NOT begin by selecting:
+
+- Kubernetes
+- Docker Swarm
+- Nomad
+- Docker Compose
+- bare metal
+- AWS
+- GCP
+- Azure
+- a managed Kubernetes service
+- Terraform
+- Helm
+- a GPU cloud provider
+
+as the architecture.
+
+Research first.
+
+Research current approaches to:
+
+- AI infrastructure
+- GPU serving
+- container deployment
+- single-node production systems
+- multi-node orchestration
+- Kubernetes
+- container runtimes
+- GPU scheduling
+- model serving
+- infrastructure as code
+- deployment strategies
+- database deployment
+- storage
+- backup
+- disaster recovery
+- cloud vs self-hosted
+- hybrid infrastructure
+
+Then identify meaningful alternatives.
+
+Then compare them.
+
+Then select the architecture best suited to THIS project.
+
+Then attempt to falsify the decision.
+
+Required process:
+
+    RESEARCH
+       ↓
+    REAL RUNTIME REQUIREMENTS
+       ↓
+    RESOURCE REQUIREMENTS
+       ↓
+    INFRASTRUCTURE ALTERNATIVES
+       ↓
+    SECURITY ANALYSIS
+       ↓
+    RELIABILITY ANALYSIS
+       ↓
+    OPERATIONS ANALYSIS
+       ↓
+    COST ANALYSIS
+       ↓
+    ADVERSARIAL CHALLENGE
+       ↓
+    FINAL DECISION
+       ↓
+    DAY-1 IMPLEMENTATION
+       ↓
+    FUTURE EVOLUTION
+
+CLAUDE MUST DETERMINE THE BEST INFRASTRUCTURE ARCHITECTURE AVAILABLE
+FOR THIS PROJECT.
+
+======================================================================
+3. CENTRAL PRINCIPLE
+======================================================================
+
+Do NOT optimize for:
+
+"cloud-native"
+
+"microservices"
+
+"Kubernetes"
+
+"maximum scalability"
+
+"enterprise-looking infrastructure"
+
+Optimize for:
+
+CORRECTNESS
++
+SECURITY
++
+RELIABILITY
++
+SIMPLICITY
++
+OPERABILITY
++
+RESOURCE EFFICIENCY
++
+FUTURE EVOLUTION
+
+The smallest architecture that satisfies the actual requirements is
+preferable.
+
+======================================================================
+4. DAY-1 CONSTRAINTS
+======================================================================
+
+Day 1:
+
+- one physical or virtual machine
+- one GPU if available
+- Qwen3.5 9B
+- PostgreSQL
+- local/containerized deployment
+- small engineering team
+- limited operational resources
+
+The system should be deployable and understandable by a small team.
+
+Strongly evaluate whether Day 1 can use:
+
+ONE HOST
+
+with:
+
+- containerized services
+- local networking
+- PostgreSQL
+- model runtime
+- agent runtime
+- workers
+- object/file storage
+- observability
+
+Do NOT introduce distributed orchestration unless a real requirement
+exists.
+
+======================================================================
+5. DAY-1 SHOULD STILL BE PRODUCTION-QUALITY
+======================================================================
+
+"Simple" does NOT mean:
+
+- insecure
+- manually configured
+- undocumented
+- impossible to reproduce
+- impossible to back up
+- impossible to update
+- impossible to recover.
+
+Day 1 should still have:
+
+- reproducible deployment
+- versioned configuration
+- backups
+- health checks
+- logs
+- metrics
+- security boundaries
+- resource limits
+- deployment procedure
+- rollback procedure
+- disaster recovery procedure.
+
+======================================================================
+6. FUTURE REQUIREMENTS
+======================================================================
+
+Future requirements may include:
+
+- multiple GPUs
+- multiple inference workers
+- multiple application workers
+- multiple machines
+- GPU pools
+- high availability
+- large tenants
+- many tenants
+- regional deployment
+- cloud deployment
+- hybrid deployment
+- multi-region
+- enterprise SLAs
+- disaster recovery
+- zero-downtime deployment.
+
+Determine:
+
+DAY 1
+PREPARE
+SCALE
+ENTERPRISE
+
+======================================================================
+7. RUNTIME TOPOLOGY
+======================================================================
+
+Define the physical/logical topology.
+
+At minimum consider:
+
+Internet
+ ↓
+Edge / Reverse Proxy
+ ↓
+API
+ ↓
+Control Plane
+ ↓
+Agent Runtime
+ ↓
+Workflow Workers
+ ↓
+Tool Runtime
+ ↓
+Model Runtime
+ ↓
+PostgreSQL
+ ↓
+Object Storage
+ ↓
+Observability
+
+Determine whether this topology is correct.
+
+Do not assume every component must be a separate process.
+
+======================================================================
+8. SERVICE BOUNDARIES
+======================================================================
+
+Using documents 01–14 determine which components should be:
+
+- same process
+- separate process
+- separate container
+- separate machine
+- separate security boundary
+- separately scalable.
+
+Do not split services merely because a diagram looks cleaner.
+
+======================================================================
+9. MONOLITH VS MODULAR MONOLITH VS MICROSERVICES
+======================================================================
+
+Compare:
+
+OPTION A
+--------
+Monolith
+
+OPTION B
+--------
+Modular monolith
+
+OPTION C
+--------
+Process-separated architecture
+
+OPTION D
+--------
+Microservices
+
+OPTION E
+--------
+Hybrid.
+
+Evaluate:
+
+- Day-1 complexity
+- performance
+- deployment
+- security
+- debugging
+- scaling
+- failure isolation
+- team size
+- migration cost.
+
+Select the appropriate architecture.
+
+======================================================================
+10. PROCESS BOUNDARIES
+======================================================================
+
+Determine where process boundaries are necessary.
+
+Potential boundaries:
+
+- API
+- Agent Runtime
+- Model Runtime
+- Tool Runtime
+- Workflow Worker
+- PostgreSQL
+- file processing
+- sandbox.
+
+Use process boundaries where they provide:
+
+- security
+- resource isolation
+- independent scaling
+- fault isolation.
+
+======================================================================
+11. CONTAINERIZATION
+======================================================================
+
+Evaluate whether containers should be the Day-1 packaging unit.
+
+Analyze:
+
+- reproducibility
+- isolation
+- deployment
+- resource limits
+- GPU access
+- networking
+- filesystem
+- security.
+
+Do not assume containers are mandatory.
+
+======================================================================
+12. DOCKER / CONTAINER RUNTIME
+======================================================================
+
+If containers are recommended, determine:
+
+- runtime
+- image structure
+- base image
+- dependency installation
+- non-root execution
+- filesystem permissions
+- health checks
+- resource limits
+- GPU access.
+
+Research current best practices.
+
+======================================================================
+13. KUBERNETES
+======================================================================
+
+This is CRITICAL.
+
+Do NOT assume Kubernetes.
+
+Research whether Kubernetes is justified.
+
+Evaluate:
+
+- operational complexity
+- GPU scheduling
+- autoscaling
+- service discovery
+- deployment
+- secrets
+- storage
+- observability
+- multi-node requirements
+- team expertise
+- failure modes.
+
+Then explicitly answer:
+
+WHY KUBERNETES?
+
+or:
+
+WHY NOT KUBERNETES?
+
+If not Day 1, define the architectural trigger for adoption.
+
+======================================================================
+14. ORCHESTRATION ALTERNATIVES
+======================================================================
+
+Compare where relevant:
+
+- Docker Compose
+- Nomad
+- Kubernetes
+- systemd
+- bare metal
+- VM-based deployment
+- managed container platforms.
+
+Do not compare technologies that are irrelevant to the project's scale.
+
+======================================================================
+15. GPU ARCHITECTURE
+======================================================================
+
+Using:
+
+05_MODEL_INFERENCE_ARCHITECTURE.md
+
+determine GPU requirements.
+
+Analyze:
+
+- GPU type
+- VRAM
+- inference concurrency
+- quantization
+- batching
+- context length
+- KV cache
+- model loading
+- model eviction
+- GPU sharing.
+
+Do not make hardware claims without research or benchmark evidence.
+
+======================================================================
+16. GPU UTILIZATION
+======================================================================
+
+Determine how GPU resources should be managed.
+
+Potential:
+
+- exclusive model process
+- shared inference process
+- multiple models
+- MIG where applicable
+- time-sharing
+- request batching.
+
+Determine the correct strategy.
+
+======================================================================
+17. MODEL SERVER
+======================================================================
+
+Using 05 determine whether the model should run through:
+
+- application-integrated inference
+- dedicated inference server
+- vLLM
+- SGLang
+- llama.cpp
+- another runtime.
+
+Research current compatibility with Qwen3.5 9B.
+
+Do NOT select based on popularity.
+
+======================================================================
+18. MODEL RUNTIME ISOLATION
+======================================================================
+
+Determine whether the model runtime should be:
+
+- same process as Agent Runtime
+- separate process
+- separate container
+- separate machine.
+
+Evaluate:
+
+- failure isolation
+- GPU access
+- security
+- latency
+- deployment.
+
+======================================================================
+19. MODEL LOADING
+======================================================================
+
+Determine:
+
+- startup loading
+- lazy loading
+- model cache
+- model version
+- checksum
+- artifact provenance
+- rollback.
+
+======================================================================
+20. MODEL ARTIFACT STORAGE
+======================================================================
+
+Determine where model artifacts live:
+
+- local disk
+- object storage
+- artifact registry
+- model registry.
+
+Determine Day 1 and future architecture.
+
+======================================================================
+21. CPU / MEMORY RESOURCE MODEL
+======================================================================
+
+Define resource classes for:
+
+- API
+- agent
+- worker
+- retrieval
+- memory
+- tool
+- document processing
+- model.
+
+Determine appropriate resource isolation.
+
+======================================================================
+22. RESOURCE LIMITS
+======================================================================
+
+Every workload should have:
+
+- CPU limit
+- memory limit
+- execution timeout
+- concurrency limit
+- queue limit where appropriate.
+
+Using previous architecture documents propagate budgets.
+
+======================================================================
+23. GPU / CPU BACKPRESSURE
+======================================================================
+
+Determine what happens when:
+
+- GPU is saturated
+- CPU is saturated
+- database is saturated
+- workers are saturated
+- queue grows.
+
+Define:
+
+- admission control
+- queueing
+- rate limiting
+- graceful degradation.
+
+======================================================================
+24. NETWORK ARCHITECTURE
+======================================================================
+
+Define:
+
+- ingress
+- internal network
+- database network
+- model network
+- tool network
+- egress.
+
+Use 13_SECURITY_ARCHITECTURE.md.
+
+======================================================================
+25. NETWORK SEGMENTATION
+======================================================================
+
+Determine which services should communicate directly.
+
+Example:
+
+API
+→ Agent Runtime
+
+Agent Runtime
+→ Model Runtime
+
+Agent Runtime
+→ Tool Runtime
+
+Tool Runtime
+→ External Network
+
+PostgreSQL
+← trusted application services only.
+
+Do not expose databases or model runtimes publicly.
+
+======================================================================
+26. SERVICE DISCOVERY
+======================================================================
+
+Day 1 may not require a dedicated service discovery system.
+
+Evaluate:
+
+- static local networking
+- DNS
+- service discovery
+- orchestration-native discovery.
+
+======================================================================
+27. LOAD BALANCING
+======================================================================
+
+Determine whether load balancing is required.
+
+Potential:
+
+- reverse proxy
+- application load balancer
+- service load balancer
+- orchestration-native routing.
+
+======================================================================
+28. TLS
+======================================================================
+
+Determine:
+
+- external TLS
+- internal TLS
+- mTLS.
+
+Do not introduce mTLS everywhere without a clear threat model.
+
+======================================================================
+29. DATABASE DEPLOYMENT
+======================================================================
+
+Using previous architecture documents determine:
+
+- PostgreSQL deployment
+- storage
+- connection pooling
+- backups
+- replication
+- failover.
+
+Day 1 may use one PostgreSQL instance.
+
+Determine future evolution.
+
+======================================================================
+30. DATABASE CONNECTIONS
+======================================================================
+
+Define:
+
+- pool size
+- worker connections
+- API connections
+- workflow workers
+- migration connections.
+
+Avoid connection storms.
+
+======================================================================
+31. STORAGE ARCHITECTURE
+======================================================================
+
+Determine storage for:
+
+- PostgreSQL
+- documents
+- artifacts
+- model files
+- logs
+- traces
+- backups
+- temporary files.
+
+Separate:
+
+persistent state
+
+from:
+
+ephemeral state.
+
+======================================================================
+32. OBJECT STORAGE
+======================================================================
+
+Evaluate:
+
+- local filesystem
+- S3-compatible storage
+- cloud object storage
+- dedicated object store.
+
+Determine Day 1 and future.
+
+======================================================================
+33. FILESYSTEM SECURITY
+======================================================================
+
+Using 13 and 14 determine:
+
+- permissions
+- isolation
+- temporary directories
+- cleanup
+- encryption
+- artifact access.
+
+======================================================================
+34. CACHE
+======================================================================
+
+Determine whether a cache is required.
+
+Potential:
+
+- PostgreSQL
+- in-memory
+- Redis
+- local cache.
+
+Do not add Redis without a requirement.
+
+======================================================================
+35. QUEUE
+======================================================================
+
+Using 11 determine how infrastructure supports:
+
+- jobs
+- workflows
+- retries
+- scheduling.
+
+Do not duplicate queue infrastructure.
+
+======================================================================
+36. SECRETS
+======================================================================
+
+Using 13 determine how deployment supplies:
+
+- database credentials
+- API keys
+- certificates
+- model credentials
+- external service credentials.
+
+Never bake secrets into images.
+
+======================================================================
+37. CONFIGURATION
+======================================================================
+
+Separate:
+
+CODE
+
+CONFIGURATION
+
+SECRETS
+
+DATA.
+
+Determine configuration versioning and deployment.
+
+======================================================================
+38. ENVIRONMENT MODEL
+======================================================================
+
+Define:
+
+development
+test
+staging
+production
+
+Determine which environments are actually necessary Day 1.
+
+Avoid unnecessary infrastructure duplication.
+
+======================================================================
+39. DEVELOPMENT ENVIRONMENT
+======================================================================
+
+Developer should be able to start a functional local platform with minimal
+manual steps.
+
+Determine:
+
+- container setup
+- local database
+- model setup
+- test data
+- configuration.
+
+======================================================================
+40. TEST ENVIRONMENT
+======================================================================
+
+Determine whether integration tests require:
+
+- real model
+- mocked model
+- lightweight model
+- real PostgreSQL
+- fake external services.
+
+======================================================================
+41. STAGING
+======================================================================
+
+Determine when staging is necessary.
+
+If used:
+
+It should reproduce meaningful production behavior without unnecessary
+cost.
+
+======================================================================
+42. PRODUCTION
+======================================================================
+
+Define production requirements:
+
+- persistent storage
+- backups
+- monitoring
+- alerting
+- health checks
+- rollback
+- security
+- resource limits.
+
+======================================================================
+43. INFRASTRUCTURE AS CODE
+======================================================================
+
+Research whether Day 1 requires:
+
+- Terraform
+- OpenTofu
+- Ansible
+- shell scripts
+- Docker Compose
+- another approach.
+
+Do not introduce IaC tooling merely because it is fashionable.
+
+Determine the minimum reproducible deployment mechanism.
+
+======================================================================
+44. CONFIGURATION MANAGEMENT
+======================================================================
+
+Determine:
+
+- environment configuration
+- secret references
+- model configuration
+- policy configuration
+- tool configuration.
+
+Configuration should be versioned where appropriate.
+
+======================================================================
+45. CI/CD
+======================================================================
+
+Using 13_SECURITY and 12_OBSERVABILITY determine pipeline:
+
+Commit
+ ↓
+Tests
+ ↓
+Security checks
+ ↓
+Build
+ ↓
+Artifact
+ ↓
+Evaluation
+ ↓
+Deployment
+ ↓
+Health checks
+ ↓
+Monitoring.
+
+======================================================================
+46. RELEASE ARTIFACTS
+======================================================================
+
+Define immutable artifacts:
+
+- container images
+- model artifacts
+- configuration versions
+- workflow versions
+- agent versions.
+
+Determine provenance.
+
+======================================================================
+47. DEPLOYMENT STRATEGY
+======================================================================
+
+Compare:
+
+- recreate
+- rolling
+- blue/green
+- canary
+- feature flag
+- shadow deployment.
+
+Determine Day 1 and future.
+
+======================================================================
+48. MODEL DEPLOYMENT STRATEGY
+======================================================================
+
+Model changes are different from application changes.
+
+Determine:
+
+- model loading
+- warm-up
+- compatibility
+- evaluation gate
+- rollback
+- traffic split.
+
+======================================================================
+49. ZERO-DOWNTIME DEPLOYMENT
+======================================================================
+
+Determine when zero downtime becomes necessary.
+
+Do not build complex HA deployment Day 1 without a requirement.
+
+======================================================================
+50. DATABASE MIGRATIONS
+======================================================================
+
+Using 11 and 14 determine:
+
+- migration strategy
+- backwards compatibility
+- rolling deployments
+- schema versioning.
+
+Running workflows must survive deployments.
+
+======================================================================
+51. WORKER DEPLOYMENT
+======================================================================
+
+Using 11 determine:
+
+- worker lifecycle
+- graceful shutdown
+- job draining
+- lease expiration
+- retry.
+
+======================================================================
+52. GRACEFUL SHUTDOWN
+======================================================================
+
+Every long-running process should handle shutdown safely.
+
+Determine:
+
+- API
+- agent
+- model
+- worker
+- document processor.
+
+======================================================================
+53. HEALTH CHECKS
+======================================================================
+
+Define:
+
+- liveness
+- readiness
+- startup.
+
+Do not use a single generic health endpoint for everything.
+
+======================================================================
+54. DEPENDENCY HEALTH
+======================================================================
+
+Determine whether readiness depends on:
+
+- PostgreSQL
+- model runtime
+- object storage
+- policy service.
+
+Avoid cascading startup failures.
+
+======================================================================
+55. FAILURE ISOLATION
+======================================================================
+
+Analyze:
+
+Model crash
+
+should not necessarily kill:
+
+API.
+
+Tool failure
+
+should not necessarily kill:
+
+Agent Runtime.
+
+Document parser crash
+
+should not compromise:
+
+Database.
+
+Determine process boundaries.
+
+======================================================================
+56. DISASTER RECOVERY
+======================================================================
+
+Define:
+
+- backup
+- restore
+- recovery procedure
+- RPO
+- RTO.
+
+Do not invent numerical targets.
+
+Derive them from requirements.
+
+======================================================================
+57. BACKUPS
+======================================================================
+
+Back up:
+
+- PostgreSQL
+- documents
+- workflow state
+- configuration
+- critical artifacts.
+
+Determine what does NOT need backup.
+
+======================================================================
+58. RESTORE TESTING
+======================================================================
+
+A backup that has never been restored is not sufficient evidence.
+
+Define restore tests.
+
+======================================================================
+59. HIGH AVAILABILITY
+======================================================================
+
+Determine when HA becomes necessary.
+
+Compare:
+
+single node
+
+vs:
+
+active/passive
+
+vs:
+
+multi-node
+
+vs:
+
+multi-region.
+
+Do not introduce HA before the business requirement exists.
+
+======================================================================
+60. SCALING MODEL
+======================================================================
+
+Define independent scaling dimensions:
+
+- API
+- agent runtime
+- workflow workers
+- model inference
+- retrieval
+- document processing
+- tool execution.
+
+Do not scale the entire platform as one unit unnecessarily.
+
+======================================================================
+61. HORIZONTAL VS VERTICAL SCALING
+======================================================================
+
+Determine which components prefer:
+
+vertical scaling
+
+and which prefer:
+
+horizontal scaling.
+
+======================================================================
+62. GPU SCALING
+======================================================================
+
+Determine future strategies:
+
+- larger GPU
+- multiple GPUs
+- model replicas
+- model sharding
+- quantization
+- batching
+- scheduling.
+
+Research before recommending.
+
+======================================================================
+63. MULTI-GPU
+======================================================================
+
+Determine when multi-GPU is justified.
+
+Analyze:
+
+- model size
+- concurrency
+- latency
+- VRAM
+- throughput.
+
+======================================================================
+64. MULTI-NODE
+======================================================================
+
+Determine architectural triggers for moving beyond one machine.
+
+Potential:
+
+- GPU saturation
+- CPU saturation
+- reliability
+- tenant isolation
+- workload isolation
+- scale.
+
+Use measurable operational signals where possible.
+
+======================================================================
+65. AUTOSCALING
+======================================================================
+
+Evaluate:
+
+- CPU autoscaling
+- queue-based autoscaling
+- GPU autoscaling
+- request-based autoscaling.
+
+Do not assume GPU autoscaling is always economical.
+
+======================================================================
+66. CAPACITY PLANNING
+======================================================================
+
+Define capacity dimensions:
+
+- requests/sec
+- concurrent runs
+- tokens/sec
+- tool calls
+- workflow executions
+- documents/sec
+- database operations
+- storage growth.
+
+Use benchmarks rather than invented numbers.
+
+======================================================================
+67. PERFORMANCE MODEL
+======================================================================
+
+Build a rough capacity model:
+
+User Request
+ ↓
+Queue
+ ↓
+Agent
+ ↓
+Model
+ ↓
+Tools
+ ↓
+Database
+ ↓
+Response.
+
+Identify bottlenecks.
+
+======================================================================
+68. COST MODEL
+======================================================================
+
+Evaluate:
+
+- GPU cost
+- CPU
+- memory
+- storage
+- network
+- observability
+- managed services
+- operational labor.
+
+Do not optimize purely for infrastructure price.
+
+Include engineering/operator complexity.
+
+======================================================================
+69. CLOUD VS SELF-HOSTED
+======================================================================
+
+Compare:
+
+SELF-HOSTED
+
+CLOUD
+
+HYBRID.
+
+Evaluate:
+
+- cost
+- control
+- GPU availability
+- security
+- data residency
+- operations
+- scalability
+- vendor lock-in.
+
+Do not assume cloud is automatically better.
+
+======================================================================
+70. CLOUD PROVIDER SELECTION
+======================================================================
+
+If cloud deployment is recommended:
+
+Research current capabilities.
+
+Do not select:
+
+AWS
+GCP
+Azure
+
+by default.
+
+Compare based on actual requirements:
+
+- GPU availability
+- region
+- storage
+- networking
+- managed PostgreSQL
+- container services
+- security
+- cost
+- data residency.
+
+======================================================================
+71. EDGE / ON-PREMISE
+======================================================================
+
+Evaluate whether enterprise customers may require:
+
+- on-premise
+- private cloud
+- isolated VPC
+- edge deployment.
+
+Determine which architectural contracts support these later.
+
+======================================================================
+72. HYBRID ARCHITECTURE
+======================================================================
+
+Potential future:
+
+Control Plane
+→ cloud
+
+Inference
+→ customer environment
+
+or:
+
+Data
+→ customer environment
+
+Determine whether such separation is architecturally viable.
+
+======================================================================
+73. MULTI-REGION
+======================================================================
+
+Determine future requirements for:
+
+- active/passive
+- active/active
+- regional isolation
+- global control plane.
+
+Do not introduce multi-region Day 1.
+
+======================================================================
+74. DATA RESIDENCY INTERACTION
+======================================================================
+
+Using 14 determine infrastructure implications for:
+
+- regional storage
+- regional inference
+- regional telemetry
+- regional backups.
+
+======================================================================
+75. SECURITY INTERACTION
+======================================================================
+
+Using 13 determine:
+
+- host hardening
+- container security
+- network isolation
+- secrets
+- supply chain
+- privileged access.
+
+======================================================================
+76. OBSERVABILITY INTERACTION
+======================================================================
+
+Using 12 determine:
+
+- infrastructure metrics
+- container metrics
+- GPU metrics
+- service traces
+- deployment events
+- logs.
+
+======================================================================
+77. WORKFLOW INTERACTION
+======================================================================
+
+Using 11 determine:
+
+- worker placement
+- persistence
+- graceful shutdown
+- scheduling
+- recovery.
+
+======================================================================
+78. MODEL INTERACTION
+======================================================================
+
+Using 05 determine:
+
+- model server
+- GPU scheduling
+- batching
+- context
+- model artifact storage
+- model deployment.
+
+======================================================================
+79. TOOL INTERACTION
+======================================================================
+
+Using 06 determine:
+
+- tool isolation
+- network access
+- process boundaries
+- resource limits.
+
+======================================================================
+80. ARCHITECTURE OPTIONS
+======================================================================
+
+Identify actual architecture candidates.
+
+Potential:
+
+OPTION A
+--------
+Single host + containers.
+
+OPTION B
+--------
+Single host + systemd + processes.
+
+OPTION C
+--------
+Single host + container orchestrator.
+
+OPTION D
+--------
+Multi-node container orchestration.
+
+OPTION E
+--------
+Kubernetes-based platform.
+
+OPTION F
+--------
+Managed cloud container platform.
+
+OPTION G
+--------
+Hybrid.
+
+These are examples only.
+
+Research and determine the real candidates.
+
+======================================================================
+81. ARCHITECTURE SELECTION MATRIX
+======================================================================
+
+Compare:
+
+| Criterion |
+| Day-1 simplicity |
+| Reproducibility |
+| Security |
+| GPU support |
+| Model serving |
+| Reliability |
+| Scaling |
+| Observability |
+| Deployment |
+| Disaster recovery |
+| Data residency |
+| Operational burden |
+| Cost |
+| Migration complexity |
+| Recommendation |
+
+======================================================================
+82. "WHY NOT?" ANALYSIS
+======================================================================
+
+For the final architecture explicitly answer:
+
+WHY THIS?
+
+WHY NOT KUBERNETES?
+
+WHY NOT MICROSERVICES?
+
+WHY NOT BARE METAL?
+
+WHY NOT CLOUD FROM DAY 1?
+
+WHY NOT MULTI-NODE FROM DAY 1?
+
+WHY NOT MANAGED POSTGRES?
+
+WHY NOT REDIS?
+
+WHY NOT A SERVICE MESH?
+
+WHY NOT MULTI-REGION?
+
+WHY NOT GPU CLUSTERING?
+
+WHY NOT A FULL PLATFORM ENGINEERING STACK?
+
+Only retain comparisons supported by research.
+
+======================================================================
+83. REVERSIBILITY ANALYSIS
+======================================================================
+
+Classify:
+
+- container runtime
+- orchestration
+- network topology
+- storage
+- database deployment
+- cloud provider
+- model server
+- GPU strategy
+- CI/CD
+- infrastructure as code
+- deployment strategy
+
+as:
+
+- easily reversible
+- moderately reversible
+- expensive to reverse
+- effectively irreversible.
+
+======================================================================
+84. CONTRACT VS IMPLEMENTATION
+======================================================================
+
+Determine stable infrastructure contracts.
+
+Potential:
+
+RuntimeEnvironment
+Service
+Workload
+ResourceBudget
+Deployment
+Artifact
+HealthCheck
+Environment
+SecretReference
+StorageReference
+
+Determine the minimum required set.
+
+======================================================================
+85. REQUIRED DIAGRAMS
+======================================================================
+
+Include Mermaid diagrams for:
+
+1. Complete runtime topology
+2. Day-1 single-host architecture
+3. Process/container boundaries
+4. Network topology
+5. GPU architecture
+6. Model-serving architecture
+7. Worker architecture
+8. Storage architecture
+9. CI/CD pipeline
+10. Deployment lifecycle
+11. Rolling deployment
+12. Model deployment
+13. Backup architecture
+14. Disaster recovery
+15. Horizontal scaling
+16. Multi-node future architecture
+17. Multi-region future architecture
+18. Cloud/hybrid architecture
+
+======================================================================
+86. ADR CANDIDATES
+======================================================================
+
+Identify ADRs for:
+
+- containerization
+- process boundaries
+- orchestration
+- Kubernetes
+- model server
+- GPU strategy
+- storage
+- database deployment
+- object storage
+- networking
+- secrets
+- CI/CD
+- infrastructure as code
+- deployment strategy
+- backup
+- disaster recovery
+- HA
+- autoscaling
+- cloud provider
+- multi-region
+
+For each:
+
+- problem
+- alternatives
+- recommendation
+- consequences
+- reversibility
+- decision deadline
+
+======================================================================
+87. DAY-1 / PREPARE / SCALE / ENTERPRISE
+======================================================================
+
+Create:
+
+| Capability | Day 1 | Prepare | Scale | Enterprise |
+
+Cover:
+
+- host
+- containers
+- orchestration
+- API
+- Agent Runtime
+- Model Runtime
+- GPU
+- workers
+- PostgreSQL
+- object storage
+- cache
+- queues
+- networking
+- TLS
+- secrets
+- observability
+- backups
+- CI/CD
+- IaC
+- staging
+- HA
+- autoscaling
+- multi-node
+- multi-region
+- cloud
+- hybrid
+- disaster recovery.
+
+======================================================================
+88. INFRASTRUCTURE TEST MATRIX
+======================================================================
+
+Create a test matrix.
+
+For each infrastructure requirement define:
+
+Requirement
+Failure
+Affected Component
+Expected Behavior
+Detection
+Recovery
+Verification
+Regression Test
+
+At minimum include:
+
+- host restart
+- container crash
+- model crash
+- worker crash
+- database restart
+- disk failure
+- network interruption
+- external API failure
+- GPU failure
+- deployment interruption
+- database migration failure
+- backup restore
+- configuration rollback
+- secret rotation
+- certificate expiration
+- queue backlog.
+
+======================================================================
+89. ATTEMPT TO FALSIFY THE RECOMMENDATION
+======================================================================
+
+Try to prove the selected infrastructure architecture wrong.
+
+Ask:
+
+- What request volume breaks it?
+- What concurrent-agent count breaks it?
+- What GPU utilization breaks it?
+- What storage volume breaks it?
+- What worker count breaks it?
+- What availability requirement breaks it?
+- What tenant isolation requirement breaks it?
+- What residency requirement breaks it?
+- What deployment frequency breaks it?
+- What recovery requirement breaks it?
+
+Determine the first architectural trigger.
+
+======================================================================
+90. ARCHITECTURAL SELF-CRITIQUE
+======================================================================
+
+Before finalizing, ask:
+
+1. Did I avoid Kubernetes by default?
+2. Did I avoid microservices by default?
+3. Did I distinguish infrastructure from application architecture?
+4. Is Day 1 genuinely simple?
+5. Is Day 1 reproducible?
+6. Is Day 1 recoverable?
+7. Are GPU resources properly isolated?
+8. Can the model runtime fail independently?
+9. Can workers fail independently?
+10. Can the database be backed up and restored?
+11. Are deployments reversible?
+12. Are secrets protected?
+13. Are network boundaries explicit?
+14. Can the architecture scale incrementally?
+15. Can infrastructure move from one machine to multiple?
+16. Can it support future data residency?
+17. Can it support future enterprise deployment?
+18. Did I avoid premature distributed infrastructure?
+19. Did I avoid unsupported capacity claims?
+20. What assumptions could invalidate the architecture?
+
+Include:
+
+# ARCHITECTURAL SELF-CRITIQUE
+
+======================================================================
+91. FINAL RECOMMENDATION
+======================================================================
+
+End with:
+
+# FINAL DEPLOYMENT, INFRASTRUCTURE & RUNTIME PLATFORM
+# ARCHITECTURE RECOMMENDATION
+
+Answer:
+
+"What Infrastructure Architecture should this platform actually build?"
+
+Be concrete.
+
+Describe:
+
+- physical/virtual topology
+- process model
+- container model
+- orchestration
+- model runtime
+- GPU architecture
+- worker architecture
+- storage
+- database
+- networking
+- secrets
+- CI/CD
+- deployment
+- backups
+- disaster recovery
+- scaling
+- cloud strategy
+- Day-1 implementation
+- future evolution.
+
+Then explicitly answer:
+
+"What MUST NOT be built on Day 1?"
+
+Then:
+
+"What future condition should trigger the next architectural evolution?"
+
+======================================================================
+92. REQUIRED OUTPUT
+======================================================================
+
+Produce:
+
+15_DEPLOYMENT_INFRASTRUCTURE_RUNTIME_PLATFORM_ARCHITECTURE.md
+
+The document MUST explicitly reference:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_PLANE.md
+04_AGENT_RUNTIME.md
+05_MODEL_INFERENCE_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+07_KNOWLEDGE_DATA_ARCHITECTURE.md
+08_MEMORY_ARCHITECTURE.md
+09_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+10_AGENT_COMMUNICATION_MULTI_AGENT_ARCHITECTURE.md
+11_EVENTING_WORKFLOW_DURABLE_EXECUTION_ARCHITECTURE.md
+12_OBSERVABILITY_EVALUATION_RELIABILITY_ARCHITECTURE.md
+13_SECURITY_ARCHITECTURE.md
+14_DATA_GOVERNANCE_PRIVACY_COMPLIANCE_ARCHITECTURE.md
+
+If there is a conflict:
+
+DO NOT silently resolve it.
+
+Identify the conflict.
+
+Explain the trade-off.
+
+Recommend the superior architectural decision.
+
+Create an ADR candidate when appropriate.
+
+======================================================================
+93. SOURCE REQUIREMENTS
+======================================================================
+
+Include direct URLs.
+
+Prioritize:
+
+- official Kubernetes documentation
+- official Docker/container-runtime documentation
+- official Linux documentation
+- official NVIDIA documentation
+- official Qwen documentation
+- official vLLM documentation
+- official SGLang documentation
+- official PostgreSQL documentation
+- official cloud-provider documentation
+- CNCF documentation
+- OpenTelemetry documentation
+- NIST
+- credible infrastructure research
+
+Do not fabricate citations.
+
+Do not cite sources that were not actually inspected.
+
+Clearly distinguish:
+
+SOURCE FACT
+
+from:
+
+BENCHMARK RESULT
+
+from:
+
+INFERENCE
+
+from:
+
+ARCHITECTURAL RECOMMENDATION.
+
+======================================================================
+94. ABSOLUTE FINAL INSTRUCTION
+======================================================================
+
+Act as an INDEPENDENT Principal Infrastructure Architect.
+
+Your responsibility is to determine the best infrastructure architecture,
+not to validate Kubernetes, cloud, containers or any other preferred
+technology.
+
+Do not assume:
+
+KUBERNETES = PRODUCTION.
+
+Do not assume:
+
+MICROSERVICES = SCALABILITY.
+
+Do not assume:
+
+CLOUD = BETTER.
+
+Do not assume:
+
+DISTRIBUTED = MORE RELIABLE.
+
+Do not assume:
+
+CONTAINER = SECURITY BOUNDARY.
+
+Do not assume:
+
+GPU = BOTTLENECK.
+
+Do not assume:
+
+MORE NODES = MORE PERFORMANCE.
+
+Do not assume:
+
+MANAGED SERVICE = LOWER TOTAL COST.
+
+Do not assume:
+
+AUTOSCALING = REQUIRED.
+
+Do not assume:
+
+HIGH AVAILABILITY = REQUIRED ON DAY 1.
+
+Do not allow:
+
+INFRASTRUCTURE COMPLEXITY
+
+to exceed:
+
+ACTUAL SYSTEM REQUIREMENTS.
+
+Do not design a distributed platform simply because the final system may
+eventually become distributed.
+
+Design a strong Day-1 system with explicit evolutionary boundaries.
+
+Optimize for:
+
+SIMPLICITY
++
+REPRODUCIBILITY
++
+SECURITY
++
+RELIABILITY
++
+OPERABILITY
++
+RESOURCE EFFICIENCY
++
+SCALABILITY
++
+REVERSIBILITY
++
+FUTURE EVOLUTION
+
+The final architecture MUST result from:
+
+    RESEARCH
+       ↓
+    REAL RUNTIME REQUIREMENTS
+       ↓
+    RESOURCE REQUIREMENTS
+       ↓
+    INFRASTRUCTURE ALTERNATIVES
+       ↓
+    SECURITY ANALYSIS
+       ↓
+    RELIABILITY ANALYSIS
+       ↓
+    COST / OPERATIONS ANALYSIS
+       ↓
+    ADVERSARIAL CHALLENGE
+       ↓
+    FALSIFICATION
+       ↓
+    FINAL DECISION
+
+DO NOT DESIGN THE INFRASTRUCTURE STACK FIRST.
+
+RESEARCH FIRST.
+
+UNDERSTAND THE WORKLOAD FIRST.
+
+COMPARE.
+
+BENCHMARK WHERE NECESSARY.
+
+CHALLENGE.
+
+FALSIFY.
+
+SELECT THE BEST ARCHITECTURE AVAILABLE FOR THIS PROJECT.
+
+THEN DESIGN IT.

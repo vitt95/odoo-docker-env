@@ -1,0 +1,1648 @@
+# 02 — CONTROL PLANE ARCHITECTURE
+## Enterprise AI Agent Platform
+
+======================================================================
+ROLE
+======================================================================
+
+Act as the Principal Software Architect responsible for designing the
+Control Plane of an enterprise-grade AI agent platform.
+
+You have deep expertise in:
+
+- distributed systems
+- control-plane architectures
+- declarative systems
+- desired-state / reconciliation architectures
+- enterprise SaaS platforms
+- multi-tenant systems
+- AI agent platforms
+- platform engineering
+- configuration management
+- lifecycle management
+- registries and catalogs
+- deployment systems
+- policy systems
+- workflow systems
+- database architecture
+- API architecture
+- reliability engineering
+- security architecture
+- observability
+- software lifecycle management
+
+You are working within the global architecture principles defined in:
+
+01_ARCHITECTURE_PRINCIPLES.md
+
+That document is the architectural constitution of the project.
+
+You MUST use it as the governing context.
+
+However, do not blindly assume that every Control Plane assumption in the
+project is correct.
+
+Your task is to RESEARCH, ANALYZE, COMPARE and SELECT the best Control Plane
+architecture for THIS project.
+
+======================================================================
+1. CRITICAL INSTRUCTION
+## DO NOT DESIGN FIRST — RESEARCH FIRST
+======================================================================
+
+Do NOT start by inventing the Control Plane.
+
+First investigate how mature systems solve comparable problems.
+
+Then identify architectural patterns.
+
+Then identify candidate architectures.
+
+Then compare them.
+
+Then select the architecture.
+
+Then design the Day-1 implementation.
+
+The process MUST be:
+
+    RESEARCH
+       ↓
+    IDENTIFY REQUIREMENTS
+       ↓
+    IDENTIFY CONTROL-PLANE PATTERNS
+       ↓
+    IDENTIFY CANDIDATE ARCHITECTURES
+       ↓
+    ARCHITECTURE SELECTION ANALYSIS
+       ↓
+    TRADE-OFF ANALYSIS
+       ↓
+    ATTEMPT TO FALSIFY THE LEADING OPTION
+       ↓
+    FINAL ARCHITECTURAL DECISION
+       ↓
+    DAY-1 DESIGN
+       ↓
+    SCALE DESIGN
+       ↓
+    ENTERPRISE EVOLUTION
+
+The architecture must be the RESULT of this process.
+
+======================================================================
+2. PROJECT CONTEXT
+======================================================================
+
+We are building an enterprise AI agent platform primarily oriented toward
+CRM / ERP workloads.
+
+The platform will eventually manage:
+
+- agents
+- agent versions
+- models
+- model versions
+- tools
+- tool versions
+- workflows
+- policies
+- tenants
+- deployments
+- evaluations
+- configurations
+- runtime environments
+- resource allocations
+- lifecycle state
+- audit metadata
+
+The Control Plane should eventually provide the management and governance
+surface through which these resources can be defined, versioned,
+validated, deployed, observed and controlled.
+
+However:
+
+THE CONTROL PLANE MUST NOT BECOME THE RUNTIME.
+
+The Control Plane configures and governs.
+
+The Runtime executes.
+
+This boundary must be investigated, validated and precisely defined.
+
+======================================================================
+3. DAY-1 CONSTRAINTS
+======================================================================
+
+Day 1 must run on:
+
+- one modest machine
+- one GPU if available
+- Qwen3.5 9B
+- PostgreSQL
+- local or containerized services
+- small engineering team
+
+There is NO mandatory:
+
+- Kubernetes
+- service mesh
+- distributed database
+- multi-region
+- multi-GPU
+- cloud control plane
+- microservice architecture
+- event streaming platform
+- distributed consensus system
+- highly available control plane cluster
+
+The Control Plane must therefore be implementable as a small,
+maintainable system.
+
+======================================================================
+4. FUTURE REQUIREMENTS
+======================================================================
+
+The Control Plane should be capable of evolving toward:
+
+- multiple agents
+- multiple agent versions
+- multiple models
+- model routing
+- multiple inference workers
+- multiple GPUs
+- worker pools
+- multiple tenants
+- tenant-specific configurations
+- tenant-specific policies
+- distributed runtime
+- deployment orchestration
+- staging
+- canary releases
+- rollback
+- fleet management
+- centralized governance
+- evaluation management
+- enterprise audit
+- HA
+- multi-region
+- enterprise identity
+- advanced compliance
+
+The Day-1 Control Plane should therefore have:
+
+SIMPLE IMPLEMENTATION
++
+STRONG CONTRACTS
++
+CLEAR STATE MODEL
++
+FUTURE EVOLUTION PATH
+
+======================================================================
+5. FIRST PRINCIPLE TO INVESTIGATE
+## WHAT IS A CONTROL PLANE?
+======================================================================
+
+Do not assume that the answer is obvious.
+
+Define precisely:
+
+- what a Control Plane is
+- what responsibilities it has
+- what responsibilities it does not have
+- how it differs from a runtime
+- how it differs from an API gateway
+- how it differs from a configuration service
+- how it differs from a deployment system
+- how it differs from a policy engine
+- how it differs from an orchestration engine
+- how it differs from an admin console
+
+Then determine the minimum coherent responsibility set for our platform.
+
+======================================================================
+6. RESEARCH TARGETS
+======================================================================
+
+Research mature control-plane architectures and extract reusable patterns.
+
+At minimum investigate, where technically relevant:
+
+KUBERNETES
+
+Study:
+
+- API server
+- declarative configuration
+- desired state
+- actual state
+- reconciliation
+- controllers
+- resource model
+- metadata
+- resource versioning
+- status
+- conditions
+- finalizers
+- watches
+- event-driven reconciliation
+- control-plane / data-plane separation
+
+Do NOT assume that Kubernetes itself should be used.
+
+The goal is to understand which architectural patterns are useful.
+
+----------------------------------------------------------------------
+CLOUD / ENTERPRISE PLATFORMS
+----------------------------------------------------------------------
+
+Research relevant control-plane architectures from:
+
+- AWS
+- Microsoft
+- Google
+- other major cloud platforms where relevant
+
+Investigate how they handle:
+
+- resource management
+- configuration
+- lifecycle
+- identity
+- governance
+- deployment
+- tenancy
+- fleet management
+- regionalization
+- control/data-plane separation
+
+Extract patterns rather than copying implementations.
+
+----------------------------------------------------------------------
+AI AGENT PLATFORMS
+----------------------------------------------------------------------
+
+Research relevant architectures from mature AI agent platforms.
+
+Investigate where possible:
+
+- AWS AgentCore
+- Microsoft agent platform / Microsoft Foundry
+- Google agent platform architectures
+- other mature enterprise agent platforms
+- relevant agent governance architectures
+
+Determine:
+
+- what they call the control plane
+- what responsibilities it owns
+- how agents are registered
+- how versions are managed
+- how deployments are represented
+- how policies are attached
+- how runtime configuration is propagated
+- how tenancy is represented
+- how audit and observability integrate
+
+Do not assume vendor architecture is automatically appropriate.
+
+----------------------------------------------------------------------
+OPEN-SOURCE SYSTEMS
+----------------------------------------------------------------------
+
+Research relevant patterns from:
+
+- Kubernetes
+- Crossplane
+- Argo CD
+- Flux
+- Temporal
+- Backstage
+- service catalogs
+- configuration management systems
+- workflow systems
+- policy systems
+- platform engineering systems
+
+Only include systems that provide genuinely relevant architectural
+evidence.
+
+======================================================================
+7. ARCHITECTURE SELECTION ANALYSIS
+======================================================================
+
+This is MANDATORY.
+
+Identify at least THREE genuinely different candidate architectures for
+our Control Plane whenever three meaningful alternatives exist.
+
+At minimum evaluate candidates such as:
+
+OPTION A
+--------
+Minimal embedded Control Plane / modular monolith
+
+OPTION B
+--------
+Dedicated Control Plane service
+
+OPTION C
+--------
+Declarative Control Plane with desired-state and reconciliation
+
+However, you MUST NOT assume these are the final alternatives.
+
+Research and identify better alternatives if appropriate.
+
+Another viable candidate may be:
+
+OPTION D
+--------
+Hybrid Control Plane
+
+where some control-plane functionality is embedded locally while
+management APIs and persistence are separated.
+
+Determine whether such a model is appropriate.
+
+----------------------------------------------------------------------
+FOR EACH CANDIDATE
+----------------------------------------------------------------------
+
+Analyze:
+
+1. Architecture
+2. Responsibilities
+3. Components
+4. State model
+5. API model
+6. Persistence model
+7. Configuration model
+8. Lifecycle model
+9. Deployment model
+10. Reconciliation model
+11. Failure modes
+12. Security
+13. Multi-tenancy
+14. Observability
+15. Auditability
+16. Day-1 complexity
+17. Operational complexity
+18. Scaling characteristics
+19. Migration complexity
+20. Developer experience
+21. Testing complexity
+22. Future evolution
+23. Hardware requirements
+24. Vendor lock-in
+25. Failure isolation
+
+Then answer:
+
+WHY IS THIS OPTION GOOD?
+
+WHY IS IT BAD?
+
+WHEN WOULD THIS OPTION BE APPROPRIATE?
+
+IS IT APPROPRIATE FOR OUR PROJECT?
+
+======================================================================
+8. FINAL ARCHITECTURE SELECTION
+======================================================================
+
+Select one architecture as:
+
+RECOMMENDED
+
+Then explicitly document:
+
+WHY THIS ARCHITECTURE?
+
+WHY NOT OPTION A?
+
+WHY NOT OPTION B?
+
+WHY NOT OPTION C?
+
+WHY NOT OTHER VIABLE ALTERNATIVES?
+
+WHAT WOULD HAVE TO CHANGE FOR US TO REVERSE THIS DECISION?
+
+Do not choose a winner simply because it is the simplest.
+
+Do not choose a winner simply because it is the most scalable.
+
+Choose the architecture that provides the best balance for THIS project.
+
+======================================================================
+9. CONTROL PLANE RESPONSIBILITIES
+======================================================================
+
+Determine whether the Control Plane should own:
+
+- Agent Registry
+- Model Registry
+- Tool Registry
+- Workflow Registry
+- Policy Registry
+- Tenant Registry
+- Configuration Management
+- Version Management
+- Deployment Configuration
+- Evaluation Registry
+- Runtime Registration
+- Worker Registration
+- Resource Metadata
+- Environment Management
+- Lifecycle Management
+- Feature Flags
+- Rollout Configuration
+- Kill Switch Configuration
+- Secrets metadata
+- Credential references
+- Audit configuration
+
+For EACH responsibility determine:
+
+- MUST be Control Plane
+- SHOULD be Control Plane
+- MAY be Control Plane
+- SHOULD NOT be Control Plane
+
+Explain every significant decision.
+
+======================================================================
+10. CONTROL PLANE NON-RESPONSIBILITIES
+======================================================================
+
+Explicitly define what the Control Plane must NOT do.
+
+Evaluate whether it should avoid:
+
+- executing agent tasks
+- executing tools
+- running LLM inference
+- holding model weights
+- performing RAG retrieval
+- making business decisions
+- performing authorization itself
+- acting as a workflow runtime
+- acting as a message broker
+- becoming a generic API gateway
+- becoming an observability backend
+
+Be precise.
+
+Some of these may have control-plane interfaces without the Control Plane
+performing the underlying runtime operation.
+
+======================================================================
+11. CONTROL PLANE VS GOVERNANCE PLANE
+======================================================================
+
+The project currently separates:
+
+CONTROL PLANE
+
+from:
+
+GOVERNANCE / POLICY PLANE
+
+Determine whether this separation is correct.
+
+Research alternative approaches.
+
+Answer:
+
+- Should policy definitions live in the Control Plane?
+- Should policy evaluation live in the Governance Plane?
+- Should policy versioning live in the Control Plane?
+- Where does authorization happen?
+- Where does risk evaluation happen?
+- Where does approval state live?
+- How does Runtime obtain the applicable policy?
+- How is policy version pinned to an execution?
+
+Provide the recommended boundary.
+
+======================================================================
+12. CONTROL PLANE VS RUNTIME
+======================================================================
+
+Define the exact boundary.
+
+The Control Plane may define:
+
+- desired configuration
+- agent definitions
+- model configuration
+- tool configuration
+- policies
+- workflows
+- deployment state
+
+The Runtime may consume:
+
+- resolved configuration
+- versions
+- policy references
+- tool definitions
+- model references
+
+Determine whether this is correct.
+
+Define the contract.
+
+======================================================================
+13. DESIRED STATE VS ACTUAL STATE
+======================================================================
+
+Investigate whether the Control Plane should use a declarative model.
+
+Research:
+
+- Kubernetes reconciliation
+- Crossplane
+- GitOps
+- desired-state systems
+- configuration reconciliation
+- controller patterns
+
+Determine whether a desired-state model is useful for this project.
+
+IMPORTANT:
+
+Do not automatically implement a Kubernetes-style reconciliation engine.
+
+Determine the minimum useful form.
+
+For example, Day 1 may require only:
+
+desired configuration
+        ↓
+validation
+        ↓
+persisted configuration
+        ↓
+runtime application
+
+while future scale may introduce:
+
+desired state
+        ↓
+controller
+        ↓
+runtime fleet
+        ↓
+actual state
+        ↓
+reconciliation
+
+Determine whether this evolution is appropriate.
+
+======================================================================
+14. RESOURCE MODEL
+======================================================================
+
+Design the conceptual resource model.
+
+Potential resources:
+
+- Tenant
+- Agent
+- AgentVersion
+- Model
+- ModelVersion
+- Tool
+- ToolVersion
+- Workflow
+- WorkflowVersion
+- Policy
+- PolicyVersion
+- Deployment
+- Environment
+- Runtime
+- Worker
+- Evaluation
+- Configuration
+
+Do NOT assume this list is correct.
+
+Research whether:
+
+- resources should be combined
+- resources should be separated
+- additional resources are required
+- some resources should not exist
+
+Define:
+
+- identity
+- version
+- metadata
+- specification
+- status
+- ownership
+- lifecycle
+- references
+- dependencies
+
+======================================================================
+15. RESOURCE VERSIONING
+======================================================================
+
+Determine how resources should be versioned.
+
+Evaluate:
+
+- semantic versions
+- immutable versions
+- database revision numbers
+- configuration versions
+- deployment versions
+- content hashes
+
+Determine what must be immutable.
+
+Determine what can be mutable.
+
+Determine how runtime executions reference a specific configuration.
+
+======================================================================
+16. RESOURCE LIFECYCLE
+======================================================================
+
+Define lifecycle states.
+
+For example:
+
+DRAFT
+VALIDATING
+ACTIVE
+DEPLOYING
+READY
+DEGRADED
+SUSPENDED
+DEPRECATED
+RETIRED
+
+Do NOT assume these are correct.
+
+Research and define the correct lifecycle model.
+
+Determine:
+
+- valid transitions
+- invalid transitions
+- who can trigger transitions
+- automated transitions
+- failure transitions
+- rollback transitions
+
+Represent this as a state machine where appropriate.
+
+======================================================================
+17. CONFIGURATION MANAGEMENT
+======================================================================
+
+Determine how configuration should work.
+
+Evaluate:
+
+- database-backed configuration
+- files
+- environment variables
+- declarative manifests
+- API-driven configuration
+- Git-backed configuration
+- configuration snapshots
+
+Day 1 should remain simple.
+
+Determine:
+
+- source of truth
+- precedence
+- validation
+- versioning
+- rollback
+- promotion
+- secrets handling
+- tenant overrides
+- environment overrides
+
+======================================================================
+18. REGISTRIES
+======================================================================
+
+Evaluate the need for:
+
+- Agent Registry
+- Model Registry
+- Tool Registry
+- Workflow Registry
+- Policy Registry
+- Tenant Registry
+- Evaluation Registry
+
+Do not automatically create seven separate services.
+
+Determine whether these should initially be:
+
+- logical modules
+- database tables
+- APIs
+- separate services
+- separate databases
+
+The architecture should distinguish:
+
+LOGICAL REGISTRY
+
+from:
+
+PHYSICAL REGISTRY SERVICE.
+
+This distinction is critical.
+
+======================================================================
+19. DEPLOYMENT MANAGEMENT
+======================================================================
+
+Determine what the Control Plane should know about deployment.
+
+Evaluate:
+
+- environments
+- deployments
+- versions
+- rollout state
+- active version
+- previous version
+- rollback target
+- canary percentage
+- feature flags
+- kill switch
+
+Day 1 may simply deploy one runtime.
+
+Determine what contract should exist now to allow future:
+
+- multiple runtimes
+- worker pools
+- canary deployment
+- rolling deployment
+- fleet management
+
+======================================================================
+20. TENANCY
+======================================================================
+
+Determine how tenant context should be represented in Control Plane
+resources.
+
+Evaluate:
+
+- tenant_id
+- tenant ownership
+- tenant-scoped resources
+- global resources
+- inherited configuration
+- tenant overrides
+- tenant quotas
+- tenant policies
+
+Determine the Day-1 isolation model.
+
+======================================================================
+21. API ARCHITECTURE
+======================================================================
+
+Design the Control Plane API conceptually.
+
+Determine the appropriate interface style:
+
+- REST
+- RPC
+- GraphQL
+- event-driven
+- other
+
+Do not choose based on fashion.
+
+Determine APIs for:
+
+- agents
+- models
+- tools
+- workflows
+- policies
+- tenants
+- deployments
+- evaluations
+- configuration
+- lifecycle
+- status
+
+Define:
+
+- authentication
+- authorization
+- versioning
+- idempotency
+- pagination
+- filtering
+- optimistic concurrency
+- error model
+- correlation IDs
+- tenant context
+- audit context
+
+======================================================================
+22. DATABASE ARCHITECTURE
+======================================================================
+
+Design the Day-1 PostgreSQL data model.
+
+Determine major entities and relationships.
+
+At minimum investigate tables for:
+
+- tenants
+- agents
+- agent_versions
+- models
+- model_versions
+- tools
+- tool_versions
+- workflows
+- workflow_versions
+- policies
+- policy_versions
+- deployments
+- environments
+- evaluations
+- configuration
+- execution references
+
+Do not blindly create one table for every concept.
+
+Explain normalization / denormalization decisions.
+
+Consider:
+
+- indexes
+- foreign keys
+- uniqueness
+- tenant isolation
+- optimistic locking
+- soft deletion
+- immutable versions
+- audit metadata
+- timestamps
+- migration strategy
+
+======================================================================
+23. DESIRED STATE / ACTUAL STATE MODEL
+======================================================================
+
+If you recommend a declarative Control Plane, define:
+
+SPEC
+
+and:
+
+STATUS
+
+separately.
+
+Determine whether resources should resemble:
+
+resource:
+    metadata
+    spec
+    status
+
+or another model.
+
+Explain:
+
+- desired state
+- observed state
+- reconciliation
+- conditions
+- health
+- errors
+
+If you DO NOT recommend this model, explain why.
+
+======================================================================
+24. RECONCILIATION
+======================================================================
+
+Determine whether reconciliation is required on Day 1.
+
+Possible approaches:
+
+A.
+No reconciliation.
+
+B.
+Simple synchronous configuration application.
+
+C.
+Local reconciliation loop.
+
+D.
+Distributed controller architecture.
+
+Compare them.
+
+Select the appropriate approach.
+
+Do not implement distributed reconciliation merely because Kubernetes
+uses it.
+
+======================================================================
+25. CONSISTENCY
+======================================================================
+
+Analyze consistency requirements.
+
+Determine where the system requires:
+
+- strong consistency
+- transactional consistency
+- eventual consistency
+
+Examples to investigate:
+
+- configuration changes
+- policy changes
+- agent activation
+- deployment state
+- runtime state
+- registry state
+- evaluation state
+
+Explain consequences.
+
+======================================================================
+26. CONCURRENCY
+======================================================================
+
+Analyze concurrent modifications to Control Plane resources.
+
+Consider:
+
+- optimistic locking
+- version numbers
+- compare-and-swap
+- database transactions
+- idempotency
+- concurrent deployment changes
+- concurrent configuration updates
+
+Determine the Day-1 mechanism.
+
+======================================================================
+27. FAILURE MODES
+======================================================================
+
+Analyze Control Plane failures:
+
+- database unavailable
+- API unavailable
+- configuration corruption
+- invalid configuration
+- partial update
+- concurrent update
+- runtime unavailable
+- worker unavailable
+- deployment failure
+- policy unavailable
+- stale runtime state
+- network partition
+
+Determine:
+
+- failure behavior
+- recovery
+- rollback
+- degraded mode
+- operator intervention
+
+======================================================================
+28. CONTROL PLANE AVAILABILITY
+======================================================================
+
+Determine whether the Control Plane must be available during every agent
+execution.
+
+This is a critical architectural question.
+
+Evaluate architectures where:
+
+A.
+Runtime requires Control Plane for every execution.
+
+B.
+Runtime caches resolved configuration.
+
+C.
+Runtime operates from immutable configuration snapshots.
+
+D.
+Runtime periodically reconciles with Control Plane.
+
+Determine the best approach.
+
+The Day-1 architecture should not create unnecessary runtime dependency on
+the Control Plane.
+
+======================================================================
+29. CONFIGURATION SNAPSHOTS
+======================================================================
+
+Evaluate whether a runtime execution should reference an immutable
+configuration snapshot.
+
+For example:
+
+run_id
+agent_version
+model_version
+tool_versions
+workflow_version
+policy_version
+configuration_version
+
+Determine whether this is sufficient for:
+
+- reproducibility
+- rollback
+- debugging
+- audit
+
+======================================================================
+30. SECURITY
+======================================================================
+
+Analyze Control Plane security.
+
+Determine:
+
+- authentication
+- authorization
+- administrative roles
+- service identity
+- tenant isolation
+- secrets references
+- sensitive configuration
+- policy protection
+- configuration integrity
+- API protection
+- audit
+
+The Control Plane is highly trusted and therefore becomes a critical
+security boundary.
+
+Explicitly model the threat surface.
+
+======================================================================
+31. OBSERVABILITY
+======================================================================
+
+Define Control Plane observability.
+
+Include:
+
+- API requests
+- resource changes
+- validation
+- lifecycle transitions
+- deployments
+- reconciliation
+- configuration changes
+- policy changes
+- authentication
+- authorization
+- errors
+- latency
+- database activity
+
+Determine the minimum Day-1 telemetry.
+
+======================================================================
+32. AUDIT
+======================================================================
+
+Determine what Control Plane actions must be auditable.
+
+At minimum investigate:
+
+- who created an agent
+- who modified it
+- who activated it
+- who changed a policy
+- who changed a tool
+- who deployed a version
+- who rolled back a deployment
+- who changed tenant configuration
+- when changes happened
+- what changed
+- previous version
+- resulting version
+
+Determine whether audit records belong:
+
+- in the same database
+- in a separate audit store
+- in an append-only ledger
+- elsewhere
+
+for Day 1 and future scale.
+
+======================================================================
+33. CONTROL PLANE SECURITY MODEL
+======================================================================
+
+Define the following conceptual actors:
+
+- end user
+- tenant administrator
+- platform administrator
+- developer
+- agent runtime
+- worker
+- deployment system
+- policy engine
+- external identity provider
+
+Determine what each actor can do.
+
+Create an authorization matrix.
+
+======================================================================
+34. DATA MODEL
+======================================================================
+
+Provide an initial conceptual ER model.
+
+Include:
+
+- entities
+- relationships
+- ownership
+- tenant boundaries
+- version relationships
+- deployment relationships
+- references
+
+Provide Mermaid ER diagram.
+
+Do not attempt to produce a complete production SQL schema yet.
+
+The purpose is architecture, not implementation.
+
+======================================================================
+35. API CONTRACTS
+======================================================================
+
+Define the minimum conceptual API surface.
+
+For each major resource provide:
+
+- resource
+- endpoint or interface
+- operation
+- purpose
+- authentication
+- authorization
+- idempotency
+- concurrency behavior
+- versioning behavior
+- audit behavior
+
+Do not produce implementation code.
+
+======================================================================
+36. DAY-1 IMPLEMENTATION
+======================================================================
+
+Design the smallest Control Plane that can support the platform.
+
+Assume:
+
+- one machine
+- PostgreSQL
+- one runtime
+- Qwen3.5 9B
+- small engineering team
+
+Explicitly identify:
+
+IMPLEMENT DAY 1
+
+Examples may include:
+
+- PostgreSQL-backed resource registry
+- API
+- validation
+- versioning
+- lifecycle state
+- basic deployment metadata
+- configuration snapshots
+- audit metadata
+
+But DO NOT assume these are automatically correct.
+
+Determine the actual minimum.
+
+======================================================================
+37. PREPARE FOR SCALE
+======================================================================
+
+Determine what contracts must exist on Day 1 to allow future:
+
+- multiple runtime workers
+- multiple GPUs
+- multiple models
+- multiple tenants
+- distributed runtime
+- deployment orchestration
+- reconciliation
+- HA
+- centralized governance
+
+Separate:
+
+DESIGN NOW
+
+from:
+
+IMPLEMENT NOW
+
+======================================================================
+38. FUTURE SCALE ARCHITECTURE
+======================================================================
+
+Describe the evolution path.
+
+For example:
+
+DAY 1
+-----
+single process / modular Control Plane
+PostgreSQL
+single runtime
+
+PHASE 2
+-------
+multiple workers
+queue
+runtime registration
+configuration snapshots
+
+PHASE 3
+-------
+distributed control plane
+reconciliation
+HA
+multiple model workers
+
+ENTERPRISE
+----------
+multi-region
+fleet management
+advanced governance
+federated identity
+enterprise audit
+
+Do not assume this exact roadmap.
+
+Derive the appropriate roadmap from your research.
+
+======================================================================
+39. MIGRATION PATH
+======================================================================
+
+Explain how Day 1 evolves into the future architecture.
+
+The migration should avoid:
+
+- rewriting the domain model
+- rewriting APIs
+- rewriting agent definitions
+- rewriting runtime contracts
+- replacing the entire persistence model
+
+Identify which components can be extracted later.
+
+======================================================================
+40. ARCHITECTURAL BOUNDARIES
+======================================================================
+
+Explicitly define boundaries between:
+
+Control Plane
+Governance Plane
+Agent Runtime
+Model Runtime
+Tool Runtime
+Data / Knowledge
+Storage
+External Systems
+
+Provide a responsibility matrix:
+
+| Capability | Control Plane | Governance | Runtime | Resource | External |
+|------------|---------------|------------|---------|----------|----------|
+
+Every major capability must have one clear owner.
+
+======================================================================
+41. ANTI-PATTERNS
+======================================================================
+
+Identify Control Plane anti-patterns relevant to this project.
+
+Examples to investigate:
+
+- Control Plane becoming runtime
+- Control Plane becoming API gateway
+- synchronous dependency on Control Plane for every inference
+- mutable configuration without versioning
+- shared unversioned configuration
+- distributed control plane too early
+- Kubernetes imitation
+- registry explosion
+- configuration sprawl
+- hidden tenant coupling
+- no optimistic concurrency
+- no rollback
+- no audit
+- no desired/actual distinction where needed
+
+Do not simply list them.
+
+Explain why they are dangerous.
+
+======================================================================
+42. ARCHITECTURE DECISION RECORDS
+======================================================================
+
+Identify ADR candidates.
+
+At minimum consider:
+
+- Control Plane vs Runtime separation
+- modular monolith vs service
+- PostgreSQL as source of truth
+- resource model
+- versioning model
+- desired state model
+- reconciliation
+- configuration snapshots
+- API style
+- registry architecture
+- deployment model
+- Control Plane availability dependency
+- tenant model
+
+For each ADR:
+
+- title
+- problem
+- alternatives
+- recommendation
+- consequences
+- reversibility
+- decision deadline
+
+======================================================================
+43. REQUIRED ARCHITECTURE DIAGRAMS
+======================================================================
+
+Include Mermaid diagrams for:
+
+1. High-level Control Plane architecture
+
+2. Control Plane / Runtime separation
+
+3. Resource lifecycle
+
+4. Desired state / actual state if applicable
+
+5. Day-1 deployment
+
+6. Future distributed architecture
+
+7. Configuration propagation
+
+8. Runtime configuration snapshot
+
+9. Security boundaries
+
+10. Control Plane data model
+
+11. API interaction flow
+
+12. Deployment / rollback flow
+
+Do not produce diagrams merely for decoration.
+
+Every diagram must communicate an architectural decision.
+
+======================================================================
+44. REQUIRED ARCHITECTURE SELECTION MATRIX
+======================================================================
+
+Create a final comparison table covering the major Control Plane
+architectures considered.
+
+At minimum:
+
+| Criterion |
+| Day-1 feasibility |
+| Future scalability |
+| Operational complexity |
+| Development complexity |
+| Security |
+| Reliability |
+| Auditability |
+| Multi-tenancy |
+| Configuration management |
+| Deployment management |
+| Reconciliation |
+| Migration complexity |
+| Hardware requirements |
+| Vendor lock-in |
+| Recommended? |
+
+Then explain the result in prose.
+
+======================================================================
+45. ATTEMPT TO FALSIFY THE RECOMMENDATION
+======================================================================
+
+After selecting the recommended architecture, attempt to disprove it.
+
+Ask:
+
+- What workload breaks it?
+- What tenant scale breaks it?
+- What deployment scale breaks it?
+- What consistency requirement breaks it?
+- What availability requirement breaks it?
+- What compliance requirement breaks it?
+- What security requirement breaks it?
+- What operational requirement breaks it?
+
+Identify the first trigger that would require architectural evolution.
+
+======================================================================
+46. SELF-CRITIQUE
+======================================================================
+
+Before finalizing, ask:
+
+1. Did I actually research real control-plane architectures?
+2. Did I compare at least three meaningful alternatives?
+3. Did I select one?
+4. Did I explain why it won?
+5. Did I explain why the others lost?
+6. Did I challenge my own choice?
+7. Did I accidentally reproduce Kubernetes unnecessarily?
+8. Did I introduce unnecessary distributed infrastructure?
+9. Did I introduce unnecessary microservices?
+10. Did I create unnecessary registries?
+11. Did I make Runtime depend synchronously on Control Plane?
+12. Can runtime continue operating from a valid snapshot if Control Plane
+    becomes temporarily unavailable?
+13. Is configuration versioned?
+14. Are resource changes auditable?
+15. Are concurrent updates safe?
+16. Is tenant isolation explicit?
+17. Is the Day-1 implementation realistic?
+18. Can the architecture evolve to multiple workers?
+19. Can it evolve to multiple models?
+20. Can it evolve to HA?
+21. Can it evolve to multi-region?
+22. Can components be extracted later?
+23. Are the boundaries actually useful?
+24. Did I create abstractions without sufficient justification?
+25. Are there unresolved architectural contradictions?
+
+Include:
+
+# ARCHITECTURAL SELF-CRITIQUE
+
+======================================================================
+47. REQUIRED FINAL RECOMMENDATION
+======================================================================
+
+End with:
+
+# FINAL CONTROL PLANE RECOMMENDATION
+
+Answer concretely:
+
+"What Control Plane should this project actually build?"
+
+Describe:
+
+- architecture style
+- components
+- responsibilities
+- non-responsibilities
+- resource model
+- state model
+- versioning
+- configuration
+- persistence
+- API
+- security
+- tenancy
+- deployment
+- audit
+- observability
+- Day-1 implementation
+- future evolution
+
+Then explicitly answer:
+
+"What should NOT be built on Day 1?"
+
+Then:
+
+"What future condition should trigger the next architectural evolution?"
+
+======================================================================
+48. REQUIRED OUTPUT FILE
+======================================================================
+
+Produce:
+
+02_CONTROL_PLANE.md
+
+The document must be self-contained but must explicitly reference:
+
+01_ARCHITECTURE_PRINCIPLES.md
+
+where relevant.
+
+======================================================================
+49. SOURCE REQUIREMENTS
+======================================================================
+
+Include direct URLs to every important source.
+
+Do not fabricate sources.
+
+Do not cite sources that were not actually inspected.
+
+Prefer primary sources.
+
+For each major architectural decision, make the supporting evidence
+traceable.
+
+======================================================================
+50. FINAL INSTRUCTION
+======================================================================
+
+Act as an independent Principal Architect.
+
+Do not try to validate the project's initial assumptions.
+
+Determine whether they survive technical scrutiny.
+
+The final Control Plane architecture must be:
+
+- evidence-based
+- explicitly compared against alternatives
+- selected through a documented decision process
+- realistically implementable on Day 1
+- secure
+- observable
+- auditable
+- versioned
+- reliable
+- multi-tenant ready
+- evolvable
+- operationally simple at small scale
+
+Most importantly:
+
+DO NOT DESIGN THE CONTROL PLANE FIRST AND THEN SEARCH FOR SOURCES THAT
+JUSTIFY IT.
+
+RESEARCH FIRST.
+
+COMPARE REAL ALTERNATIVES.
+
+SELECT THE BEST ARCHITECTURE FOR THIS PROJECT.
+
+THEN DESIGN IT.

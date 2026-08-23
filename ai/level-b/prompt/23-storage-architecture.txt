@@ -1,0 +1,3718 @@
+# 23 — STORAGE ARCHITECTURE
+## Enterprise AI Agent Platform
+
+======================================================================
+ROLE
+======================================================================
+
+Act as the Principal Storage Architect, Distributed Systems Architect,
+Database Architect, Data Platform Architect, AI Data Infrastructure
+Architect, Reliability Architect and Security Architect responsible for
+designing the complete Storage Architecture of an enterprise-grade AI
+agent platform.
+
+You have deep expertise in:
+
+- relational databases
+- distributed databases
+- object storage
+- blob storage
+- key-value stores
+- document databases
+- vector databases
+- search indexes
+- caches
+- ephemeral storage
+- persistent volumes
+- event stores
+- append-only logs
+- data warehouses
+- data lakes
+- data lakehouses
+- transactional systems
+- analytical systems
+- consistency models
+- transactions
+- concurrency control
+- replication
+- durability
+- availability
+- partitioning
+- sharding
+- indexing
+- compaction
+- garbage collection
+- retention
+- archival
+- backup
+- restore
+- disaster recovery
+- encryption
+- tenant isolation
+- data lifecycle management
+- data residency
+- data sovereignty
+- storage economics
+- performance engineering
+- capacity planning
+- database operations
+- AI/LLM data architectures.
+
+You are working within:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_ARCHITECTURE.md
+04_AGENT_RUNTIME.md
+05_MODEL_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+08_KNOWLEDGE_DATA_ARCHITECTURE.md
+09_MEMORY_ARCHITECTURE.md
+10_SECURITY_ARCHITECTURE.md
+11_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+12_TRUST_PROVENANCE_ARCHITECTURE.md
+13_RELIABILITY_ARCHITECTURE.md
+14_CONCURRENCY_ARCHITECTURE.md
+15_OBSERVABILITY_ARCHITECTURE.md
+16_AUDIT_ARCHITECTURE.md
+17_EVALUATION_ARCHITECTURE.md
+18_DEPLOYMENT_LIFECYCLE_ARCHITECTURE.md
+19_MULTI_TENANCY_ARCHITECTURE.md
+20_COST_ARCHITECTURE.md
+21_CAPACITY_PLANNING_ARCHITECTURE.md
+22_NETWORKING_ARCHITECTURE.md
+
+Future architecture documents include:
+
+24_DR_ENTERPRISE_ARCHITECTURE.md
+25_ADVANCED_SUPPLY_CHAIN_ARCHITECTURE.md
+26_ENTERPRISE_COMPLIANCE_ARCHITECTURE.md
+27_MULTI_MODEL_FALLBACK_ARCHITECTURE.md
+28_HUMAN_IN_THE_LOOP_ARCHITECTURE.md
+29_REPLAY_ARCHITECTURE.md
+30_OFFLINE_MOBILE_ARCHITECTURE.md
+31_A2A_ARCHITECTURE.md
+32_ADMIN_CONSOLE_ARCHITECTURE.md
+33_ADR_ARCHITECTURE.md
+34_QUALITY_MODEL_ARCHITECTURE.md
+
+If future documents do not exist:
+
+DO NOT invent their content.
+
+Identify the dependency and define only the stable interface required
+to remain compatible with the future architecture.
+
+Existing architecture documents are not immune from challenge.
+
+If research demonstrates that an assumption in another architecture
+document is incorrect, incomplete, obsolete or suboptimal, explicitly
+identify the conflict and recommend the superior architectural
+decision.
+
+======================================================================
+1. PRIMARY OBJECTIVE
+======================================================================
+
+Design the complete Storage Architecture.
+
+The architecture must answer:
+
+WHAT DATA EXISTS?
+
+WHERE IS EACH DATA TYPE STORED?
+
+WHY IS IT STORED THERE?
+
+WHO OWNS IT?
+
+WHO CAN READ IT?
+
+WHO CAN WRITE IT?
+
+WHAT IS THE SOURCE OF TRUTH?
+
+WHAT IS DERIVED DATA?
+
+WHAT DATA MUST BE TRANSACTIONAL?
+
+WHAT DATA CAN BE EVENTUAL?
+
+WHAT DATA CAN BE REBUILT?
+
+WHAT DATA MUST NEVER BE LOST?
+
+WHAT DATA CAN BE REGENERATED?
+
+WHAT DATA CAN BE DELETED?
+
+WHAT DATA MUST BE RETAINED?
+
+WHAT DATA SHOULD BE ARCHIVED?
+
+WHAT DATA SHOULD EXPIRE?
+
+WHAT DATA BELONGS TO A TENANT?
+
+WHAT DATA BELONGS TO THE PLATFORM?
+
+WHAT DATA CONTAINS PERSONAL OR SENSITIVE INFORMATION?
+
+WHAT DATA REQUIRES ENCRYPTION?
+
+WHAT DATA REQUIRES AUDITABILITY?
+
+WHAT DATA REQUIRES IMMUTABILITY?
+
+WHAT DATA REQUIRES LOW LATENCY?
+
+WHAT DATA REQUIRES HIGH THROUGHPUT?
+
+WHAT DATA REQUIRES STRONG CONSISTENCY?
+
+WHAT DATA CAN USE EVENTUAL CONSISTENCY?
+
+WHAT DATA REQUIRES TRANSACTIONS?
+
+WHAT DATA REQUIRES VERSIONING?
+
+WHAT DATA REQUIRES REPLICATION?
+
+WHAT DATA REQUIRES BACKUP?
+
+WHAT DATA CAN BE RECONSTRUCTED?
+
+HOW DOES STORAGE SCALE?
+
+HOW DOES STORAGE FAIL?
+
+HOW DOES STORAGE RECOVER?
+
+HOW DOES STORAGE INTERACT WITH COST?
+
+HOW DOES STORAGE INTERACT WITH CAPACITY?
+
+HOW DOES STORAGE INTERACT WITH SECURITY?
+
+HOW DOES STORAGE INTERACT WITH MULTI-TENANCY?
+
+======================================================================
+2. MOST IMPORTANT INSTRUCTION
+## RESEARCH FIRST — SELECT ARCHITECTURE SECOND
+======================================================================
+
+DO NOT begin by choosing:
+
+- PostgreSQL
+- MySQL
+- MongoDB
+- DynamoDB
+- Cassandra
+- Redis
+- S3
+- Azure Blob
+- GCS
+- Elasticsearch
+- OpenSearch
+- Pinecone
+- Weaviate
+- Milvus
+- pgvector
+- Kafka
+- ClickHouse
+- a specific cloud provider
+- a specific database vendor.
+
+Those are implementation candidates, not architectural conclusions.
+
+Claude MUST independently determine the best Storage Architecture for
+THIS platform.
+
+Research first.
+
+Analyze the actual data characteristics and access patterns.
+
+Research where necessary:
+
+- transactional storage
+- relational databases
+- object storage
+- vector storage
+- search
+- caching
+- distributed storage
+- consistency
+- replication
+- partitioning
+- sharding
+- backup
+- archival
+- data lifecycle
+- database economics
+- AI/LLM storage patterns
+- multi-tenant data isolation
+- storage security.
+
+Prioritize:
+
+- official database documentation
+- official cloud storage documentation
+- official database architecture documentation
+- authoritative distributed-systems research
+- authoritative storage research
+- official vector/search documentation
+- authoritative security guidance.
+
+Do not choose a technology because:
+
+"everyone uses it."
+
+Do not choose a technology because:
+
+"it scales."
+
+Do not choose a technology because:
+
+"it is enterprise."
+
+Do not choose a technology because:
+
+"it is open source."
+
+Do not choose a technology because:
+
+"it is cloud-native."
+
+The technology must follow the workload.
+
+Required process:
+
+    DATA INVENTORY
+       ↓
+    DATA CLASSIFICATION
+       ↓
+    OWNERSHIP
+       ↓
+    SOURCE OF TRUTH
+       ↓
+    ACCESS PATTERNS
+       ↓
+    CONSISTENCY REQUIREMENTS
+       ↓
+    TRANSACTION REQUIREMENTS
+       ↓
+    DURABILITY REQUIREMENTS
+       ↓
+    LATENCY REQUIREMENTS
+       ↓
+    SCALE REQUIREMENTS
+       ↓
+    TENANT ISOLATION
+       ↓
+    SECURITY
+       ↓
+    RETENTION
+       ↓
+    BACKUP / RECOVERY
+       ↓
+    CAPACITY
+       ↓
+    COST
+       ↓
+    ARCHITECTURE OPTIONS
+       ↓
+    BENCHMARKING
+       ↓
+    ADVERSARIAL CHALLENGE
+       ↓
+    FALSIFICATION
+       ↓
+    FINAL DECISION
+       ↓
+    DAY-1 IMPLEMENTATION
+       ↓
+    FUTURE EVOLUTION
+
+CLAUDE MUST DETERMINE THE BEST STORAGE ARCHITECTURE AVAILABLE FOR THIS
+PROJECT.
+
+======================================================================
+3. CENTRAL PRINCIPLE
+======================================================================
+
+DO NOT START WITH:
+
+"Which database should we use?"
+
+START WITH:
+
+"WHAT DATA DO WE HAVE AND WHAT ARE ITS ACTUAL REQUIREMENTS?"
+
+The storage technology must follow:
+
+DATA
+
++
+ACCESS PATTERN
+
++
+CONSISTENCY
+
++
+DURABILITY
+
++
+LATENCY
+
++
+SCALE
+
++
+SECURITY
+
++
+LIFECYCLE
+
++
+COST.
+
+======================================================================
+4. LEVEL B CONSTRAINT
+======================================================================
+
+This is:
+
+LEVEL B — PREPARED DAY 1.
+
+Day 1 does NOT require:
+
+- dozens of storage engines
+- globally distributed databases
+- advanced data lakehouse architecture
+- multi-region active-active storage
+- sophisticated archival systems
+- enterprise data warehouse
+- complex storage tiering.
+
+But Day 1 MUST establish:
+
+- explicit data ownership
+- explicit source of truth
+- clear data classification
+- clear storage boundaries
+- tenant isolation
+- backup strategy
+- retention model
+- encryption
+- access control
+- migration strategy
+- observability.
+
+======================================================================
+5. DAY-1 PRINCIPLE
+======================================================================
+
+Day 1 should minimize storage technologies.
+
+But:
+
+MINIMAL NUMBER OF TECHNOLOGIES
+
+must NOT become:
+
+ONE DATABASE FOR EVERYTHING.
+
+Choose the minimum number of storage systems that correctly satisfy the
+requirements.
+
+======================================================================
+6. DATA TAXONOMY
+======================================================================
+
+Create a complete data taxonomy.
+
+At minimum evaluate:
+
+CONTROL PLANE DATA
+
+AGENT CONFIGURATION
+
+AGENT STATE
+
+RUN STATE
+
+WORKFLOW STATE
+
+MODEL CONFIGURATION
+
+TOOL CONFIGURATION
+
+MCP CONFIGURATION
+
+USER DATA
+
+TENANT DATA
+
+KNOWLEDGE DATA
+
+DOCUMENTS
+
+DOCUMENT METADATA
+
+CHUNKS
+
+EMBEDDINGS
+
+VECTOR INDEXES
+
+MEMORY
+
+CONVERSATION HISTORY
+
+WORKING MEMORY
+
+LONG-TERM MEMORY
+
+AUDIT DATA
+
+SECURITY EVENTS
+
+OBSERVABILITY DATA
+
+METRICS
+
+LOGS
+
+TRACES
+
+EVALUATION DATA
+
+COST DATA
+
+USAGE DATA
+
+CACHE DATA
+
+SECRETS REFERENCES
+
+IDENTITY DATA
+
+AUTHORIZATION DATA
+
+DEPLOYMENT DATA
+
+ARTIFACTS
+
+CHECKPOINTS
+
+REPLAY DATA
+
+BACKUPS
+
+ARCHIVES.
+
+These are candidates.
+
+Determine the actual data model.
+
+======================================================================
+7. DATA OWNERSHIP
+======================================================================
+
+For every major data type define:
+
+OWNER
+
+WRITER
+
+READER
+
+SOURCE OF TRUTH
+
+DERIVED DATA
+
+RETENTION OWNER.
+
+======================================================================
+8. SOURCE OF TRUTH
+======================================================================
+
+For every entity determine:
+
+WHERE IS THE AUTHORITATIVE RECORD?
+
+Do not allow:
+
+Database A
+
+and:
+
+Database B
+
+to both silently become authoritative.
+
+======================================================================
+9. DERIVED DATA
+======================================================================
+
+Identify data that can be regenerated.
+
+Examples:
+
+- embeddings
+- indexes
+- aggregates
+- caches.
+
+If derived:
+
+define the source.
+
+======================================================================
+10. REBUILDABILITY
+======================================================================
+
+Classify each storage artifact:
+
+NOT REBUILDABLE
+
+PARTIALLY REBUILDABLE
+
+FULLY REBUILDABLE.
+
+======================================================================
+11. DATA CRITICALITY
+======================================================================
+
+Classify:
+
+CRITICAL
+
+IMPORTANT
+
+REBUILDABLE
+
+EPHEMERAL.
+
+Use this classification to drive:
+
+- replication
+- backup
+- retention
+- recovery.
+
+======================================================================
+12. TRANSACTIONAL DATA
+======================================================================
+
+Identify data requiring:
+
+ACID transactions.
+
+Examples may include:
+
+- tenant configuration
+- authorization configuration
+- agent configuration
+- workflow state.
+
+Do not assume all state requires ACID.
+
+======================================================================
+13. EVENTUAL CONSISTENCY
+======================================================================
+
+Identify data that can tolerate:
+
+eventual consistency.
+
+Examples may include:
+
+- search indexes
+- vector indexes
+- analytics aggregates
+- caches.
+
+Validate each case.
+
+======================================================================
+14. STRONG CONSISTENCY
+======================================================================
+
+Identify data where stale reads could cause:
+
+- security violation
+- duplicate execution
+- incorrect authorization
+- financial inconsistency
+- corrupted state.
+
+======================================================================
+15. CONSISTENCY MATRIX
+======================================================================
+
+Create:
+
+| Data Type | Consistency | Why | Consequence of Stale Data |
+
+======================================================================
+16. TRANSACTION BOUNDARIES
+======================================================================
+
+Define transaction boundaries.
+
+Do not create distributed transactions unless necessary.
+
+Prefer:
+
+single authoritative transaction
+
+followed by:
+
+asynchronous propagation
+
+where correctness permits.
+
+======================================================================
+17. DISTRIBUTED TRANSACTIONS
+======================================================================
+
+Evaluate whether any use case truly requires:
+
+2-phase commit
+
+or equivalent distributed transactions.
+
+Prefer avoiding them unless justified.
+
+======================================================================
+18. EVENTUAL PROPAGATION
+======================================================================
+
+If data is propagated asynchronously:
+
+define:
+
+source
+
+→
+
+event
+
+→
+
+consumer
+
+→
+
+derived state.
+
+======================================================================
+19. IDEMPOTENCY
+======================================================================
+
+Storage operations must support idempotency where retries are possible.
+
+======================================================================
+20. CONCURRENCY
+======================================================================
+
+Using 14 define:
+
+- optimistic concurrency
+- pessimistic locking
+- version numbers
+- compare-and-swap
+- leases.
+
+Determine what each use case needs.
+
+======================================================================
+21. AGENT STATE
+======================================================================
+
+Using 04 define:
+
+- active run state
+- persistent state
+- checkpoints
+- workflow state.
+
+Determine what must survive:
+
+- process restart
+- node failure
+- deployment.
+
+======================================================================
+22. WORKFLOW STATE
+======================================================================
+
+Define durable workflow state.
+
+Determine:
+
+- checkpoint frequency
+- recovery semantics
+- state versioning
+- idempotency.
+
+======================================================================
+23. RUN STATE
+======================================================================
+
+A run may have:
+
+- status
+- inputs
+- outputs
+- intermediate state
+- errors
+- timestamps
+- cost
+- provenance.
+
+Determine which belongs in durable storage.
+
+======================================================================
+24. EPHEMERAL STATE
+======================================================================
+
+Identify data that can safely disappear.
+
+Examples:
+
+- temporary locks
+- transient queues
+- short-lived cache entries.
+
+Do not persist ephemeral state unnecessarily.
+
+======================================================================
+25. CACHE
+======================================================================
+
+Evaluate caching separately from primary persistence.
+
+Cache must NOT become:
+
+source of truth.
+
+======================================================================
+26. CACHE INVALIDATION
+======================================================================
+
+Define:
+
+- TTL
+- explicit invalidation
+- version-based invalidation
+- write-through
+- write-behind where justified.
+
+Do not use write-behind for data where durability is mandatory.
+
+======================================================================
+27. CACHE FAILURE
+======================================================================
+
+If cache disappears:
+
+the platform should recover from authoritative storage where possible.
+
+======================================================================
+28. OBJECT STORAGE
+======================================================================
+
+Evaluate object storage for:
+
+- documents
+- files
+- artifacts
+- large payloads
+- backups
+- model artifacts
+- evaluation datasets.
+
+Do not place large binary objects into relational tables unless justified.
+
+======================================================================
+29. OBJECT METADATA
+======================================================================
+
+Separate:
+
+object content
+
+from:
+
+object metadata.
+
+Determine which belongs in transactional storage.
+
+======================================================================
+30. OBJECT VERSIONING
+======================================================================
+
+Evaluate object versioning.
+
+Required where accidental overwrite or reproducibility matters.
+
+======================================================================
+31. OBJECT INTEGRITY
+======================================================================
+
+Define:
+
+- checksum
+- content hash
+- integrity verification.
+
+======================================================================
+32. CONTENT ADDRESSING
+======================================================================
+
+Evaluate content-addressed storage.
+
+Potential:
+
+hash(content)
+
+→
+
+object identity.
+
+Do not assume it is necessary.
+
+======================================================================
+33. LARGE FILE HANDLING
+======================================================================
+
+Define:
+
+- upload
+- streaming
+- chunking
+- resumable upload
+- download
+- range access.
+
+======================================================================
+34. KNOWLEDGE DATA
+======================================================================
+
+Using 08 define storage layers:
+
+Raw document
+→
+Parsed document
+→
+Chunks
+→
+Metadata
+→
+Embeddings
+→
+Index.
+
+Determine which are authoritative.
+
+======================================================================
+35. KNOWLEDGE SOURCE OF TRUTH
+======================================================================
+
+The vector index should generally not become the only copy of source
+knowledge unless explicitly justified.
+
+======================================================================
+36. EMBEDDINGS
+======================================================================
+
+Determine whether embeddings are:
+
+- derived
+- versioned
+- rebuildable.
+
+Store enough metadata to reproduce them.
+
+======================================================================
+37. EMBEDDING VERSION
+======================================================================
+
+Record:
+
+embedding model
+
+and:
+
+embedding configuration.
+
+Do not mix incompatible embeddings silently.
+
+======================================================================
+38. VECTOR STORAGE
+======================================================================
+
+Evaluate:
+
+- relational + vector extension
+- dedicated vector database
+- search engine
+- hybrid.
+
+Do not choose a vector database automatically.
+
+======================================================================
+39. VECTOR REQUIREMENTS
+======================================================================
+
+Measure:
+
+- vector count
+- dimensions
+- query volume
+- latency
+- filtering
+- metadata requirements
+- update frequency
+- index build time.
+
+======================================================================
+40. VECTOR CONSISTENCY
+======================================================================
+
+Determine acceptable delay between:
+
+source document update
+
+and:
+
+vector index update.
+
+======================================================================
+41. VECTOR REBUILD
+======================================================================
+
+Define:
+
+source
+
+→
+
+re-embedding
+
+→
+
+index rebuild.
+
+======================================================================
+42. SEARCH
+======================================================================
+
+Evaluate whether semantic search and lexical search require:
+
+- same system
+- separate systems
+- hybrid architecture.
+
+======================================================================
+43. MEMORY
+======================================================================
+
+Using 09 classify:
+
+- working memory
+- episodic memory
+- semantic memory
+- long-term memory
+- conversation history.
+
+Determine storage requirements for each.
+
+======================================================================
+44. MEMORY RETENTION
+======================================================================
+
+Define:
+
+- TTL
+- retention
+- deletion
+- archival.
+
+======================================================================
+45. MEMORY CONSISTENCY
+======================================================================
+
+Determine whether memory writes require:
+
+strong consistency
+
+or:
+
+eventual consistency.
+
+======================================================================
+46. CONVERSATION HISTORY
+======================================================================
+
+Determine:
+
+- storage format
+- ordering
+- versioning
+- retention
+- tenant isolation
+- deletion.
+
+======================================================================
+47. AUDIT DATA
+======================================================================
+
+Using 16:
+
+audit records may require:
+
+- append-only semantics
+- immutability
+- strong durability
+- retention.
+
+Do not treat audit logs as ordinary application logs.
+
+======================================================================
+48. AUDIT STORAGE
+======================================================================
+
+Evaluate whether audit data belongs in:
+
+- relational database
+- append-only store
+- object storage
+- dedicated audit system.
+
+======================================================================
+49. OBSERVABILITY STORAGE
+======================================================================
+
+Using 15 distinguish:
+
+- logs
+- metrics
+- traces.
+
+Do not force all three into the same storage engine.
+
+======================================================================
+50. COST DATA
+======================================================================
+
+Using 20:
+
+usage events
+
+and:
+
+cost calculations
+
+may have different storage requirements.
+
+======================================================================
+51. USAGE LEDGER
+======================================================================
+
+Determine whether usage events require:
+
+append-only storage
+
+or:
+
+relational transactional storage.
+
+======================================================================
+52. SECURITY DATA
+======================================================================
+
+Using 10/11 define:
+
+- identity records
+- authorization configuration
+- security events
+- credentials references.
+
+======================================================================
+53. SECRETS
+======================================================================
+
+Do not store secrets in general-purpose application databases unless
+explicitly justified.
+
+Evaluate dedicated secret-management architecture.
+
+======================================================================
+54. TENANT DATA
+======================================================================
+
+Using 19 determine isolation model:
+
+Shared tables
+
+vs:
+
+Schema per tenant
+
+vs:
+
+Database per tenant
+
+vs:
+
+Storage account/bucket per tenant
+
+vs:
+
+Hybrid.
+
+Do not choose based on preference.
+
+======================================================================
+55. TENANT ISOLATION DIMENSIONS
+======================================================================
+
+Evaluate:
+
+logical
+
+schema
+
+database
+
+network
+
+encryption
+
+physical.
+
+======================================================================
+56. TENANT ENCRYPTION
+======================================================================
+
+Evaluate:
+
+shared encryption keys
+
+vs:
+
+tenant-specific keys
+
+vs:
+
+tiered model.
+
+Do not assume customer-managed keys are required Day 1.
+
+======================================================================
+57. TENANT DATA DELETION
+======================================================================
+
+Define:
+
+Tenant deletion
+
+→
+
+data discovery
+
+→
+
+deletion
+
+→
+
+verification.
+
+======================================================================
+58. CROSS-TENANT QUERY RISK
+======================================================================
+
+Storage queries must enforce tenant boundaries.
+
+Do not rely solely on application developers remembering:
+
+WHERE tenant_id = X.
+
+Evaluate stronger mechanisms where appropriate.
+
+======================================================================
+59. ROW-LEVEL SECURITY
+======================================================================
+
+If relational storage is selected:
+
+evaluate row-level security.
+
+Do not assume it is always required.
+
+======================================================================
+60. TENANT INDEXING
+======================================================================
+
+Indexes must support tenant-aware query patterns.
+
+======================================================================
+61. DATA PARTITIONING
+======================================================================
+
+Evaluate partitioning by:
+
+- tenant
+- time
+- workload
+- geography
+- data type.
+
+======================================================================
+62. SHARDING
+======================================================================
+
+Do not shard Day 1 without evidence.
+
+Define the trigger for introducing sharding.
+
+======================================================================
+63. PARTITION KEY
+======================================================================
+
+A bad partition key can create:
+
+- hot partitions
+- uneven load
+- expensive queries.
+
+Determine partition strategy from workload.
+
+======================================================================
+64. HOT PARTITIONS
+======================================================================
+
+Identify likely hot keys:
+
+- tenant
+- agent
+- run
+- date.
+
+======================================================================
+65. TIME-SERIES DATA
+======================================================================
+
+Evaluate specialized storage for:
+
+- metrics
+- cost events
+- audit events
+- run events.
+
+======================================================================
+66. EVENT STORAGE
+======================================================================
+
+Evaluate whether events require:
+
+- event log
+- relational table
+- object storage
+- streaming system.
+
+======================================================================
+67. APPEND-ONLY DATA
+======================================================================
+
+Identify data naturally modeled as append-only:
+
+- audit
+- usage
+- events
+- history.
+
+======================================================================
+68. EVENT ORDER
+======================================================================
+
+Do not assume distributed events arrive ordered.
+
+Storage model must support:
+
+- event timestamp
+- sequence
+- version
+- idempotency.
+
+======================================================================
+69. DATA VERSIONING
+======================================================================
+
+Determine which entities require:
+
+optimistic version
+
+or:
+
+immutable versions.
+
+======================================================================
+70. SCHEMA EVOLUTION
+======================================================================
+
+Storage schemas will change.
+
+Define:
+
+- migration
+- compatibility
+- rollback
+- versioning.
+
+======================================================================
+71. DATABASE MIGRATIONS
+======================================================================
+
+Using 18:
+
+database migrations must be:
+
+- repeatable
+- observable
+- rollback-aware
+- compatible with running versions.
+
+======================================================================
+72. ZERO-DOWNTIME MIGRATION
+======================================================================
+
+Evaluate:
+
+expand
+
+→
+
+migrate
+
+→
+
+contract.
+
+Do not assume all schema changes can be transactional.
+
+======================================================================
+73. BACKWARD COMPATIBILITY
+======================================================================
+
+During deployment:
+
+old application
+
+and:
+
+new application
+
+may access the same database.
+
+Storage schema must support controlled transition.
+
+======================================================================
+74. DATA MIGRATION
+======================================================================
+
+Define migration of:
+
+- tenant data
+- knowledge data
+- embeddings
+- indexes
+- memory.
+
+======================================================================
+75. MIGRATION FAILURE
+======================================================================
+
+What happens if migration stops halfway?
+
+Define recovery.
+
+======================================================================
+76. DURABILITY
+======================================================================
+
+Classify required durability.
+
+Not all data requires identical durability.
+
+======================================================================
+77. REPLICATION
+======================================================================
+
+Evaluate:
+
+- synchronous
+- asynchronous
+- single-region
+- multi-zone
+- multi-region.
+
+======================================================================
+78. SYNCHRONOUS REPLICATION
+======================================================================
+
+Higher consistency may increase:
+
+latency.
+
+Determine whether required.
+
+======================================================================
+79. ASYNCHRONOUS REPLICATION
+======================================================================
+
+Define:
+
+RPO
+
+and:
+
+replication lag.
+
+======================================================================
+80. RPO
+======================================================================
+
+For each critical data class define acceptable:
+
+Recovery Point Objective.
+
+Do not invent values.
+
+======================================================================
+81. RTO
+======================================================================
+
+For each critical storage system define:
+
+Recovery Time Objective.
+
+Coordinate with future 24.
+
+======================================================================
+82. BACKUPS
+======================================================================
+
+Define:
+
+- what is backed up
+- frequency
+- retention
+- encryption
+- verification
+- restore process.
+
+======================================================================
+83. BACKUP ≠ REPLICATION
+======================================================================
+
+Replication does not replace backups.
+
+Explain why.
+
+======================================================================
+84. BACKUP CORRUPTION
+======================================================================
+
+Protect against:
+
+logical corruption
+
+propagating to replicas.
+
+======================================================================
+85. POINT-IN-TIME RECOVERY
+======================================================================
+
+Evaluate where required.
+
+======================================================================
+86. RESTORE TESTING
+======================================================================
+
+Backups are not valid until restoration is tested.
+
+======================================================================
+87. BACKUP ISOLATION
+======================================================================
+
+Backups should not be trivially deleted by the same credentials that
+control production storage.
+
+======================================================================
+88. IMMUTABLE BACKUPS
+======================================================================
+
+Evaluate immutability where required.
+
+======================================================================
+89. ARCHIVAL
+======================================================================
+
+Define when data moves:
+
+HOT
+→
+WARM
+→
+COLD
+→
+ARCHIVE
+→
+DELETE.
+
+Do not create tiers without economic justification.
+
+======================================================================
+90. RETENTION
+======================================================================
+
+Every major data class must define:
+
+retention policy.
+
+======================================================================
+91. DATA DELETION
+======================================================================
+
+Deletion must answer:
+
+Does deletion mean:
+
+logical deletion?
+
+physical deletion?
+
+cryptographic deletion?
+
+eventual deletion?
+
+======================================================================
+92. SOFT DELETE
+======================================================================
+
+Evaluate soft deletion.
+
+Do not use it indefinitely for data that must actually disappear.
+
+======================================================================
+93. HARD DELETE
+======================================================================
+
+Define when physical deletion is required.
+
+======================================================================
+94. LEGAL / COMPLIANCE DELETION
+======================================================================
+
+Future 26 may define detailed requirements.
+
+Day 1 should still have:
+
+data ownership
+
+and:
+
+deletion boundaries.
+
+======================================================================
+95. DATA RESIDENCY
+======================================================================
+
+Evaluate whether tenants may require:
+
+region-specific storage.
+
+Do not implement complex residency architecture unless requirements
+justify it.
+
+======================================================================
+96. DATA SOVEREIGNTY
+======================================================================
+
+Distinguish:
+
+residency
+
+from:
+
+sovereignty
+
+from:
+
+access control.
+
+======================================================================
+97. ENCRYPTION AT REST
+======================================================================
+
+Define:
+
+- database encryption
+- object storage encryption
+- backup encryption
+- key management.
+
+======================================================================
+98. KEY MANAGEMENT
+======================================================================
+
+Using 10:
+
+determine:
+
+provider-managed keys
+
+vs:
+
+customer-managed keys
+
+vs:
+
+application-level encryption.
+
+======================================================================
+99. FIELD-LEVEL ENCRYPTION
+======================================================================
+
+Evaluate for highly sensitive fields.
+
+Do not encrypt everything at application level without considering:
+
+- indexing
+- queryability
+- performance
+- key rotation.
+
+======================================================================
+100. TOKENIZATION
+======================================================================
+
+Evaluate tokenization where appropriate.
+
+======================================================================
+101. STORAGE ACCESS CONTROL
+======================================================================
+
+Define:
+
+WHO
+
+can:
+
+READ
+
+WRITE
+
+DELETE
+
+EXPORT
+
+ADMINISTER.
+
+======================================================================
+102. BREAK-GLASS STORAGE ACCESS
+======================================================================
+
+Emergency access must be:
+
+- authenticated
+- authorized
+- time-limited
+- audited.
+
+======================================================================
+103. STORAGE AUDIT
+======================================================================
+
+Log sensitive storage operations:
+
+- read where required
+- write
+- delete
+- permission changes
+- exports.
+
+======================================================================
+104. DATA EXPORT
+======================================================================
+
+Tenant export may be required.
+
+Define:
+
+- export request
+- authorization
+- asynchronous generation
+- integrity
+- expiration.
+
+======================================================================
+105. DATA IMPORT
+======================================================================
+
+Define:
+
+- validation
+- malware scanning where relevant
+- schema validation
+- tenant assignment
+- integrity.
+
+======================================================================
+106. LARGE DATA INGESTION
+======================================================================
+
+Knowledge ingestion may create huge storage bursts.
+
+Using 21:
+
+capacity planning must include ingestion peaks.
+
+======================================================================
+107. STORAGE CAPACITY
+======================================================================
+
+Measure:
+
+- bytes
+- objects
+- IOPS
+- throughput
+- queries/sec
+- index size
+- replication factor.
+
+======================================================================
+108. STORAGE UTILIZATION
+======================================================================
+
+Storage capacity is not only:
+
+disk full percentage.
+
+Also consider:
+
+IOPS
+
+throughput
+
+connections
+
+memory
+
+cache hit rate
+
+index size.
+
+======================================================================
+109. STORAGE BOTTLENECK
+======================================================================
+
+Determine which becomes saturated first:
+
+- storage capacity
+- IOPS
+- throughput
+- CPU
+- RAM
+- connections
+- network.
+
+======================================================================
+110. DATABASE CONNECTION CAPACITY
+======================================================================
+
+Using 21:
+
+application scaling can exhaust database connections.
+
+Model:
+
+workers
+→
+connections
+→
+database capacity.
+
+======================================================================
+111. READ SCALING
+======================================================================
+
+Evaluate:
+
+- read replicas
+- caching
+- denormalization
+- indexing.
+
+Do not add replicas before identifying the read bottleneck.
+
+======================================================================
+112. WRITE SCALING
+======================================================================
+
+Evaluate:
+
+- batching
+- partitioning
+- sharding
+- queueing
+- write aggregation.
+
+======================================================================
+113. INDEXING
+======================================================================
+
+Indexes improve reads but increase:
+
+- storage
+- write cost
+- maintenance
+- migration complexity.
+
+======================================================================
+114. INDEX GOVERNANCE
+======================================================================
+
+Every major index should have:
+
+- purpose
+- query pattern
+- size impact
+- maintenance cost.
+
+======================================================================
+115. QUERY PATTERNS
+======================================================================
+
+Storage architecture must start from:
+
+actual query patterns.
+
+Define:
+
+- point lookup
+- range query
+- tenant query
+- time query
+- full-text search
+- semantic search
+- aggregation.
+
+======================================================================
+116. QUERY PERFORMANCE
+======================================================================
+
+Define:
+
+p50
+
+p95
+
+p99.
+
+Storage latency must fit the overall latency budget from 21/22.
+
+======================================================================
+117. SLOW QUERY
+======================================================================
+
+Define detection and response.
+
+======================================================================
+118. QUERY TIMEOUT
+======================================================================
+
+A query timeout should not create:
+
+unbounded retry.
+
+======================================================================
+119. STORAGE RETRIES
+======================================================================
+
+Define retry behavior.
+
+Avoid retry storms against databases.
+
+======================================================================
+120. DATABASE FAILOVER
+======================================================================
+
+Define:
+
+primary failure
+→
+replica promotion
+→
+application reconnection.
+
+======================================================================
+121. FAILOVER CONSISTENCY
+======================================================================
+
+Determine possible:
+
+data loss
+
+and:
+
+replication lag.
+
+======================================================================
+122. STORAGE PARTITION
+======================================================================
+
+Model:
+
+application
+cannot reach database.
+
+Determine:
+
+- fail
+- queue
+- degrade
+- read cache
+- retry.
+
+======================================================================
+123. SPLIT-BRAIN
+======================================================================
+
+Evaluate split-brain risks.
+
+======================================================================
+124. LEADER ELECTION
+======================================================================
+
+If distributed storage uses leader election:
+
+define failure behavior.
+
+======================================================================
+125. CLOCKS
+======================================================================
+
+Distributed storage should not rely blindly on wall-clock ordering.
+
+Use:
+
+versions
+
+sequence numbers
+
+or other mechanisms where needed.
+
+======================================================================
+126. ID GENERATION
+======================================================================
+
+Evaluate globally unique IDs.
+
+Potential:
+
+UUID
+
+ULID
+
+Snowflake-like identifiers
+
+database sequences.
+
+These are candidates only.
+
+Determine the appropriate model.
+
+======================================================================
+127. HOT ROWS
+======================================================================
+
+Identify state that many workers may update simultaneously.
+
+Avoid centralized mutable bottlenecks where possible.
+
+======================================================================
+128. HOT KEYS
+======================================================================
+
+Identify high-contention keys.
+
+======================================================================
+129. LOCKING
+======================================================================
+
+Evaluate:
+
+- database locks
+- distributed locks
+- leases.
+
+Do not introduce distributed locks casually.
+
+======================================================================
+130. DISTRIBUTED LOCKS
+======================================================================
+
+If required:
+
+define:
+
+- ownership
+- lease duration
+- renewal
+- expiry
+- fencing.
+
+======================================================================
+131. FENCING
+======================================================================
+
+Prevent stale lock holders from writing after lease expiry.
+
+======================================================================
+132. STORAGE + AGENT REPLAY
+======================================================================
+
+Future 29 may require replayable state.
+
+Define which stored artifacts would enable replay without inventing the
+future architecture.
+
+======================================================================
+133. STORAGE + A2A
+======================================================================
+
+Future 31 may create additional workflow state.
+
+Ensure storage contracts can support agent-to-agent relationships.
+
+======================================================================
+134. STORAGE + HUMAN-IN-THE-LOOP
+======================================================================
+
+Future 28 may introduce paused state and approvals.
+
+Define durable workflow boundaries.
+
+======================================================================
+135. STORAGE + OFFLINE
+======================================================================
+
+Future 30 may introduce synchronization.
+
+Avoid designing storage contracts that make eventual synchronization
+impossible.
+
+======================================================================
+136. STORAGE + MULTI-MODEL
+======================================================================
+
+Future 27 may store:
+
+model-specific artifacts
+
+and:
+
+routing metadata.
+
+Keep these versioned.
+
+======================================================================
+137. STORAGE + EVALUATION
+======================================================================
+
+Evaluation datasets and results may require:
+
+large-object storage
+
+plus:
+
+metadata database.
+
+======================================================================
+138. STORAGE + AUDIT
+======================================================================
+
+Audit data must remain independently durable from ordinary application
+state where appropriate.
+
+======================================================================
+139. STORAGE + COST
+======================================================================
+
+Using 20:
+
+measure:
+
+- storage bytes
+- request count
+- IOPS
+- network transfer
+- database compute
+- backups
+- replication.
+
+======================================================================
+140. STORAGE COST OPTIMIZATION
+======================================================================
+
+Potential:
+
+- compression
+- deduplication
+- tiering
+- archival
+- caching
+- index optimization.
+
+Evaluate net effect.
+
+======================================================================
+141. COMPRESSION
+======================================================================
+
+Compression may reduce:
+
+storage cost
+
+but increase:
+
+CPU cost.
+
+Measure trade-off.
+
+======================================================================
+142. DEDUPLICATION
+======================================================================
+
+Evaluate whether duplicate documents or artifacts justify deduplication.
+
+======================================================================
+143. STORAGE TIERING
+======================================================================
+
+Do not move data to cold storage without considering:
+
+retrieval latency
+
+retrieval cost
+
+operational complexity.
+
+======================================================================
+144. DATA LOCALITY
+======================================================================
+
+Storage placement affects:
+
+- latency
+- cost
+- availability
+- residency.
+
+======================================================================
+145. CROSS-REGION STORAGE
+======================================================================
+
+Evaluate:
+
+- replication
+- latency
+- transfer cost
+- consistency.
+
+======================================================================
+146. STORAGE PROVIDER LOCK-IN
+======================================================================
+
+Classify dependencies on:
+
+- database
+- object storage API
+- vector DB
+- search engine.
+
+Determine migration cost.
+
+======================================================================
+147. PORTABILITY
+======================================================================
+
+Do not optimize for theoretical portability at the expense of using
+appropriate capabilities.
+
+Determine where abstraction is valuable.
+
+======================================================================
+148. STORAGE ABSTRACTION
+======================================================================
+
+Define stable application-level contracts.
+
+Do not expose provider-specific APIs throughout the application.
+
+======================================================================
+149. STORAGE REPOSITORIES
+======================================================================
+
+Evaluate repository/service boundaries.
+
+Avoid:
+
+every service
+
+directly manipulating:
+
+every database.
+
+======================================================================
+150. DATABASE PER SERVICE
+======================================================================
+
+Evaluate whether each bounded context should own its storage.
+
+Do not blindly implement database-per-service if operational complexity
+outweighs the benefit.
+
+======================================================================
+151. SHARED DATABASE
+======================================================================
+
+Evaluate:
+
+shared database
+
+with:
+
+strong schema ownership boundaries.
+
+======================================================================
+152. STORAGE OWNERSHIP
+======================================================================
+
+A service should have explicit authority over the data it owns.
+
+Other services should use:
+
+API
+
+or:
+
+controlled read model
+
+where appropriate.
+
+======================================================================
+153. CQRS
+======================================================================
+
+Evaluate:
+
+CQRS
+
+only where read/write characteristics justify it.
+
+======================================================================
+154. EVENT SOURCING
+======================================================================
+
+Evaluate:
+
+event sourcing
+
+only where historical state reconstruction is genuinely required.
+
+Do not use it because it is fashionable.
+
+======================================================================
+155. EVENT SOURCING COST
+======================================================================
+
+Account for:
+
+- storage growth
+- replay complexity
+- schema evolution
+- operational complexity.
+
+======================================================================
+156. MATERIALIZED VIEWS
+======================================================================
+
+Evaluate materialized views for expensive read patterns.
+
+======================================================================
+157. READ MODELS
+======================================================================
+
+Derived read models must have:
+
+source of truth.
+
+======================================================================
+158. REBUILDABILITY
+======================================================================
+
+Every derived storage layer should answer:
+
+CAN WE DELETE IT AND REBUILD IT?
+
+If yes:
+
+document how.
+
+======================================================================
+159. STORAGE CORRUPTION
+======================================================================
+
+Threat-model:
+
+logical corruption
+
+physical corruption
+
+operator error
+
+malicious deletion.
+
+======================================================================
+160. INTEGRITY VERIFICATION
+======================================================================
+
+Use:
+
+checksums
+
+hashes
+
+database integrity checks
+
+where appropriate.
+
+======================================================================
+161. STORAGE MONITORING
+======================================================================
+
+Define:
+
+- capacity
+- IOPS
+- throughput
+- latency
+- connection count
+- replication lag
+- cache hit rate
+- error rate
+- storage growth.
+
+======================================================================
+162. STORAGE ALERTING
+======================================================================
+
+Alert on:
+
+- capacity exhaustion
+- replication lag
+- backup failure
+- restore failure
+- query degradation
+- IOPS saturation
+- unexpected growth.
+
+======================================================================
+163. DATA GROWTH
+======================================================================
+
+Model:
+
+daily growth
+
+monthly growth
+
+annual growth.
+
+Use actual workload assumptions.
+
+======================================================================
+164. CAPACITY FORECAST
+======================================================================
+
+Using 21:
+
+forecast storage demand.
+
+Include:
+
+- tenants
+- runs
+- documents
+- embeddings
+- logs
+- audit
+- backups.
+
+======================================================================
+165. STORAGE FAILURE DOMAINS
+======================================================================
+
+Define:
+
+- disk
+- node
+- zone
+- region.
+
+======================================================================
+166. REPLICATION TOPOLOGY
+======================================================================
+
+Document:
+
+primary
+
+replicas
+
+regions
+
+zones.
+
+======================================================================
+167. BACKUP TOPOLOGY
+======================================================================
+
+Backups must have an independent failure domain where appropriate.
+
+======================================================================
+168. RESTORE TOPOLOGY
+======================================================================
+
+Define where restoration occurs.
+
+======================================================================
+169. DISASTER RECOVERY
+======================================================================
+
+Future 24 will provide enterprise DR.
+
+Day 1 must define:
+
+critical data
+
+RPO assumptions
+
+RTO assumptions
+
+restore ownership.
+
+======================================================================
+170. STORAGE TEST MATRIX
+======================================================================
+
+Create:
+
+| Scenario | Expected Behavior | Verification | Recovery |
+
+At minimum:
+
+- normal read
+- normal write
+- concurrent writes
+- duplicate write
+- stale read
+- database failure
+- replica failure
+- zone failure
+- backup failure
+- restore
+- logical corruption
+- accidental deletion
+- tenant deletion
+- large ingestion
+- vector rebuild
+- index rebuild
+- storage saturation
+- network partition
+- cache failure
+- migration failure
+- schema rollback.
+
+======================================================================
+171. DATABASE LOAD TEST
+======================================================================
+
+Measure:
+
+- reads/sec
+- writes/sec
+- transaction latency
+- connection count
+- CPU
+- memory
+- storage I/O.
+
+Test:
+
+normal
+
+peak
+
+burst
+
+saturation.
+
+======================================================================
+172. OBJECT STORAGE TEST
+======================================================================
+
+Measure:
+
+- upload throughput
+- download throughput
+- concurrent operations
+- object size distribution.
+
+======================================================================
+173. VECTOR STORAGE TEST
+======================================================================
+
+Measure:
+
+- insert throughput
+- query throughput
+- filtering
+- p95/p99 latency
+- index build time
+- memory
+- storage.
+
+======================================================================
+174. CACHE TEST
+======================================================================
+
+Measure:
+
+- hit rate
+- miss rate
+- latency
+- eviction
+- recovery after cache loss.
+
+======================================================================
+175. FAILOVER TEST
+======================================================================
+
+Fail the primary storage node/service.
+
+Verify:
+
+- detection
+- promotion
+- client recovery
+- data integrity
+- RPO.
+
+======================================================================
+176. RESTORE TEST
+======================================================================
+
+Perform actual restoration.
+
+Verify:
+
+- completeness
+- integrity
+- application compatibility
+- recovery time.
+
+======================================================================
+177. TENANT ISOLATION TEST
+======================================================================
+
+Attempt:
+
+Tenant A
+
+to access:
+
+Tenant B
+
+data.
+
+Must fail.
+
+Test through:
+
+- application API
+- direct query path where applicable
+- background jobs
+- exports
+- caches
+- search indexes.
+
+======================================================================
+178. DATA DELETION TEST
+======================================================================
+
+Delete a tenant.
+
+Verify that tenant data is removed from:
+
+- primary store
+- replicas where applicable
+- indexes
+- vector storage
+- cache
+- object storage
+- derived stores.
+
+Where deletion is asynchronous:
+
+track completion.
+
+======================================================================
+179. SCHEMA MIGRATION TEST
+======================================================================
+
+Test:
+
+old application
++
+new application
++
+new schema.
+
+Verify compatibility.
+
+======================================================================
+180. HOT PARTITION TEST
+======================================================================
+
+Simulate:
+
+one tenant
+
+generating disproportionate load.
+
+Measure:
+
+- latency
+- resource distribution
+- partition pressure.
+
+======================================================================
+181. STORAGE GROWTH TEST
+======================================================================
+
+Simulate increasing:
+
+- tenants
+- documents
+- runs
+- embeddings.
+
+Determine scaling trigger.
+
+======================================================================
+182. STORAGE CORRUPTION TEST
+======================================================================
+
+Simulate:
+
+logical corruption.
+
+Verify:
+
+backup
+
+and:
+
+recovery.
+
+======================================================================
+183. INCIDENT RESPONSE
+======================================================================
+
+Walk through:
+
+SCENARIO A
+----------
+Primary database becomes unavailable.
+
+SCENARIO B
+----------
+A tenant accidentally deletes large amounts of data.
+
+SCENARIO C
+----------
+Vector index becomes corrupted.
+
+SCENARIO D
+----------
+Storage grows 10x faster than forecast.
+
+SCENARIO E
+----------
+Database migration fails halfway.
+
+SCENARIO F
+----------
+Backup exists but restore fails.
+
+SCENARIO G
+----------
+Cache becomes unavailable.
+
+SCENARIO H
+----------
+Tenant deletion leaves derived data behind.
+
+SCENARIO I
+----------
+Replication lag exceeds acceptable limits.
+
+For each:
+
+DETECTION
+→
+IMPACT
+→
+CONTAINMENT
+→
+RECOVERY
+→
+DATA INTEGRITY VERIFICATION
+→
+ROOT CAUSE
+→
+PREVENTION.
+
+======================================================================
+184. ARCHITECTURE OPTIONS
+======================================================================
+
+Identify real alternatives.
+
+Potential:
+
+OPTION A
+--------
+Single relational database + object storage + cache.
+
+OPTION B
+--------
+Relational database + object storage + dedicated vector database.
+
+OPTION C
+--------
+Relational database with vector extension + object storage + cache.
+
+OPTION D
+--------
+Polyglot persistence.
+
+OPTION E
+--------
+Distributed database + object storage + specialized indexes.
+
+These are examples only.
+
+Research and determine the actual candidates.
+
+======================================================================
+185. ARCHITECTURE SELECTION MATRIX
+======================================================================
+
+Compare:
+
+| Criterion |
+| Correctness |
+| Consistency |
+| Durability |
+| Latency |
+| Throughput |
+| Scalability |
+| Tenant isolation |
+| Security |
+| Backup |
+| Recovery |
+| Operational complexity |
+| Cost |
+| Portability |
+| Day-1 simplicity |
+| Future evolution |
+| Recommendation |
+
+======================================================================
+186. "WHY NOT?" ANALYSIS
+======================================================================
+
+For the final architecture explicitly answer:
+
+WHY THIS?
+
+WHY NOT ONE DATABASE FOR EVERYTHING?
+
+WHY NOT POLYGLOT PERSISTENCE FROM DAY 1?
+
+WHY NOT POSTGRESQL FOR EVERYTHING?
+
+WHY NOT A DISTRIBUTED DATABASE?
+
+WHY NOT A DEDICATED VECTOR DATABASE?
+
+WHY NOT PGVECTOR?
+
+WHY NOT OBJECT STORAGE FOR EVERYTHING?
+
+WHY NOT EVENT SOURCING?
+
+WHY NOT CQRS?
+
+WHY NOT DATABASE PER SERVICE?
+
+WHY NOT SHARED DATABASE?
+
+WHY NOT DATABASE PER TENANT?
+
+WHY NOT SHARED TABLES?
+
+WHY NOT SHARD FROM DAY 1?
+
+WHY NOT REPLICATE EVERYTHING?
+
+WHY NOT MULTI-REGION EVERYTHING?
+
+WHY NOT CACHE EVERYTHING?
+
+WHY NOT EVENTUAL CONSISTENCY?
+
+WHY NOT STRONG CONSISTENCY EVERYWHERE?
+
+WHY NOT SERVICE-OWNED DATABASES?
+
+WHY NOT A SINGLE DATA PLATFORM?
+
+Only retain alternatives that are actually relevant after research.
+
+======================================================================
+187. REVERSIBILITY ANALYSIS
+======================================================================
+
+Classify:
+
+- primary database
+- object storage
+- vector storage
+- search
+- cache
+- schema model
+- partition model
+- sharding
+- replication
+- tenant isolation
+- storage abstraction
+- event model
+
+as:
+
+- easily reversible
+- moderately reversible
+- expensive to reverse
+- effectively irreversible.
+
+======================================================================
+188. CONTRACT VS IMPLEMENTATION
+======================================================================
+
+Define stable internal contracts.
+
+Potential:
+
+EntityStore
+ObjectStore
+VectorStore
+SearchStore
+CacheStore
+EventStore
+UsageStore
+AuditStore
+StorageMetadata
+DataVersion
+StoragePolicy.
+
+These are examples only.
+
+Determine the minimum required set.
+
+The contracts must remain independent from:
+
+- PostgreSQL
+- MySQL
+- MongoDB
+- Redis
+- S3
+- GCS
+- Azure Blob
+- OpenSearch
+- Elasticsearch
+- Pinecone
+- Weaviate
+- Milvus
+- any specific storage vendor.
+
+======================================================================
+189. REQUIRED DIAGRAMS
+======================================================================
+
+Include Mermaid diagrams for:
+
+1. Complete storage architecture
+2. Data classification
+3. Source-of-truth map
+4. Transactional storage
+5. Object storage
+6. Vector storage
+7. Search storage
+8. Cache
+9. Agent state
+10. Workflow state
+11. Memory storage
+12. Knowledge storage
+13. Audit storage
+14. Cost/usage storage
+15. Tenant isolation
+16. Data lifecycle
+17. Backup architecture
+18. Restore architecture
+19. Replication
+20. Storage failure domains
+21. Storage capacity
+22. Storage + networking
+23. Storage + cost
+24. Day-1 → enterprise evolution
+
+======================================================================
+190. ADR CANDIDATES
+======================================================================
+
+Identify ADRs for:
+
+- primary transactional store
+- object storage
+- vector storage
+- search
+- cache
+- data ownership
+- source of truth
+- tenant isolation
+- consistency
+- replication
+- backup
+- retention
+- storage abstraction
+- partitioning
+- sharding
+- schema evolution
+- data deletion.
+
+For each:
+
+- problem
+- alternatives
+- recommendation
+- consequences
+- reversibility
+- decision deadline.
+
+======================================================================
+191. DAY-1 / PREPARE / SCALE / ENTERPRISE
+======================================================================
+
+Create:
+
+| Capability | Day 1 | Prepare | Scale | Enterprise |
+
+Cover:
+
+- transactional database
+- object storage
+- cache
+- vector storage
+- search
+- agent state
+- workflow state
+- memory
+- knowledge
+- audit
+- cost
+- backups
+- restore
+- retention
+- deletion
+- tenant isolation
+- encryption
+- replication
+- sharding
+- multi-region
+- archival
+- data residency.
+
+======================================================================
+192. DATA LIFECYCLE MATRIX
+======================================================================
+
+Create:
+
+| Data | Created | Active | Archived | Deleted | Rebuildable |
+
+For every major data class.
+
+======================================================================
+193. STORAGE CRITICALITY MATRIX
+======================================================================
+
+Create:
+
+| Data | Criticality | Source of Truth | RPO | RTO | Backup | Replication |
+
+Do not invent RPO/RTO values.
+
+Derive them from system requirements.
+
+======================================================================
+194. STORAGE CONSISTENCY MATRIX
+======================================================================
+
+Create:
+
+| Data | Consistency | Transaction | Staleness Tolerance | Reason |
+
+======================================================================
+195. STORAGE OWNERSHIP MATRIX
+======================================================================
+
+Create:
+
+| Data | Owner | Writers | Readers | Tenant Scope |
+
+======================================================================
+196. STORAGE CAPACITY MODEL
+======================================================================
+
+Define formulas for:
+
+database size
+
+object storage
+
+vector storage
+
+index size
+
+audit growth
+
+log growth
+
+backup growth
+
+replication overhead.
+
+State assumptions explicitly.
+
+======================================================================
+197. STORAGE COST MODEL
+======================================================================
+
+Using 20 define:
+
+storage bytes
+
+requests
+
+IOPS
+
+compute
+
+network
+
+backup
+
+replication
+
+retrieval.
+
+Separate:
+
+internal cost
+
+from:
+
+customer pricing.
+
+======================================================================
+198. ATTEMPT TO FALSIFY THE RECOMMENDATION
+======================================================================
+
+Try to prove the selected architecture wrong.
+
+Ask:
+
+- What data volume breaks the architecture?
+- What tenant count breaks isolation?
+- What write rate breaks the primary store?
+- What read rate breaks it?
+- What vector count breaks vector storage?
+- What document size breaks object handling?
+- What replication lag breaks correctness?
+- What backup size breaks recovery?
+- What restore time breaks RTO?
+- What schema evolution breaks compatibility?
+- What hot partition breaks scaling?
+- What cache failure breaks the system?
+- What storage provider failure breaks availability?
+- What region failure breaks recovery?
+- What deletion scenario leaves residual data?
+- What cost growth makes the architecture uneconomic?
+
+Determine the first architectural trigger.
+
+======================================================================
+199. ARCHITECTURAL SELF-CRITIQUE
+======================================================================
+
+Before finalizing, ask:
+
+1. Did I classify the data before selecting technology?
+2. Did I define source of truth?
+3. Did I distinguish authoritative and derived data?
+4. Did I distinguish transactional and non-transactional data?
+5. Did I define consistency per workload?
+6. Did I define tenant isolation?
+7. Did I define deletion?
+8. Did I define retention?
+9. Did I define backup?
+10. Did I define restore?
+11. Did I define rebuildability?
+12. Did I define storage capacity?
+13. Did I define storage cost?
+14. Did I account for vector storage?
+15. Did I account for object storage?
+16. Did I account for cache failure?
+17. Did I account for schema evolution?
+18. Did I account for migration?
+19. Did I avoid premature sharding?
+20. Did I avoid unnecessary polyglot persistence?
+21. Did I avoid forcing all data into one database?
+22. Did I preserve future evolution?
+23. What assumptions could invalidate the architecture?
+
+Include:
+
+# ARCHITECTURAL SELF-CRITIQUE
+
+======================================================================
+200. FINAL RECOMMENDATION
+======================================================================
+
+End with:
+
+# FINAL STORAGE ARCHITECTURE RECOMMENDATION
+
+Answer:
+
+"What Storage Architecture should this platform actually build?"
+
+Be concrete.
+
+Describe:
+
+- data taxonomy
+- source of truth
+- transactional storage
+- object storage
+- vector storage
+- search
+- cache
+- agent state
+- workflow state
+- memory
+- knowledge
+- audit
+- cost/usage
+- tenant isolation
+- consistency
+- transactions
+- replication
+- backups
+- restore
+- retention
+- deletion
+- encryption
+- storage capacity
+- storage cost
+- migration
+- schema evolution
+- Day-1 implementation
+- future evolution.
+
+Then explicitly answer:
+
+"What MUST NOT be built on Day 1?"
+
+Then:
+
+"What future condition should trigger the next storage architecture
+evolution?"
+
+======================================================================
+201. REQUIRED OUTPUT
+======================================================================
+
+Produce:
+
+23_STORAGE_ARCHITECTURE.md
+
+The document MUST explicitly reference:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_ARCHITECTURE.md
+04_AGENT_RUNTIME.md
+05_MODEL_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+08_KNOWLEDGE_DATA_ARCHITECTURE.md
+09_MEMORY_ARCHITECTURE.md
+10_SECURITY_ARCHITECTURE.md
+11_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+12_TRUST_PROVENANCE_ARCHITECTURE.md
+13_RELIABILITY_ARCHITECTURE.md
+14_CONCURRENCY_ARCHITECTURE.md
+15_OBSERVABILITY_ARCHITECTURE.md
+16_AUDIT_ARCHITECTURE.md
+17_EVALUATION_ARCHITECTURE.md
+18_DEPLOYMENT_LIFECYCLE_ARCHITECTURE.md
+19_MULTI_TENANCY_ARCHITECTURE.md
+20_COST_ARCHITECTURE.md
+21_CAPACITY_PLANNING_ARCHITECTURE.md
+22_NETWORKING_ARCHITECTURE.md
+
+Also identify future interactions with:
+
+24_DR_ENTERPRISE_ARCHITECTURE.md
+25_ADVANCED_SUPPLY_CHAIN_ARCHITECTURE.md
+26_ENTERPRISE_COMPLIANCE_ARCHITECTURE.md
+27_MULTI_MODEL_FALLBACK_ARCHITECTURE.md
+28_HUMAN_IN_THE_LOOP_ARCHITECTURE.md
+29_REPLAY_ARCHITECTURE.md
+30_OFFLINE_MOBILE_ARCHITECTURE.md
+31_A2A_ARCHITECTURE.md
+32_ADMIN_CONSOLE_ARCHITECTURE.md
+34_QUALITY_MODEL_ARCHITECTURE.md
+
+If these documents do not exist:
+
+DO NOT invent their content.
+
+Define only stable contracts and future dependencies.
+
+If there is a conflict:
+
+DO NOT silently resolve it.
+
+Identify the conflict.
+
+Explain the trade-off.
+
+Recommend the superior architectural decision.
+
+Create an ADR candidate where appropriate.
+
+======================================================================
+202. SOURCE REQUIREMENTS
+======================================================================
+
+THIS SECTION IS MANDATORY.
+
+Use current web research wherever storage technology capabilities,
+limits, pricing or operational behavior materially affect the
+architecture.
+
+Prioritize:
+
+- official database documentation
+- official object storage documentation
+- official vector database documentation
+- official search documentation
+- official cloud storage documentation
+- authoritative distributed-systems research
+- authoritative database research
+- authoritative security guidance.
+
+When discussing current storage pricing:
+
+STATE THE DATE OF THE PRICE DATA.
+
+Do not hard-code provider prices into architectural contracts.
+
+Do not fabricate:
+
+- capacity
+- throughput
+- latency
+- durability
+- consistency guarantees
+- pricing
+- recovery characteristics.
+
+Do not cite sources that were not actually inspected.
+
+Clearly distinguish:
+
+SOURCE FACT
+
+from:
+
+BENCHMARK
+
+from:
+
+MEASUREMENT
+
+from:
+
+CALCULATION
+
+from:
+
+INFERENCE
+
+from:
+
+ARCHITECTURAL RECOMMENDATION.
+
+======================================================================
+203. VERSION AND DATE DISCIPLINE
+======================================================================
+
+At the beginning of the document state:
+
+RESEARCH DATE
+
+BENCHMARK DATE
+
+and relevant:
+
+DATABASE VERSION
+
+VECTOR ENGINE VERSION
+
+OBJECT STORAGE API VERSION
+
+SEARCH ENGINE VERSION
+
+CACHE VERSION
+
+for technologies actually selected.
+
+Storage behavior may differ across versions.
+
+======================================================================
+204. ABSOLUTE FINAL INSTRUCTION
+======================================================================
+
+Act as an INDEPENDENT Principal Storage Architect.
+
+Your responsibility is to determine the best storage architecture for
+THIS platform.
+
+Do not assume:
+
+ONE DATABASE = BEST ARCHITECTURE.
+
+Do not assume:
+
+POLYGLOT PERSISTENCE = BEST ARCHITECTURE.
+
+Do not assume:
+
+POSTGRESQL = BEST ARCHITECTURE.
+
+Do not assume:
+
+DISTRIBUTED DATABASE = REQUIRED.
+
+Do not assume:
+
+VECTOR DATABASE = REQUIRED.
+
+Do not assume:
+
+DEDICATED SEARCH ENGINE = REQUIRED.
+
+Do not assume:
+
+OBJECT STORAGE = SUFFICIENT FOR EVERYTHING.
+
+Do not assume:
+
+CACHE = SOURCE OF TRUTH.
+
+Do not assume:
+
+REPLICATION = BACKUP.
+
+Do not assume:
+
+BACKUP = RECOVERY.
+
+Do not assume:
+
+EVENTUAL CONSISTENCY = BAD.
+
+Do not assume:
+
+STRONG CONSISTENCY = ALWAYS BETTER.
+
+Do not assume:
+
+SHARDING = SCALABILITY.
+
+Do not assume:
+
+MORE REPLICAS = MORE RELIABILITY WITHOUT TRADE-OFFS.
+
+Do not assume:
+
+MULTI-REGION = REQUIRED DAY 1.
+
+Do not assume:
+
+DATABASE PER TENANT = BEST ISOLATION.
+
+Do not assume:
+
+SHARED TABLES = SUFFICIENT ISOLATION.
+
+Do not assume:
+
+ENCRYPTION = COMPLETE DATA SECURITY.
+
+Do not assume:
+
+SOFT DELETE = DATA DELETION.
+
+Do not assume:
+
+DERIVED DATA = AUTHORITATIVE DATA.
+
+Do not allow:
+
+VECTOR INDEX
+
+to become:
+
+THE ONLY COPY OF KNOWLEDGE.
+
+Do not allow:
+
+CACHE
+
+to become:
+
+THE ONLY COPY OF CRITICAL STATE.
+
+Do not allow:
+
+BACKUP
+
+to remain:
+
+UNTESTED.
+
+Do not allow:
+
+TENANT DATA
+
+to become:
+
+CROSS-TENANT QUERYABLE.
+
+Do not allow:
+
+SCHEMA CHANGES
+
+to break:
+
+RUNNING VERSIONS.
+
+Do not allow:
+
+STORAGE SCALING
+
+to ignore:
+
+NETWORK CAPACITY.
+
+Do not allow:
+
+STORAGE COST
+
+to be hidden inside:
+
+UNATTRIBUTED PLATFORM OVERHEAD.
+
+Do not allow:
+
+DATA RETENTION
+
+to become:
+
+INFINITE BY DEFAULT.
+
+Do not allow:
+
+SHARDING
+
+to become:
+
+A SUBSTITUTE FOR UNDERSTANDING THE WORKLOAD.
+
+Do not allow:
+
+A STORAGE TECHNOLOGY
+
+to dictate:
+
+THE DATA MODEL
+
+without explicit architectural justification.
+
+Optimize for:
+
+CORRECTNESS
++
+CLEAR SOURCE OF TRUTH
++
+APPROPRIATE CONSISTENCY
++
+DURABILITY
++
+RECOVERABILITY
++
+TENANT ISOLATION
++
+SECURITY
++
+PREDICTABLE PERFORMANCE
++
+MEASURABLE CAPACITY
++
+COST EFFICIENCY
++
+LOW DAY-1 COMPLEXITY
++
+FUTURE EVOLUTION.
+
+The final architecture MUST result from:
+
+    DATA INVENTORY
+       ↓
+    DATA CLASSIFICATION
+       ↓
+    OWNERSHIP
+       ↓
+    SOURCE OF TRUTH
+       ↓
+    ACCESS PATTERNS
+       ↓
+    CONSISTENCY
+       ↓
+    TRANSACTIONS
+       ↓
+    DURABILITY
+       ↓
+    LATENCY
+       ↓
+    SCALE
+       ↓
+    SECURITY
+       ↓
+    RETENTION
+       ↓
+    BACKUP / RECOVERY
+       ↓
+    CAPACITY
+       ↓
+    COST
+       ↓
+    ALTERNATIVE COMPARISON
+       ↓
+    BENCHMARKING
+       ↓
+    ADVERSARIAL CHALLENGE
+       ↓
+    FALSIFICATION
+       ↓
+    FINAL DECISION
+
+DO NOT CHOOSE THE DATABASE FIRST.
+
+DO NOT CHOOSE THE VECTOR DATABASE FIRST.
+
+DO NOT CHOOSE OBJECT STORAGE FIRST.
+
+DO NOT CHOOSE THE CACHE FIRST.
+
+DO NOT CHOOSE THE CLOUD FIRST.
+
+DO NOT CHOOSE SHARDING FIRST.
+
+RESEARCH THE DATA FIRST.
+
+CLASSIFY EVERY MAJOR DATA TYPE.
+
+DEFINE ITS OWNER.
+
+DEFINE ITS SOURCE OF TRUTH.
+
+DEFINE ITS ACCESS PATTERN.
+
+DEFINE ITS CONSISTENCY REQUIREMENT.
+
+DEFINE ITS DURABILITY REQUIREMENT.
+
+DEFINE ITS RETENTION.
+
+DEFINE ITS SECURITY REQUIREMENTS.
+
+DEFINE ITS CAPACITY.
+
+DEFINE ITS COST.
+
+THEN COMPARE STORAGE ARCHITECTURES.
+
+THEN BENCHMARK WHERE NECESSARY.
+
+THEN CHALLENGE THE DESIGN.
+
+THEN ATTEMPT TO FALSIFY IT.
+
+THEN SELECT THE BEST STORAGE ARCHITECTURE AVAILABLE FOR THIS PROJECT.
+
+THEN DESIGN IT.

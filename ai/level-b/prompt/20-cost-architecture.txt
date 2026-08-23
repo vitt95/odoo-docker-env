@@ -1,0 +1,2841 @@
+# 20 — COST ARCHITECTURE
+## Enterprise AI Agent Platform
+
+======================================================================
+ROLE
+======================================================================
+
+Act as the Principal FinOps Architect, AI Infrastructure Economist,
+Distributed Systems Architect, Platform Cost Architect and AI Runtime
+Cost Optimization Architect responsible for designing the complete
+Cost Architecture of an enterprise-grade AI agent platform.
+
+You have deep expertise in:
+
+- FinOps
+- cloud economics
+- AI inference economics
+- GPU economics
+- LLM pricing
+- token accounting
+- model inference
+- tool execution costs
+- API metering
+- storage economics
+- database economics
+- vector database economics
+- network egress
+- observability costs
+- workload attribution
+- cost allocation
+- cost forecasting
+- chargeback
+- showback
+- budgets
+- quotas
+- rate limits
+- capacity planning
+- resource utilization
+- multi-tenancy
+- cost-aware scheduling
+- unit economics
+- marginal cost
+- fixed vs variable costs
+- amortization
+- reserved capacity
+- autoscaling
+- infrastructure utilization.
+
+You are working within:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_ARCHITECTURE.md
+04_AGENT_RUNTIME.md
+05_MODEL_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+08_KNOWLEDGE_DATA_ARCHITECTURE.md
+09_MEMORY_ARCHITECTURE.md
+10_SECURITY_ARCHITECTURE.md
+11_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+12_TRUST_PROVENANCE_ARCHITECTURE.md
+13_RELIABILITY_ARCHITECTURE.md
+14_CONCURRENCY_ARCHITECTURE.md
+15_OBSERVABILITY_ARCHITECTURE.md
+16_AUDIT_ARCHITECTURE.md
+17_EVALUATION_ARCHITECTURE.md
+18_DEPLOYMENT_LIFECYCLE_ARCHITECTURE.md
+19_MULTI_TENANCY_ARCHITECTURE.md
+
+Future architecture documents include:
+
+21_CAPACITY_PLANNING_ARCHITECTURE.md
+22_NETWORKING_ARCHITECTURE.md
+23_STORAGE_ARCHITECTURE.md
+24_DR_ENTERPRISE_ARCHITECTURE.md
+25_ADVANCED_SUPPLY_CHAIN_ARCHITECTURE.md
+26_ENTERPRISE_COMPLIANCE_ARCHITECTURE.md
+27_MULTI_MODEL_FALLBACK_ARCHITECTURE.md
+28_HUMAN_IN_THE_LOOP_ARCHITECTURE.md
+29_REPLAY_ARCHITECTURE.md
+30_OFFLINE_MOBILE_ARCHITECTURE.md
+31_A2A_ARCHITECTURE.md
+32_ADMIN_CONSOLE_ARCHITECTURE.md
+33_ADR_ARCHITECTURE.md
+34_QUALITY_MODEL_ARCHITECTURE.md
+
+If these future documents do not exist:
+
+DO NOT invent their content.
+
+Instead identify the dependency and define the stable interface that
+must remain compatible.
+
+Existing architecture documents are not immune from challenge.
+
+If research demonstrates that an assumption in another document is
+incorrect, incomplete, obsolete or economically suboptimal, explicitly
+identify the conflict and recommend the superior architecture.
+
+======================================================================
+1. PRIMARY OBJECTIVE
+======================================================================
+
+Design the complete Cost Architecture.
+
+The architecture must answer:
+
+WHAT DOES ONE AGENT RUN ACTUALLY COST?
+
+WHAT DOES ONE MODEL CALL COST?
+
+WHAT DOES ONE TOOL CALL COST?
+
+WHAT DOES ONE WORKFLOW COST?
+
+WHAT DOES ONE TENANT COST?
+
+WHAT DOES ONE USER COST?
+
+WHAT DOES ONE SUCCESSFUL BUSINESS OPERATION COST?
+
+WHICH COSTS ARE FIXED?
+
+WHICH COSTS ARE VARIABLE?
+
+WHICH COSTS ARE DIRECT?
+
+WHICH COSTS ARE SHARED?
+
+WHICH COSTS ARE INDIRECT?
+
+HOW ARE SHARED COSTS ALLOCATED?
+
+HOW ARE COSTS ATTRIBUTED TO TENANTS?
+
+HOW ARE COSTS ATTRIBUTED TO AGENTS?
+
+HOW ARE COSTS ATTRIBUTED TO RUNS?
+
+HOW ARE COSTS ATTRIBUTED TO TOOLS?
+
+HOW ARE GPU COSTS ATTRIBUTED?
+
+HOW ARE MODEL COSTS ATTRIBUTED?
+
+HOW ARE STORAGE COSTS ATTRIBUTED?
+
+HOW ARE NETWORK COSTS ATTRIBUTED?
+
+HOW ARE OBSERVABILITY COSTS ATTRIBUTED?
+
+HOW ARE COSTS FORECAST?
+
+HOW ARE BUDGETS ENFORCED?
+
+HOW DOES THE SYSTEM PREVENT RUNAWAY COST?
+
+HOW DOES COST INTERACT WITH CONCURRENCY?
+
+HOW DOES COST INTERACT WITH MODEL SELECTION?
+
+HOW DOES COST INTERACT WITH MULTI-TENANCY?
+
+HOW DOES COST INTERACT WITH CAPACITY PLANNING?
+
+======================================================================
+2. MOST IMPORTANT INSTRUCTION
+## RESEARCH FIRST — SELECT ARCHITECTURE SECOND
+======================================================================
+
+DO NOT begin by choosing:
+
+- a billing provider
+- Stripe
+- OpenMeter
+- Kubecost
+- cloud billing APIs
+- Prometheus
+- a database
+- a cost analytics platform
+- a token counter
+- a specific FinOps tool.
+
+Research first.
+
+Analyze the actual economic model of THIS platform.
+
+Research current authoritative information where external pricing,
+metering behavior or technology capabilities materially affect the
+architecture.
+
+Research:
+
+- current model pricing where relevant
+- current GPU economics
+- cloud compute billing models
+- storage pricing
+- network pricing
+- database pricing
+- vector database pricing
+- observability pricing
+- inference economics
+- token accounting
+- batch inference economics
+- reserved capacity
+- spot/preemptible economics
+- FinOps practices
+- cost allocation practices.
+
+For technology-specific decisions:
+
+prioritize official pricing/documentation first.
+
+For FinOps methodology:
+
+prioritize authoritative FinOps Foundation guidance and other
+authoritative sources.
+
+Do not assume provider pricing is stable.
+
+The architecture must separate:
+
+COST MEASUREMENT
+
+from:
+
+CURRENT PRICE.
+
+Required process:
+
+    COST MODEL
+       ↓
+    COST DRIVER INVENTORY
+       ↓
+    METERING MODEL
+       ↓
+    ATTRIBUTION MODEL
+       ↓
+    PRICING MODEL
+       ↓
+    ALLOCATION MODEL
+       ↓
+    BUDGET MODEL
+       ↓
+    COST CONTROL
+       ↓
+    FORECASTING
+       ↓
+    MULTI-TENANT CHARGEBACK
+       ↓
+    CAPACITY INTERACTION
+       ↓
+    ARCHITECTURE OPTIONS
+       ↓
+    ADVERSARIAL CHALLENGE
+       ↓
+    FALSIFICATION
+       ↓
+    FINAL DECISION
+       ↓
+    DAY-1 IMPLEMENTATION
+       ↓
+    FUTURE EVOLUTION
+
+CLAUDE MUST DETERMINE THE BEST COST ARCHITECTURE AVAILABLE FOR THIS
+PROJECT.
+
+======================================================================
+3. CENTRAL PRINCIPLE
+======================================================================
+
+COST MEASUREMENT ≠ BILLING.
+
+The platform must first know:
+
+WHAT RESOURCES WERE CONSUMED?
+
+Then:
+
+WHO CAUSED THE CONSUMPTION?
+
+Then:
+
+WHAT DID IT COST?
+
+Then optionally:
+
+WHAT SHOULD THE CUSTOMER BE CHARGED?
+
+Do not couple internal cost measurement directly to external billing.
+
+======================================================================
+4. LEVEL B CONSTRAINT
+======================================================================
+
+This is:
+
+LEVEL B — PREPARED DAY 1.
+
+Day 1 does NOT require:
+
+- a complete billing platform
+- customer invoices
+- complex chargeback
+- predictive financial models
+- enterprise FinOps automation.
+
+But Day 1 MUST establish:
+
+- usage events
+- cost dimensions
+- resource attribution
+- tenant attribution
+- run attribution
+- model attribution
+- tool attribution.
+
+Otherwise historical cost data will be impossible to reconstruct accurately.
+
+======================================================================
+5. DAY-1 PRINCIPLE
+======================================================================
+
+Day 1 should measure:
+
+- model usage
+- tokens
+- model requests
+- GPU/resource usage where applicable
+- tool calls
+- external API usage
+- storage usage
+- database usage where material
+- network usage where material
+- tenant attribution
+- agent/run attribution.
+
+Do not implement full billing Day 1.
+
+But:
+
+DO NOT build the runtime without cost attribution identifiers.
+
+======================================================================
+6. COST TAXONOMY
+======================================================================
+
+Define the platform's cost categories.
+
+At minimum evaluate:
+
+MODEL INFERENCE
+
+GPU
+
+CPU
+
+RAM
+
+STORAGE
+
+DATABASE
+
+VECTOR DATABASE
+
+EMBEDDINGS
+
+RERANKING
+
+NETWORK
+
+TOOL EXECUTION
+
+EXTERNAL APIs
+
+MCP
+
+OBSERVABILITY
+
+LOGGING
+
+AUDIT
+
+QUEUES
+
+WORKFLOWS
+
+BACKUPS
+
+DISASTER RECOVERY
+
+EVALUATION
+
+DEVELOPMENT
+
+STAGING
+
+SUPPORT / PLATFORM OVERHEAD.
+
+Determine which belong in the primary cost model.
+
+======================================================================
+7. FIXED VS VARIABLE COST
+======================================================================
+
+Define:
+
+FIXED COST
+
+VARIABLE COST
+
+SEMI-VARIABLE COST
+
+Examples:
+
+Dedicated GPU
+→ potentially fixed.
+
+Model API calls
+→ variable.
+
+Database cluster
+→ semi-variable.
+
+Do not classify costs based only on provider billing terminology.
+
+======================================================================
+8. DIRECT VS SHARED COST
+======================================================================
+
+Define:
+
+DIRECT COST
+
+SHARED COST
+
+PLATFORM OVERHEAD.
+
+Examples:
+
+Tenant-specific API calls
+→ direct.
+
+Shared monitoring cluster
+→ shared.
+
+Control Plane
+→ platform overhead.
+
+======================================================================
+9. COST ALLOCATION
+======================================================================
+
+For shared resources determine allocation methodology.
+
+Potential:
+
+- usage-based
+- proportional
+- reserved capacity
+- equal allocation
+- weighted allocation.
+
+Do not choose arbitrary allocation.
+
+======================================================================
+10. COST ATTRIBUTION HIERARCHY
+======================================================================
+
+Define:
+
+Platform
+ ↓
+Tenant
+ ↓
+Project
+ ↓
+User
+ ↓
+Agent
+ ↓
+Run
+ ↓
+Step
+ ↓
+Operation.
+
+Determine which levels are mandatory.
+
+======================================================================
+11. COST CONTEXT
+======================================================================
+
+Using 19 and 14 define a stable cost context.
+
+Potential:
+
+tenant_id
+project_id
+agent_id
+run_id
+operation_id
+resource_type.
+
+These are examples only.
+
+Determine the minimum.
+
+======================================================================
+12. COST EVENT
+======================================================================
+
+Define the canonical:
+
+Cost / Usage Event.
+
+Potential:
+
+event_id
+timestamp
+tenant
+resource
+quantity
+unit
+provider
+price_reference
+source
+operation.
+
+Determine the actual schema.
+
+======================================================================
+13. USAGE VS COST EVENT
+======================================================================
+
+Strongly consider separating:
+
+USAGE EVENT
+
+from:
+
+COST EVENT.
+
+Example:
+
+Usage:
+
+10,000 tokens.
+
+Pricing:
+
+$X per million tokens.
+
+Do not permanently encode current price into immutable usage history
+unless there is a compelling reason.
+
+======================================================================
+14. PRICE CATALOG
+======================================================================
+
+Define a versioned:
+
+Price Catalog.
+
+It may contain:
+
+provider
+resource
+region
+unit
+price
+currency
+effective_from
+effective_to.
+
+These are examples only.
+
+Determine the correct model.
+
+======================================================================
+15. PRICE VERSIONING
+======================================================================
+
+Pricing changes.
+
+Historical usage must remain reproducible using the price applicable
+at the relevant time.
+
+Do not overwrite old prices.
+
+======================================================================
+16. CURRENCY
+======================================================================
+
+Determine canonical accounting currency.
+
+Separate:
+
+usage units
+
+from:
+
+currency.
+
+======================================================================
+17. UNIT ECONOMICS
+======================================================================
+
+Define useful unit economics.
+
+Examples:
+
+cost per agent run
+
+cost per successful run
+
+cost per model request
+
+cost per million tokens
+
+cost per tool call
+
+cost per tenant
+
+cost per workflow.
+
+Do not assume all are equally meaningful.
+
+======================================================================
+18. BUSINESS UNIT ECONOMICS
+======================================================================
+
+Where appropriate evaluate:
+
+cost per successful task
+
+cost per customer outcome
+
+cost per workflow completion.
+
+Technical cost alone may not represent business efficiency.
+
+======================================================================
+19. TOKEN COST
+======================================================================
+
+Using 05 define:
+
+- input tokens
+- output tokens
+- cached tokens where applicable
+- reasoning tokens where provider exposes them
+- embedding tokens where applicable.
+
+Do not assume all model providers expose identical token metrics.
+
+======================================================================
+20. TOKEN ACCOUNTING
+======================================================================
+
+Determine the authoritative source for token usage.
+
+Potential:
+
+model runtime
+
+provider response
+
+local tokenizer.
+
+Compare accuracy and operational trade-offs.
+
+======================================================================
+21. TOKENIZER DIFFERENCES
+======================================================================
+
+Different models tokenize differently.
+
+Do not estimate exact billing from the wrong tokenizer.
+
+======================================================================
+22. MODEL API PRICING
+======================================================================
+
+For external models:
+
+Provider
+→
+Model
+→
+Pricing Plan
+→
+Usage.
+
+Research current pricing only where needed.
+
+The architecture must not hard-code current prices.
+
+======================================================================
+23. SELF-HOSTED MODEL COST
+======================================================================
+
+Self-hosted inference has different economics.
+
+Define:
+
+GPU cost
++
+CPU
++
+RAM
++
+electricity where relevant
++
+storage
++
+network
++
+operations.
+
+Determine appropriate allocation.
+
+======================================================================
+24. GPU COST MODEL
+======================================================================
+
+Using 05 and 21 define GPU economics.
+
+Potential dimensions:
+
+- GPU type
+- GPU-hours
+- utilization
+- reserved capacity
+- idle capacity
+- model allocation.
+
+======================================================================
+25. GPU UTILIZATION
+======================================================================
+
+A GPU running at:
+
+10% utilization
+
+does not necessarily cost 10% of the machine.
+
+Distinguish:
+
+resource cost
+
+from:
+
+utilization.
+
+======================================================================
+26. GPU ALLOCATION
+======================================================================
+
+If one GPU serves multiple tenants:
+
+define allocation methodology.
+
+Potential:
+
+- actual execution time
+- weighted compute
+- reserved capacity
+- proportional utilization.
+
+Research and determine the correct approach.
+
+======================================================================
+27. GPU MEMORY
+======================================================================
+
+GPU memory reservation may constrain capacity even when compute
+utilization is low.
+
+Determine whether cost accounting needs to track:
+
+- VRAM reservation
+- GPU time
+- active inference time.
+
+======================================================================
+28. BATCH INFERENCE
+======================================================================
+
+Batching can change economics.
+
+Evaluate:
+
+- cost per request
+- utilization
+- latency
+- fairness.
+
+======================================================================
+29. MODEL ROUTING
+======================================================================
+
+Using 05 determine whether the platform can choose models based partly
+on cost.
+
+Do not allow cost optimization to violate:
+
+- quality
+- security
+- policy
+- latency requirements.
+
+======================================================================
+30. COST-AWARE MODEL SELECTION
+======================================================================
+
+Evaluate:
+
+Cheap model
+vs
+Expensive model.
+
+Potential objective:
+
+minimize cost
+
+subject to:
+
+quality ≥ threshold
+
+latency ≤ threshold
+
+policy = allowed.
+
+Do not assume cost should always dominate model selection.
+
+======================================================================
+31. MODEL FALLBACK
+======================================================================
+
+Future 27 may introduce fallback models.
+
+Define how cost attribution behaves when:
+
+Model A
+fails
+→
+Model B.
+
+Both costs must be attributable to the same operation.
+
+======================================================================
+32. EMBEDDING COST
+======================================================================
+
+Track:
+
+- embedding model
+- tokens
+- documents
+- vectors generated.
+
+======================================================================
+33. RERANKING COST
+======================================================================
+
+If reranking is used:
+
+attribute separately.
+
+======================================================================
+34. KNOWLEDGE INGESTION COST
+======================================================================
+
+Using 08 measure:
+
+- parsing
+- chunking
+- embedding
+- indexing
+- storage.
+
+======================================================================
+35. MEMORY COST
+======================================================================
+
+Using 09 determine costs associated with:
+
+- storage
+- retrieval
+- embedding
+- processing.
+
+Do not over-engineer if memory cost is negligible at Day 1.
+
+======================================================================
+36. TOOL COST
+======================================================================
+
+Using 06 define:
+
+Tool
+→
+Invocation
+→
+Usage
+→
+Cost.
+
+======================================================================
+37. EXTERNAL API COST
+======================================================================
+
+Tools may call external APIs with:
+
+- per-call pricing
+- per-token pricing
+- subscription pricing
+- quota pricing.
+
+The platform must distinguish:
+
+observed usage
+
+from:
+
+provider invoice.
+
+======================================================================
+38. MCP COST
+======================================================================
+
+Using 07 define cost attribution for MCP calls.
+
+Potential:
+
+tenant
+agent
+tool
+server
+invocation.
+
+======================================================================
+39. DATABASE COST
+======================================================================
+
+Determine whether database cost should be allocated by:
+
+- queries
+- compute
+- storage
+- connections
+- reserved capacity.
+
+Do not assume query count is an accurate proxy for database cost.
+
+======================================================================
+40. VECTOR DATABASE COST
+======================================================================
+
+Determine whether vector cost is driven by:
+
+- storage
+- query volume
+- compute
+- indexing
+- embeddings.
+
+======================================================================
+41. STORAGE COST
+======================================================================
+
+Future 23 may define detailed storage architecture.
+
+For Day 1 define stable usage events for:
+
+- bytes stored
+- object count where relevant
+- storage class
+- retrieval.
+
+======================================================================
+42. NETWORK COST
+======================================================================
+
+Future 22 may define detailed networking.
+
+Determine which network costs matter economically.
+
+Potential:
+
+- ingress
+- egress
+- inter-region
+- external API traffic.
+
+======================================================================
+43. OBSERVABILITY COST
+======================================================================
+
+Using 15:
+
+logs
+metrics
+traces
+
+can become significant.
+
+Define whether observability cost is:
+
+platform overhead
+
+or:
+
+tenant-attributable.
+
+======================================================================
+44. AUDIT COST
+======================================================================
+
+Using 16 determine whether audit storage is:
+
+- shared
+- tenant-specific
+- platform overhead.
+
+======================================================================
+45. EVALUATION COST
+======================================================================
+
+Using 17 define attribution for:
+
+- benchmark runs
+- regression tests
+- model evaluations
+- red-team tests.
+
+Determine whether evaluation costs are:
+
+tenant-specific
+
+or:
+
+platform R&D.
+
+======================================================================
+46. DEVELOPMENT COST
+======================================================================
+
+Separate:
+
+production
+
+from:
+
+development.
+
+Do not accidentally attribute internal engineering workloads to tenants.
+
+======================================================================
+47. PLATFORM OVERHEAD
+======================================================================
+
+Define costs that cannot be directly attributed.
+
+Examples:
+
+- Control Plane
+- identity infrastructure
+- monitoring
+- security systems
+- deployment infrastructure.
+
+======================================================================
+48. OVERHEAD ALLOCATION
+======================================================================
+
+Evaluate whether shared platform costs should be:
+
+- excluded from tenant cost
+- allocated proportionally
+- allocated by subscription tier.
+
+Do not mix internal cost accounting with customer pricing without explicit
+decision.
+
+======================================================================
+49. COST ATTRIBUTION ACCURACY
+======================================================================
+
+Define:
+
+EXACT
+
+ESTIMATED
+
+ALLOCATED
+
+UNKNOWN.
+
+Never present an allocated cost as exact.
+
+======================================================================
+50. COST CONFIDENCE
+======================================================================
+
+A cost measurement should optionally include:
+
+confidence
+
+or:
+
+measurement_method.
+
+======================================================================
+51. COST RECONCILIATION
+======================================================================
+
+Internal usage telemetry will not perfectly match provider invoices.
+
+Define reconciliation:
+
+Platform Usage
+vs
+Provider Invoice.
+
+======================================================================
+52. PROVIDER BILLING
+======================================================================
+
+Do not treat provider billing APIs as the only source of truth.
+
+They answer:
+
+"What did the provider charge?"
+
+Internal telemetry answers:
+
+"What did the platform consume?"
+
+Both are useful.
+
+======================================================================
+53. COST LEDGER
+======================================================================
+
+Evaluate whether the platform needs an immutable internal usage/cost
+ledger.
+
+Compare:
+
+- append-only event store
+- relational database
+- warehouse
+- billing system.
+
+======================================================================
+54. EVENTUAL CONSISTENCY
+======================================================================
+
+Cost reporting does not necessarily need real-time consistency.
+
+Determine which cost decisions require:
+
+real-time
+
+vs:
+
+near-real-time
+
+vs:
+
+batch.
+
+======================================================================
+55. REAL-TIME COST
+======================================================================
+
+Evaluate whether the runtime needs approximate current cost for:
+
+- budget enforcement
+- runaway detection
+- model routing.
+
+======================================================================
+56. COST BUDGET
+======================================================================
+
+Define:
+
+Platform Budget
+
+Tenant Budget
+
+Project Budget
+
+Agent Budget
+
+Run Budget.
+
+Determine which are useful.
+
+======================================================================
+57. BUDGET ENFORCEMENT
+======================================================================
+
+When budget is exhausted:
+
+DO NOT automatically terminate everything.
+
+Define possible actions:
+
+- reject
+- degrade
+- switch model
+- reduce concurrency
+- require approval
+- pause.
+
+Determine the correct policy.
+
+======================================================================
+58. RUNAWAY COST
+======================================================================
+
+Threat-model:
+
+Agent enters loop.
+
+Costs increase indefinitely.
+
+Define:
+
+- per-run cost limit
+- token limit
+- tool-call limit
+- time limit
+- concurrency limit.
+
+Integrate with 14.
+
+======================================================================
+59. COST GUARDRAILS
+======================================================================
+
+A cost guardrail should operate before significant spend where possible.
+
+Potential:
+
+Policy
+→
+Estimated Cost
+→
+ALLOW / DENY / APPROVAL.
+
+======================================================================
+60. COST ESTIMATION
+======================================================================
+
+Determine whether the platform can estimate cost before execution.
+
+For example:
+
+Expected:
+- model calls
+- tool calls
+- tokens.
+
+Do not claim precise prediction where uncertainty is high.
+
+======================================================================
+61. COST FORECASTING
+======================================================================
+
+Future 21 should consume usage data.
+
+Define stable data needed for:
+
+- trend
+- growth
+- capacity
+- forecast.
+
+======================================================================
+62. COST ANOMALY DETECTION
+======================================================================
+
+Detect:
+
+- sudden token spikes
+- unusual tool usage
+- unexpected GPU usage
+- tenant cost spikes.
+
+======================================================================
+63. COST ANOMALY VS FRAUD
+======================================================================
+
+Do not assume an anomaly is fraud.
+
+Classify:
+
+- expected growth
+- workload change
+- bug
+- abuse
+- infrastructure issue.
+
+======================================================================
+64. COST + CONCURRENCY
+======================================================================
+
+Using 14 define relationship:
+
+More concurrency
+→
+more resource consumption
+→
+potentially more cost.
+
+But:
+
+higher concurrency may also improve GPU utilization and reduce cost per
+request.
+
+Do not assume monotonicity.
+
+======================================================================
+65. COST + CAPACITY
+======================================================================
+
+Future 21:
+
+Cost data must help determine:
+
+- when to scale
+- when to consolidate
+- when to reserve capacity.
+
+======================================================================
+66. RESERVED CAPACITY
+======================================================================
+
+Evaluate economics of:
+
+- reserved instances
+- committed use
+- dedicated GPUs
+- long-term contracts.
+
+Do not make business recommendations without current pricing evidence.
+
+======================================================================
+67. SPOT / PREEMPTIBLE
+======================================================================
+
+Evaluate whether suitable workloads can use:
+
+- spot
+- preemptible
+- interruptible compute.
+
+Candidate:
+
+evaluation
+
+batch
+
+background processing.
+
+Do not use for workloads whose reliability requirements prohibit it.
+
+======================================================================
+68. AUTOSCALING
+======================================================================
+
+Scaling has cost implications.
+
+Define:
+
+load
+
+→
+
+scale
+
+→
+
+cost.
+
+Avoid oscillating autoscaling.
+
+======================================================================
+69. SCALE-TO-ZERO
+======================================================================
+
+Evaluate whether workloads can scale to zero.
+
+Consider:
+
+- startup latency
+- model loading
+- GPU initialization.
+
+======================================================================
+70. IDLE COST
+======================================================================
+
+Track:
+
+- idle GPU
+- idle CPU
+- idle model server
+- idle database capacity.
+
+======================================================================
+71. UTILIZATION
+======================================================================
+
+Define economically meaningful utilization metrics.
+
+Do not optimize utilization at the expense of:
+
+- latency
+- reliability
+- quality.
+
+======================================================================
+72. COST PER SUCCESS
+======================================================================
+
+A failed request can still consume resources.
+
+Track:
+
+cost per successful operation
+
+separately from:
+
+cost per request.
+
+======================================================================
+73. RETRY COST
+======================================================================
+
+Using 13/14:
+
+Retries consume resources.
+
+Attribute retry cost to the original operation.
+
+======================================================================
+74. FAILURE COST
+======================================================================
+
+Measure cost caused by:
+
+- failed model calls
+- failed tool calls
+- retries
+- infrastructure failures.
+
+======================================================================
+75. CACHE ECONOMICS
+======================================================================
+
+Caching may:
+
+increase storage cost
+
+while:
+
+reducing inference cost.
+
+Evaluate net economics.
+
+======================================================================
+76. MODEL CACHE
+======================================================================
+
+Evaluate cached model results where safe.
+
+Do not allow cache architecture to violate 19.
+
+======================================================================
+77. PROMPT CACHING
+======================================================================
+
+Where providers support prompt caching:
+
+measure:
+
+- cache hits
+- cache misses
+- cost impact.
+
+Do not assume provider pricing is static.
+
+======================================================================
+78. BATCHING ECONOMICS
+======================================================================
+
+Evaluate:
+
+batch size
+
+vs:
+
+latency
+
+vs:
+
+GPU utilization
+
+vs:
+
+cost.
+
+======================================================================
+79. TOOL BATCHING
+======================================================================
+
+Some external APIs may support batching.
+
+Determine when it is economically useful.
+
+======================================================================
+80. TENANT COST ALLOCATION
+======================================================================
+
+Using 19 define:
+
+Tenant
+→
+Usage
+→
+Cost.
+
+Do not allow one tenant to consume shared resources without attribution
+if those resources materially affect economics.
+
+======================================================================
+81. SHARED RESOURCE ALLOCATION
+======================================================================
+
+Examples:
+
+Shared GPU
+
+Shared database
+
+Shared cache
+
+Shared model runtime.
+
+Define allocation methodology.
+
+======================================================================
+82. TENANT SHOWBACK
+======================================================================
+
+Evaluate exposing:
+
+"what did this tenant consume?"
+
+without necessarily exposing:
+
+internal infrastructure costs.
+
+======================================================================
+83. TENANT CHARGEBACK
+======================================================================
+
+Separate:
+
+internal cost
+
+from:
+
+customer price.
+
+Do not assume they are identical.
+
+======================================================================
+84. PRICING LAYER
+======================================================================
+
+If customer pricing exists, define separate architecture:
+
+Cost Engine
+
+vs:
+
+Pricing Engine.
+
+======================================================================
+85. PRICE VS COST
+======================================================================
+
+Example:
+
+Internal cost = $1
+
+Customer price = $3.
+
+Do not embed the $3 into resource cost accounting.
+
+======================================================================
+86. MARGIN
+======================================================================
+
+Future business systems may calculate:
+
+revenue
+
+−
+
+cost
+
+=
+
+margin.
+
+The Cost Architecture should provide reliable cost data without becoming
+the entire finance system.
+
+======================================================================
+87. COST ALLOCATION GRANULARITY
+======================================================================
+
+Too coarse:
+
+tenant-level only.
+
+Too fine:
+
+every CPU instruction.
+
+Determine the useful granularity.
+
+======================================================================
+88. COST DATA RETENTION
+======================================================================
+
+Define retention for:
+
+- usage events
+- price catalogs
+- cost records
+- aggregates.
+
+Coordinate with 16 and future 26.
+
+======================================================================
+89. COST DATA IMMUTABILITY
+======================================================================
+
+Historical usage should be immutable.
+
+Corrections should create adjustment records rather than silently
+rewriting history.
+
+======================================================================
+90. ADJUSTMENTS
+======================================================================
+
+Provider billing may be corrected.
+
+Define:
+
+Adjustment
+
+or:
+
+Reconciliation Entry.
+
+======================================================================
+91. COST EVENT IDEMPOTENCY
+======================================================================
+
+Telemetry may be delivered twice.
+
+Cost events must support deduplication.
+
+======================================================================
+92. COST EVENT ORDERING
+======================================================================
+
+Distributed systems may deliver events out of order.
+
+Do not assume event order.
+
+======================================================================
+93. COST EVENT CORRELATION
+======================================================================
+
+Every meaningful usage event should be correlatable with:
+
+- tenant
+- operation
+- run
+- resource.
+
+======================================================================
+94. COST + OBSERVABILITY
+======================================================================
+
+Using 15 define whether cost metadata is attached to:
+
+- traces
+- spans
+- runs.
+
+Avoid putting high-cardinality cost data into metrics without analysis.
+
+======================================================================
+95. COST + AUDIT
+======================================================================
+
+Using 16 define auditable cost decisions.
+
+Example:
+
+Why was a run rejected?
+
+Because:
+
+Tenant budget exceeded.
+
+======================================================================
+96. COST + POLICY
+======================================================================
+
+Using 03 determine whether:
+
+CostPolicy
+
+is part of the existing policy architecture.
+
+Avoid creating a second policy engine.
+
+======================================================================
+97. COST + SECURITY
+======================================================================
+
+Cost data itself can be sensitive.
+
+A tenant should not see:
+
+another tenant's usage.
+
+======================================================================
+98. COST DATA ACCESS
+======================================================================
+
+Define:
+
+- tenant users
+- tenant admins
+- platform operators
+- finance
+- security.
+
+======================================================================
+99. COST DATA PRIVACY
+======================================================================
+
+Cost telemetry may reveal:
+
+- customer activity
+- model usage
+- workflow volume.
+
+Protect appropriately.
+
+======================================================================
+100. COST + TRUST / PROVENANCE
+======================================================================
+
+Using 12 determine provenance of cost calculations.
+
+A reported cost should be traceable to:
+
+usage
+
++
+
+price catalog
+
++
+
+calculation version.
+
+======================================================================
+101. COST CALCULATION VERSIONING
+======================================================================
+
+If the calculation algorithm changes:
+
+do not silently rewrite history.
+
+Version:
+
+CostCalculationMethod.
+
+======================================================================
+102. COST MODEL VERSION
+======================================================================
+
+Define:
+
+CostModelVersion.
+
+Historical reports should identify the model used.
+
+======================================================================
+103. COST REPRODUCIBILITY
+======================================================================
+
+Given:
+
+Usage Event
++
+Price Version
++
+Calculation Version
+
+the platform should be able to reproduce the calculated cost.
+
+======================================================================
+104. COST ESTIMATION UNCERTAINTY
+======================================================================
+
+Some costs are estimates.
+
+Examples:
+
+shared GPU
+
+shared database.
+
+Represent:
+
+estimated
+
+vs:
+
+actual.
+
+======================================================================
+105. COST ALLOCATION TRANSPARENCY
+======================================================================
+
+If a tenant is charged an allocated shared cost:
+
+the methodology should be explainable.
+
+======================================================================
+106. COST DRIVERS
+======================================================================
+
+Identify the dominant cost drivers.
+
+Do not assume:
+
+LLM tokens
+
+are always the largest cost.
+
+For self-hosted systems:
+
+GPU idle capacity may dominate.
+
+======================================================================
+107. COST SENSITIVITY
+======================================================================
+
+Perform sensitivity analysis:
+
+If model price changes 20%
+
+what happens?
+
+If GPU cost changes 20%?
+
+If utilization changes?
+
+If workload doubles?
+
+======================================================================
+108. BREAK-EVEN ANALYSIS
+======================================================================
+
+Compare:
+
+External Model API
+
+vs:
+
+Self-hosted Model.
+
+Determine:
+
+- utilization threshold
+- volume threshold
+- latency
+- engineering cost.
+
+Do not use fabricated prices.
+
+======================================================================
+109. TOTAL COST OF OWNERSHIP
+======================================================================
+
+For self-hosting include:
+
+- hardware
+- cloud
+- engineering
+- operations
+- monitoring
+- security
+- maintenance
+- downtime.
+
+======================================================================
+110. ENGINEERING COST
+======================================================================
+
+Infrastructure architecture has engineering cost.
+
+Do not optimize cloud spend while dramatically increasing engineering
+burden without acknowledging it.
+
+======================================================================
+111. OPPORTUNITY COST
+======================================================================
+
+A complex cost optimization can consume engineering capacity.
+
+Evaluate whether savings justify complexity.
+
+======================================================================
+112. ARCHITECTURE OPTIONS
+======================================================================
+
+Identify real alternatives.
+
+Potential:
+
+OPTION A
+--------
+Usage telemetry only.
+
+OPTION B
+--------
+Usage telemetry + cost engine.
+
+OPTION C
+--------
+Usage + cost + budget enforcement.
+
+OPTION D
+--------
+Usage + cost + chargeback.
+
+OPTION E
+--------
+Full FinOps platform integration.
+
+These are examples only.
+
+Research and determine the real candidates.
+
+======================================================================
+113. ARCHITECTURE SELECTION MATRIX
+======================================================================
+
+Compare:
+
+| Criterion |
+| Day-1 simplicity |
+| Cost accuracy |
+| Attribution accuracy |
+| Real-time control |
+| Forecasting |
+| Multi-tenancy |
+| Provider independence |
+| Operational complexity |
+| Performance |
+| Auditability |
+| Reconciliation |
+| Future billing |
+| Recommendation |
+
+======================================================================
+114. "WHY NOT?" ANALYSIS
+======================================================================
+
+For the final architecture explicitly answer:
+
+WHY THIS?
+
+WHY NOT TOKEN COUNTING ONLY?
+
+WHY NOT PROVIDER BILLING APIS ONLY?
+
+WHY NOT BUILD A FULL BILLING SYSTEM?
+
+WHY NOT COUPLE COST TO STRIPE?
+
+WHY NOT ATTRIBUTE ALL SHARED COST EQUALLY?
+
+WHY NOT ATTRIBUTE ALL COST TO TENANTS?
+
+WHY NOT IGNORE PLATFORM OVERHEAD?
+
+WHY NOT USE REAL-TIME COST FOR EVERYTHING?
+
+WHY NOT CALCULATE COST ONLY DAILY?
+
+WHY NOT HARD-CODE MODEL PRICES?
+
+WHY NOT HARD-CODE GPU COST?
+
+WHY NOT OPTIMIZE FOR LOWEST COST AT ALL TIMES?
+
+WHY NOT SELF-HOST EVERYTHING?
+
+WHY NOT USE EXTERNAL MODEL APIS FOR EVERYTHING?
+
+Only retain alternatives that are actually relevant after research.
+
+======================================================================
+115. REVERSIBILITY ANALYSIS
+======================================================================
+
+Classify:
+
+- usage event schema
+- cost event schema
+- price catalog
+- attribution model
+- allocation model
+- cost engine
+- budget engine
+- billing integration
+- chargeback
+- cost-aware routing
+
+as:
+
+- easily reversible
+- moderately reversible
+- expensive to reverse
+- effectively irreversible.
+
+======================================================================
+116. CONTRACT VS IMPLEMENTATION
+======================================================================
+
+Define stable internal contracts.
+
+Potential:
+
+UsageEvent
+CostEvent
+CostContext
+PriceCatalog
+PriceVersion
+CostCalculation
+CostCalculationVersion
+CostAllocation
+Budget
+BudgetDecision
+CostAdjustment
+UsageAggregate.
+
+These are examples only.
+
+Determine the minimum required set.
+
+The internal contract must remain independent from:
+
+- AWS
+- GCP
+- Azure
+- OpenAI
+- Anthropic
+- Stripe
+- Kubecost
+- OpenMeter
+- any specific billing provider.
+
+======================================================================
+117. REQUIRED DIAGRAMS
+======================================================================
+
+Include Mermaid diagrams for:
+
+1. Cost architecture
+2. Cost attribution hierarchy
+3. Usage event flow
+4. Usage → cost calculation
+5. Price catalog
+6. Model cost
+7. GPU cost
+8. Tool cost
+9. MCP cost
+10. Storage cost
+11. Shared resource allocation
+12. Tenant cost attribution
+13. Budget enforcement
+14. Runaway cost protection
+15. Cost reconciliation
+16. Cost adjustment
+17. Cost + concurrency
+18. Cost + capacity planning
+19. Cost-aware model routing
+20. Day-1 → enterprise evolution
+
+======================================================================
+118. ADR CANDIDATES
+======================================================================
+
+Identify ADRs for:
+
+- usage event model
+- cost event model
+- price catalog
+- cost attribution
+- shared resource allocation
+- GPU cost allocation
+- model cost calculation
+- cost engine
+- budget enforcement
+- cost-aware routing
+- provider reconciliation
+- chargeback boundary
+- cost data retention
+- cost calculation versioning.
+
+For each:
+
+- problem
+- alternatives
+- recommendation
+- consequences
+- reversibility
+- decision deadline
+
+======================================================================
+119. DAY-1 / PREPARE / SCALE / ENTERPRISE
+======================================================================
+
+Create:
+
+| Capability | Day 1 | Prepare | Scale | Enterprise |
+
+Cover:
+
+- usage events
+- token accounting
+- model cost
+- GPU cost
+- tool cost
+- MCP cost
+- storage cost
+- database cost
+- network cost
+- observability cost
+- tenant attribution
+- run attribution
+- price catalog
+- cost calculation
+- budgets
+- runaway protection
+- anomaly detection
+- forecasting
+- shared cost allocation
+- reconciliation
+- showback
+- chargeback
+- customer billing.
+
+======================================================================
+120. COST TEST MATRIX
+======================================================================
+
+Create:
+
+| Scenario | Expected Cost Behavior | Verification | Recovery |
+
+At minimum:
+
+- model call
+- failed model call
+- retried model call
+- tool call
+- failed tool call
+- MCP call
+- embedding
+- vector search
+- storage
+- shared GPU
+- idle GPU
+- tenant quota exceeded
+- run budget exceeded
+- provider price change
+- duplicate usage event
+- out-of-order event
+- provider billing correction.
+
+======================================================================
+121. COST RECONCILIATION TEST
+======================================================================
+
+Define how to compare:
+
+Internal Usage
+
+against:
+
+Provider Invoice.
+
+Identify acceptable discrepancies and their causes.
+
+Do not invent tolerance percentages without evidence.
+
+======================================================================
+122. RUNAWAY COST TEST
+======================================================================
+
+Simulate:
+
+Agent loop
+→
+repeated model calls
+→
+repeated tool calls.
+
+Verify:
+
+- run budget
+- token budget
+- time budget
+- concurrency budget
+- policy enforcement.
+
+======================================================================
+123. COST ANOMALY TEST
+======================================================================
+
+Simulate:
+
+normal tenant
+
+then:
+
+10x workload.
+
+Verify anomaly detection and response.
+
+======================================================================
+124. SHARED RESOURCE TEST
+======================================================================
+
+Simulate multiple tenants using:
+
+- shared GPU
+- shared database
+- shared model runtime.
+
+Verify cost allocation.
+
+======================================================================
+125. PRICE CHANGE TEST
+======================================================================
+
+Change price catalog version.
+
+Verify:
+
+new usage uses new price
+
+while:
+
+historical usage remains reproducible.
+
+======================================================================
+126. COST CALCULATION VERSION TEST
+======================================================================
+
+Change cost calculation logic.
+
+Verify historical calculations remain explainable.
+
+======================================================================
+127. COST DATA SECURITY TEST
+======================================================================
+
+Verify:
+
+Tenant A
+
+cannot access:
+
+Tenant B
+
+cost data.
+
+======================================================================
+128. COST EVENT FAILURE
+======================================================================
+
+Simulate:
+
+usage generated
+
+but:
+
+cost pipeline temporarily unavailable.
+
+Determine whether usage is lost.
+
+Prefer preserving usage evidence.
+
+======================================================================
+129. COST EVENT DUPLICATION
+======================================================================
+
+Deliver the same usage event twice.
+
+Verify exactly how duplicate detection works.
+
+======================================================================
+130. COST EVENT REORDERING
+======================================================================
+
+Deliver usage events out of order.
+
+Verify calculations remain correct.
+
+======================================================================
+131. COST DATA RETENTION TEST
+======================================================================
+
+Verify retention and deletion behavior.
+
+Coordinate with:
+
+16_AUDIT_ARCHITECTURE.md
+
+and future:
+
+26_ENTERPRISE_COMPLIANCE_ARCHITECTURE.md.
+
+======================================================================
+132. INCIDENT RESPONSE
+======================================================================
+
+Walk through:
+
+SCENARIO A
+----------
+Tenant receives unexpectedly high cost.
+
+SCENARIO B
+----------
+Provider invoice differs from platform calculation.
+
+SCENARIO C
+----------
+GPU cost attribution is incorrect.
+
+SCENARIO D
+----------
+Runaway agent generates excessive spend.
+
+SCENARIO E
+----------
+Pricing catalog was incorrectly updated.
+
+SCENARIO F
+----------
+Usage events were duplicated.
+
+For each:
+
+DETECTION
+→
+IMPACT ANALYSIS
+→
+CONTAINMENT
+→
+CORRECTION
+→
+RECONCILIATION
+→
+PREVENTION.
+
+======================================================================
+133. ATTEMPT TO FALSIFY THE RECOMMENDATION
+======================================================================
+
+Try to prove the selected architecture wrong.
+
+Ask:
+
+- What usage volume breaks the event pipeline?
+- What tenant count breaks attribution?
+- What provider count breaks pricing?
+- What model count breaks the price catalog?
+- What GPU scale breaks allocation?
+- What shared-resource complexity breaks cost accuracy?
+- What price volatility breaks historical reproducibility?
+- What event volume breaks storage?
+- What billing discrepancy breaks reconciliation?
+- What real-time budget requirement breaks the architecture?
+
+Determine the first architectural trigger.
+
+======================================================================
+134. ARCHITECTURAL SELF-CRITIQUE
+======================================================================
+
+Before finalizing, ask:
+
+1. Is usage separated from cost?
+2. Is price versioned?
+3. Is cost calculation versioned?
+4. Is tenant attribution reliable?
+5. Is run attribution reliable?
+6. Are shared costs explicitly allocated?
+7. Are GPU costs measurable?
+8. Are model costs measurable?
+9. Are tool costs measurable?
+10. Are retries attributed correctly?
+11. Are failed operations accounted for?
+12. Can runaway cost be stopped?
+13. Can historical cost be reproduced?
+14. Can provider invoices be reconciled?
+15. Is the architecture provider-independent?
+16. Does it support future capacity planning?
+17. Does it avoid becoming a billing platform prematurely?
+18. Can cost-aware model routing be added later?
+19. Are cost data access controls defined?
+20. What assumptions could invalidate the architecture?
+
+Include:
+
+# ARCHITECTURAL SELF-CRITIQUE
+
+======================================================================
+135. FINAL RECOMMENDATION
+======================================================================
+
+End with:
+
+# FINAL COST ARCHITECTURE RECOMMENDATION
+
+Answer:
+
+"What Cost Architecture should this platform actually build?"
+
+Be concrete.
+
+Describe:
+
+- cost taxonomy
+- usage model
+- cost event model
+- attribution hierarchy
+- model cost
+- GPU cost
+- tool cost
+- MCP cost
+- storage cost
+- database cost
+- network cost
+- observability cost
+- shared cost allocation
+- tenant attribution
+- price catalog
+- cost calculation
+- budget enforcement
+- runaway cost protection
+- reconciliation
+- forecasting interface
+- cost-aware routing
+- Day-1 implementation
+- future FinOps evolution
+- future billing boundary.
+
+Then explicitly answer:
+
+"What MUST NOT be built on Day 1?"
+
+Then:
+
+"What future condition should trigger the next architectural evolution?"
+
+======================================================================
+136. REQUIRED OUTPUT
+======================================================================
+
+Produce:
+
+20_COST_ARCHITECTURE.md
+
+The document MUST explicitly reference:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_ARCHITECTURE.md
+04_AGENT_RUNTIME.md
+05_MODEL_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+08_KNOWLEDGE_DATA_ARCHITECTURE.md
+09_MEMORY_ARCHITECTURE.md
+10_SECURITY_ARCHITECTURE.md
+11_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+12_TRUST_PROVENANCE_ARCHITECTURE.md
+13_RELIABILITY_ARCHITECTURE.md
+14_CONCURRENCY_ARCHITECTURE.md
+15_OBSERVABILITY_ARCHITECTURE.md
+16_AUDIT_ARCHITECTURE.md
+17_EVALUATION_ARCHITECTURE.md
+18_DEPLOYMENT_LIFECYCLE_ARCHITECTURE.md
+19_MULTI_TENANCY_ARCHITECTURE.md
+
+Also identify future interactions with:
+
+21_CAPACITY_PLANNING_ARCHITECTURE.md
+22_NETWORKING_ARCHITECTURE.md
+23_STORAGE_ARCHITECTURE.md
+24_DR_ENTERPRISE_ARCHITECTURE.md
+26_ENTERPRISE_COMPLIANCE_ARCHITECTURE.md
+27_MULTI_MODEL_FALLBACK_ARCHITECTURE.md
+28_HUMAN_IN_THE_LOOP_ARCHITECTURE.md
+29_REPLAY_ARCHITECTURE.md
+30_OFFLINE_MOBILE_ARCHITECTURE.md
+31_A2A_ARCHITECTURE.md
+32_ADMIN_CONSOLE_ARCHITECTURE.md
+34_QUALITY_MODEL_ARCHITECTURE.md
+
+If these documents do not exist:
+
+DO NOT invent their content.
+
+Define only stable contracts and future dependencies.
+
+If there is a conflict:
+
+DO NOT silently resolve it.
+
+Identify the conflict.
+
+Explain the trade-off.
+
+Recommend the superior architectural decision.
+
+Create an ADR candidate where appropriate.
+
+======================================================================
+137. SOURCE REQUIREMENTS
+======================================================================
+
+THIS SECTION IS MANDATORY.
+
+Use current web research wherever pricing, provider behavior or external
+technology capabilities affect the architecture.
+
+Prioritize:
+
+- official provider pricing
+- official provider billing documentation
+- official GPU pricing
+- official database pricing
+- official storage pricing
+- official network pricing
+- official observability pricing
+- FinOps Foundation
+- authoritative cloud economics documentation.
+
+When discussing current prices:
+
+STATE THE DATE OF THE PRICE DATA.
+
+Do not hard-code current prices into architectural contracts.
+
+Do not fabricate prices.
+
+Do not fabricate citations.
+
+Do not cite sources that were not actually inspected.
+
+Clearly distinguish:
+
+CURRENT PRICE
+
+from:
+
+ARCHITECTURAL FACT
+
+from:
+
+COST MODEL
+
+from:
+
+ESTIMATE
+
+from:
+
+BENCHMARK
+
+from:
+
+INFERENCE
+
+from:
+
+ARCHITECTURAL RECOMMENDATION.
+
+======================================================================
+138. VERSION AND DATE DISCIPLINE
+======================================================================
+
+At the beginning of the document state:
+
+RESEARCH DATE
+
+PRICE DATA DATE
+
+and relevant:
+
+PROVIDER / RUNTIME / TECHNOLOGY VERSIONS
+
+for technologies actually selected.
+
+Pricing must always be treated as mutable external data.
+
+======================================================================
+139. ABSOLUTE FINAL INSTRUCTION
+======================================================================
+
+Act as an INDEPENDENT Principal FinOps and AI Cost Architect.
+
+Your responsibility is to determine the best cost architecture for
+THIS platform.
+
+Do not assume:
+
+TOKEN COUNT = TOTAL COST.
+
+Do not assume:
+
+PROVIDER BILL = INTERNAL RESOURCE CONSUMPTION.
+
+Do not assume:
+
+USAGE = COST.
+
+Do not assume:
+
+COST = CUSTOMER PRICE.
+
+Do not assume:
+
+LOWEST COST = BEST ARCHITECTURE.
+
+Do not assume:
+
+GPU UTILIZATION = GPU COST.
+
+Do not assume:
+
+GPU TIME = COMPLETE GPU ECONOMICS.
+
+Do not assume:
+
+ONE MODEL PRICE = ALL MODEL COST.
+
+Do not assume:
+
+SHARED RESOURCE COST CAN BE ALLOCATED ARBITRARILY.
+
+Do not assume:
+
+REAL-TIME COST IS ALWAYS NECESSARY.
+
+Do not assume:
+
+DAILY BATCH COST IS ALWAYS SUFFICIENT.
+
+Do not assume:
+
+FINOPS PLATFORM = REQUIRED.
+
+Do not assume:
+
+BILLING SYSTEM = REQUIRED.
+
+Do not assume:
+
+COST OPTIMIZATION SHOULD OVERRIDE QUALITY.
+
+Do not assume:
+
+COST OPTIMIZATION SHOULD OVERRIDE SECURITY.
+
+Do not assume:
+
+COST OPTIMIZATION SHOULD OVERRIDE RELIABILITY.
+
+Do not allow:
+
+COST MEASUREMENT
+
+to become:
+
+A PROVIDER-SPECIFIC IMPLEMENTATION.
+
+Do not allow:
+
+CURRENT PRICES
+
+to become:
+
+IMMUTABLE ARCHITECTURE.
+
+Do not allow:
+
+SHARED COSTS
+
+to become:
+
+UNEXPLAINABLE ALLOCATIONS.
+
+Do not allow:
+
+RUNAWAY AGENTS
+
+to generate:
+
+UNBOUNDED SPEND.
+
+Do not allow:
+
+COST DATA
+
+to leak:
+
+ANOTHER TENANT'S USAGE.
+
+Optimize for:
+
+ACCURATE USAGE MEASUREMENT
++
+REPRODUCIBLE COST CALCULATION
++
+TENANT ATTRIBUTION
++
+RUN ATTRIBUTION
++
+PROVIDER INDEPENDENCE
++
+COST CONTROL
++
+BUDGET PROTECTION
++
+CAPACITY VISIBILITY
++
+FINOPS EVOLUTION
++
+LOW DAY-1 COMPLEXITY.
+
+The final architecture MUST result from:
+
+    COST MODEL
+       ↓
+    COST DRIVER INVENTORY
+       ↓
+    USAGE MODEL
+       ↓
+    ATTRIBUTION MODEL
+       ↓
+    PRICE MODEL
+       ↓
+    SHARED RESOURCE MODEL
+       ↓
+    COST CONTROL
+       ↓
+    MULTI-TENANT ANALYSIS
+       ↓
+    CAPACITY ANALYSIS
+       ↓
+    RECONCILIATION
+       ↓
+    ALTERNATIVE COMPARISON
+       ↓
+    ADVERSARIAL CHALLENGE
+       ↓
+    FALSIFICATION
+       ↓
+    FINAL DECISION
+
+DO NOT DESIGN THE BILLING SYSTEM FIRST.
+
+DO NOT SELECT STRIPE FIRST.
+
+DO NOT SELECT A FINOPS TOOL FIRST.
+
+DO NOT HARD-CODE MODEL PRICES FIRST.
+
+DO NOT HARD-CODE GPU PRICES FIRST.
+
+RESEARCH THE COST DRIVERS FIRST.
+
+DEFINE THE USAGE MODEL.
+
+DEFINE ATTRIBUTION.
+
+SEPARATE USAGE FROM PRICE.
+
+SEPARATE COST FROM CUSTOMER BILLING.
+
+MODEL SHARED RESOURCE COST.
+
+DEFINE BUDGET AND RUNAWAY PROTECTION.
+
+CONNECT COST TO CONCURRENCY AND CAPACITY.
+
+CHALLENGE THE ECONOMIC ASSUMPTIONS.
+
+FALSIFY THE MODEL.
+
+THEN SELECT THE BEST COST ARCHITECTURE AVAILABLE FOR THIS PROJECT.
+
+THEN DESIGN IT.

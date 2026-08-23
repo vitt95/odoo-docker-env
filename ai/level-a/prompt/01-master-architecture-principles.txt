@@ -1,0 +1,1498 @@
+# 01 — MASTER ARCHITECTURE PRINCIPLES
+## Enterprise AI Agent Platform — Architecture Constitution
+
+======================================================================
+ROLE
+======================================================================
+
+Act as the Principal Software Architect and Enterprise AI Platform
+Architect responsible for designing a new enterprise-grade AI agent
+platform.
+
+You have deep expertise in:
+
+- distributed systems
+- enterprise SaaS architecture
+- multi-tenant platforms
+- AI agent architectures
+- LLM systems
+- LLM inference and serving
+- workflow orchestration
+- authorization and policy systems
+- identity architecture
+- cybersecurity
+- data architecture
+- observability
+- reliability engineering
+- software supply-chain security
+- cloud-native architecture
+- database architecture
+- API design
+- platform engineering
+- enterprise software quality
+- architecture governance
+- ADR methodology
+- capacity planning
+- infrastructure architecture
+
+You are NOT being asked to blindly implement an architecture that has
+already been decided.
+
+You are being asked to:
+
+RESEARCH
+ANALYZE
+COMPARE
+CHALLENGE
+EVALUATE
+SELECT
+DOCUMENT
+
+the architecture that you believe is technically strongest for this
+specific project.
+
+This distinction is fundamental.
+
+The architecture described in this prompt represents the CURRENT PROJECT
+HYPOTHESIS and constraints.
+
+It is NOT an instruction that you must accept every architectural
+assumption contained in it.
+
+If your research demonstrates that a different architecture is superior,
+you MUST say so and recommend the alternative.
+
+Do not preserve an architectural decision merely because it was present
+in the initial project description.
+
+Your responsibility is to determine what architecture THIS project should
+actually adopt.
+
+======================================================================
+1. PROJECT CONTEXT
+======================================================================
+
+We are designing an enterprise-grade AI agent platform primarily oriented
+toward CRM / ERP workloads.
+
+The eventual platform may support:
+
+- AI agents
+- workflows
+- tools
+- external APIs
+- CRM systems
+- ERP systems
+- email
+- calendar
+- documents
+- enterprise knowledge
+- RAG
+- memory
+- human approval
+- policy enforcement
+- audit
+- evaluation
+- multiple tenants
+- multiple models
+- multiple inference workers
+- multiple GPUs
+- distributed execution
+- enterprise deployment
+- MCP
+- A2A
+- cloud and on-premises deployment
+- enterprise compliance
+- disaster recovery
+- advanced observability
+- enterprise identity
+- centralized governance
+
+However, the initial implementation must be dramatically simpler.
+
+======================================================================
+2. DAY-1 NON-NEGOTIABLE CONSTRAINTS
+======================================================================
+
+The Day-1 system MUST be realistically implementable on modest hardware.
+
+Day-1 assumptions:
+
+- one LLM
+- Qwen3.5 9B
+- one physical machine
+- one GPU if available
+- modest CPU
+- modest RAM
+- limited VRAM
+- PostgreSQL as primary relational database
+- local or containerized services
+- no mandatory Kubernetes
+- no mandatory service mesh
+- no mandatory distributed database
+- no mandatory multi-region deployment
+- no mandatory multi-GPU infrastructure
+- no mandatory cloud LLM
+- no mandatory cloud infrastructure
+- no mandatory distributed control plane
+- no mandatory microservice architecture
+
+The system must be capable of being developed and operated by a small
+engineering team.
+
+The architecture must therefore avoid requiring an enterprise-grade
+infrastructure platform merely to operate the initial product.
+
+======================================================================
+3. FUTURE EVOLUTION REQUIREMENTS
+======================================================================
+
+The architecture must nevertheless permit evolution toward:
+
+- multiple LLMs
+- multiple model providers
+- local models
+- cloud models
+- multiple model versions
+- multiple GPUs
+- GPU pools
+- inference worker pools
+- distributed runtimes
+- horizontal scaling
+- multiple application instances
+- high availability
+- multi-tenant SaaS
+- tenant-specific policies
+- tenant-specific models
+- tenant-specific tools
+- advanced authorization
+- centralized governance
+- remote tool gateways
+- MCP
+- A2A
+- enterprise identity providers
+- centralized telemetry
+- SIEM integration
+- advanced audit
+- enterprise compliance
+- disaster recovery
+- multi-region deployment
+- cloud fallback
+- canary deployment
+- rolling upgrades
+- fleet management
+
+The architecture must therefore optimize for:
+
+    SIMPLE IMPLEMENTATION
+    +
+    STABLE CONTRACTS
+    +
+    FUTURE EVOLUTION
+
+rather than:
+
+    ENTERPRISE INFRASTRUCTURE ON DAY 1
+
+======================================================================
+4. FUNDAMENTAL PROJECT HYPOTHESIS
+======================================================================
+
+The current architectural principle is:
+
+"Simple implementation, scalable contracts."
+
+The intended philosophy is:
+
+"Enterprise architecture from day one,
+ enterprise infrastructure when justified."
+
+However, this is itself a hypothesis.
+
+You MUST evaluate whether this is actually the right architectural
+principle.
+
+If research indicates a better formulation, propose it.
+
+======================================================================
+5. THE MOST IMPORTANT INSTRUCTION
+## ARCHITECTURE MUST BE THE RESULT OF RESEARCH
+======================================================================
+
+Do NOT start by writing the architecture.
+
+Do NOT simply transform this prompt into a system design.
+
+Do NOT assume that the proposed Control Plane / Governance Plane /
+Runtime / Resource Plane decomposition is correct.
+
+Do NOT assume that a modular monolith is correct.
+
+Do NOT assume that microservices are wrong.
+
+Do NOT assume PostgreSQL is sufficient for every responsibility.
+
+Do NOT assume any particular vendor architecture is correct.
+
+Do NOT assume a particular open-source project represents the best
+architecture.
+
+Instead, follow this process:
+
+    RESEARCH
+       ↓
+    EVIDENCE
+       ↓
+    REQUIREMENTS
+       ↓
+    ARCHITECTURAL ALTERNATIVES
+       ↓
+    ARCHITECTURE SELECTION ANALYSIS
+       ↓
+    TRADE-OFF ANALYSIS
+       ↓
+    CHALLENGE THE LEADING OPTION
+       ↓
+    ARCHITECTURAL DECISION
+       ↓
+    DAY-1 DESIGN
+       ↓
+    FUTURE EVOLUTION
+       ↓
+    SELF-CRITIQUE
+
+The architecture must be the RESULT of this process.
+
+It must NOT be the starting assumption.
+
+======================================================================
+6. REQUIRED ARCHITECTURE SELECTION ANALYSIS
+======================================================================
+
+This section is MANDATORY.
+
+For every major architectural decision, perform an explicit:
+
+ARCHITECTURE SELECTION ANALYSIS
+
+The analysis MUST consider at least THREE genuinely different
+architectural alternatives whenever three meaningful alternatives exist.
+
+Do not create artificial alternatives merely to satisfy this requirement.
+
+Examples of meaningful alternatives may include:
+
+- modular monolith
+- microservices
+- hybrid architecture
+
+or:
+
+- synchronous runtime
+- asynchronous workflow runtime
+- hybrid runtime
+
+or:
+
+- PostgreSQL-only
+- PostgreSQL + Redis
+- dedicated distributed data infrastructure
+
+or:
+
+- embedded policy engine
+- OPA
+- Cedar
+- another mature policy architecture
+
+or:
+
+- direct model runtime
+- model abstraction layer
+- model gateway
+
+The alternatives must represent real architectural choices.
+
+----------------------------------------------------------------------
+6.1 REQUIRED ANALYSIS STRUCTURE
+----------------------------------------------------------------------
+
+For each major decision, document:
+
+1. Architectural problem
+
+2. Requirements
+
+3. Constraints
+
+4. Candidate architecture A
+
+5. Candidate architecture B
+
+6. Candidate architecture C
+
+7. Additional candidate if technically relevant
+
+8. Evidence for each candidate
+
+9. Strengths of each candidate
+
+10. Weaknesses of each candidate
+
+11. Security implications
+
+12. Reliability implications
+
+13. Performance implications
+
+14. Operational complexity
+
+15. Development complexity
+
+16. Testing complexity
+
+17. Day-1 feasibility
+
+18. Future scalability
+
+19. Migration complexity
+
+20. Vendor lock-in implications
+
+21. Hardware requirements
+
+22. Cost implications
+
+23. Failure modes
+
+24. Long-term architectural consequences
+
+25. Final recommendation
+
+26. Reasons the recommendation is superior for THIS project
+
+27. Reasons the alternatives were rejected or deferred
+
+----------------------------------------------------------------------
+6.2 DECISION MUST BE PROJECT-SPECIFIC
+----------------------------------------------------------------------
+
+Do NOT answer:
+
+"Which architecture is generally considered best?"
+
+Answer:
+
+"Which architecture is best for THIS project, given its current
+requirements, constraints, team size, hardware and future objectives?"
+
+A solution can be technically excellent and still be the wrong choice
+for this project.
+
+Explicitly recognize this distinction.
+
+----------------------------------------------------------------------
+6.3 NO FALSE PRECISION
+----------------------------------------------------------------------
+
+Do not assign arbitrary numerical scores merely to make a decision matrix
+look scientific.
+
+If quantitative evidence exists, use it.
+
+Otherwise use:
+
+- Strong
+- Moderate
+- Weak
+- High risk
+- Low risk
+- Good fit
+- Poor fit
+- etc.
+
+Explain the reasoning.
+
+======================================================================
+7. ARCHITECTURE CHALLENGE PROCESS
+======================================================================
+
+After identifying the leading architecture, attempt to DISPROVE it.
+
+Perform a section:
+
+"Attempt to Falsify the Recommended Architecture"
+
+Ask:
+
+- What assumptions could make this architecture wrong?
+- At what workload would it stop being appropriate?
+- What failure mode would expose its weakness?
+- What requirement would force another architecture?
+- What future feature would make this design problematic?
+- What operational burden could become unacceptable?
+- What security issue could invalidate it?
+- What scalability bottleneck could appear?
+- What migration problem could emerge?
+
+Then determine whether the recommendation survives the challenge.
+
+If it does not survive, revise the recommendation.
+
+======================================================================
+8. SOURCE HIERARCHY
+======================================================================
+
+Perform serious external research before making architectural conclusions.
+
+Prioritize sources in this order:
+
+1. official standards
+2. official specifications
+3. official project documentation
+4. official reference architectures
+5. peer-reviewed academic research
+6. high-quality technical publications
+7. engineering case studies
+8. community discussions
+
+Use sources such as:
+
+- NIST
+- OWASP
+- IETF
+- ISO where publicly accessible
+- CNCF
+- OpenTelemetry
+- MCP specifications
+- A2A specifications
+- W3C where relevant
+
+Research major vendor architectures where relevant:
+
+- AWS
+- Microsoft
+- Google
+- other vendors where technically relevant
+
+Research mature open-source systems where relevant:
+
+- Kubernetes
+- Temporal
+- LangGraph
+- vLLM
+- SGLang
+- llama.cpp
+- OpenTelemetry
+- OPA
+- Cedar
+- PostgreSQL
+- Redis
+- mature API gateways
+- mature workflow engines
+- mature policy engines
+
+Research relevant academic literature on:
+
+- agent architectures
+- LLM serving
+- inference scheduling
+- workflow orchestration
+- distributed systems
+- agent memory
+- agent evaluation
+- agent security
+- authorization
+- multi-agent systems
+- reliability
+- observability
+- distributed tracing
+- policy enforcement
+
+Do not research technologies merely to name them.
+
+Research them to answer architectural questions.
+
+======================================================================
+9. SOURCE DISCIPLINE
+======================================================================
+
+For every significant architectural claim classify the reasoning as:
+
+SOURCE FACT
+-----------
+Directly supported by an authoritative source.
+
+INFERENCE
+---------
+A conclusion derived from evidence and technical reasoning.
+
+ARCHITECTURAL RECOMMENDATION
+----------------------------
+A recommendation made specifically for this project.
+
+Never present:
+
+- inference as fact
+- vendor marketing as standard
+- personal opinion as consensus
+- a single implementation as universal best practice
+- popularity as evidence of architectural superiority
+
+If sources disagree, document the disagreement.
+
+If evidence is weak, explicitly say so.
+
+======================================================================
+10. INDEPENDENT ARCHITECTURAL JUDGMENT
+======================================================================
+
+You are explicitly authorized and REQUIRED to challenge the project.
+
+If research shows that:
+
+- the plane decomposition is wrong
+- a component should be merged
+- a component should be separated
+- a registry is unnecessary
+- a registry is missing
+- a service boundary is unnecessary
+- a service boundary is necessary
+- synchronous execution is preferable
+- asynchronous execution is preferable
+- a modular monolith is superior
+- microservices are justified
+- PostgreSQL is sufficient
+- PostgreSQL is insufficient
+- a proposed abstraction is premature
+- an abstraction is missing
+- another technology is superior
+- another architecture is safer
+- another architecture is easier to evolve
+
+say so.
+
+Do not optimize for agreement.
+
+Optimize for technical correctness.
+
+======================================================================
+11. CONTROL / GOVERNANCE / RUNTIME / RESOURCE PLANES
+======================================================================
+
+The current project hypothesis proposes:
+
+- Control Plane
+- Governance / Policy Plane
+- Agent Runtime / Data Plane
+- Resource Plane
+- External Systems
+
+Treat this as a hypothesis.
+
+Research comparable architectures.
+
+Determine:
+
+- whether these boundaries are correct
+- whether they are too coarse
+- whether they are too granular
+- whether any should be merged
+- whether any important plane is missing
+- whether any responsibility belongs elsewhere
+
+Produce a final recommended decomposition.
+
+======================================================================
+12. SECURITY PRINCIPLE
+======================================================================
+
+The current project principle is:
+
+THE MODEL IS NOT THE AUTHORITY.
+
+The model may:
+
+- reason
+- propose
+- plan
+- select
+- generate arguments
+- suggest actions
+
+But trusted components must enforce:
+
+- identity
+- authorization
+- policy
+- permissions
+- tenant boundaries
+- data access
+- tool access
+- budgets
+- approvals
+- execution constraints
+
+Evaluate this principle against current agent security architecture.
+
+If it requires refinement, refine it.
+
+======================================================================
+13. REPRODUCIBILITY
+======================================================================
+
+Important executions should be traceable to:
+
+- run_id
+- tenant_id
+- agent_id
+- agent_version
+- model_id
+- model_version
+- tool_id
+- tool_version
+- workflow_id
+- workflow_version
+- policy_id
+- policy_version
+
+Evaluate whether this is sufficient.
+
+Determine additional:
+
+- identifiers
+- hashes
+- timestamps
+- snapshots
+- metadata
+- provenance
+
+needed for:
+
+- audit
+- debugging
+- replay
+- incident investigation
+- compliance
+- reproducibility
+
+======================================================================
+14. DAY 1 / PREPARE / SCALE / ENTERPRISE
+======================================================================
+
+Every significant architectural decision MUST be classified:
+
+DAY 1
+-----
+Implement immediately.
+
+PREPARE
+-------
+Design the contract now; implementation may remain minimal.
+
+SCALE
+-----
+Implement when workload or infrastructure justifies it.
+
+ENTERPRISE
+----------
+Implement when enterprise availability, compliance, governance or scale
+requires it.
+
+Do not allow SCALE or ENTERPRISE infrastructure to become hidden Day-1
+dependencies.
+
+======================================================================
+15. ARCHITECTURAL QUALITY CRITERIA
+======================================================================
+
+Evaluate alternatives against:
+
+1. correctness
+2. security
+3. reliability
+4. availability
+5. performance
+6. latency
+7. resource efficiency
+8. cost
+9. maintainability
+10. testability
+11. observability
+12. auditability
+13. versionability
+14. backward compatibility
+15. upgradeability
+16. failure isolation
+17. tenant isolation
+18. developer ergonomics
+19. operational simplicity
+20. hardware independence
+21. deployment portability
+22. future scalability
+23. migration complexity
+24. vendor neutrality
+25. enterprise readiness
+
+Use these criteria in actual architectural comparisons.
+
+======================================================================
+16. MODULAR MONOLITH VS MICROSERVICES
+======================================================================
+
+Explicitly evaluate:
+
+- modular monolith
+- microservices
+- hybrid architecture
+- process-separated modular architecture
+- other relevant alternatives
+
+Do not decide based on fashion.
+
+Determine:
+
+- correct module boundaries
+- future service boundaries
+- data ownership
+- communication patterns
+- deployment boundaries
+- failure boundaries
+
+Explain why the recommended Day-1 structure can evolve without requiring
+a rewrite.
+
+======================================================================
+17. DATABASE PRINCIPLES
+======================================================================
+
+Evaluate PostgreSQL as the Day-1 system of record.
+
+Determine what belongs in PostgreSQL.
+
+Consider:
+
+- configuration
+- registries
+- tenants
+- execution metadata
+- audit metadata
+- workflow state
+- agent state
+- policy metadata
+- model metadata
+- tool metadata
+- evaluation metadata
+
+Determine what does NOT belong there.
+
+Evaluate future evolution toward:
+
+- replicas
+- HA
+- partitioning
+- dedicated stores
+- distributed storage
+
+without prematurely implementing them.
+
+======================================================================
+18. API AND CONTRACT PRINCIPLES
+======================================================================
+
+Evaluate:
+
+- REST
+- RPC
+- gRPC
+- asynchronous jobs
+- event interfaces
+- internal interfaces
+
+Determine appropriate styles for:
+
+- Control Plane
+- Runtime
+- Model access
+- Tool access
+- External integrations
+- Administration
+
+Define principles for:
+
+- versioning
+- backward compatibility
+- idempotency
+- errors
+- authentication
+- authorization
+- tracing
+- correlation IDs
+- tenant context
+- request context
+
+======================================================================
+19. VERSIONING
+======================================================================
+
+Define coherent versioning for:
+
+- agent
+- model
+- tool
+- workflow
+- policy
+- schema
+- API
+- configuration
+
+Explain how versions interact during an execution.
+
+======================================================================
+20. OBSERVABILITY
+======================================================================
+
+Treat observability as an architectural property.
+
+Evaluate:
+
+- logs
+- metrics
+- traces
+- structured events
+- correlation IDs
+- run IDs
+- agent traces
+- model traces
+- tool traces
+- policy traces
+
+Evaluate OpenTelemetry and other relevant approaches.
+
+Determine the minimum Day-1 implementation.
+
+======================================================================
+21. AUDITABILITY
+======================================================================
+
+Determine what the system must be able to reconstruct after execution.
+
+At minimum:
+
+- who initiated it
+- tenant
+- agent
+- agent version
+- model
+- model version
+- tools
+- tool versions
+- arguments
+- policies
+- approvals
+- external systems
+- side effects
+- final result
+- authorization decisions
+
+Determine what should be:
+
+- logged
+- audited
+- persisted
+- hashed
+- immutable
+- retained
+- redacted
+
+======================================================================
+22. FAILURE AND RECOVERY
+======================================================================
+
+Analyze:
+
+- model failure
+- tool failure
+- database failure
+- network failure
+- timeout
+- partial execution
+- duplicate execution
+- process crash
+- corrupted state
+- policy failure
+- external API failure
+- approval timeout
+
+Evaluate:
+
+- retry
+- timeout
+- cancellation
+- compensation
+- idempotency
+- state recovery
+- circuit breakers
+- degraded mode
+- human fallback
+
+======================================================================
+23. SECURITY BOUNDARIES
+======================================================================
+
+Identify security boundaries between:
+
+- user
+- application
+- agent
+- model
+- runtime
+- tool
+- external system
+- database
+- secrets
+- tenant
+- administrator
+- control plane
+- governance plane
+
+Define:
+
+- trusted components
+- untrusted components
+- partially trusted components
+- trust transitions
+
+======================================================================
+24. MULTI-TENANCY
+======================================================================
+
+Even if advanced multi-tenancy is not Day-1 functionality, evaluate:
+
+- tenant_id propagation
+- tenant-scoped configuration
+- tenant-scoped policies
+- tenant-scoped tools
+- tenant-scoped data
+- tenant-scoped memory
+- tenant-scoped audit
+- tenant-scoped quotas
+
+Determine appropriate Day-1 isolation.
+
+======================================================================
+25. HARDWARE INDEPENDENCE
+======================================================================
+
+The application should not depend on the physical hardware topology.
+
+Evaluate abstractions such as:
+
+- ModelProvider
+- ModelRuntime
+- InferenceWorker
+- ToolProvider
+- ToolRuntime
+- StorageProvider
+
+But determine which abstractions are genuinely justified.
+
+Do not create abstractions merely for theoretical purity.
+
+======================================================================
+26. REQUIRED ARCHITECTURE SELECTION TABLES
+======================================================================
+
+For each major architectural decision include a table such as:
+
+| Criterion | Alternative A | Alternative B | Alternative C | Recommendation |
+|-----------|----------------|----------------|----------------|----------------|
+
+Then include:
+
+| Criterion | Weight/Importance | Winner | Reason |
+|-----------|------------------|--------|--------|
+
+Do not fabricate numerical weights where they would create false precision.
+
+Qualitative importance is acceptable.
+
+======================================================================
+27. REQUIRED "WHY NOT?" ANALYSIS
+======================================================================
+
+For every major recommendation include:
+
+WHY THIS?
+
+WHY NOT THE MAIN ALTERNATIVE?
+
+WHY NOT THE OTHER VIABLE ALTERNATIVE?
+
+WHAT WOULD HAVE TO CHANGE FOR US TO REVERSE THIS DECISION?
+
+This section is mandatory.
+
+======================================================================
+28. REQUIRED "REVERSIBILITY" ANALYSIS
+======================================================================
+
+For every major decision classify it as:
+
+- easily reversible
+- moderately reversible
+- expensive to reverse
+- effectively irreversible
+
+For expensive or irreversible decisions:
+
+- provide stronger evidence
+- create an ADR candidate
+- identify the decision deadline
+- identify migration consequences
+
+======================================================================
+29. REQUIRED "CONTRACT VS IMPLEMENTATION" ANALYSIS
+======================================================================
+
+For every major architectural boundary determine:
+
+WHAT MUST BE STABLE NOW?
+
+and:
+
+WHAT CAN REMAIN SIMPLE?
+
+Example:
+
+A future model abstraction may require a stable ModelProvider contract,
+while Day 1 may still contain only one concrete Qwen implementation.
+
+Do this analysis for:
+
+- model
+- tools
+- runtime
+- policy
+- storage
+- identity
+- observability
+- audit
+- deployment
+
+======================================================================
+30. REQUIRED OUTPUT
+======================================================================
+
+Produce:
+
+01_ARCHITECTURE_PRINCIPLES.md
+
+This document is the architectural constitution of the entire project.
+
+All subsequent architecture documents will be required to conform to it
+unless they explicitly challenge and supersede a principle through a
+documented ADR.
+
+======================================================================
+31. DOCUMENT STRUCTURE
+======================================================================
+
+The document MUST contain:
+
+1. Executive Summary
+
+2. Project Context
+
+3. Architectural Problem
+
+4. Goals
+
+5. Non-Goals
+
+6. Day-1 Constraints
+
+7. Future Evolution Requirements
+
+8. Research Methodology
+
+9. State of the Art
+
+10. Standards
+
+11. Reference Architectures
+
+12. Mature Open-Source Implementations
+
+13. Relevant Academic Research
+
+14. Architectural Alternatives
+
+15. Architecture Selection Analysis
+
+16. Architecture Decision Matrix
+
+17. Recommended Architecture
+
+18. Why This Architecture Was Selected
+
+19. Why the Main Alternatives Were Rejected
+
+20. What Would Cause Us to Reverse the Decision
+
+21. System Boundaries
+
+22. Plane / Layer Decomposition
+
+23. Trust Boundaries
+
+24. Security Principles
+
+25. Data Principles
+
+26. API Principles
+
+27. Versioning Principles
+
+28. Reliability Principles
+
+29. Observability Principles
+
+30. Audit Principles
+
+31. Multi-Tenancy Principles
+
+32. Hardware Independence Principles
+
+33. Day-1 Architecture
+
+34. Prepare-for-Scale Architecture
+
+35. Enterprise Evolution
+
+36. Architectural Quality Contract
+
+37. Architectural Rules
+
+38. Anti-Patterns
+
+39. Technical Debt Principles
+
+40. Reversibility Analysis
+
+41. Contract vs Implementation Analysis
+
+42. Explicitly Deferred Decisions
+
+43. Risks
+
+44. Open Questions
+
+45. ADR Candidates
+
+46. Architectural Self-Critique
+
+47. Final Architectural Recommendation
+
+48. Sources and Bibliography
+
+======================================================================
+32. ARCHITECTURAL RULES
+======================================================================
+
+Create approximately 25-40 explicit architectural rules.
+
+Use:
+
+AR-001
+AR-002
+AR-003
+...
+
+Each rule must include:
+
+- rule
+- rationale
+- scope
+- Day-1 implication
+- future implication
+- verification method
+
+Rules must be concrete enough that an engineer or reviewer can determine
+whether an implementation violates them.
+
+======================================================================
+33. DAY-1 VS FUTURE MATRIX
+======================================================================
+
+Include:
+
+| Domain | Day 1 | Prepare | Scale | Enterprise |
+
+Cover at minimum:
+
+- control plane
+- governance
+- runtime
+- model
+- tools
+- data
+- memory
+- identity
+- security
+- reliability
+- observability
+- audit
+- evaluation
+- deployment
+- storage
+- networking
+- multi-tenancy
+- cost
+- disaster recovery
+
+======================================================================
+34. ADR CANDIDATES
+======================================================================
+
+Identify architectural decisions that require formal ADRs.
+
+For each:
+
+- ADR number
+- title
+- problem
+- alternatives
+- current recommendation
+- decision deadline
+- reversibility
+- consequences
+
+======================================================================
+35. MERMAID DIAGRAMS
+======================================================================
+
+Include Mermaid diagrams for:
+
+1. High-level architecture
+2. Plane/layer decomposition
+3. Trust boundaries
+4. Day-1 deployment
+5. Future scalable deployment
+6. Major dependency relationships
+
+The diagrams must represent the RECOMMENDED architecture.
+
+Do not design diagrams first and force the architecture to fit them.
+
+======================================================================
+36. ARCHITECTURAL SELF-CRITIQUE
+======================================================================
+
+Before finalizing, perform an explicit adversarial review.
+
+Ask:
+
+1. Did I simply accept the initial project assumptions?
+2. Did I research competing architectures?
+3. Did I compare at least three meaningful alternatives where possible?
+4. Did I actually select a winner?
+5. Did I explain why it won?
+6. Did I explain why the alternatives lost?
+7. Did I identify conditions under which the decision should be reversed?
+8. Did I distinguish source fact from inference?
+9. Is the architecture realistically implementable on one modest machine?
+10. Did I introduce unnecessary infrastructure?
+11. Did I introduce unnecessary abstractions?
+12. Did I miss any critical abstraction?
+13. Did I accidentally create cloud vendor lock-in?
+14. Did I accidentally create Qwen lock-in?
+15. Can the model layer evolve?
+16. Can the tool layer evolve?
+17. Can the runtime evolve?
+18. Can the control plane evolve?
+19. Can the data architecture evolve?
+20. Can the platform become multi-tenant?
+21. Can it become distributed?
+22. Can important executions be audited?
+23. Can executions be reconstructed?
+24. Can failures be recovered safely?
+25. Are trust boundaries explicit?
+26. Are security boundaries explicit?
+27. Are the architectural rules testable?
+28. Are irreversible decisions explicitly identified?
+29. Are deferred decisions explicit?
+30. Are there unresolved contradictions?
+
+Create a section:
+
+"ARCHITECTURAL SELF-CRITIQUE"
+
+Be critical of your own recommendation.
+
+======================================================================
+37. FINAL ARCHITECTURAL DECISION
+======================================================================
+
+At the end, provide:
+
+# FINAL ARCHITECTURAL RECOMMENDATION
+
+Answer concretely:
+
+"What architecture should we actually build?"
+
+Describe:
+
+- Day-1 architecture
+- major boundaries
+- module boundaries
+- process boundaries
+- API boundaries
+- key interfaces
+- trusted components
+- persistence strategy
+- model strategy
+- tool strategy
+- runtime strategy
+- governance strategy
+- observability strategy
+- audit strategy
+- deployment strategy
+
+Then answer:
+
+"Why is this architecture better than the main alternatives?"
+
+Then:
+
+"What must we absolutely NOT build on Day 1?"
+
+Then:
+
+"What future requirement would force us to reconsider this architecture?"
+
+======================================================================
+38. SOURCES AND BIBLIOGRAPHY
+======================================================================
+
+Include direct URLs.
+
+Prioritize:
+
+1. official standards
+2. official specifications
+3. official project documentation
+4. official vendor documentation
+5. academic papers
+6. high-quality technical publications
+
+Do not fabricate citations.
+
+Do not cite a source that you did not actually inspect.
+
+======================================================================
+39. FINAL QUALITY BAR
+======================================================================
+
+This is NOT a blog post.
+
+This is NOT generic documentation about AI agents.
+
+This is NOT a vendor comparison.
+
+This is NOT a list of buzzwords.
+
+This document will become the architectural foundation of a real software
+platform.
+
+It must therefore be rigorous enough for review by:
+
+- Principal Architects
+- Staff Engineers
+- Security Architects
+- Platform Engineers
+- SREs
+- enterprise customers
+- technical due-diligence teams
+
+Prefer:
+
+- explicit decisions
+- evidence
+- trade-offs
+- architecture comparisons
+- failure analysis
+- security analysis
+- concrete boundaries
+- concrete contracts
+- diagrams
+- decision matrices
+- ADR candidates
+- migration implications
+
+Avoid:
+
+- generic explanations
+- marketing language
+- unsupported claims
+- vague "best practices"
+- technology name-dropping
+- premature infrastructure
+- unjustified abstractions
+
+======================================================================
+40. ABSOLUTE FINAL INSTRUCTION
+======================================================================
+
+Act as an INDEPENDENT PRINCIPAL ARCHITECT.
+
+Your job is NOT to validate the project author's ideas.
+
+Your job is to determine whether those ideas survive technical scrutiny.
+
+The correct sequence is:
+
+    RESEARCH
+       ↓
+    IDENTIFY REQUIREMENTS
+       ↓
+    IDENTIFY CONSTRAINTS
+       ↓
+    IDENTIFY CANDIDATE ARCHITECTURES
+       ↓
+    RESEARCH EACH CANDIDATE
+       ↓
+    COMPARE CANDIDATES
+       ↓
+    SELECT THE BEST ARCHITECTURE FOR THIS PROJECT
+       ↓
+    ATTEMPT TO DISPROVE IT
+       ↓
+    REFINE THE DECISION
+       ↓
+    DESIGN DAY 1
+       ↓
+    DESIGN THE EVOLUTION PATH
+       ↓
+    DOCUMENT THE DECISION
+       ↓
+    DEFINE ADRs AND ARCHITECTURAL RULES
+
+The architecture must be the RESULT of the research.
+
+The research must materially influence the architecture.
+
+If your research leads you to disagree with the initial project hypothesis,
+you MUST say so.
+
+If your research leads you to conclude that the initial hypothesis is
+correct, demonstrate WHY.
+
+Do not say merely:
+
+"This is a good architecture."
+
+Demonstrate:
+
+"This architecture was selected over A, B and C because..."

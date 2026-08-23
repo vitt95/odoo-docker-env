@@ -1,0 +1,2943 @@
+# 19 — MULTI-TENANCY ARCHITECTURE
+## Enterprise AI Agent Platform
+
+======================================================================
+ROLE
+======================================================================
+
+Act as the Principal Multi-Tenant Systems Architect, Security
+Architect, Distributed Systems Architect, Data Isolation Architect and
+AI Platform Architect responsible for designing the complete
+Multi-Tenancy Architecture of an enterprise-grade AI agent platform.
+
+You have deep expertise in:
+
+- SaaS multi-tenancy
+- tenant isolation
+- data isolation
+- identity and authorization
+- resource isolation
+- compute isolation
+- database isolation
+- object storage isolation
+- vector database isolation
+- memory isolation
+- model isolation
+- tool isolation
+- credential isolation
+- network isolation
+- Kubernetes / container isolation
+- workload identity
+- policy enforcement
+- quotas
+- rate limiting
+- concurrency management
+- noisy-neighbor prevention
+- tenant-aware observability
+- tenant-aware audit
+- tenant lifecycle
+- tenant provisioning
+- tenant deletion
+- tenant migration
+- tenant suspension
+- disaster recovery
+- encryption
+- key management
+- data residency
+- compliance boundaries.
+
+You are working within:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_ARCHITECTURE.md
+04_AGENT_RUNTIME.md
+05_MODEL_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+08_KNOWLEDGE_DATA_ARCHITECTURE.md
+09_MEMORY_ARCHITECTURE.md
+10_SECURITY_ARCHITECTURE.md
+11_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+12_TRUST_PROVENANCE_ARCHITECTURE.md
+13_RELIABILITY_ARCHITECTURE.md
+14_CONCURRENCY_ARCHITECTURE.md
+15_OBSERVABILITY_ARCHITECTURE.md
+16_AUDIT_ARCHITECTURE.md
+17_EVALUATION_ARCHITECTURE.md
+18_DEPLOYMENT_LIFECYCLE_ARCHITECTURE.md
+
+Future architecture documents include:
+
+20_COST_ARCHITECTURE.md
+21_CAPACITY_PLANNING_ARCHITECTURE.md
+22_NETWORKING_ARCHITECTURE.md
+23_STORAGE_ARCHITECTURE.md
+24_DR_ENTERPRISE_ARCHITECTURE.md
+25_ADVANCED_SUPPLY_CHAIN_ARCHITECTURE.md
+26_ENTERPRISE_COMPLIANCE_ARCHITECTURE.md
+27_MULTI_MODEL_FALLBACK_ARCHITECTURE.md
+28_HUMAN_IN_THE_LOOP_ARCHITECTURE.md
+29_REPLAY_ARCHITECTURE.md
+30_OFFLINE_MOBILE_ARCHITECTURE.md
+31_A2A_ARCHITECTURE.md
+32_ADMIN_CONSOLE_ARCHITECTURE.md
+33_ADR_ARCHITECTURE.md
+34_QUALITY_MODEL_ARCHITECTURE.md
+
+If these future documents do not exist:
+
+DO NOT invent their content.
+
+Instead identify the future dependency and define the stable contract
+that must remain compatible.
+
+Existing architecture documents are not immune from challenge.
+
+If research demonstrates that an assumption in another document is
+incorrect, incomplete, obsolete or suboptimal, explicitly identify the
+conflict and recommend the superior architecture.
+
+======================================================================
+1. PRIMARY OBJECTIVE
+======================================================================
+
+Design the complete Multi-Tenancy Architecture.
+
+The architecture must answer:
+
+WHAT IS A TENANT?
+
+WHAT IS THE TENANT BOUNDARY?
+
+WHERE IS TENANT IDENTITY ESTABLISHED?
+
+WHERE IS TENANT IDENTITY PROPAGATED?
+
+WHERE IS TENANT AUTHORIZATION ENFORCED?
+
+WHERE IS TENANT DATA STORED?
+
+HOW IS TENANT DATA ISOLATED?
+
+HOW IS TENANT MEMORY ISOLATED?
+
+HOW IS TENANT KNOWLEDGE ISOLATED?
+
+HOW ARE TENANT TOOLS ISOLATED?
+
+HOW ARE TENANT CREDENTIALS ISOLATED?
+
+HOW ARE TENANT MODELS ISOLATED?
+
+HOW ARE TENANT AGENTS ISOLATED?
+
+HOW ARE TENANT RESOURCES ISOLATED?
+
+HOW ARE TENANT CONCURRENCY LIMITS ENFORCED?
+
+HOW IS A NOISY TENANT PREVENTED FROM AFFECTING OTHERS?
+
+HOW IS TENANT DATA PREVENTED FROM CROSSING BOUNDARIES?
+
+HOW IS TENANT DELETION IMPLEMENTED?
+
+HOW IS TENANT SUSPENSION IMPLEMENTED?
+
+HOW IS TENANT MIGRATION IMPLEMENTED?
+
+HOW IS TENANT RESTORATION IMPLEMENTED?
+
+HOW IS TENANT AUDITABILITY MAINTAINED?
+
+HOW IS TENANT-SCOPED OBSERVABILITY IMPLEMENTED?
+
+HOW DOES THE ARCHITECTURE EVOLVE FROM A SIMPLE DAY-1 DEPLOYMENT TO
+STRONG ENTERPRISE ISOLATION?
+
+======================================================================
+2. MOST IMPORTANT INSTRUCTION
+## RESEARCH FIRST — SELECT ARCHITECTURE SECOND
+======================================================================
+
+DO NOT begin by choosing:
+
+- shared database
+- database per tenant
+- schema per tenant
+- Kubernetes namespace per tenant
+- container per tenant
+- cluster per tenant
+- account/project/subscription per tenant
+- encryption key per tenant
+- separate vector database
+- separate Redis instance
+- separate queue.
+
+Research first.
+
+Analyze the actual requirements of THIS platform.
+
+Research current authoritative approaches to SaaS multi-tenancy,
+especially:
+
+- tenant isolation
+- database isolation
+- identity isolation
+- workload isolation
+- network isolation
+- storage isolation
+- Kubernetes multi-tenancy
+- encryption and tenant-specific keys
+- noisy-neighbor prevention
+- tenant-aware authorization
+- tenant lifecycle.
+
+Prioritize:
+
+- official cloud architecture guidance
+- NIST
+- OWASP
+- Kubernetes documentation
+- database vendor documentation
+- storage documentation
+- identity-provider documentation
+- authoritative SaaS architecture research.
+
+Do not treat vendor recommendations as automatically correct.
+
+Compare alternatives independently.
+
+Required process:
+
+    BUSINESS / TENANT MODEL
+       ↓
+    TENANT BOUNDARY
+       ↓
+    THREAT MODEL
+       ↓
+    IDENTITY MODEL
+       ↓
+    AUTHORIZATION MODEL
+       ↓
+    DATA ISOLATION MODEL
+       ↓
+    COMPUTE ISOLATION MODEL
+       ↓
+    RESOURCE / CONCURRENCY MODEL
+       ↓
+    NETWORK ISOLATION
+       ↓
+    CREDENTIAL ISOLATION
+       ↓
+    OBSERVABILITY / AUDIT
+       ↓
+    LIFECYCLE
+       ↓
+    DISASTER RECOVERY
+       ↓
+    ARCHITECTURE OPTIONS
+       ↓
+    ADVERSARIAL CHALLENGE
+       ↓
+    FALSIFICATION
+       ↓
+    FINAL DECISION
+       ↓
+    DAY-1 IMPLEMENTATION
+       ↓
+    ENTERPRISE EVOLUTION
+
+CLAUDE MUST DETERMINE THE BEST MULTI-TENANCY ARCHITECTURE AVAILABLE FOR
+THIS PROJECT.
+
+======================================================================
+3. CENTRAL PRINCIPLE
+======================================================================
+
+TENANT ISOLATION IS NOT ONE CONTROL.
+
+It is a layered property.
+
+At minimum consider:
+
+IDENTITY
++
+AUTHORIZATION
++
+DATA
++
+MEMORY
++
+KNOWLEDGE
++
+TOOLS
++
+CREDENTIALS
++
+COMPUTE
++
+NETWORK
++
+CONCURRENCY
++
+OBSERVABILITY
++
+AUDIT.
+
+A system is not truly multi-tenant merely because every database row
+contains:
+
+tenant_id.
+
+======================================================================
+4. LEVEL B CONSTRAINT
+======================================================================
+
+This is:
+
+LEVEL B — PREPARED DAY 1.
+
+Day 1 does NOT require:
+
+- dedicated infrastructure for every tenant
+- enterprise data residency routing
+- customer-managed encryption keys
+- dedicated database clusters
+- dedicated GPU pools
+- complex tenant migration infrastructure.
+
+However:
+
+THE TENANT BOUNDARY MUST EXIST IN THE CORE DOMAIN MODEL FROM DAY 1.
+
+Every relevant resource must have a deterministic ownership model.
+
+======================================================================
+5. DAY-1 PRINCIPLE
+======================================================================
+
+Day 1 should ideally establish:
+
+- immutable tenant identity
+- tenant-scoped authorization
+- tenant-aware resource identity
+- tenant-aware data access
+- tenant-aware memory
+- tenant-aware knowledge
+- tenant-aware tools
+- tenant-aware audit
+- tenant-aware observability
+- basic quotas.
+
+Do not implement enterprise-grade physical isolation prematurely.
+
+But:
+
+DO NOT DESIGN THE SYSTEM AS SINGLE-TENANT AND "ADD TENANT_ID LATER."
+
+======================================================================
+6. TENANT DEFINITION
+======================================================================
+
+Define:
+
+Tenant
+
+Organization
+
+User
+
+Service
+
+Agent
+
+Workspace
+
+Project
+
+Environment.
+
+Determine whether all are distinct concepts.
+
+Do not assume:
+
+Tenant = Organization.
+
+======================================================================
+7. TENANT HIERARCHY
+======================================================================
+
+Evaluate a possible model:
+
+Tenant
+ ├── Users
+ ├── Agents
+ ├── Projects
+ ├── Environments
+ ├── Knowledge
+ ├── Memory
+ ├── Tools
+ └── Policies
+
+Determine the correct hierarchy.
+
+======================================================================
+8. TENANT IDENTITY
+======================================================================
+
+Define canonical tenant identity.
+
+Potential:
+
+tenant_id
+
+These are examples only.
+
+Determine:
+
+- format
+- immutability
+- uniqueness
+- lifecycle.
+
+======================================================================
+9. TENANT IDENTITY SOURCE
+======================================================================
+
+Using 11 determine where tenant identity comes from:
+
+- authentication token
+- identity provider
+- gateway
+- session
+- service credential.
+
+Never trust a client-provided:
+
+tenant_id
+
+without authoritative validation.
+
+======================================================================
+10. TENANT CONTEXT
+======================================================================
+
+Define the tenant context propagated through:
+
+User
+ ↓
+API
+ ↓
+Agent Runtime
+ ↓
+Model Runtime
+ ↓
+Tool Runtime
+ ↓
+Knowledge
+ ↓
+Memory
+ ↓
+Storage.
+
+======================================================================
+11. TENANT CONTEXT INTEGRITY
+======================================================================
+
+Prevent:
+
+User A
+
+from manipulating:
+
+tenant_id = Tenant B.
+
+Tenant context must be derived from authenticated identity and
+authorization.
+
+======================================================================
+12. AUTHORIZATION
+======================================================================
+
+Using 03 and 11 define:
+
+WHO
+
+can access:
+
+WHICH TENANT
+
+and:
+
+WHICH RESOURCE
+
+inside that tenant.
+
+======================================================================
+13. TENANT-LEVEL RBAC / ABAC
+======================================================================
+
+Evaluate:
+
+RBAC
+
+ABAC
+
+relationship-based authorization.
+
+Determine which model best fits the platform.
+
+Do not select RBAC merely because it is familiar.
+
+======================================================================
+14. TENANT MEMBERSHIP
+======================================================================
+
+Define:
+
+User
+→ Tenant Membership
+→ Role / Permissions.
+
+Determine lifecycle:
+
+INVITED
+
+ACTIVE
+
+SUSPENDED
+
+REMOVED.
+
+======================================================================
+15. CROSS-TENANT ACCESS
+======================================================================
+
+Cross-tenant access must be:
+
+EXPLICIT
+
+AUTHORIZED
+
+AUDITABLE.
+
+Do not allow accidental cross-tenant access.
+
+======================================================================
+16. ADMIN ACCESS
+======================================================================
+
+An internal platform administrator may need access across tenants.
+
+Do not treat:
+
+"admin"
+
+as automatic unlimited access.
+
+Define privileged access separately.
+
+======================================================================
+17. BREAK-GLASS ACCESS
+======================================================================
+
+Evaluate emergency support access.
+
+Require:
+
+- explicit authorization
+- time limitation
+- reason
+- audit.
+
+======================================================================
+18. DATA ISOLATION OPTIONS
+======================================================================
+
+Research and compare:
+
+OPTION A
+--------
+Shared database
+Shared tables
+tenant_id isolation.
+
+OPTION B
+--------
+Shared database
+Separate schemas.
+
+OPTION C
+--------
+Database per tenant.
+
+OPTION D
+--------
+Hybrid.
+
+Do not choose before analyzing:
+
+- scale
+- security
+- cost
+- migration
+- operations
+- backup
+- performance.
+
+======================================================================
+19. ROW-LEVEL SECURITY
+======================================================================
+
+If shared database is selected, evaluate database-native:
+
+Row-Level Security.
+
+Determine whether it provides meaningful defense-in-depth.
+
+Do not rely exclusively on application code where stronger database
+controls are appropriate.
+
+======================================================================
+20. TENANT IDENTITY IN DATA
+======================================================================
+
+Every tenant-owned record must have a clear ownership model.
+
+Potential:
+
+tenant_id
+
+or:
+
+tenant_id + project_id.
+
+Determine where ownership is required.
+
+======================================================================
+21. FOREIGN KEY / RELATIONAL ISOLATION
+======================================================================
+
+Prevent references from Tenant A records to Tenant B records unless
+explicitly allowed.
+
+======================================================================
+22. CACHE ISOLATION
+======================================================================
+
+Caches are a major cross-tenant leakage risk.
+
+Define tenant-safe cache keys.
+
+Example:
+
+tenant_id
++
+resource_id
++
+version.
+
+Never assume application-level filtering is enough if the cache itself
+can return another tenant's value.
+
+======================================================================
+23. DISTRIBUTED CACHE
+======================================================================
+
+If Redis or another distributed cache is used:
+
+determine tenant isolation.
+
+Do not assume:
+
+shared cache = automatically safe.
+
+======================================================================
+24. SESSION ISOLATION
+======================================================================
+
+Sessions must be tenant-aware where a user can belong to multiple
+tenants.
+
+Prevent session confusion.
+
+======================================================================
+25. MEMORY ISOLATION
+======================================================================
+
+Using 09 define:
+
+Tenant
+ ↓
+Memory Namespace.
+
+A memory lookup must never cross tenant boundaries unless explicitly
+authorized.
+
+======================================================================
+26. MEMORY WRITE ISOLATION
+======================================================================
+
+A memory write must be associated with:
+
+- tenant
+- user / agent
+- source
+- authorization context.
+
+======================================================================
+27. KNOWLEDGE ISOLATION
+======================================================================
+
+Using 08 define:
+
+Tenant
+ ↓
+Knowledge Space
+ ↓
+Documents
+ ↓
+Chunks
+ ↓
+Embeddings.
+
+======================================================================
+28. VECTOR SEARCH ISOLATION
+======================================================================
+
+Critical.
+
+If vector databases are shared:
+
+ensure retrieval cannot return vectors from another tenant.
+
+Evaluate:
+
+- metadata filters
+- namespaces
+- collections
+- separate indexes
+- separate databases.
+
+Do not trust a single application-level filter without analyzing failure
+modes.
+
+======================================================================
+29. RETRIEVAL AUTHORIZATION
+======================================================================
+
+A document may belong to the tenant but still be inaccessible to a
+specific user.
+
+Therefore:
+
+Tenant Isolation
+
+does not replace:
+
+Resource Authorization.
+
+======================================================================
+30. DOCUMENT INGESTION
+======================================================================
+
+When a document enters the system:
+
+derive and persist:
+
+- tenant
+- owner
+- classification
+- source
+- permissions.
+
+======================================================================
+31. EMBEDDING PROVENANCE
+======================================================================
+
+Using 12 track:
+
+- tenant
+- document
+- embedding model
+- embedding version.
+
+======================================================================
+32. TOOL ISOLATION
+======================================================================
+
+Using 06 determine:
+
+Can a tool be:
+
+GLOBAL
+
+TENANT-SCOPED
+
+USER-SCOPED
+
+AGENT-SCOPED?
+
+======================================================================
+33. GLOBAL TOOLS
+======================================================================
+
+A global tool must not automatically receive access to every tenant.
+
+Define explicit authorization context.
+
+======================================================================
+34. TENANT-SCOPED TOOLS
+======================================================================
+
+Define tool ownership and configuration.
+
+======================================================================
+35. EXTERNAL API CREDENTIALS
+======================================================================
+
+Credentials are tenant-sensitive.
+
+Example:
+
+Tenant A's Salesforce credential
+
+must never be usable by:
+
+Tenant B.
+
+======================================================================
+36. CREDENTIAL STORAGE
+======================================================================
+
+Using 10/11 define:
+
+Tenant
+ ↓
+Credential
+ ↓
+Secret Store.
+
+Determine:
+
+- encryption
+- identity
+- access policy
+- rotation.
+
+======================================================================
+37. CREDENTIAL ACCESS
+======================================================================
+
+Do not expose raw credentials to:
+
+- model
+- prompt
+- agent state
+- logs.
+
+======================================================================
+38. MCP MULTI-TENANCY
+======================================================================
+
+Using 07 determine whether external MCP servers can safely serve multiple
+tenants.
+
+Compare:
+
+shared MCP server
+
+vs:
+
+tenant-isolated MCP server.
+
+======================================================================
+39. MCP CREDENTIAL ISOLATION
+======================================================================
+
+A shared MCP server must not receive:
+
+Tenant A credentials
+
+when serving:
+
+Tenant B.
+
+======================================================================
+40. MODEL ISOLATION
+======================================================================
+
+Using 05 determine whether models are:
+
+GLOBAL
+
+TENANT-AVAILABLE
+
+TENANT-SPECIFIC
+
+DEDICATED.
+
+======================================================================
+41. MODEL CONFIGURATION ISOLATION
+======================================================================
+
+Tenant-specific:
+
+- model configuration
+- system prompts
+- adapters
+- inference parameters
+
+must remain isolated.
+
+======================================================================
+42. MODEL ADAPTERS
+======================================================================
+
+If tenant-specific LoRA/adapters exist:
+
+define isolation and provenance.
+
+Do not assume future model customization exists.
+
+======================================================================
+43. AGENT ISOLATION
+======================================================================
+
+An agent belongs to a tenant unless explicitly designed otherwise.
+
+Define:
+
+agent_id
+
+tenant_id
+
+environment.
+
+======================================================================
+44. AGENT CONFIGURATION
+======================================================================
+
+Agent configuration must not accidentally reference:
+
+- another tenant's tools
+- another tenant's memory
+- another tenant's knowledge
+- another tenant's credentials.
+
+======================================================================
+45. POLICY ISOLATION
+======================================================================
+
+Using 03 define:
+
+Global policy
+
+vs:
+
+Tenant policy
+
+vs:
+
+Project policy
+
+vs:
+
+Agent policy.
+
+Determine precedence.
+
+======================================================================
+46. POLICY INHERITANCE
+======================================================================
+
+Evaluate:
+
+Global
+ ↓
+Tenant
+ ↓
+Project
+ ↓
+Agent.
+
+Define conflict resolution.
+
+Do not assume simple override is always safe.
+
+======================================================================
+47. POLICY ESCALATION
+======================================================================
+
+A tenant policy must not be able to weaken mandatory platform-wide
+security policies.
+
+======================================================================
+48. CONCURRENCY ISOLATION
+======================================================================
+
+Using 14 define:
+
+Tenant concurrency budget.
+
+A noisy tenant must not consume all shared capacity.
+
+======================================================================
+49. TENANT QUOTAS
+======================================================================
+
+Evaluate:
+
+- agent runs
+- model requests
+- tool calls
+- storage
+- knowledge
+- memory
+- network
+- GPU.
+
+Do not implement quotas for every resource Day 1.
+
+Identify the minimum.
+
+======================================================================
+50. RATE LIMITING
+======================================================================
+
+Define tenant-aware rate limits.
+
+Distinguish:
+
+rate
+
+from:
+
+concurrency.
+
+======================================================================
+51. FAIRNESS
+======================================================================
+
+Using 14 determine whether scheduling must include tenant fairness.
+
+Evaluate:
+
+FIFO
+
+weighted fair sharing
+
+per-tenant pools
+
+token allocation.
+
+======================================================================
+52. NOISY NEIGHBOR
+======================================================================
+
+Model:
+
+Tenant A
+→ huge workload
+
+Tenant B
+→ normal workload.
+
+Tenant B must remain usable.
+
+Define protections.
+
+======================================================================
+53. RESOURCE RESERVATION
+======================================================================
+
+Evaluate whether premium / dedicated tenants can receive:
+
+reserved capacity.
+
+Do not implement without business justification.
+
+======================================================================
+54. GPU TENANCY
+======================================================================
+
+Using 05 and 14 determine:
+
+- shared GPU
+- dedicated GPU
+- GPU pool
+- tenant reservation.
+
+======================================================================
+55. CPU / MEMORY TENANCY
+======================================================================
+
+Define whether workloads require:
+
+- CPU limits
+- memory limits
+- container quotas
+- process isolation.
+
+======================================================================
+56. NETWORK ISOLATION
+======================================================================
+
+Using future 22 determine whether tenants require:
+
+- network policies
+- egress restrictions
+- private endpoints
+- dedicated networks.
+
+Do not build physical network isolation Day 1 unless justified.
+
+======================================================================
+57. STORAGE ISOLATION
+======================================================================
+
+Using future 23 define stable ownership contracts for:
+
+- object storage
+- files
+- artifacts
+- backups.
+
+======================================================================
+58. OBJECT STORAGE
+======================================================================
+
+Evaluate:
+
+bucket per tenant
+
+vs:
+
+prefix per tenant
+
+vs:
+
+separate storage accounts.
+
+Compare security and operational implications.
+
+======================================================================
+59. FILE ACCESS
+======================================================================
+
+Prevent path traversal across tenant boundaries.
+
+Never trust:
+
+tenant_id + filename
+
+without secure path construction and authorization.
+
+======================================================================
+60. DATABASE BACKUPS
+======================================================================
+
+A tenant deletion must consider backups.
+
+Deleting live data does not necessarily erase historical backups.
+
+Define the architectural contract.
+
+======================================================================
+61. TENANT DELETION
+======================================================================
+
+Define lifecycle:
+
+ACTIVE
+ ↓
+DELETION_REQUESTED
+ ↓
+GRACE_PERIOD
+ ↓
+DELETING
+ ↓
+DELETED.
+
+Determine whether these states are sufficient.
+
+======================================================================
+62. RIGHT TO DELETE
+======================================================================
+
+Do not make legal claims.
+
+Architecturally determine how deletion propagates through:
+
+- database
+- object storage
+- vectors
+- memory
+- caches
+- logs
+- backups.
+
+======================================================================
+63. SOFT DELETE VS HARD DELETE
+======================================================================
+
+Evaluate both.
+
+Do not assume soft delete satisfies permanent deletion requirements.
+
+======================================================================
+64. TENANT SUSPENSION
+======================================================================
+
+Suspended tenant should be unable to:
+
+- create runs
+- access data
+- invoke tools.
+
+Determine exceptions for administrative recovery.
+
+======================================================================
+65. TENANT REACTIVATION
+======================================================================
+
+Define:
+
+SUSPENDED
+ ↓
+ACTIVE
+
+and what must be revalidated.
+
+======================================================================
+66. TENANT PROVISIONING
+======================================================================
+
+Define:
+
+Create Tenant
+ ↓
+Initialize Resources
+ ↓
+Initialize Policies
+ ↓
+Initialize Identity
+ ↓
+Ready.
+
+======================================================================
+67. PROVISIONING FAILURE
+======================================================================
+
+If tenant creation partially fails:
+
+define rollback / compensation.
+
+======================================================================
+68. TENANT MIGRATION
+======================================================================
+
+Evaluate future migration:
+
+shared
+
+→
+
+isolated.
+
+or:
+
+region A
+
+→
+
+region B.
+
+Define stable identifiers.
+
+======================================================================
+69. TENANT SHARDING
+======================================================================
+
+Future scale may require moving a tenant between shards.
+
+Tenant identity must remain stable.
+
+======================================================================
+70. TENANT DATA LOCATION
+======================================================================
+
+Future 22/23/26 may introduce regional requirements.
+
+Define:
+
+tenant data residency
+
+without hard-coding one geography.
+
+======================================================================
+71. ENCRYPTION
+======================================================================
+
+Determine encryption requirements for tenant data:
+
+- at rest
+- in transit
+- backups.
+
+======================================================================
+72. TENANT-SPECIFIC KEYS
+======================================================================
+
+Evaluate:
+
+shared encryption key
+
+vs:
+
+tenant-specific key.
+
+Determine where customer-managed keys become justified.
+
+======================================================================
+73. KEY ISOLATION
+======================================================================
+
+If tenant-specific keys exist:
+
+Tenant A key
+
+must not decrypt:
+
+Tenant B data.
+
+======================================================================
+74. CROSS-TENANT ANALYTICS
+======================================================================
+
+Platform operators may need aggregate metrics.
+
+Determine how analytics can operate without exposing tenant data.
+
+======================================================================
+75. AGGREGATION
+======================================================================
+
+Prefer:
+
+aggregate metrics
+
+over:
+
+raw cross-tenant data access.
+
+======================================================================
+76. OBSERVABILITY
+======================================================================
+
+Using 15 define tenant dimensions for:
+
+- traces
+- metrics
+- logs.
+
+Ensure observability systems themselves do not leak tenant data.
+
+======================================================================
+77. LOG ISOLATION
+======================================================================
+
+Logs may contain:
+
+- prompts
+- tool outputs
+- identifiers
+- document names.
+
+Define tenant-aware access.
+
+======================================================================
+78. AUDIT
+======================================================================
+
+Using 16 define:
+
+tenant_id
+
+as a mandatory audit dimension for tenant-scoped events.
+
+======================================================================
+79. ADMIN AUDIT
+======================================================================
+
+Cross-tenant administrative access must be especially visible.
+
+======================================================================
+80. COST
+======================================================================
+
+Future 20 requires tenant-aware usage measurement.
+
+Define stable telemetry for:
+
+- model usage
+- tool calls
+- storage
+- GPU
+- tokens
+- network.
+
+======================================================================
+81. CAPACITY
+======================================================================
+
+Future 21 should be able to derive capacity requirements per tenant.
+
+======================================================================
+82. EVALUATION
+======================================================================
+
+Using 17 ensure evaluation data cannot accidentally cross tenant
+boundaries.
+
+======================================================================
+83. TEST TENANT
+======================================================================
+
+Determine whether test tenants should be physically or logically
+isolated from production tenants.
+
+======================================================================
+84. DEPLOYMENT
+======================================================================
+
+Using 18 determine whether tenant-specific configuration is deployed:
+
+- centrally
+- dynamically
+- per environment.
+
+======================================================================
+85. TENANT CONFIGURATION
+======================================================================
+
+Tenant configuration must be:
+
+- versioned
+- authorized
+- auditable
+- tenant-scoped.
+
+======================================================================
+86. TENANT FEATURE FLAGS
+======================================================================
+
+Feature flags must not accidentally expose another tenant's features.
+
+======================================================================
+87. SECURITY INCIDENT
+======================================================================
+
+Define response if cross-tenant access is suspected.
+
+At minimum:
+
+DETECT
+→
+CONTAIN
+→
+IDENTIFY AFFECTED TENANTS
+→
+REVOKE
+→
+INVESTIGATE
+→
+RECOVER.
+
+======================================================================
+88. CROSS-TENANT LEAK TESTING
+======================================================================
+
+Create adversarial tests for:
+
+- SQL
+- vector search
+- cache
+- object storage
+- memory
+- tools
+- credentials
+- logs
+- metrics
+- audit.
+
+======================================================================
+89. TENANT CONFUSION ATTACK
+======================================================================
+
+Test:
+
+Authenticated as Tenant A
+
+attempt:
+
+tenant_id = Tenant B.
+
+This must fail.
+
+======================================================================
+90. IDOR
+======================================================================
+
+Test insecure direct object reference:
+
+Tenant A user
+→ resource ID belonging to Tenant B.
+
+Must fail.
+
+======================================================================
+91. CACHE POISONING
+======================================================================
+
+Test whether Tenant A can populate a cache entry later returned to
+Tenant B.
+
+======================================================================
+92. VECTOR LEAK
+======================================================================
+
+Test whether retrieval can return another tenant's embedding.
+
+======================================================================
+93. MEMORY LEAK
+======================================================================
+
+Test whether memory search can retrieve another tenant's memory.
+
+======================================================================
+94. TOOL LEAK
+======================================================================
+
+Test whether a tenant can invoke another tenant's tool configuration.
+
+======================================================================
+95. CREDENTIAL LEAK
+======================================================================
+
+Test whether a tenant can obtain another tenant's external credential.
+
+======================================================================
+96. LOG LEAK
+======================================================================
+
+Test whether tenant users can access logs containing another tenant's
+data.
+
+======================================================================
+97. AGENT CONFUSION
+======================================================================
+
+Test whether an agent can reference another tenant's:
+
+- tools
+- memory
+- knowledge
+- policies
+- credentials.
+
+======================================================================
+98. MODEL CONTEXT LEAK
+======================================================================
+
+This is CRITICAL.
+
+Ensure the model context assembled for:
+
+Tenant A
+
+cannot contain:
+
+Tenant B data.
+
+======================================================================
+99. PROMPT / SYSTEM CONFIGURATION ISOLATION
+======================================================================
+
+Tenant A custom instructions must not modify Tenant B behavior.
+
+======================================================================
+100. MULTI-TENANT MODEL CACHE
+======================================================================
+
+If model inference caching is introduced:
+
+evaluate whether cached outputs could cross tenants.
+
+======================================================================
+101. EMBEDDING CACHE
+======================================================================
+
+If embeddings are cached:
+
+ensure tenant-safe keys and authorization.
+
+======================================================================
+102. SHARED MODEL RUNTIME
+======================================================================
+
+A shared model runtime must not leak:
+
+- request context
+- cached context
+- adapter state
+- memory.
+
+======================================================================
+103. MODEL BATCHING
+======================================================================
+
+If requests from multiple tenants are batched:
+
+determine how isolation is guaranteed.
+
+The model may process multiple tenants in one batch, but their data
+must remain logically isolated.
+
+======================================================================
+104. GPU MEMORY
+======================================================================
+
+Evaluate whether model runtime state can leak between tenant requests.
+
+======================================================================
+105. WORKER REUSE
+======================================================================
+
+A worker handling Tenant A may later handle Tenant B.
+
+Ensure:
+
+- request state cleared
+- credentials cleared
+- memory cleared
+- context cleared.
+
+======================================================================
+106. PROCESS ISOLATION
+======================================================================
+
+Determine when stronger process/container isolation becomes necessary.
+
+======================================================================
+107. CONTAINER ISOLATION
+======================================================================
+
+Compare:
+
+shared process
+
+vs:
+
+separate process
+
+vs:
+
+separate container
+
+vs:
+
+dedicated node.
+
+Do not default to the strongest isolation everywhere.
+
+======================================================================
+108. TENANT TRUST TIERS
+======================================================================
+
+Evaluate whether tenants may have different trust/security requirements.
+
+Potential:
+
+STANDARD
+
+ISOLATED
+
+HIGH-ASSURANCE.
+
+These are examples only.
+
+======================================================================
+109. DEDICATED TENANTS
+======================================================================
+
+Evaluate dedicated infrastructure for high-value tenants.
+
+Determine trigger conditions.
+
+======================================================================
+110. HYBRID MULTI-TENANCY
+======================================================================
+
+Evaluate a hybrid architecture:
+
+Most tenants
+→ shared infrastructure
+
+Sensitive / high-scale tenants
+→ isolated infrastructure.
+
+This may be preferable, but Claude must determine it through analysis.
+
+======================================================================
+111. TENANT PLACEMENT
+======================================================================
+
+If workloads can move between infrastructure:
+
+define placement policy.
+
+Potential factors:
+
+- region
+- capacity
+- trust tier
+- GPU requirement
+- data residency.
+
+======================================================================
+112. TENANT-AWARE SCHEDULING
+======================================================================
+
+Using 14 determine how scheduling incorporates tenant identity.
+
+======================================================================
+113. TENANT QUOTA HIERARCHY
+======================================================================
+
+Evaluate:
+
+Global
+ ↓
+Tenant
+ ↓
+Project
+ ↓
+Agent
+ ↓
+Run.
+
+Determine whether this hierarchy is correct.
+
+======================================================================
+114. QUOTA INHERITANCE
+======================================================================
+
+Define what happens when:
+
+Tenant max = 100
+
+Agent max = 200.
+
+The effective limit should not silently exceed the parent boundary.
+
+======================================================================
+115. QUOTA OVERRIDES
+======================================================================
+
+Tenant administrators may configure lower limits.
+
+They must not exceed platform security limits.
+
+======================================================================
+116. TENANT-LEVEL RATE LIMITS
+======================================================================
+
+Define whether rate limits apply to:
+
+- API
+- model
+- tools
+- knowledge
+- memory.
+
+======================================================================
+117. TENANT-LEVEL CONCURRENCY
+======================================================================
+
+Define relationship with:
+
+14_CONCURRENCY_ARCHITECTURE.md.
+
+Do not create an independent second scheduler.
+
+======================================================================
+118. TENANT-LEVEL RESOURCE BUDGET
+======================================================================
+
+Future 20/21 may require:
+
+tokens
+
+GPU seconds
+
+storage
+
+network.
+
+Define telemetry contracts.
+
+======================================================================
+119. CROSS-TENANT SHARED SERVICES
+======================================================================
+
+Some services will naturally be shared:
+
+- model runtime
+- monitoring
+- control plane
+- identity.
+
+Define what "shared" means and what isolation remains required.
+
+======================================================================
+120. SHARED CONTROL PLANE
+======================================================================
+
+Control Plane may be shared across tenants.
+
+It must remain tenant-aware.
+
+======================================================================
+121. CONTROL PLANE COMPROMISE
+======================================================================
+
+Threat-model:
+
+Control Plane compromised.
+
+Could attacker access all tenant data?
+
+Determine architectural containment.
+
+======================================================================
+122. DATA PLANE COMPROMISE
+======================================================================
+
+Threat-model:
+
+one worker compromised.
+
+Can it access all tenant data?
+
+Determine blast radius.
+
+======================================================================
+123. TENANT BLAST RADIUS
+======================================================================
+
+Define isolation levels and blast radius.
+
+Examples:
+
+- process
+- worker
+- node
+- cluster
+- region.
+
+======================================================================
+124. SECURITY ZONES
+======================================================================
+
+Map:
+
+Tenant
+ ↓
+Application
+ ↓
+Runtime
+ ↓
+Storage
+ ↓
+External Services.
+
+Identify trust boundaries.
+
+======================================================================
+125. TENANT-AWARE API DESIGN
+======================================================================
+
+API endpoints must derive tenant context from identity.
+
+Avoid APIs such as:
+
+GET /tenant/{tenant_id}/data
+
+where authorization depends only on the URL parameter.
+
+======================================================================
+126. TENANT-AWARE RESOURCE IDS
+======================================================================
+
+Resource IDs should not be treated as sufficient authorization.
+
+Even if globally unique:
+
+resource_id
+
+must still be checked against:
+
+tenant ownership.
+
+======================================================================
+127. GLOBAL RESOURCES
+======================================================================
+
+Some resources may genuinely be global:
+
+- base models
+- system policies
+- platform capabilities.
+
+Define explicit distinction:
+
+GLOBAL
+
+vs:
+
+TENANT-OWNED.
+
+======================================================================
+128. RESOURCE OWNERSHIP MODEL
+======================================================================
+
+Every major resource type must answer:
+
+WHO OWNS THIS?
+
+Examples:
+
+Agent → Tenant
+Memory → Tenant
+Knowledge → Tenant
+Credential → Tenant
+Tool → Global/Tenant
+Model → Global/Tenant
+Policy → Global/Tenant.
+
+======================================================================
+129. RESOURCE TRANSFER
+======================================================================
+
+Evaluate whether a resource can move between tenants.
+
+Default principle:
+
+NO SILENT TRANSFER.
+
+If allowed:
+
+- authorization
+- validation
+- audit
+- provenance.
+
+======================================================================
+130. TENANT IMPORT
+======================================================================
+
+If future migration/import exists:
+
+define secure import boundaries.
+
+======================================================================
+131. TENANT EXPORT
+======================================================================
+
+Define what a tenant export contains:
+
+- data
+- metadata
+- knowledge
+- memory
+- configuration
+- audit subset.
+
+Do not automatically export platform secrets.
+
+======================================================================
+132. TENANT BACKUP
+======================================================================
+
+Determine whether backup is:
+
+- shared
+- tenant-aware
+- tenant-specific.
+
+======================================================================
+133. RESTORE
+======================================================================
+
+A tenant restore must not overwrite another tenant's data.
+
+======================================================================
+134. DISASTER RECOVERY
+======================================================================
+
+Future 24 must preserve tenant boundaries during:
+
+- failover
+- restore
+- region migration.
+
+======================================================================
+135. TENANT ID STABILITY
+======================================================================
+
+Tenant identity should remain stable through:
+
+- migration
+- backup restore
+- region move
+- infrastructure replacement.
+
+======================================================================
+136. TENANT LIFECYCLE EVENTS
+======================================================================
+
+Define events such as:
+
+TenantCreated
+TenantSuspended
+TenantReactivated
+TenantDeletionRequested
+TenantDeleted
+TenantMigrated.
+
+These are examples only.
+
+Determine the actual event contract.
+
+======================================================================
+137. EVENT ISOLATION
+======================================================================
+
+Tenant events must not leak sensitive information across tenants.
+
+======================================================================
+138. EVENT AUTHORIZATION
+======================================================================
+
+Consumers must be authorized to receive tenant events.
+
+======================================================================
+139. A2A FUTURE
+======================================================================
+
+Using 31 determine how agent-to-agent communication affects tenancy.
+
+A Tenant A agent must not automatically communicate with:
+
+Tenant B agent.
+
+======================================================================
+140. MCP FUTURE
+======================================================================
+
+Using 07 determine how MCP integrations respect tenant boundaries.
+
+======================================================================
+141. HUMAN-IN-THE-LOOP
+======================================================================
+
+Future 28:
+
+human reviewers must receive only the tenant-scoped information they
+are authorized to see.
+
+======================================================================
+142. REPLAY
+======================================================================
+
+Future 29:
+
+replaying Tenant A's run must not expose data to Tenant B.
+
+======================================================================
+143. OFFLINE
+======================================================================
+
+Future 30:
+
+offline data must preserve tenant boundaries.
+
+======================================================================
+144. ADMIN CONSOLE
+======================================================================
+
+Future 32:
+
+administrative views must respect tenant permissions.
+
+======================================================================
+145. ARCHITECTURE OPTIONS
+======================================================================
+
+Identify real alternatives.
+
+Potential:
+
+OPTION A
+--------
+Fully shared infrastructure with logical isolation.
+
+OPTION B
+--------
+Shared application + database/schema isolation.
+
+OPTION C
+--------
+Hybrid logical + physical isolation.
+
+OPTION D
+--------
+Dedicated infrastructure per tenant.
+
+OPTION E
+--------
+Tiered isolation based on tenant requirements.
+
+These are examples only.
+
+Research and determine the real candidates.
+
+======================================================================
+146. ARCHITECTURE SELECTION MATRIX
+======================================================================
+
+Compare:
+
+| Criterion |
+| Security |
+| Isolation |
+| Operational complexity |
+| Cost |
+| Scalability |
+| Performance |
+| Noisy-neighbor protection |
+| Data migration |
+| Disaster recovery |
+| Compliance readiness |
+| Developer complexity |
+| Day-1 practicality |
+| Enterprise evolution |
+| Recommendation |
+
+======================================================================
+147. "WHY NOT?" ANALYSIS
+======================================================================
+
+For the final architecture explicitly answer:
+
+WHY THIS?
+
+WHY NOT ONE DATABASE PER TENANT?
+
+WHY NOT ONE SCHEMA PER TENANT?
+
+WHY NOT SHARED TABLES WITH tenant_id?
+
+WHY NOT ONE CONTAINER PER TENANT?
+
+WHY NOT ONE KUBERNETES NAMESPACE PER TENANT?
+
+WHY NOT ONE CLUSTER PER TENANT?
+
+WHY NOT DEDICATED GPU PER TENANT?
+
+WHY NOT CUSTOMER-MANAGED KEYS FOR EVERY TENANT?
+
+WHY NOT PHYSICAL NETWORK ISOLATION FOR EVERY TENANT?
+
+WHY NOT COMPLETE LOGICAL ISOLATION ONLY?
+
+WHY NOT COMPLETE PHYSICAL ISOLATION?
+
+WHY NOT BUILD FULL ENTERPRISE MULTI-TENANCY ON DAY 1?
+
+Only retain alternatives that are actually relevant after research.
+
+======================================================================
+148. REVERSIBILITY ANALYSIS
+======================================================================
+
+Classify:
+
+- tenant identity
+- ownership model
+- database isolation
+- storage isolation
+- cache isolation
+- compute isolation
+- network isolation
+- credential isolation
+- encryption model
+- quota architecture
+- tenant placement
+
+as:
+
+- easily reversible
+- moderately reversible
+- expensive to reverse
+- effectively irreversible.
+
+======================================================================
+149. CONTRACT VS IMPLEMENTATION
+======================================================================
+
+Define stable internal contracts.
+
+Potential:
+
+Tenant
+TenantContext
+TenantMembership
+TenantResource
+TenantPolicy
+TenantQuota
+TenantUsage
+TenantCredential
+TenantPlacement
+TenantLifecycle
+TenantIsolationLevel.
+
+These are examples only.
+
+Determine the minimum required set.
+
+The internal contract must remain independent from:
+
+- PostgreSQL
+- Redis
+- Kubernetes
+- AWS
+- Azure
+- GCP
+- any specific cloud provider.
+
+======================================================================
+150. REQUIRED DIAGRAMS
+======================================================================
+
+Include Mermaid diagrams for:
+
+1. Multi-tenancy architecture
+2. Tenant hierarchy
+3. Tenant identity propagation
+4. Authorization boundary
+5. Data isolation
+6. Database isolation options
+7. Cache isolation
+8. Knowledge isolation
+9. Memory isolation
+10. Tool isolation
+11. Credential isolation
+12. Model runtime isolation
+13. GPU tenancy
+14. Concurrency tenancy
+15. Network tenancy
+16. Tenant provisioning
+17. Tenant suspension
+18. Tenant deletion
+19. Tenant migration
+20. Hybrid isolation evolution
+
+======================================================================
+151. ADR CANDIDATES
+======================================================================
+
+Identify ADRs for:
+
+- tenant model
+- tenant identity
+- authorization model
+- database isolation
+- vector isolation
+- memory isolation
+- cache isolation
+- storage isolation
+- credential isolation
+- compute isolation
+- network isolation
+- concurrency quotas
+- hybrid isolation
+- dedicated tenant triggers
+- tenant lifecycle
+- tenant deletion
+- tenant migration
+- tenant encryption.
+
+For each:
+
+- problem
+- alternatives
+- recommendation
+- consequences
+- reversibility
+- decision deadline
+
+======================================================================
+152. DAY-1 / PREPARE / SCALE / ENTERPRISE
+======================================================================
+
+Create:
+
+| Capability | Day 1 | Prepare | Scale | Enterprise |
+
+Cover:
+
+- tenant identity
+- tenant context
+- authorization
+- database isolation
+- cache isolation
+- knowledge isolation
+- memory isolation
+- tool isolation
+- credential isolation
+- model isolation
+- concurrency quotas
+- resource quotas
+- noisy-neighbor protection
+- storage isolation
+- network isolation
+- encryption
+- tenant migration
+- tenant deletion
+- tenant backup
+- tenant DR
+- dedicated infrastructure
+- customer-managed keys
+- data residency.
+
+======================================================================
+153. TENANT SECURITY TEST MATRIX
+======================================================================
+
+Create:
+
+| Threat | Attack | Control | Detection | Recovery |
+
+At minimum:
+
+- tenant ID spoofing
+- IDOR
+- cross-tenant SQL access
+- cross-tenant vector retrieval
+- cross-tenant memory access
+- cache leakage
+- credential leakage
+- tool leakage
+- model context leakage
+- log leakage
+- audit leakage
+- object-storage leakage
+- worker state leakage
+- shared GPU state leakage
+- cross-tenant admin abuse
+- tenant migration leakage
+- restore leakage.
+
+======================================================================
+154. TENANT ISOLATION TEST PLAN
+======================================================================
+
+Define automated tests for every major tenant-owned resource.
+
+For every resource test:
+
+CREATE
+
+READ
+
+UPDATE
+
+DELETE
+
+LIST
+
+SEARCH
+
+EXECUTE
+
+EXPORT
+
+RESTORE
+
+against another tenant.
+
+Every unauthorized operation must fail.
+
+======================================================================
+155. NOISY-NEIGHBOR TEST PLAN
+======================================================================
+
+Simulate:
+
+Tenant A
+→ maximum allowed workload
+
+while:
+
+Tenant B
+→ normal workload.
+
+Measure:
+
+- latency
+- throughput
+- queue time
+- error rate.
+
+======================================================================
+156. TENANT DELETION TEST
+======================================================================
+
+Create a tenant.
+
+Populate:
+
+- database
+- memory
+- knowledge
+- vectors
+- cache
+- object storage
+- credentials
+- logs
+- audit records.
+
+Delete tenant.
+
+Verify exactly what remains and why.
+
+Do not claim complete deletion if backups or legally required audit
+records remain.
+
+======================================================================
+157. TENANT MIGRATION TEST
+======================================================================
+
+Move a tenant between:
+
+- database shard
+- worker pool
+- region
+
+where applicable.
+
+Verify:
+
+- tenant identity unchanged
+- data intact
+- no cross-tenant leakage.
+
+======================================================================
+158. INCIDENT RESPONSE
+======================================================================
+
+Walk through:
+
+SCENARIO A
+----------
+Cross-tenant data leak suspected.
+
+SCENARIO B
+----------
+Tenant credential compromised.
+
+SCENARIO C
+----------
+Shared cache leakage.
+
+SCENARIO D
+----------
+Vector isolation failure.
+
+SCENARIO E
+----------
+Compromised worker serving multiple tenants.
+
+SCENARIO F
+----------
+Administrator abuses cross-tenant access.
+
+For each:
+
+DETECTION
+→
+CONTAINMENT
+→
+BLAST-RADIUS ANALYSIS
+→
+REVOCATION
+→
+INVESTIGATION
+→
+RECOVERY
+→
+PREVENTION.
+
+======================================================================
+159. ATTEMPT TO FALSIFY THE RECOMMENDATION
+======================================================================
+
+Try to prove the selected architecture wrong.
+
+Ask:
+
+- What tenant count breaks it?
+- What data volume breaks it?
+- What workload volume breaks it?
+- What GPU pressure breaks it?
+- What concurrency breaks it?
+- What storage volume breaks it?
+- What migration frequency breaks it?
+- What geographic distribution breaks it?
+- What compliance requirement breaks it?
+- What cross-tenant attack breaks it?
+- What control-plane compromise breaks it?
+- What shared-service compromise breaks it?
+
+Determine the first architectural trigger.
+
+======================================================================
+160. ARCHITECTURAL SELF-CRITIQUE
+======================================================================
+
+Before finalizing, ask:
+
+1. Is tenant identity authoritative?
+2. Is tenant context tamper-resistant?
+3. Is authorization tenant-aware?
+4. Is every tenant-owned resource identifiable?
+5. Is database isolation safe?
+6. Is vector isolation safe?
+7. Is memory isolation safe?
+8. Is cache isolation safe?
+9. Are credentials isolated?
+10. Are model contexts isolated?
+11. Are tools isolated?
+12. Are logs isolated?
+13. Are audit records isolated?
+14. Is concurrency tenant-aware?
+15. Is noisy-neighbor protection defined?
+16. Can tenant data be deleted?
+17. Can tenants be migrated?
+18. Can the architecture evolve toward stronger isolation?
+19. Can one compromised worker access all tenants?
+20. What assumptions could invalidate the architecture?
+
+Include:
+
+# ARCHITECTURAL SELF-CRITIQUE
+
+======================================================================
+161. FINAL RECOMMENDATION
+======================================================================
+
+End with:
+
+# FINAL MULTI-TENANCY ARCHITECTURE RECOMMENDATION
+
+Answer:
+
+"What Multi-Tenancy Architecture should this platform actually build?"
+
+Be concrete.
+
+Describe:
+
+- tenant model
+- tenant identity
+- tenant context
+- authorization
+- database isolation
+- storage isolation
+- vector isolation
+- memory isolation
+- cache isolation
+- tool isolation
+- credential isolation
+- model isolation
+- compute isolation
+- GPU isolation
+- concurrency isolation
+- network isolation
+- observability
+- audit
+- tenant lifecycle
+- deletion
+- migration
+- disaster recovery
+- noisy-neighbor protection
+- Day-1 architecture
+- future enterprise evolution.
+
+Then explicitly answer:
+
+"What MUST NOT be built on Day 1?"
+
+Then:
+
+"What future condition should trigger stronger tenant isolation?"
+
+======================================================================
+162. REQUIRED OUTPUT
+======================================================================
+
+Produce:
+
+19_MULTI_TENANCY_ARCHITECTURE.md
+
+The document MUST explicitly reference:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_ARCHITECTURE.md
+04_AGENT_RUNTIME.md
+05_MODEL_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+08_KNOWLEDGE_DATA_ARCHITECTURE.md
+09_MEMORY_ARCHITECTURE.md
+10_SECURITY_ARCHITECTURE.md
+11_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+12_TRUST_PROVENANCE_ARCHITECTURE.md
+13_RELIABILITY_ARCHITECTURE.md
+14_CONCURRENCY_ARCHITECTURE.md
+15_OBSERVABILITY_ARCHITECTURE.md
+16_AUDIT_ARCHITECTURE.md
+17_EVALUATION_ARCHITECTURE.md
+18_DEPLOYMENT_LIFECYCLE_ARCHITECTURE.md
+
+Also identify future interactions with:
+
+20_COST_ARCHITECTURE.md
+21_CAPACITY_PLANNING_ARCHITECTURE.md
+22_NETWORKING_ARCHITECTURE.md
+23_STORAGE_ARCHITECTURE.md
+24_DR_ENTERPRISE_ARCHITECTURE.md
+26_ENTERPRISE_COMPLIANCE_ARCHITECTURE.md
+27_MULTI_MODEL_FALLBACK_ARCHITECTURE.md
+28_HUMAN_IN_THE_LOOP_ARCHITECTURE.md
+29_REPLAY_ARCHITECTURE.md
+30_OFFLINE_MOBILE_ARCHITECTURE.md
+31_A2A_ARCHITECTURE.md
+32_ADMIN_CONSOLE_ARCHITECTURE.md
+
+If these documents do not exist:
+
+DO NOT invent their content.
+
+Define only stable contracts and future dependencies.
+
+If there is a conflict:
+
+DO NOT silently resolve it.
+
+Identify the conflict.
+
+Explain the trade-off.
+
+Recommend the superior architectural decision.
+
+Create an ADR candidate where appropriate.
+
+======================================================================
+163. SOURCE REQUIREMENTS
+======================================================================
+
+THIS SECTION IS MANDATORY.
+
+Use current research.
+
+Prioritize:
+
+- NIST
+- OWASP
+- official Kubernetes documentation
+- official PostgreSQL documentation
+- official vector database documentation where relevant
+- official cloud architecture documentation
+- official identity-provider documentation
+- authoritative SaaS architecture research
+- authoritative security research.
+
+Research actual capabilities before making claims about:
+
+- Row-Level Security
+- namespaces
+- encryption
+- network policies
+- container isolation
+- workload identity
+- database isolation.
+
+Do not fabricate citations.
+
+Do not cite sources that were not actually inspected.
+
+Clearly distinguish:
+
+SOURCE FACT
+
+from:
+
+SECURITY RESEARCH
+
+from:
+
+BENCHMARK RESULT
+
+from:
+
+INFERENCE
+
+from:
+
+ARCHITECTURAL RECOMMENDATION.
+
+======================================================================
+164. VERSION AND DATE DISCIPLINE
+======================================================================
+
+At the beginning of the document state:
+
+RESEARCH DATE
+
+and relevant:
+
+DATABASE / RUNTIME / PLATFORM VERSIONS
+
+for technologies actually selected.
+
+If technologies evolve rapidly:
+
+identify where revalidation is required.
+
+======================================================================
+165. ABSOLUTE FINAL INSTRUCTION
+======================================================================
+
+Act as an INDEPENDENT Principal Multi-Tenancy and Security Architect.
+
+Your responsibility is to determine the best multi-tenancy architecture
+for THIS platform.
+
+Do not assume:
+
+tenant_id = ISOLATION.
+
+Do not assume:
+
+RBAC = COMPLETE TENANT SECURITY.
+
+Do not assume:
+
+DATABASE SEPARATION = COMPLETE ISOLATION.
+
+Do not assume:
+
+KUBERNETES NAMESPACE = COMPLETE ISOLATION.
+
+Do not assume:
+
+SEPARATE DATABASE = ZERO CROSS-TENANT RISK.
+
+Do not assume:
+
+ENCRYPTION = AUTHORIZATION.
+
+Do not assume:
+
+SHARED MODEL RUNTIME = SAFE BY DEFAULT.
+
+Do not assume:
+
+SHARED CACHE = SAFE.
+
+Do not assume:
+
+VECTOR FILTER = SUFFICIENT WITHOUT FAILURE ANALYSIS.
+
+Do not assume:
+
+ADMIN = UNLIMITED TRUST.
+
+Do not assume:
+
+PHYSICAL ISOLATION = ALWAYS BETTER.
+
+Do not assume:
+
+LOGICAL ISOLATION = ALWAYS ENOUGH.
+
+Do not assume:
+
+DEDICATED INFRASTRUCTURE = NECESSARY FOR EVERY TENANT.
+
+Do not assume:
+
+MULTI-TENANCY CAN BE ADDED LATER.
+
+Do not allow:
+
+TENANT CONTEXT
+
+to be controlled solely by:
+
+CLIENT INPUT.
+
+Do not allow:
+
+TENANT A
+
+to influence:
+
+TENANT B
+
+through:
+
+DATA
+
+MEMORY
+
+KNOWLEDGE
+
+TOOLS
+
+CREDENTIALS
+
+CACHE
+
+MODEL CONTEXT
+
+LOGS
+
+AUDIT
+
+CONCURRENCY
+
+STORAGE
+
+OR:
+
+SHARED WORKER STATE.
+
+Do not allow:
+
+NOISY TENANTS
+
+to consume all shared capacity.
+
+Do not allow:
+
+TENANT-SCOPED AUTHORIZATION
+
+to be weaker than:
+
+PLATFORM SECURITY POLICIES.
+
+Optimize for:
+
+STRONG ISOLATION
++
+LEAST PRIVILEGE
++
+LOW DAY-1 COMPLEXITY
++
+NOISY-NEIGHBOR PROTECTION
++
+SECURITY
++
+OPERABILITY
++
+SCALABILITY
++
+MIGRATABILITY
++
+AUDITABILITY
++
+FUTURE ENTERPRISE ISOLATION
++
+VENDOR INDEPENDENCE.
+
+The final architecture MUST result from:
+
+    TENANT MODEL
+       ↓
+    TENANT BOUNDARY
+       ↓
+    THREAT MODEL
+       ↓
+    IDENTITY
+       ↓
+    AUTHORIZATION
+       ↓
+    DATA ISOLATION
+       ↓
+    COMPUTE ISOLATION
+       ↓
+    RESOURCE ISOLATION
+       ↓
+    NETWORK ISOLATION
+       ↓
+    CREDENTIAL ISOLATION
+       ↓
+    LIFECYCLE
+       ↓
+    INCIDENT RESPONSE
+       ↓
+    ALTERNATIVE COMPARISON
+       ↓
+    ADVERSARIAL CHALLENGE
+       ↓
+    FALSIFICATION
+       ↓
+    FINAL DECISION
+
+DO NOT DESIGN THE DATABASE TOPOLOGY FIRST.
+
+DO NOT DESIGN THE KUBERNETES TOPOLOGY FIRST.
+
+DO NOT DESIGN THE NETWORK FIRST.
+
+DO NOT DESIGN THE ENCRYPTION SYSTEM FIRST.
+
+RESEARCH THE TENANT MODEL FIRST.
+
+DEFINE THE TENANT BOUNDARY.
+
+MAP EVERY TENANT-OWNED RESOURCE.
+
+MAP EVERY SHARED RESOURCE.
+
+IDENTIFY EVERY POSSIBLE CROSS-TENANT LEAKAGE PATH.
+
+DEFINE THE THREAT MODEL.
+
+COMPARE LOGICAL, PHYSICAL AND HYBRID ISOLATION.
+
+ANALYZE COST, PERFORMANCE AND OPERABILITY.
+
+CHALLENGE THE DESIGN.
+
+FALSIFY IT.
+
+THEN SELECT THE BEST MULTI-TENANCY ARCHITECTURE AVAILABLE FOR THIS
+PROJECT.
+
+THEN DESIGN IT.

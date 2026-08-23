@@ -1,0 +1,3540 @@
+# 30 — OFFLINE / MOBILE ARCHITECTURE
+## Enterprise AI Agent Platform
+
+======================================================================
+ROLE
+======================================================================
+
+Act as the Principal AI Systems Architect, Distributed Systems
+Architect, Edge Computing Architect, Mobile Systems Architect,
+Offline-First Architect, Agent Runtime Architect, Security Architect,
+Privacy Architect, Data Synchronization Architect, Reliability
+Architect, Identity Architect, Networking Architect and Enterprise
+Platform Architect responsible for designing the complete
+Offline / Mobile Architecture of this platform.
+
+You have deep expertise in:
+
+- offline-first systems
+- mobile applications
+- edge computing
+- disconnected operation
+- intermittent connectivity
+- synchronization
+- conflict resolution
+- distributed state
+- local persistence
+- secure storage
+- identity
+- authorization
+- credential management
+- mobile security
+- device management
+- AI inference at the edge
+- model deployment
+- model synchronization
+- agent runtimes
+- tool execution
+- distributed workflows
+- event-driven systems
+- eventual consistency
+- reliability
+- disaster recovery
+- privacy
+- multi-tenancy
+- enterprise fleet management.
+
+======================================================================
+1. MOST IMPORTANT INSTRUCTION
+## CLAUDE MUST CHOOSE THE OFFLINE / MOBILE ARCHITECTURE
+======================================================================
+
+This is NOT a prompt asking you to automatically build:
+
+- a mobile app
+- offline mode
+- local LLM inference
+- edge inference
+- local database
+- synchronization
+- CRDTs
+- local-first architecture
+- offline queues
+- embedded agents.
+
+These are candidate mechanisms.
+
+They are NOT architectural conclusions.
+
+Claude MUST first determine:
+
+DOES THIS PLATFORM ACTUALLY NEED OFFLINE CAPABILITY?
+
+If yes:
+
+WHAT TYPE OF OFFLINE CAPABILITY?
+
+And:
+
+WHAT PARTS OF THE PLATFORM SHOULD OPERATE OFFLINE?
+
+Claude MUST independently analyze the complete platform and choose
+the best architecture available.
+
+Do NOT assume:
+
+OFFLINE = BETTER.
+
+Do NOT assume:
+
+MOBILE = REQUIRED.
+
+Do NOT assume:
+
+LOCAL AI = REQUIRED.
+
+Do NOT assume:
+
+FULL AGENT AUTONOMY OFFLINE = DESIRABLE.
+
+Do NOT assume:
+
+EVENTUAL CONSISTENCY = ALWAYS ACCEPTABLE.
+
+Do NOT assume:
+
+LOCAL DATA = SAFE.
+
+Do NOT assume:
+
+SYNC = SIMPLE.
+
+======================================================================
+2. CORE ARCHITECTURAL QUESTION
+======================================================================
+
+The architecture must answer:
+
+"What happens when the platform cannot reach the Control Plane?"
+
+And separately:
+
+"What happens when the device is temporarily disconnected?"
+
+And separately:
+
+"What happens when the device is permanently offline?"
+
+And separately:
+
+"What happens when connectivity is intermittent?"
+
+These are different operating conditions.
+
+======================================================================
+3. OFFLINE CAPABILITY LEVELS
+======================================================================
+
+Evaluate at minimum:
+
+LEVEL 0
+-------
+No offline capability.
+
+LEVEL 1
+-------
+Offline viewing / cached information.
+
+LEVEL 2
+-------
+Offline data capture with later synchronization.
+
+LEVEL 3
+-------
+Offline workflow execution using bounded local capabilities.
+
+LEVEL 4
+-------
+Offline agent execution with constrained tools.
+
+LEVEL 5
+-------
+Substantial autonomous edge execution.
+
+These are candidate levels.
+
+Claude MUST determine whether this taxonomy is appropriate.
+
+======================================================================
+4. DO NOT ASSUME FULL OFFLINE AUTONOMY
+======================================================================
+
+The default architecture must NOT assume that an agent should continue
+to operate autonomously when disconnected.
+
+For every capability determine:
+
+- whether it can operate offline
+- whether it should operate offline
+- whether it must operate offline
+- whether it must stop when offline.
+
+======================================================================
+5. REQUIRED ARCHITECTURAL PROCESS
+======================================================================
+
+The final architecture MUST result from:
+
+    USE CASE INVENTORY
+       ↓
+    CONNECTIVITY REQUIREMENTS
+       ↓
+    OFFLINE NECESSITY ANALYSIS
+       ↓
+    DEVICE / EDGE ROLE
+       ↓
+    DATA CLASSIFICATION
+       ↓
+    LOCAL STATE ANALYSIS
+       ↓
+    AGENT CAPABILITY ANALYSIS
+       ↓
+    MODEL / INFERENCE ANALYSIS
+       ↓
+    TOOL / SIDE-EFFECT ANALYSIS
+       ↓
+    IDENTITY / AUTHORIZATION
+       ↓
+    SECURITY / PRIVACY
+       ↓
+    SYNC MODEL
+       ↓
+    CONFLICT MODEL
+       ↓
+    CONSISTENCY MODEL
+       ↓
+    FAILURE ANALYSIS
+       ↓
+    RESOURCE / BATTERY / STORAGE ANALYSIS
+       ↓
+    COST / OPERATIONS
+       ↓
+    ARCHITECTURE OPTIONS
+       ↓
+    ADVERSARIAL ANALYSIS
+       ↓
+    FALSIFICATION
+       ↓
+    FINAL OFFLINE / MOBILE ARCHITECTURE.
+
+======================================================================
+6. FIRST QUESTION
+======================================================================
+
+Before designing anything:
+
+ANSWER:
+
+"WHY DOES THIS PLATFORM NEED MOBILE OR OFFLINE CAPABILITY?"
+
+Potential reasons:
+
+- field workers
+- remote environments
+- unreliable connectivity
+- aircraft / maritime environments
+- industrial environments
+- emergency operations
+- travel
+- temporary network outages
+- privacy-sensitive environments
+- edge latency
+- local data processing
+- disaster scenarios
+- business continuity.
+
+These are examples.
+
+Determine actual use cases.
+
+======================================================================
+7. MOBILE ≠ OFFLINE
+======================================================================
+
+A mobile client can be:
+
+ONLINE-ONLY.
+
+An offline system does not necessarily require:
+
+MOBILE.
+
+Treat these independently.
+
+======================================================================
+8. EDGE ≠ MOBILE
+======================================================================
+
+An edge deployment may run on:
+
+- industrial computer
+- server
+- gateway
+- workstation
+- embedded device.
+
+Do not equate:
+
+edge
+
+with:
+
+smartphone.
+
+======================================================================
+9. OFFLINE ≠ AIR-GAPPED
+======================================================================
+
+Disconnected temporarily is different from:
+
+permanently isolated.
+
+Analyze separately.
+
+======================================================================
+10. ARCHITECTURAL CONTEXT
+======================================================================
+
+Existing architecture documents:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_ARCHITECTURE.md
+04_AGENT_RUNTIME.md
+05_MODEL_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+08_KNOWLEDGE_DATA_ARCHITECTURE.md
+09_MEMORY_ARCHITECTURE.md
+10_SECURITY_ARCHITECTURE.md
+11_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+12_TRUST_PROVENANCE_ARCHITECTURE.md
+13_RELIABILITY_ARCHITECTURE.md
+14_CONCURRENCY_ARCHITECTURE.md
+15_OBSERVABILITY_ARCHITECTURE.md
+16_AUDIT_ARCHITECTURE.md
+17_EVALUATION_ARCHITECTURE.md
+18_DEPLOYMENT_LIFECYCLE_ARCHITECTURE.md
+19_MULTI_TENANCY_ARCHITECTURE.md
+20_COST_ARCHITECTURE.md
+21_CAPACITY_PLANNING_ARCHITECTURE.md
+22_NETWORKING_ARCHITECTURE.md
+23_STORAGE_ARCHITECTURE.md
+24_DR_ENTERPRISE_ARCHITECTURE.md
+25_ADVANCED_SUPPLY_CHAIN_ARCHITECTURE.md
+26_ENTERPRISE_COMPLIANCE_ARCHITECTURE.md
+27_MULTI_MODEL_FALLBACK_ARCHITECTURE.md
+28_HUMAN_IN_THE_LOOP_ARCHITECTURE.md
+29_REPLAY_ARCHITECTURE.md
+
+Future architecture documents:
+
+31_A2A_ARCHITECTURE.md
+32_ADMIN_CONSOLE_ARCHITECTURE.md
+33_ADR_ARCHITECTURE.md
+34_QUALITY_MODEL_ARCHITECTURE.md
+
+If a future document does not exist:
+
+DO NOT invent its contents.
+
+Identify only:
+
+- dependency
+- stable interface
+- unresolved assumption.
+
+If an existing architecture conflicts with this architecture:
+
+DO NOT silently compensate.
+
+Document:
+
+- source architecture
+- conflict
+- consequence
+- recommended resolution
+- ADR candidate.
+
+======================================================================
+11. LEVEL
+======================================================================
+
+This document belongs to:
+
+LEVEL C — SUCCESSIVE ARCHITECTURE.
+
+Sophisticated offline/mobile capability does NOT need to be implemented
+on Day 1 unless a real requirement exists.
+
+However:
+
+DAY 1 MUST NOT MAKE FUTURE OFFLINE / MOBILE OPERATION IMPOSSIBLE.
+
+Identify the minimum stable contracts required to preserve future
+optionality.
+
+======================================================================
+12. OPERATING MODES
+======================================================================
+
+Define explicit platform operating modes.
+
+Potential:
+
+ONLINE
+
+DEGRADED
+
+INTERMITTENT
+
+OFFLINE
+
+RECOVERY / SYNCING
+
+These are candidates.
+
+Determine the correct state model.
+
+======================================================================
+13. STATE TRANSITIONS
+======================================================================
+
+Define:
+
+ONLINE
+→
+DEGRADED
+→
+OFFLINE
+→
+RECOVERING
+→
+SYNCING
+→
+ONLINE.
+
+Include failure and interruption cases.
+
+======================================================================
+14. CONNECTIVITY DETECTION
+======================================================================
+
+Do not equate:
+
+network interface available
+
+with:
+
+platform reachable.
+
+Connectivity may exist while:
+
+- Control Plane is unavailable
+- authorization service is unavailable
+- model provider is unavailable
+- required tool is unavailable.
+
+Define actual connectivity semantics.
+
+======================================================================
+15. PARTIAL CONNECTIVITY
+======================================================================
+
+The device may be able to reach:
+
+some services
+
+but not:
+
+others.
+
+Model partial availability.
+
+======================================================================
+16. CONTROL PLANE DEPENDENCY
+======================================================================
+
+Using 02:
+
+determine which capabilities require the Control Plane.
+
+Do not assume all functions must stop when Control Plane connectivity
+is lost.
+
+======================================================================
+17. POLICY DEPENDENCY
+======================================================================
+
+Using 03:
+
+determine which policies must be:
+
+- locally cached
+- remotely evaluated
+- cryptographically verified
+- refreshed before offline use.
+
+======================================================================
+18. LOCAL POLICY
+======================================================================
+
+If offline decisions are allowed:
+
+what policy version governs them?
+
+======================================================================
+19. POLICY EXPIRATION
+======================================================================
+
+A locally cached policy may become stale.
+
+Define:
+
+- expiration
+- maximum offline duration
+- emergency behavior.
+
+Do not invent universal durations.
+
+======================================================================
+20. POLICY REVOCATION
+======================================================================
+
+A policy may be revoked remotely while the device is offline.
+
+The architecture must define:
+
+what happens before the device reconnects.
+
+======================================================================
+21. OFFLINE AUTHORIZATION
+======================================================================
+
+Using 11:
+
+determine whether authorization can be evaluated offline.
+
+If yes:
+
+define:
+
+- cached credentials
+- capability tokens
+- signed policies
+- local authorization state
+- expiration
+- revocation.
+
+======================================================================
+22. NEVER CACHE UNBOUNDED AUTHORITY
+======================================================================
+
+Offline credentials must be:
+
+- scoped
+- time-bounded
+- auditable
+- revocable where possible.
+
+======================================================================
+23. DEVICE IDENTITY
+======================================================================
+
+Determine how the device identifies itself.
+
+Potential:
+
+- device identity
+- user identity
+- tenant identity
+- workload identity.
+
+Do not assume one identity is sufficient.
+
+======================================================================
+24. USER AUTHENTICATION OFFLINE
+======================================================================
+
+Determine whether users can authenticate while disconnected.
+
+Evaluate:
+
+- local credentials
+- device-bound credentials
+- cached authentication state
+- biometric unlock
+- hardware-backed keys.
+
+Do not assume all methods are available on every platform.
+
+======================================================================
+25. STOLEN DEVICE
+======================================================================
+
+Threat-model:
+
+device is stolen while offline.
+
+The attacker must NOT gain unlimited access to:
+
+- tenant data
+- credentials
+- model
+- agent capabilities.
+
+======================================================================
+26. REMOTE REVOCATION
+======================================================================
+
+When device reconnects:
+
+remote revocation must be enforced.
+
+======================================================================
+27. DEVICE EXPIRATION
+======================================================================
+
+Offline authority may need:
+
+maximum offline validity.
+
+Determine appropriate policy.
+
+======================================================================
+28. CLOCK MANIPULATION
+======================================================================
+
+An attacker may manipulate:
+
+device clock.
+
+Do not rely solely on local time for security expiration.
+
+======================================================================
+29. SECURE TIME
+======================================================================
+
+Evaluate mechanisms for trusted time where needed.
+
+======================================================================
+30. DATA CLASSIFICATION
+======================================================================
+
+Using 08/10/26:
+
+classify data into:
+
+- safe to cache
+- conditionally cacheable
+- never cache locally.
+
+Do not assume all cloud data should be available offline.
+
+======================================================================
+31. LOCAL DATA MINIMIZATION
+======================================================================
+
+Store the minimum information required.
+
+======================================================================
+32. LOCAL ENCRYPTION
+======================================================================
+
+Evaluate:
+
+- encryption at rest
+- hardware-backed key storage
+- secure enclaves / key stores
+- database encryption.
+
+Do not assume a particular mobile OS or hardware mechanism.
+
+======================================================================
+33. KEY MANAGEMENT
+======================================================================
+
+Determine:
+
+- key generation
+- key storage
+- key rotation
+- key revocation
+- device wipe.
+
+======================================================================
+34. DEVICE WIPE
+======================================================================
+
+Evaluate:
+
+- local wipe
+- cryptographic erase
+- remote wipe.
+
+Remote wipe cannot operate while disconnected.
+
+Therefore determine:
+
+what happens when the device reconnects.
+
+======================================================================
+35. LOCAL CACHE
+======================================================================
+
+Evaluate cache architecture.
+
+Potential:
+
+- LRU
+- policy-driven
+- user-driven
+- task-driven.
+
+Determine actual strategy.
+
+======================================================================
+36. CACHE CONSISTENCY
+======================================================================
+
+Define:
+
+- stale data
+- freshness
+- invalidation
+- version.
+
+======================================================================
+37. STALE DATA
+======================================================================
+
+An agent must know when information may be stale.
+
+Do not silently present stale information as current.
+
+======================================================================
+38. DATA PROVENANCE
+======================================================================
+
+Using 12:
+
+offline data must preserve:
+
+- source
+- version
+- timestamp
+- provenance.
+
+======================================================================
+39. KNOWLEDGE OFFLINE
+======================================================================
+
+Using 08:
+
+evaluate offline access to:
+
+- documents
+- embeddings
+- indexes
+- knowledge bases.
+
+======================================================================
+40. RETRIEVAL OFFLINE
+======================================================================
+
+Determine whether retrieval can run:
+
+locally.
+
+Potential:
+
+- local vector index
+- keyword index
+- prepackaged knowledge.
+
+Do not assume a local vector database is required.
+
+======================================================================
+41. KNOWLEDGE FRESHNESS
+======================================================================
+
+Determine:
+
+how stale offline knowledge may become.
+
+======================================================================
+42. KNOWLEDGE UPDATE
+======================================================================
+
+When online:
+
+evaluate:
+
+- incremental update
+- full replacement
+- delta sync.
+
+======================================================================
+43. LARGE KNOWLEDGE BASE
+======================================================================
+
+Do not attempt to replicate:
+
+entire enterprise knowledge base
+
+onto every device.
+
+Use:
+
+selective synchronization.
+
+======================================================================
+44. MEMORY OFFLINE
+======================================================================
+
+Using 09:
+
+determine what agent memory can be safely stored locally.
+
+======================================================================
+45. MEMORY SYNCHRONIZATION
+======================================================================
+
+Determine:
+
+- local memory changes
+- server memory changes
+- conflict handling.
+
+======================================================================
+46. MEMORY CONFLICT
+======================================================================
+
+Two locations may modify memory concurrently.
+
+Define conflict semantics.
+
+======================================================================
+47. AGENT STATE
+======================================================================
+
+Using 04:
+
+determine whether agent execution state can persist across:
+
+disconnection.
+
+======================================================================
+48. WORKFLOW CHECKPOINT
+======================================================================
+
+Using 13/14/29:
+
+offline operation may require checkpoints.
+
+Determine:
+
+- checkpoint frequency
+- state contents
+- consistency.
+
+======================================================================
+49. AGENT INTERRUPTION
+======================================================================
+
+If network disappears during agent execution:
+
+what happens?
+
+Potential:
+
+- pause
+- fail
+- continue locally
+- checkpoint
+- retry.
+
+Determine based on capability and risk.
+
+======================================================================
+50. TOOL AVAILABILITY
+======================================================================
+
+Using 06:
+
+classify tools as:
+
+- always local
+- offline-capable
+- online-required
+- unsafe offline.
+
+======================================================================
+51. LOCAL TOOLS
+======================================================================
+
+Examples:
+
+- file operations
+- local database
+- device sensors.
+
+Determine actual tool set.
+
+======================================================================
+52. REMOTE TOOLS
+======================================================================
+
+Examples:
+
+- cloud API
+- CRM
+- payment provider
+- enterprise systems.
+
+These may be unavailable offline.
+
+======================================================================
+53. TOOL QUEUING
+======================================================================
+
+An offline agent may queue:
+
+future tool actions.
+
+But queued actions can become unsafe or stale.
+
+======================================================================
+54. OFFLINE SIDE EFFECTS
+======================================================================
+
+Evaluate whether offline execution may perform external side effects.
+
+Default toward:
+
+bounded local side effects only.
+
+======================================================================
+55. QUEUED SIDE EFFECTS
+======================================================================
+
+If queued:
+
+- email
+- transactions
+- changes
+
+must be revalidated before execution after reconnect.
+
+======================================================================
+56. REVALIDATION
+======================================================================
+
+On reconnect:
+
+do not blindly execute queued actions.
+
+Re-evaluate:
+
+- authorization
+- policy
+- target
+- state
+- validity
+- conflicts.
+
+======================================================================
+57. STALE COMMAND
+======================================================================
+
+A command generated offline at:
+
+T0
+
+may be invalid at:
+
+T1.
+
+Define expiration.
+
+======================================================================
+58. COMMAND IDENTITY
+======================================================================
+
+Every queued action must have:
+
+stable action identity.
+
+======================================================================
+59. IDEMPOTENCY
+======================================================================
+
+Queued actions may be delivered twice.
+
+Use idempotency mechanisms where required.
+
+======================================================================
+60. DUPLICATE EXECUTION
+======================================================================
+
+Prevent:
+
+offline action
+
+→
+
+sync
+
+→
+
+retry
+
+→
+
+duplicate side effect.
+
+======================================================================
+61. OUT-OF-ORDER SYNC
+======================================================================
+
+Sync events may arrive out of order.
+
+Design accordingly.
+
+======================================================================
+62. SYNC MODEL
+======================================================================
+
+Compare:
+
+- client-server synchronization
+- event synchronization
+- operation-based synchronization
+- state synchronization
+- hybrid.
+
+Claude MUST choose.
+
+======================================================================
+63. EVENTUAL CONSISTENCY
+======================================================================
+
+Do not assume eventual consistency is acceptable for:
+
+- security
+- permissions
+- financial state
+- destructive operations.
+
+======================================================================
+64. STRONG CONSISTENCY
+======================================================================
+
+Determine which operations require online confirmation.
+
+======================================================================
+65. CONFLICT MODEL
+======================================================================
+
+Define conflict categories:
+
+- same record
+- same field
+- same collection
+- same workflow
+- same agent state.
+
+======================================================================
+66. CONFLICT RESOLUTION
+======================================================================
+
+Compare:
+
+- last-write-wins
+- first-write-wins
+- merge
+- CRDT
+- application-specific resolution
+- human resolution.
+
+These are candidates.
+
+Claude MUST determine the correct mechanism per data type.
+
+======================================================================
+67. DO NOT USE CRDT BY DEFAULT
+======================================================================
+
+CRDTs are useful for some structures.
+
+They are NOT a universal conflict-resolution solution.
+
+======================================================================
+68. HUMAN CONFLICT RESOLUTION
+======================================================================
+
+Using 28:
+
+some conflicts may require:
+
+human intervention.
+
+Determine when.
+
+======================================================================
+69. CONFLICT PRIORITY
+======================================================================
+
+High-risk conflicts should not be silently resolved.
+
+======================================================================
+70. CONFLICT AUDIT
+======================================================================
+
+Record:
+
+- original state
+- local change
+- remote change
+- resolution
+- actor
+- timestamp.
+
+======================================================================
+71. MERGE PROVENANCE
+======================================================================
+
+Using 12:
+
+preserve why a conflict was resolved a certain way.
+
+======================================================================
+72. VERSIONING
+======================================================================
+
+Use version identifiers where required.
+
+Potential:
+
+- revision number
+- vector clock
+- logical clock.
+
+Determine actual need.
+
+======================================================================
+73. CAUSALITY
+======================================================================
+
+For distributed updates:
+
+preserve causal relationships where required.
+
+======================================================================
+74. OFFLINE QUEUE
+======================================================================
+
+Define queue:
+
+- persistent
+- encrypted
+- bounded
+- prioritized.
+
+======================================================================
+75. QUEUE LIMIT
+======================================================================
+
+Offline queue must have:
+
+capacity limits.
+
+Determine behavior when full.
+
+======================================================================
+76. QUEUE CORRUPTION
+======================================================================
+
+Handle:
+
+- corrupted command
+- incomplete command
+- duplicate command
+- unknown command version.
+
+======================================================================
+77. QUEUE SECURITY
+======================================================================
+
+Queued actions may contain:
+
+sensitive data.
+
+Protect them accordingly.
+
+======================================================================
+78. QUEUE RETENTION
+======================================================================
+
+Offline actions should not live indefinitely.
+
+======================================================================
+79. EXPIRATION
+======================================================================
+
+Define action expiration semantics.
+
+======================================================================
+80. NETWORK RECOVERY
+======================================================================
+
+When connectivity returns:
+
+do not immediately flood the server.
+
+Use:
+
+- backoff
+- batching
+- prioritization.
+
+======================================================================
+81. SYNC STORM
+======================================================================
+
+Multiple devices may reconnect simultaneously.
+
+Capacity planning must account for:
+
+sync storms.
+
+======================================================================
+82. BACKPRESSURE
+======================================================================
+
+Server must be able to:
+
+slow synchronization.
+
+======================================================================
+83. PARTIAL SYNC
+======================================================================
+
+Sync may fail halfway.
+
+Design:
+
+resumable synchronization.
+
+======================================================================
+84. CHECKPOINTED SYNC
+======================================================================
+
+Avoid restarting full sync after:
+
+small failure.
+
+======================================================================
+85. BANDWIDTH
+======================================================================
+
+Offline synchronization may occur over:
+
+- cellular
+- Wi-Fi
+- satellite
+- low-bandwidth networks.
+
+======================================================================
+86. BANDWIDTH-AWARE SYNC
+======================================================================
+
+Evaluate:
+
+- compression
+- prioritization
+- delta sync
+- deferred large payloads.
+
+======================================================================
+87. COST-AWARE SYNC
+======================================================================
+
+Cellular data may be expensive.
+
+Allow policy where appropriate.
+
+======================================================================
+88. BATTERY
+======================================================================
+
+Mobile devices have limited battery.
+
+Offline AI can consume significant power.
+
+======================================================================
+89. BATTERY POLICY
+======================================================================
+
+Evaluate:
+
+- background execution
+- charging-only tasks
+- compute limits
+- thermal limits.
+
+======================================================================
+90. THERMAL
+======================================================================
+
+Local inference can cause:
+
+thermal throttling.
+
+======================================================================
+91. PERFORMANCE
+======================================================================
+
+Measure:
+
+- startup
+- inference latency
+- sync latency
+- storage IO.
+
+======================================================================
+92. LOCAL MODEL INFERENCE
+======================================================================
+
+Using 05:
+
+evaluate whether local model inference is actually needed.
+
+Compare:
+
+- remote inference
+- local inference
+- hybrid inference
+- cached results.
+
+======================================================================
+93. LOCAL MODEL SIZE
+======================================================================
+
+If local inference is selected:
+
+evaluate:
+
+- model size
+- memory
+- storage
+- compute
+- battery.
+
+======================================================================
+94. MODEL QUANTIZATION
+======================================================================
+
+Evaluate whether quantization is necessary.
+
+Do not assume it is always beneficial.
+
+======================================================================
+95. MODEL QUALITY
+======================================================================
+
+A smaller local model may behave differently from the primary cloud
+model.
+
+Define:
+
+quality degradation.
+
+======================================================================
+96. MODEL ROUTING
+======================================================================
+
+Using 27:
+
+potential:
+
+online → cloud model
+
+offline → local model.
+
+But do not assume this is automatically correct.
+
+======================================================================
+97. MODEL FALLBACK
+======================================================================
+
+If local model unavailable:
+
+determine whether agent:
+
+- stops
+- degrades
+- uses cached result.
+
+======================================================================
+98. MODEL VERSION SYNCHRONIZATION
+======================================================================
+
+Local models must be versioned.
+
+======================================================================
+99. MODEL UPDATE
+======================================================================
+
+Model updates may be:
+
+large.
+
+Evaluate:
+
+- delta update
+- staged update
+- Wi-Fi only
+- enterprise managed update.
+
+======================================================================
+100. MODEL ROLLBACK
+======================================================================
+
+If local model update fails:
+
+retain safe fallback.
+
+======================================================================
+101. MODEL INTEGRITY
+======================================================================
+
+Verify:
+
+- signature
+- hash
+- provenance.
+
+======================================================================
+102. MODEL SECURITY
+======================================================================
+
+An attacker must not replace the local model with a malicious model.
+
+======================================================================
+103. SUPPLY CHAIN
+======================================================================
+
+Using 25:
+
+offline model packages must preserve artifact provenance.
+
+======================================================================
+104. LOCAL TOOL SECURITY
+======================================================================
+
+Offline tools may have elevated access to:
+
+- filesystem
+- camera
+- sensors
+- local databases.
+
+Use least privilege.
+
+======================================================================
+105. DEVICE PERMISSIONS
+======================================================================
+
+Map agent capabilities to:
+
+device permissions.
+
+======================================================================
+106. AGENT CAPABILITY TOKENS
+======================================================================
+
+Evaluate bounded local capabilities.
+
+======================================================================
+107. OFFLINE PRIVILEGE
+======================================================================
+
+Offline mode must NOT automatically grant:
+
+more permissions.
+
+======================================================================
+108. TENANT ISOLATION
+======================================================================
+
+Using 19:
+
+device may contain data from:
+
+one or more tenants.
+
+Define isolation.
+
+======================================================================
+109. MULTI-USER DEVICE
+======================================================================
+
+If supported:
+
+separate:
+
+- user data
+- credentials
+- tenant data
+- agent state.
+
+======================================================================
+110. SHARED DEVICE
+======================================================================
+
+Threat-model:
+
+multiple users on one device.
+
+======================================================================
+111. DEVICE MANAGEMENT
+======================================================================
+
+Evaluate integration with:
+
+enterprise device management.
+
+Do not assume a specific vendor.
+
+======================================================================
+112. DEVICE TRUST
+======================================================================
+
+Determine whether device posture affects:
+
+offline authority.
+
+Potential:
+
+- rooted/jailbroken
+- outdated OS
+- disabled encryption
+- compromised device.
+
+======================================================================
+113. ROOT / JAILBREAK
+======================================================================
+
+Evaluate policy for compromised devices.
+
+======================================================================
+114. DEVICE ATTESTATION
+======================================================================
+
+Evaluate hardware/software attestation where justified.
+
+======================================================================
+115. TRUSTED EXECUTION
+======================================================================
+
+Evaluate hardware-backed security.
+
+Do not require it universally.
+
+======================================================================
+116. SECURE BOOT
+======================================================================
+
+Evaluate device integrity where needed.
+
+======================================================================
+117. OFFLINE SECRETS
+======================================================================
+
+Minimize secrets stored locally.
+
+======================================================================
+118. TOKEN EXPIRATION
+======================================================================
+
+Offline tokens must have:
+
+bounded lifetime.
+
+======================================================================
+119. TOKEN REVOCATION
+======================================================================
+
+Revocation may be delayed offline.
+
+Design around that limitation.
+
+======================================================================
+120. COMPROMISED OFFLINE DEVICE
+======================================================================
+
+Assume:
+
+an attacker can extract some local data.
+
+Design data minimization accordingly.
+
+======================================================================
+121. PRIVACY
+======================================================================
+
+Local storage may increase privacy risk.
+
+But local processing may reduce network exposure.
+
+Compare both.
+
+======================================================================
+122. DATA RESIDENCY
+======================================================================
+
+A mobile device crossing borders may carry data into another
+jurisdiction.
+
+Evaluate.
+
+======================================================================
+123. TRAVEL
+======================================================================
+
+Threat-model:
+
+device physically crossing jurisdictions.
+
+======================================================================
+124. LOCAL DATA EXPIRATION
+======================================================================
+
+Cached data may require:
+
+automatic deletion.
+
+======================================================================
+125. SCREEN PRIVACY
+======================================================================
+
+Mobile display may expose sensitive information.
+
+Evaluate application-level controls where relevant.
+
+======================================================================
+126. CLIPBOARD / SHARING
+======================================================================
+
+Sensitive data may escape through:
+
+- clipboard
+- screenshots
+- OS sharing.
+
+Determine whether controls are required.
+
+======================================================================
+127. BACKUPS
+======================================================================
+
+Device backups may contain:
+
+offline data.
+
+Evaluate encryption and exclusion requirements.
+
+======================================================================
+128. LOCAL LOGS
+======================================================================
+
+Do not log sensitive prompts/results unnecessarily.
+
+======================================================================
+129. OBSERVABILITY OFFLINE
+======================================================================
+
+Using 15:
+
+events generated offline must eventually sync.
+
+======================================================================
+130. OFFLINE TELEMETRY BUFFER
+======================================================================
+
+Buffer:
+
+- metrics
+- logs
+- traces
+- audit events.
+
+======================================================================
+131. TELEMETRY PRIORITY
+======================================================================
+
+Critical security/audit events should have higher priority than
+debug telemetry.
+
+======================================================================
+132. TELEMETRY STORAGE
+======================================================================
+
+Bound local telemetry storage.
+
+======================================================================
+133. TELEMETRY LOSS
+======================================================================
+
+If storage fills:
+
+determine what can be dropped.
+
+======================================================================
+134. AUDIT OFFLINE
+======================================================================
+
+Using 16:
+
+offline actions must remain auditable.
+
+======================================================================
+135. AUDIT INTEGRITY
+======================================================================
+
+Offline audit records must be tamper-evident.
+
+======================================================================
+136. AUDIT TIMESTAMP
+======================================================================
+
+Local timestamps may be unreliable.
+
+Preserve:
+
+local time
+
+and:
+
+server reconciliation time.
+
+======================================================================
+137. PROVENANCE
+======================================================================
+
+Using 12:
+
+offline actions must record:
+
+- device
+- user
+- tenant
+- agent
+- model
+- policy
+- action.
+
+======================================================================
+138. REPLAY
+======================================================================
+
+Using 29:
+
+offline execution must generate sufficient metadata for future
+reconstruction.
+
+======================================================================
+139. OFFLINE REPLAY
+======================================================================
+
+Determine whether offline runs can be replayed:
+
+- locally
+- centrally
+- partially.
+
+======================================================================
+140. HUMAN-IN-THE-LOOP
+======================================================================
+
+Using 28:
+
+offline approval may be problematic.
+
+Determine:
+
+- which approvals can occur offline
+- which must be online
+- how authority is validated.
+
+======================================================================
+141. OFFLINE APPROVAL
+======================================================================
+
+Never assume:
+
+cached approver identity
+
+equals:
+
+current authority.
+
+======================================================================
+142. HIGH-RISK ACTIONS
+======================================================================
+
+Consider requiring:
+
+online confirmation
+
+for:
+
+- financial
+- security
+- destructive
+- privileged
+- cross-tenant
+- irreversible actions.
+
+These are candidates.
+
+Claude MUST determine actual policy.
+
+======================================================================
+143. EMERGENCY MODE
+======================================================================
+
+Some environments may need emergency offline operation.
+
+Determine:
+
+- scope
+- authorization
+- logging
+- later reconciliation.
+
+======================================================================
+144. EMERGENCY OFFLINE ACTION
+======================================================================
+
+Emergency authorization must remain:
+
+bounded.
+
+======================================================================
+145. RECONCILIATION
+======================================================================
+
+When reconnecting:
+
+compare:
+
+offline state
+
+vs:
+
+server state.
+
+======================================================================
+146. RECONCILIATION ENGINE
+======================================================================
+
+Define:
+
+- detection
+- merge
+- rejection
+- manual review.
+
+======================================================================
+147. RECONCILIATION CONFLICT
+======================================================================
+
+High-risk conflicts should not be silently merged.
+
+======================================================================
+148. HUMAN CONFLICT REVIEW
+======================================================================
+
+Using 28:
+
+route unresolved conflicts to authorized humans.
+
+======================================================================
+149. RECONCILIATION AUDIT
+======================================================================
+
+Record:
+
+- original
+- proposed merge
+- final state
+- decision.
+
+======================================================================
+150. OFFLINE TRANSACTION
+======================================================================
+
+Determine which operations can use:
+
+optimistic local transaction.
+
+======================================================================
+151. FINANCIAL TRANSACTIONS
+======================================================================
+
+Do not assume financial transactions can be safely finalized offline.
+
+Evaluate:
+
+authorization
+
+and:
+
+double-spend / duplicate execution.
+
+======================================================================
+152. INVENTORY
+======================================================================
+
+Offline inventory changes may conflict.
+
+Evaluate:
+
+reservation
+
+vs:
+
+optimistic update.
+
+======================================================================
+153. RESOURCE ALLOCATION
+======================================================================
+
+Offline allocation of scarce resources can produce conflicts.
+
+======================================================================
+154. MONOTONIC DATA
+======================================================================
+
+Identify data that can safely merge monotonically.
+
+======================================================================
+155. NON-MERGEABLE DATA
+======================================================================
+
+Identify data that requires:
+
+central authority.
+
+======================================================================
+156. OFFLINE-FIRST DATA MODEL
+======================================================================
+
+Do not convert entire platform to local-first architecture without
+justification.
+
+======================================================================
+157. HYBRID ARCHITECTURE
+======================================================================
+
+Evaluate:
+
+centralized control plane
+
++
+
+selective local capabilities.
+
+This is a candidate, not a conclusion.
+
+======================================================================
+158. EDGE GATEWAY
+======================================================================
+
+Evaluate whether an edge gateway is superior to direct mobile offline
+execution for some environments.
+
+======================================================================
+159. DEVICE VS EDGE
+======================================================================
+
+Compare:
+
+mobile device
+
+vs:
+
+edge gateway
+
+vs:
+
+local server
+
+vs:
+
+cloud.
+
+======================================================================
+160. CONNECTIVITY TOPOLOGY
+======================================================================
+
+Model:
+
+device
+
+→
+
+gateway
+
+→
+
+cloud
+
+as well as:
+
+device
+
+→
+
+cloud.
+
+======================================================================
+161. STORE-AND-FORWARD
+======================================================================
+
+Evaluate store-and-forward architecture.
+
+======================================================================
+162. LOCAL CONTROL PLANE
+======================================================================
+
+Do NOT assume a complete local Control Plane is necessary.
+
+Evaluate the minimum required local control capability.
+
+======================================================================
+163. LOCAL POLICY ENGINE
+======================================================================
+
+Evaluate local policy evaluation.
+
+======================================================================
+164. LOCAL AGENT RUNTIME
+======================================================================
+
+Evaluate whether Agent Runtime can operate locally.
+
+======================================================================
+165. LOCAL MODEL RUNTIME
+======================================================================
+
+Evaluate whether Model Runtime can operate locally.
+
+======================================================================
+166. LOCAL TOOL RUNTIME
+======================================================================
+
+Evaluate local tool execution.
+
+======================================================================
+167. LOCAL MEMORY
+======================================================================
+
+Evaluate local memory.
+
+======================================================================
+168. LOCAL KNOWLEDGE
+======================================================================
+
+Evaluate local knowledge.
+
+======================================================================
+169. LOCAL OBSERVABILITY
+======================================================================
+
+Evaluate local telemetry.
+
+======================================================================
+170. LOCAL AUDIT
+======================================================================
+
+Evaluate local audit.
+
+======================================================================
+171. LOCAL SECURITY
+======================================================================
+
+Evaluate local security controls.
+
+======================================================================
+172. LOCAL ADMINISTRATION
+======================================================================
+
+Do not build a full local Admin Console unless required.
+
+======================================================================
+173. ADMIN CONSOLE
+======================================================================
+
+Future 32:
+
+define only the interface required for:
+
+- device status
+- sync status
+- offline policy
+- device revocation
+- fleet management.
+
+Do not invent UI.
+
+======================================================================
+174. A2A
+======================================================================
+
+Future 31:
+
+offline agents may interact with:
+
+- local agents
+- remote agents
+- queued messages.
+
+Define only stable requirements.
+
+======================================================================
+175. A2A OFFLINE
+======================================================================
+
+Messages may need:
+
+- persistence
+- ordering
+- expiration
+- replay protection.
+
+======================================================================
+176. MESSAGE EXPIRATION
+======================================================================
+
+An offline message may become stale.
+
+Define TTL where required.
+
+======================================================================
+177. REPLAY PROTECTION
+======================================================================
+
+Do not execute:
+
+the same offline command twice.
+
+======================================================================
+178. NONCE
+======================================================================
+
+Evaluate nonces/idempotency keys.
+
+======================================================================
+179. NETWORK PARTITION
+======================================================================
+
+Model long partition.
+
+======================================================================
+180. SPLIT-BRAIN
+======================================================================
+
+Multiple offline devices may act independently.
+
+Determine whether the data model tolerates:
+
+split-brain.
+
+======================================================================
+181. LEADER / AUTHORITY
+======================================================================
+
+Where centralized authority is required:
+
+do not simulate it locally without controls.
+
+======================================================================
+182. DEVICE CLUSTER
+======================================================================
+
+Evaluate whether multiple local devices may coordinate offline.
+
+======================================================================
+183. LOCAL DISCOVERY
+======================================================================
+
+If devices communicate locally:
+
+evaluate secure discovery.
+
+======================================================================
+184. LOCAL NETWORK TRUST
+======================================================================
+
+Do not treat:
+
+same Wi-Fi network
+
+as:
+
+trusted.
+
+======================================================================
+185. DEVICE-TO-DEVICE SECURITY
+======================================================================
+
+Use authenticated communication.
+
+======================================================================
+186. OFFLINE SOFTWARE UPDATES
+======================================================================
+
+Evaluate:
+
+- application updates
+- policy updates
+- model updates
+- security updates.
+
+======================================================================
+187. UPDATE ORDER
+======================================================================
+
+Define whether:
+
+policy
+
+must update before:
+
+model
+
+or:
+
+runtime.
+
+Determine dependencies.
+
+======================================================================
+188. UPDATE FAILURE
+======================================================================
+
+Device must not enter:
+
+unsafe partially updated state.
+
+======================================================================
+189. ROLLBACK
+======================================================================
+
+Evaluate rollback for:
+
+- app
+- model
+- policy
+- data schema.
+
+======================================================================
+190. SCHEMA MIGRATION
+======================================================================
+
+Offline devices may remain on:
+
+old schema.
+
+Sync must support:
+
+migration.
+
+======================================================================
+191. BACKWARD COMPATIBILITY
+======================================================================
+
+Cloud must understand:
+
+supported older clients.
+
+======================================================================
+192. CLIENT VERSION SUPPORT
+======================================================================
+
+Define compatibility policy.
+
+======================================================================
+193. DEPRECATED CLIENT
+======================================================================
+
+A device may remain offline for months.
+
+Define:
+
+what happens when it reconnects.
+
+======================================================================
+194. FORCED UPGRADE
+======================================================================
+
+Evaluate:
+
+- mandatory update
+- graceful degradation
+- revocation.
+
+======================================================================
+195. SECURITY PATCHING
+======================================================================
+
+Long offline periods increase:
+
+security exposure.
+
+Determine maximum acceptable offline posture.
+
+======================================================================
+196. OFFLINE SECURITY WINDOW
+======================================================================
+
+Do not invent a universal value.
+
+Model based on:
+
+risk.
+
+======================================================================
+197. DEVICE HEALTH
+======================================================================
+
+Track:
+
+- OS
+- app version
+- model version
+- policy version
+- security posture.
+
+======================================================================
+198. DEVICE INVENTORY
+======================================================================
+
+Using 21/32:
+
+maintain fleet visibility.
+
+======================================================================
+199. FLEET MANAGEMENT
+======================================================================
+
+Evaluate:
+
+- device registration
+- enrollment
+- revocation
+- policy assignment
+- update channels.
+
+======================================================================
+200. MULTI-TENANCY
+======================================================================
+
+Using 19:
+
+fleet management must preserve tenant isolation.
+
+======================================================================
+201. TENANT DEVICE POLICY
+======================================================================
+
+Customers may require different:
+
+- offline duration
+- cached data
+- models
+- tools.
+
+======================================================================
+202. PLATFORM MINIMUM CONTROLS
+======================================================================
+
+Tenant policies must not disable:
+
+platform security minimums.
+
+======================================================================
+203. OFFLINE COST
+======================================================================
+
+Using 20:
+
+evaluate:
+
+- device compute
+- cloud sync
+- model updates
+- storage
+- bandwidth.
+
+======================================================================
+204. CAPACITY
+======================================================================
+
+Using 21:
+
+model:
+
+- sync storms
+- device fleets
+- model distribution
+- telemetry upload.
+
+======================================================================
+205. STORAGE
+======================================================================
+
+Using 23:
+
+local storage must be bounded.
+
+======================================================================
+206. NETWORKING
+======================================================================
+
+Using 22:
+
+support intermittent networks.
+
+======================================================================
+207. RELIABILITY
+======================================================================
+
+Using 13:
+
+offline capability should increase:
+
+resilience
+
+without introducing:
+
+inconsistent state.
+
+======================================================================
+208. CONCURRENCY
+======================================================================
+
+Using 14:
+
+offline writes create concurrency.
+
+======================================================================
+209. DEPLOYMENT
+======================================================================
+
+Using 18:
+
+mobile/edge versions require lifecycle management.
+
+======================================================================
+210. DR
+======================================================================
+
+Using 24:
+
+device-local state may not be the authoritative backup.
+
+======================================================================
+211. SUPPLY CHAIN
+======================================================================
+
+Using 25:
+
+device software/model artifacts must be verified.
+
+======================================================================
+212. COMPLIANCE
+======================================================================
+
+Using 26:
+
+offline data processing may affect:
+
+- privacy
+- residency
+- retention
+- access rights.
+
+======================================================================
+213. MODEL FALLBACK
+======================================================================
+
+Using 27:
+
+offline mode may select alternate models.
+
+Capture routing decisions.
+
+======================================================================
+214. HUMAN OVERSIGHT
+======================================================================
+
+Using 28:
+
+offline mode must not silently weaken required human oversight.
+
+======================================================================
+215. REPLAY
+======================================================================
+
+Using 29:
+
+offline execution must remain reconstructable where required.
+
+======================================================================
+216. OFFLINE TELEMETRY
+======================================================================
+
+Create:
+
+| Telemetry | Local Buffer | Priority | Max Retention | Sync |
+
+======================================================================
+217. OFFLINE DATA MATRIX
+======================================================================
+
+Create:
+
+| Data Class | Local? | Encrypted? | TTL | Sync | Conflict |
+
+======================================================================
+218. OFFLINE ACTION MATRIX
+======================================================================
+
+Create:
+
+| Action | Offline? | Local Side Effect? | Queue? | Revalidate? |
+
+======================================================================
+219. TOOL MATRIX
+======================================================================
+
+Create:
+
+| Tool | Offline | Local | Remote | Risk | Policy |
+
+======================================================================
+220. MODEL MATRIX
+======================================================================
+
+Create:
+
+| Model | Local | Remote | Offline Use | Size | Versioning |
+
+======================================================================
+221. AUTHORIZATION MATRIX
+======================================================================
+
+Create:
+
+| Capability | Offline Authorization | Expiration | Revocation |
+
+======================================================================
+222. SYNCHRONIZATION MATRIX
+======================================================================
+
+Create:
+
+| Data | Sync Strategy | Conflict Strategy | Consistency |
+
+======================================================================
+223. FAILURE MATRIX
+======================================================================
+
+Create:
+
+| Failure | Offline Behavior | Recovery | Human Required |
+
+======================================================================
+224. DEVICE TRUST MATRIX
+======================================================================
+
+Create:
+
+| Device State | Offline Capability | Authority | Action |
+
+======================================================================
+225. ARCHITECTURE OPTIONS
+======================================================================
+
+Evaluate at minimum:
+
+OPTION A
+--------
+Online-only mobile client.
+
+OPTION B
+--------
+Offline cache + deferred synchronization.
+
+OPTION C
+--------
+Offline-first application with local state and synchronization.
+
+OPTION D
+--------
+Hybrid edge architecture.
+
+OPTION E
+--------
+Local agent + local model + bounded local tools + controlled
+synchronization.
+
+OPTION F
+--------
+Tiered hybrid:
+cloud control plane
++
+optional edge gateway
++
+optional mobile offline capability.
+
+These are candidate architectures.
+
+Claude MUST determine which is best.
+
+======================================================================
+226. ARCHITECTURE SELECTION
+======================================================================
+
+Compare:
+
+| Criterion |
+| Use Case Fit |
+| Reliability |
+| Security |
+| Privacy |
+| Data Consistency |
+| Offline Capability |
+| Model Capability |
+| Device Resource Usage |
+| Battery |
+| Storage |
+| Network Cost |
+| Operational Complexity |
+| Scalability |
+| Enterprise Manageability |
+| Day-1 Practicality |
+| Future Flexibility |
+| Recommendation |
+
+======================================================================
+227. WHY NOT ANALYSIS
+======================================================================
+
+Explicitly answer:
+
+WHY NOT ONLINE-ONLY?
+
+WHY NOT FULL OFFLINE-FIRST?
+
+WHY NOT LOCAL LLM ON EVERY DEVICE?
+
+WHY NOT EDGE GATEWAY?
+
+WHY NOT STORE EVERYTHING LOCALLY?
+
+WHY NOT SYNCHRONIZE EVERYTHING?
+
+WHY NOT EVENTUAL CONSISTENCY EVERYWHERE?
+
+WHY NOT CRDT EVERYWHERE?
+
+WHY NOT QUEUE ALL ACTIONS?
+
+WHY NOT ALLOW ALL TOOLS OFFLINE?
+
+WHY NOT KEEP DEVICES OFFLINE INDEFINITELY?
+
+WHY NOT CACHE ALL POLICIES?
+
+WHY NOT CACHE ALL AUTHORIZATION?
+
+WHY NOT BUILD A COMPLETE LOCAL CONTROL PLANE?
+
+WHY NOT BUILD A FULL MOBILE CLIENT ON DAY 1?
+
+Only retain alternatives that survive architectural analysis.
+
+======================================================================
+228. REVERSIBILITY
+======================================================================
+
+Classify:
+
+- offline data model
+- synchronization protocol
+- local storage model
+- local agent runtime
+- local model runtime
+- device identity
+- offline authorization
+- conflict resolution
+
+as:
+
+- easily reversible
+- moderately reversible
+- expensive
+- effectively irreversible.
+
+======================================================================
+229. DAY-1 REQUIREMENTS
+======================================================================
+
+Define minimum foundations.
+
+Potential:
+
+- explicit online/offline capability boundary
+- execution identity
+- action identity
+- versioning
+- policy versioning
+- idempotency
+- synchronization interfaces
+- state transition model
+- capability abstraction
+- provenance.
+
+These are candidates.
+
+Determine actual requirements.
+
+======================================================================
+230. DAY-1 NON-REQUIREMENTS
+======================================================================
+
+Explicitly identify what should NOT be built on Day 1 unless a concrete
+use case demands it.
+
+======================================================================
+231. FUTURE TRIGGERS
+======================================================================
+
+Define objective conditions that justify advanced offline/mobile
+capabilities.
+
+Potential:
+
+- remote users
+- unreliable connectivity
+- regulated environments
+- emergency operations
+- edge latency requirements
+- local privacy requirements
+- enterprise fleet demand.
+
+Determine actual triggers.
+
+======================================================================
+232. STABLE CONTRACTS
+======================================================================
+
+Define stable concepts such as:
+
+ConnectivityState
+OfflineCapability
+OfflinePolicy
+DeviceIdentity
+DeviceTrust
+OfflineAuthorization
+LocalState
+SyncRequest
+SyncResponse
+SyncCheckpoint
+Conflict
+ConflictResolution
+OfflineAction
+QueuedAction
+RevalidationResult
+DeviceCapability
+LocalModel
+ModelManifest
+DevicePolicy.
+
+These are examples.
+
+Determine the minimum required contracts.
+
+Contracts must remain independent of:
+
+- mobile OS
+- device vendor
+- synchronization framework
+- database
+- model provider.
+
+======================================================================
+233. ADR CANDIDATES
+======================================================================
+
+Identify ADRs for:
+
+- offline strategy
+- mobile vs edge
+- synchronization
+- conflict resolution
+- local inference
+- offline authorization
+- device trust
+- local storage
+- model distribution
+- tool availability
+- emergency offline mode.
+
+For each:
+
+- problem
+- alternatives
+- recommendation
+- consequences
+- reversibility
+- decision deadline.
+
+======================================================================
+234. OFFLINE READINESS MATRIX
+======================================================================
+
+Create:
+
+| Capability | Day 1 | Prepare | Enterprise | Verified |
+
+Cover:
+
+- connectivity state
+- offline policy
+- device identity
+- offline authorization
+- local encryption
+- local storage
+- action queue
+- synchronization
+- conflict detection
+- conflict resolution
+- model versioning
+- tool classification
+- telemetry buffering
+- audit
+- replay
+- device revocation
+- fleet management.
+
+======================================================================
+235. REQUIRED DIAGRAMS
+======================================================================
+
+Include Mermaid diagrams for:
+
+1. Complete offline/mobile architecture
+2. Online/offline state machine
+3. Device → Edge → Cloud topology
+4. Mobile → Cloud topology
+5. Local agent runtime
+6. Local model runtime
+7. Local tool architecture
+8. Offline authorization
+9. Secure local storage
+10. Offline action queue
+11. Synchronization
+12. Conflict resolution
+13. Revalidation after reconnect
+14. Model update
+15. Policy update
+16. Device revocation
+17. Telemetry buffering
+18. Audit synchronization
+19. Replay integration
+20. Human approval integration
+21. Multi-tenant device architecture
+22. Day-1 → Enterprise evolution.
+
+======================================================================
+236. ATTEMPT TO FALSIFY THE RECOMMENDATION
+======================================================================
+
+Try to prove the selected architecture wrong.
+
+At minimum analyze:
+
+- device stolen while offline
+- device compromised
+- rooted/jailbroken device
+- device clock manipulated
+- credentials expire offline
+- authorization revoked while offline
+- policy revoked while offline
+- model compromised
+- model update fails
+- application update fails
+- schema migration fails
+- device remains offline for a very long time
+- connectivity becomes intermittent
+- sync storm
+- duplicate sync
+- out-of-order sync
+- conflicting writes
+- split-brain
+- stale data
+- stale commands
+- queued action becomes unsafe
+- external state changes
+- tool disappears
+- remote API changes
+- model changes
+- local model quality degrades
+- battery exhaustion
+- storage exhaustion
+- telemetry buffer fills
+- network unavailable during critical action
+- replay of offline execution is incomplete
+- human approval is unavailable
+- tenant policy conflicts with platform policy
+- cross-tenant data accidentally cached
+- device crosses jurisdiction
+- local backup leaks data
+- remote wipe requested while device offline
+- device reconnects after security incident
+- malicious offline command
+- replayed command
+- duplicate financial action
+- unauthorized local tool execution
+- sync package tampered with
+- malicious model/package update.
+
+For each:
+
+- failure
+- containment
+- residual risk
+- architecture impact.
+
+======================================================================
+237. ARCHITECTURAL SELF-CRITIQUE
+======================================================================
+
+Before finalizing ask:
+
+1. Did I prove offline capability is actually necessary?
+2. Did I distinguish mobile from offline?
+3. Did I distinguish edge from mobile?
+4. Did I distinguish intermittent connectivity from air-gapped operation?
+5. Did I classify capabilities individually?
+6. Did I avoid assuming local inference?
+7. Did I avoid assuming local-first architecture?
+8. Did I model offline authorization?
+9. Did I model revocation?
+10. Did I model device compromise?
+11. Did I model stale policy?
+12. Did I model stale data?
+13. Did I model queued side effects?
+14. Did I require revalidation?
+15. Did I model idempotency?
+16. Did I model conflict resolution?
+17. Did I avoid CRDT by default?
+18. Did I model battery?
+19. Did I model storage?
+20. Did I model bandwidth?
+21. Did I model sync storms?
+22. Did I model model distribution?
+23. Did I model tool restrictions?
+24. Did I preserve tenant isolation?
+25. Did I preserve auditability?
+26. Did I preserve replayability?
+27. Did I preserve human oversight where required?
+28. Did I avoid over-engineering Day 1?
+29. What assumption could invalidate the architecture?
+
+Include:
+
+# ARCHITECTURAL SELF-CRITIQUE
+
+======================================================================
+238. FINAL RECOMMENDATION
+======================================================================
+
+End with:
+
+# FINAL OFFLINE / MOBILE ARCHITECTURE RECOMMENDATION
+
+Answer:
+
+"Should this platform support offline/mobile operation, and if so,
+what exact architecture should it use?"
+
+Be concrete.
+
+Describe:
+
+- actual use cases
+- operating modes
+- device role
+- edge role
+- cloud role
+- local runtime
+- local model
+- local tools
+- local data
+- synchronization
+- conflict resolution
+- authorization
+- device trust
+- security
+- privacy
+- telemetry
+- audit
+- replay
+- human oversight
+- model updates
+- policy updates
+- fleet management
+- cost
+- capacity
+- failure behavior
+- Day-1 foundation
+- enterprise evolution.
+
+Then explicitly answer:
+
+"IS OFFLINE CAPABILITY ACTUALLY REQUIRED?"
+
+Then:
+
+"WHAT MUST EXIST ON DAY 1?"
+
+Then:
+
+"WHAT MUST NOT BE BUILT ON DAY 1?"
+
+Then:
+
+"WHAT OBJECTIVE CONDITIONS SHOULD TRIGGER ADVANCED OFFLINE/MOBILE
+CAPABILITIES?"
+
+Then:
+
+"WHICH CAPABILITIES MUST NEVER BE AVAILABLE OFFLINE?"
+
+======================================================================
+239. REQUIRED OUTPUT
+======================================================================
+
+Produce:
+
+30_OFFLINE_MOBILE_ARCHITECTURE.md
+
+The document MUST explicitly reference:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_ARCHITECTURE.md
+04_AGENT_RUNTIME.md
+05_MODEL_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+08_KNOWLEDGE_DATA_ARCHITECTURE.md
+09_MEMORY_ARCHITECTURE.md
+10_SECURITY_ARCHITECTURE.md
+11_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+12_TRUST_PROVENANCE_ARCHITECTURE.md
+13_RELIABILITY_ARCHITECTURE.md
+14_CONCURRENCY_ARCHITECTURE.md
+15_OBSERVABILITY_ARCHITECTURE.md
+16_AUDIT_ARCHITECTURE.md
+17_EVALUATION_ARCHITECTURE.md
+18_DEPLOYMENT_LIFECYCLE_ARCHITECTURE.md
+19_MULTI_TENANCY_ARCHITECTURE.md
+20_COST_ARCHITECTURE.md
+21_CAPACITY_PLANNING_ARCHITECTURE.md
+22_NETWORKING_ARCHITECTURE.md
+23_STORAGE_ARCHITECTURE.md
+24_DR_ENTERPRISE_ARCHITECTURE.md
+25_ADVANCED_SUPPLY_CHAIN_ARCHITECTURE.md
+26_ENTERPRISE_COMPLIANCE_ARCHITECTURE.md
+27_MULTI_MODEL_FALLBACK_ARCHITECTURE.md
+28_HUMAN_IN_THE_LOOP_ARCHITECTURE.md
+29_REPLAY_ARCHITECTURE.md
+
+Also identify future interactions with:
+
+31_A2A_ARCHITECTURE.md
+32_ADMIN_CONSOLE_ARCHITECTURE.md
+33_ADR_ARCHITECTURE.md
+34_QUALITY_MODEL_ARCHITECTURE.md
+
+If documents do not exist:
+
+DO NOT invent their contents.
+
+Define only:
+
+- dependency
+- stable interface
+- unresolved assumption.
+
+======================================================================
+240. SOURCE REQUIREMENTS
+======================================================================
+
+THIS SECTION IS MANDATORY.
+
+Use current web research.
+
+Prioritize authoritative sources:
+
+- NIST
+- CISA
+- OWASP
+- official Apple security/platform documentation where relevant
+- official Android security/platform documentation where relevant
+- official mobile OS documentation
+- official cloud/edge documentation
+- official synchronization/database documentation
+- official model/runtime documentation
+- relevant privacy authorities
+- relevant enterprise security standards.
+
+When evaluating device security:
+
+use current platform documentation.
+
+When evaluating offline AI/model execution:
+
+verify current hardware/runtime/provider capabilities.
+
+When evaluating privacy and regulation:
+
+use authoritative sources.
+
+Clearly distinguish:
+
+SOURCE FACT
+
+from:
+
+MEASUREMENT
+
+from:
+
+INFERENCE
+
+from:
+
+ARCHITECTURAL RECOMMENDATION.
+
+======================================================================
+241. RESEARCH DATE
+======================================================================
+
+At the beginning state:
+
+RESEARCH DATE
+
+and:
+
+VERSIONS / DEVICES / RUNTIMES / FRAMEWORKS EVALUATED.
+
+Do not claim compatibility with devices or runtimes without verification.
+
+======================================================================
+242. PRIVACY DISCIPLINE
+======================================================================
+
+Never assume:
+
+"offline"
+
+means:
+
+"more private."
+
+Offline storage can increase:
+
+physical compromise risk.
+
+Offline processing can reduce:
+
+network exposure.
+
+Analyze both.
+
+======================================================================
+243. SECURITY DISCIPLINE
+======================================================================
+
+Never assume:
+
+device = trusted.
+
+Treat mobile and edge devices as:
+
+potentially compromised environments.
+
+Use:
+
+least privilege
+
++
+
+bounded authority
+
++
+
+encryption
+
++
+
+device trust
+
++
+
+revocation
+
++
+
+data minimization.
+
+======================================================================
+244. CONSISTENCY DISCIPLINE
+======================================================================
+
+Never assume:
+
+eventual consistency
+
+is universally acceptable.
+
+Classify data by:
+
+consistency requirement.
+
+======================================================================
+245. OFFLINE SIDE-EFFECT DISCIPLINE
+======================================================================
+
+Never allow:
+
+offline capability
+
+to silently become:
+
+unbounded autonomous authority.
+
+Queued external side effects must be:
+
+bounded
+
++
+
+idempotent
+
++
+
+revalidated
+
++
+
+audited.
+
+======================================================================
+246. ABSOLUTE FINAL INSTRUCTION
+======================================================================
+
+Act as an INDEPENDENT Principal Offline / Mobile / Edge Architect.
+
+Your responsibility is to determine the best Offline / Mobile
+Architecture for THIS platform.
+
+Do not assume:
+
+MOBILE = REQUIRED.
+
+Do not assume:
+
+OFFLINE = REQUIRED.
+
+Do not assume:
+
+EDGE = REQUIRED.
+
+Do not assume:
+
+LOCAL LLM = REQUIRED.
+
+Do not assume:
+
+OFFLINE-FIRST = REQUIRED.
+
+Do not assume:
+
+EVENTUAL CONSISTENCY = ACCEPTABLE.
+
+Do not assume:
+
+CRDT = UNIVERSAL SOLUTION.
+
+Do not assume:
+
+LOCAL STORAGE = SAFE.
+
+Do not assume:
+
+CACHED AUTHORIZATION = CURRENT AUTHORIZATION.
+
+Do not assume:
+
+CACHED POLICY = CURRENT POLICY.
+
+Do not assume:
+
+CURRENT DATA = HISTORICAL DATA.
+
+Do not assume:
+
+QUEUED ACTION = VALID ACTION.
+
+Do not assume:
+
+OFFLINE EXECUTION = SAFE EXECUTION.
+
+Do not allow:
+
+OFFLINE MODE
+
+to bypass:
+
+AUTHORIZATION.
+
+Do not allow:
+
+OFFLINE MODE
+
+to bypass:
+
+TENANT ISOLATION.
+
+Do not allow:
+
+OFFLINE MODE
+
+to bypass:
+
+PLATFORM SECURITY CONTROLS.
+
+Do not allow:
+
+OFFLINE MODE
+
+to silently expand:
+
+AGENT AUTHORITY.
+
+Do not allow:
+
+LOCAL MODEL
+
+to replace:
+
+CENTRAL GOVERNANCE
+
+without explicit architectural justification.
+
+Do not allow:
+
+QUEUED SIDE EFFECTS
+
+to execute without:
+
+REVALIDATION.
+
+Do not allow:
+
+OFFLINE ACTIONS
+
+to execute twice because of:
+
+SYNC RETRIES.
+
+Do not allow:
+
+STALE COMMANDS
+
+to execute indefinitely.
+
+Do not allow:
+
+DEVICE COMPROMISE
+
+to expose:
+
+UNBOUNDED TENANT DATA.
+
+Do not allow:
+
+OFFLINE DATA
+
+to be stored indefinitely without:
+
+RETENTION POLICY.
+
+Do not allow:
+
+SYNC
+
+to create:
+
+SPLIT-BRAIN DATA
+
+without explicit conflict handling.
+
+Do not allow:
+
+HUMAN OVERSIGHT REQUIREMENTS
+
+to disappear merely because:
+
+THE DEVICE IS OFFLINE.
+
+Do not allow:
+
+OFFLINE AI
+
+to become:
+
+AN UNCONTROLLED SECOND PLATFORM.
+
+Optimize for:
+
+ACTUAL USE-CASE FIT
++
+SECURITY
++
+PRIVACY
++
+BOUNDED AUTONOMY
++
+CONSISTENCY
++
+RELIABILITY
++
+DEVICE SAFETY
++
+COST
++
+BATTERY EFFICIENCY
++
+NETWORK EFFICIENCY
++
+TENANT ISOLATION
++
+AUDITABILITY
++
+REPLAYABILITY
++
+ENTERPRISE MANAGEABILITY
++
+FUTURE FLEXIBILITY.
+
+The final architecture MUST result from:
+
+    USE CASES
+       ↓
+    CONNECTIVITY REQUIREMENTS
+       ↓
+    OFFLINE NECESSITY
+       ↓
+    DEVICE / EDGE ROLE
+       ↓
+    DATA CLASSIFICATION
+       ↓
+    LOCAL STATE
+       ↓
+    AGENT CAPABILITIES
+       ↓
+    MODEL / INFERENCE
+       ↓
+    TOOL / SIDE EFFECTS
+       ↓
+    AUTHORIZATION
+       ↓
+    SECURITY
+       ↓
+    SYNCHRONIZATION
+       ↓
+    CONSISTENCY
+       ↓
+    CONFLICT RESOLUTION
+       ↓
+    RESOURCE LIMITS
+       ↓
+    FAILURE ANALYSIS
+       ↓
+    ADVERSARIAL ANALYSIS
+       ↓
+    FALSIFICATION
+       ↓
+    FINAL DECISION.
+
+DO NOT CHOOSE A MOBILE FRAMEWORK FIRST.
+
+DO NOT CHOOSE A DATABASE FIRST.
+
+DO NOT CHOOSE A SYNC TECHNOLOGY FIRST.
+
+DO NOT CHOOSE CRDT FIRST.
+
+DO NOT CHOOSE LOCAL INFERENCE FIRST.
+
+DO NOT CHOOSE EDGE FIRST.
+
+DO NOT CHOOSE OFFLINE-FIRST FIRST.
+
+UNDERSTAND THE ACTUAL USE CASES FIRST.
+
+UNDERSTAND WHICH CAPABILITIES REALLY NEED TO SURVIVE
+DISCONNECTION FIRST.
+
+UNDERSTAND THE SECURITY IMPLICATIONS FIRST.
+
+UNDERSTAND THE DATA CONSISTENCY REQUIREMENTS FIRST.
+
+UNDERSTAND THE SIDE EFFECTS FIRST.
+
+UNDERSTAND THE DEVICE TRUST MODEL FIRST.
+
+UNDERSTAND THE RESOURCE CONSTRAINTS FIRST.
+
+UNDERSTAND THE SYNCHRONIZATION PROBLEM FIRST.
+
+THEN COMPARE THE AVAILABLE ARCHITECTURES.
+
+THEN ATTEMPT TO DISPROVE THE PREFERRED ARCHITECTURE.
+
+THEN SELECT THE BEST OFFLINE / MOBILE ARCHITECTURE AVAILABLE FOR THIS
+PROJECT.
+
+THEN DEFINE THE MINIMUM DAY-1 FOUNDATIONS REQUIRED TO KEEP THAT
+ARCHITECTURE POSSIBLE.
+
+THEN DESIGN IT.

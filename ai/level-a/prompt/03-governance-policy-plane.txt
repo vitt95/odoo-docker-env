@@ -1,0 +1,1767 @@
+# 03 — GOVERNANCE & POLICY PLANE ARCHITECTURE
+## Enterprise AI Agent Platform
+
+======================================================================
+ROLE
+======================================================================
+
+Act as the Principal Security Architect, Enterprise AI Architect and
+Platform Architect responsible for designing the Governance and Policy
+Plane of an enterprise-grade AI agent platform.
+
+You have deep expertise in:
+
+- authorization architecture
+- policy engines
+- policy-as-code
+- RBAC
+- ABAC
+- capability-based security
+- identity architecture
+- zero-trust architecture
+- agent security
+- AI safety architecture
+- enterprise SaaS security
+- multi-tenant authorization
+- data security
+- API security
+- workflow authorization
+- human-in-the-loop systems
+- risk-based authorization
+- audit systems
+- distributed systems
+- policy evaluation
+- security observability
+- compliance architecture
+
+You are working within:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+
+These documents provide the existing architectural context.
+
+However:
+
+YOU MUST NOT ASSUME THAT THEIR CURRENT GOVERNANCE/POLICY ASSUMPTIONS
+ARE CORRECT.
+
+If research demonstrates that the current decomposition is wrong,
+challenge it.
+
+If the Governance Plane should be merged with another subsystem,
+explain why.
+
+If it should be split into multiple logical components, explain why.
+
+If another authorization architecture is superior, recommend it.
+
+Your responsibility is to determine the best architecture for THIS project.
+
+======================================================================
+1. MOST IMPORTANT INSTRUCTION
+## RESEARCH FIRST — DECIDE SECOND
+======================================================================
+
+Do NOT begin by designing the Policy Plane.
+
+First:
+
+1. Research current standards.
+2. Research current security architectures.
+3. Research mature policy engines.
+4. Research agent-specific security patterns.
+5. Research identity and authorization architectures.
+6. Identify competing architectural approaches.
+7. Compare them.
+8. Analyze their trade-offs.
+9. Select the best architecture for this project.
+10. Attempt to disprove that choice.
+11. Only then design the recommended architecture.
+
+The architecture must be the RESULT of the research.
+
+It must NOT be the starting assumption.
+
+======================================================================
+2. CORE SECURITY HYPOTHESIS
+======================================================================
+
+The project currently proposes:
+
+THE MODEL IS NOT THE AUTHORITY.
+
+The LLM may:
+
+- reason
+- plan
+- propose an action
+- select a tool
+- generate tool arguments
+- suggest a workflow
+- suggest a decision
+
+But the LLM must NOT be the final authority for:
+
+- authorization
+- tenant access
+- data access
+- tool permissions
+- financial limits
+- security decisions
+- privileged operations
+- approval requirements
+
+A trusted component must independently determine whether an action is
+permitted.
+
+This principle is a HYPOTHESIS.
+
+Validate it against:
+
+- NIST
+- OWASP
+- zero-trust principles
+- modern authorization architectures
+- agent security research
+- enterprise IAM architectures
+- policy-engine architectures
+
+If the principle requires refinement, refine it.
+
+======================================================================
+3. PROJECT CONTEXT
+======================================================================
+
+The platform will eventually support:
+
+- users
+- agents
+- services
+- tools
+- workflows
+- models
+- tenants
+- CRM records
+- ERP records
+- documents
+- email
+- calendars
+- external APIs
+- financial operations
+- sensitive enterprise data
+- human approvals
+- automated actions
+
+Agents may eventually perform actions such as:
+
+- reading CRM records
+- modifying CRM records
+- creating opportunities
+- changing customer information
+- sending emails
+- creating appointments
+- creating invoices
+- issuing refunds
+- exporting data
+- invoking external APIs
+- performing multi-step workflows
+
+Therefore authorization cannot be treated as a simple:
+
+"Can this user call this API?"
+
+The system must potentially answer:
+
+"Can THIS principal perform THIS action on THIS resource,
+for THIS tenant,
+with THESE parameters,
+under THESE conditions,
+at THIS time,
+using THIS agent,
+through THIS tool,
+with THIS risk level,
+under THIS policy version?"
+
+======================================================================
+4. DAY-1 CONSTRAINTS
+======================================================================
+
+Day 1:
+
+- one machine
+- one GPU if available
+- Qwen3.5 9B
+- PostgreSQL
+- local/containerized services
+- small engineering team
+
+No mandatory:
+
+- distributed policy cluster
+- service mesh
+- Kubernetes
+- external policy SaaS
+- multi-region authorization
+- complex federation
+- distributed cache
+- high-scale PDP cluster
+
+The Day-1 governance system must be:
+
+- simple
+- deterministic
+- testable
+- auditable
+- secure
+- fast enough
+- operationally trivial
+
+But its CONTRACT must support future scale.
+
+======================================================================
+5. FUTURE REQUIREMENTS
+======================================================================
+
+Future platform requirements may include:
+
+- multiple tenants
+- enterprise IAM
+- SSO
+- OIDC
+- OAuth
+- SAML
+- RBAC
+- ABAC
+- capability-based authorization
+- delegated authority
+- agent identity
+- workload identity
+- service identity
+- resource-level permissions
+- field-level permissions
+- policy inheritance
+- policy overrides
+- dynamic risk
+- human approval
+- budget controls
+- rate controls
+- data residency policies
+- model restrictions
+- tool restrictions
+- environment restrictions
+- geographic restrictions
+- time restrictions
+- separation of duties
+- emergency access
+- kill switches
+- policy simulation
+- policy testing
+- policy versioning
+- centralized policy management
+- distributed policy enforcement
+- policy decision logging
+- enterprise audit
+
+Do not implement all of these on Day 1.
+
+Determine which are:
+
+DAY 1
+PREPARE
+SCALE
+ENTERPRISE
+
+======================================================================
+6. ARCHITECTURE SELECTION ANALYSIS
+======================================================================
+
+This is mandatory.
+
+You MUST identify and compare at least THREE meaningful architectural
+approaches to governance and authorization.
+
+Potential candidates include, but are not limited to:
+
+OPTION A
+--------
+Application-level custom authorization logic.
+
+OPTION B
+--------
+Embedded policy engine.
+
+OPTION C
+--------
+Dedicated Policy Decision Point / Policy Enforcement Point architecture.
+
+OPTION D
+--------
+Centralized policy service.
+
+OPTION E
+--------
+Hybrid local PDP + centralized policy management.
+
+OPTION F
+--------
+Capability-based authorization architecture.
+
+These are examples only.
+
+Research and identify the actual strongest alternatives.
+
+Do not manufacture alternatives merely to satisfy the requirement.
+
+======================================================================
+7. POLICY ENGINE COMPARISON
+======================================================================
+
+Research and compare mature policy technologies where relevant, including:
+
+- OPA / Rego
+- Cedar
+- Zanzibar-style authorization models
+- relationship-based authorization
+- RBAC systems
+- ABAC systems
+- capability-based security
+- other mature authorization technologies
+
+Determine whether each is appropriate for:
+
+- Day 1
+- future scale
+- enterprise deployment
+
+Evaluate:
+
+- expressive power
+- correctness
+- performance
+- embeddability
+- operational complexity
+- policy readability
+- policy testing
+- policy versioning
+- policy distribution
+- policy caching
+- auditability
+- ecosystem
+- language/tooling
+- security model
+- failure behavior
+- multi-tenancy
+- future scalability
+
+Do not select a policy engine because it is popular.
+
+Select based on technical suitability.
+
+======================================================================
+8. POLICY DECISION POINT / POLICY ENFORCEMENT POINT
+======================================================================
+
+Explicitly evaluate the concepts:
+
+PDP
+Policy Decision Point
+
+PEP
+Policy Enforcement Point
+
+PIP
+Policy Information Point
+
+PAP
+Policy Administration Point
+
+Determine whether these concepts are useful for this project.
+
+Define where each function belongs.
+
+For example:
+
+Agent
+  ↓
+Tool Router
+  ↓
+PEP
+  ↓
+PDP
+  ↓
+Policy / Context
+  ↓
+ALLOW / DENY / APPROVAL_REQUIRED
+
+But do not assume this exact architecture is correct.
+
+Determine the best flow through research.
+
+======================================================================
+9. TRUST MODEL
+======================================================================
+
+Define the trust model.
+
+Potential principals:
+
+- human user
+- tenant administrator
+- platform administrator
+- agent
+- agent runtime
+- workflow
+- tool
+- service
+- model
+- worker
+- external system
+
+Determine which are:
+
+- trusted
+- partially trusted
+- untrusted
+
+In particular evaluate:
+
+THE MODEL SHOULD BE TREATED AS UNTRUSTED WITH RESPECT TO AUTHORITY.
+
+Explain precisely what that means.
+
+======================================================================
+10. IDENTITY VS AUTHORIZATION
+======================================================================
+
+Do not conflate:
+
+IDENTITY
+
+with:
+
+AUTHORIZATION
+
+Determine:
+
+- who the principal is
+- how the principal is authenticated
+- how identity is represented
+- how identity is propagated
+- how authority is derived
+- how permissions are evaluated
+
+Evaluate:
+
+- user identity
+- agent identity
+- service identity
+- workload identity
+- tool identity
+- tenant identity
+
+Determine which belongs to this document and which belongs to:
+
+11_IDENTITY_AUTHORIZATION.md
+
+Avoid duplication while maintaining coherent architecture.
+
+======================================================================
+11. AUTHORITY MODEL
+======================================================================
+
+Determine how authority flows through the system.
+
+Example:
+
+Human User
+   ↓
+Agent
+   ↓
+Workflow
+   ↓
+Tool
+   ↓
+External System
+
+The key question:
+
+Does the agent inherit the user's authority?
+
+Or:
+
+Does the agent have its own authority?
+
+Or:
+
+Is authority a combination of:
+
+user identity
++
+agent identity
++
+delegated capability
++
+tenant policy
++
+resource policy
++
+runtime context?
+
+Research and determine the correct model.
+
+======================================================================
+12. DELEGATION
+======================================================================
+
+Agents may act on behalf of users.
+
+Analyze:
+
+- delegated authority
+- impersonation
+- token exchange
+- capability delegation
+- constrained delegation
+- service accounts
+- workload identity
+- short-lived credentials
+
+Determine how delegation should work.
+
+Critical requirement:
+
+An agent must not gain more authority merely because the LLM requested
+an action.
+
+======================================================================
+13. LEAST PRIVILEGE
+======================================================================
+
+Design the architecture around least privilege.
+
+Evaluate:
+
+- agent-level permissions
+- tool-level permissions
+- operation-level permissions
+- resource-level permissions
+- field-level permissions
+- tenant-level permissions
+- temporary capabilities
+- dynamic privilege attenuation
+
+Determine the minimum Day-1 implementation.
+
+======================================================================
+14. RBAC
+======================================================================
+
+Analyze RBAC.
+
+Determine whether roles such as:
+
+- admin
+- manager
+- sales
+- support
+- finance
+- agent
+- service
+
+are sufficient.
+
+Identify limitations of pure RBAC for agentic systems.
+
+Determine where RBAC should remain useful.
+
+======================================================================
+15. ABAC
+======================================================================
+
+Analyze ABAC.
+
+Potential attributes:
+
+- user
+- agent
+- tenant
+- resource
+- action
+- location
+- time
+- environment
+- risk
+- data classification
+- customer ownership
+- department
+- workflow
+- model
+- tool
+
+Determine whether ABAC should be:
+
+- Day 1
+- prepared
+- future
+
+======================================================================
+16. CAPABILITY-BASED SECURITY
+======================================================================
+
+Analyze capability-based authorization.
+
+Determine whether capabilities are useful for agents.
+
+For example:
+
+Agent A receives:
+
+    CRM.read.customer
+
+but not:
+
+    CRM.write.customer
+
+or:
+
+    CRM.write.customer.address
+
+Evaluate:
+
+- capability tokens
+- scoped capabilities
+- attenuated capabilities
+- capability delegation
+- capability expiration
+
+Determine whether this provides a stronger model than role-only access.
+
+======================================================================
+17. POLICY DECISION MODEL
+======================================================================
+
+Define the conceptual authorization request.
+
+For example:
+
+{
+    principal,
+    principal_type,
+    tenant,
+    action,
+    resource,
+    resource_type,
+    context,
+    agent,
+    tool,
+    workflow,
+    risk,
+    policy_version
+}
+
+Do not assume these fields are correct.
+
+Determine the minimum authoritative request model.
+
+Define:
+
+- inputs
+- outputs
+- decision
+- reasons
+- obligations
+- metadata
+
+Potential outputs:
+
+ALLOW
+DENY
+APPROVAL_REQUIRED
+
+Determine whether additional outcomes are required.
+
+======================================================================
+18. POLICY PRECEDENCE
+======================================================================
+
+Determine precedence between:
+
+- platform policy
+- tenant policy
+- user policy
+- agent policy
+- tool policy
+- resource policy
+- workflow policy
+- emergency policy
+
+Do not assume simple override semantics.
+
+Define:
+
+- precedence
+- conflict resolution
+- deny overrides
+- allow overrides
+- explicit exceptions
+- emergency access
+
+The resulting system must be deterministic.
+
+======================================================================
+19. FAIL-CLOSED VS FAIL-OPEN
+======================================================================
+
+Analyze policy-engine failure.
+
+What happens if:
+
+- policy engine is unavailable?
+- database is unavailable?
+- policy cache is stale?
+- policy version is missing?
+- policy cannot be evaluated?
+- context cannot be retrieved?
+
+Determine where the system must:
+
+FAIL CLOSED
+
+and where degraded operation might be acceptable.
+
+Do not assume that every policy decision can fail open.
+
+Do not assume that every policy decision must fail closed.
+
+Classify decisions by risk.
+
+======================================================================
+20. RISK-BASED AUTHORIZATION
+======================================================================
+
+Determine whether the authorization decision should include risk.
+
+Potential risk classes:
+
+LOW
+MEDIUM
+HIGH
+CRITICAL
+
+Examples:
+
+LOW:
+read CRM record
+
+MEDIUM:
+modify CRM field
+
+HIGH:
+send external email
+
+CRITICAL:
+issue refund
+export sensitive data
+delete customer
+change financial information
+
+Determine whether risk should be:
+
+- static
+- dynamic
+- policy-derived
+- model-derived
+- external risk-engine-derived
+
+IMPORTANT:
+
+The model's own confidence must NOT automatically be treated as trusted
+risk assessment.
+
+Determine the trusted risk architecture.
+
+======================================================================
+21. HUMAN APPROVAL
+======================================================================
+
+Analyze human-in-the-loop.
+
+Determine when:
+
+ALLOW
+
+becomes:
+
+APPROVAL_REQUIRED
+
+Consider:
+
+- action risk
+- amount
+- resource sensitivity
+- tenant policy
+- user role
+- agent role
+- confidence
+- external side effects
+- regulatory constraints
+
+Determine how approval should be represented.
+
+An approval should be:
+
+- explicit
+- attributable
+- scoped
+- versioned
+- auditable
+- non-transferable unless explicitly designed otherwise
+
+======================================================================
+22. BUDGET POLICIES
+======================================================================
+
+Analyze policy controls for:
+
+- token budgets
+- API spending
+- financial actions
+- per-run budgets
+- per-agent budgets
+- per-tenant budgets
+- tool call limits
+
+Determine whether budgets belong in:
+
+- policy engine
+- runtime
+- billing
+- separate quota system
+
+Define boundaries.
+
+======================================================================
+23. RATE POLICIES
+======================================================================
+
+Evaluate:
+
+- tool rate limits
+- API rate limits
+- agent execution limits
+- tenant quotas
+- workflow limits
+
+Determine what the Governance Plane should decide versus what runtime
+infrastructure should enforce.
+
+======================================================================
+24. DATA POLICIES
+======================================================================
+
+Determine policies for:
+
+- sensitive data
+- PII
+- financial data
+- tenant data
+- data residency
+- external transfer
+- model access
+- tool access
+- export
+
+Evaluate:
+
+- data classification
+- DLP
+- egress controls
+- model restrictions
+- tool restrictions
+
+Determine the relationship with the Security Architecture document.
+
+======================================================================
+25. MODEL POLICIES
+======================================================================
+
+Determine whether policy should control:
+
+- which model may access which data
+- which model may execute which tool
+- which model may be used for which tenant
+- local vs cloud inference
+- model capability
+- model version
+- model security classification
+
+Day 1 has only Qwen3.5 9B.
+
+Nevertheless, determine what model-policy contract should exist.
+
+======================================================================
+26. TOOL POLICIES
+======================================================================
+
+Determine whether authorization should occur:
+
+BEFORE tool selection
+
+AFTER tool selection
+
+BEFORE tool execution
+
+AFTER tool execution
+
+or at multiple points.
+
+Evaluate:
+
+Agent
+ ↓
+Planner
+ ↓
+Tool selection
+ ↓
+Policy
+ ↓
+Tool execution
+
+versus:
+
+Agent
+ ↓
+Policy-constrained tool discovery
+ ↓
+Tool selection
+ ↓
+Policy
+ ↓
+Execution
+
+Determine the safest and most practical architecture.
+
+======================================================================
+27. FIELD-LEVEL AUTHORIZATION
+======================================================================
+
+CRM/ERP systems often require field-level controls.
+
+Example:
+
+A sales agent may read:
+
+customer.name
+customer.email
+
+but not:
+
+customer.credit_limit
+customer.bank_account
+
+Determine whether field-level authorization belongs:
+
+- in Governance
+- in Data layer
+- in external CRM
+- in multiple layers
+
+Avoid assuming that one layer alone is sufficient.
+
+======================================================================
+28. RESOURCE-LEVEL AUTHORIZATION
+======================================================================
+
+Analyze:
+
+- customer ownership
+- account ownership
+- territory
+- department
+- organization
+- tenant
+- specific resource IDs
+
+Determine whether resource-level authorization requires:
+
+- relationship-based access
+- ABAC
+- RBAC + attributes
+- Zanzibar-style model
+- another architecture
+
+======================================================================
+29. TENANT ISOLATION
+======================================================================
+
+Determine how tenant boundaries are enforced.
+
+Evaluate:
+
+- tenant context
+- tenant-scoped policies
+- database isolation
+- application enforcement
+- policy enforcement
+- defense in depth
+
+The Governance Plane must not be the only tenant-isolation mechanism.
+
+======================================================================
+30. POLICY VERSIONING
+======================================================================
+
+Determine how policies are:
+
+- created
+- reviewed
+- tested
+- activated
+- versioned
+- rolled back
+- deprecated
+
+Every important execution must identify the policy version that authorized
+or rejected an action.
+
+======================================================================
+31. POLICY TESTING
+======================================================================
+
+Design policy testing architecture.
+
+Evaluate:
+
+- unit tests
+- policy fixtures
+- golden decisions
+- regression suites
+- simulation
+- shadow evaluation
+- policy mutation testing
+- negative tests
+- adversarial tests
+
+Determine Day-1 requirements.
+
+======================================================================
+32. POLICY SIMULATION
+======================================================================
+
+Determine whether administrators should be able to ask:
+
+"What would happen if this policy were applied?"
+
+Evaluate:
+
+- dry-run
+- simulation
+- shadow mode
+- decision explanation
+
+Determine Day-1 vs future.
+
+======================================================================
+33. POLICY DISTRIBUTION
+======================================================================
+
+Evaluate:
+
+A.
+Central policy evaluation
+
+B.
+Local embedded policy engine
+
+C.
+Central policy management + local policy evaluation
+
+D.
+Hybrid architecture
+
+Determine the best approach.
+
+A critical requirement is that normal agent execution should not
+unnecessarily depend on a remote policy service if that dependency can be
+avoided without compromising security.
+
+======================================================================
+34. POLICY CACHING
+======================================================================
+
+Determine whether policy decisions or policy definitions may be cached.
+
+Analyze:
+
+- cache invalidation
+- TTL
+- policy version pinning
+- stale policy risk
+- emergency policy updates
+
+Never allow caching to silently bypass security changes.
+
+======================================================================
+35. POLICY EXPLANATIONS
+======================================================================
+
+Determine what a policy decision should return.
+
+For example:
+
+decision:
+DENY
+
+reason:
+agent_not_authorized
+
+policy:
+POL-123
+
+policy_version:
+17
+
+matched_rule:
+RULE-42
+
+Do not expose sensitive policy information unnecessarily.
+
+Determine what information belongs in:
+
+- user-facing explanation
+- audit record
+- developer logs
+- security logs
+
+======================================================================
+36. POLICY AUDIT
+======================================================================
+
+Every important authorization decision should be reconstructable.
+
+Determine whether audit must capture:
+
+- principal
+- tenant
+- action
+- resource
+- context
+- policy version
+- decision
+- matched rule
+- risk
+- approval
+- timestamp
+- correlation ID
+- run ID
+
+Determine retention and privacy requirements.
+
+======================================================================
+37. EMERGENCY ACCESS / KILL SWITCH
+======================================================================
+
+Analyze:
+
+- emergency deny-all
+- tool kill switch
+- agent suspension
+- tenant suspension
+- model suspension
+- policy emergency update
+
+Determine:
+
+- who can activate
+- authorization requirements
+- propagation latency
+- audit
+- rollback
+
+======================================================================
+38. POLICY ARCHITECTURE AND CONTROL PLANE
+======================================================================
+
+Clearly separate:
+
+POLICY DEFINITION
+
+from:
+
+POLICY EVALUATION
+
+from:
+
+POLICY ENFORCEMENT
+
+from:
+
+POLICY ADMINISTRATION
+
+Determine where each belongs.
+
+Likely concepts:
+
+Control Plane
+    ↓
+Policy Administration / versioning
+
+Governance Plane
+    ↓
+Policy evaluation
+
+Runtime / Tool boundary
+    ↓
+Policy enforcement
+
+But this is a hypothesis.
+
+Validate it.
+
+======================================================================
+39. POLICY DATA MODEL
+======================================================================
+
+Design a conceptual model for:
+
+- Policy
+- PolicyVersion
+- Rule
+- Subject
+- Resource
+- Action
+- Condition
+- Decision
+- Approval
+- RiskClass
+- Obligation
+
+Do not assume all should be database entities.
+
+Determine what should be:
+
+- relational data
+- policy document
+- compiled policy
+- immutable version
+- runtime cache
+
+Provide Mermaid ER/model diagrams where appropriate.
+
+======================================================================
+40. POLICY API
+======================================================================
+
+Define conceptual APIs for:
+
+- policy creation
+- policy version creation
+- policy validation
+- policy activation
+- policy simulation
+- policy evaluation
+- policy rollback
+- policy status
+- policy audit
+
+Define:
+
+- inputs
+- outputs
+- authentication
+- authorization
+- idempotency
+- versioning
+- audit
+
+======================================================================
+41. DAY-1 ARCHITECTURE
+======================================================================
+
+Design the minimum secure Day-1 Governance Plane.
+
+Assume:
+
+- one machine
+- PostgreSQL
+- Qwen3.5 9B
+- one runtime
+- small engineering team
+
+Determine whether Day 1 should use:
+
+- custom policy evaluation
+- OPA
+- Cedar
+- another mature engine
+- hybrid approach
+
+DO NOT choose until you have compared them.
+
+The Day-1 system must be:
+
+- deterministic
+- fast
+- testable
+- auditable
+- simple
+- secure
+- maintainable
+
+======================================================================
+42. FUTURE SCALE
+======================================================================
+
+Define evolution toward:
+
+- centralized policy management
+- distributed policy evaluation
+- local PDPs
+- policy caching
+- policy federation
+- enterprise IAM
+- external identity providers
+- centralized audit
+- advanced risk engines
+
+Determine what must be designed now.
+
+======================================================================
+43. FAILURE MODES
+======================================================================
+
+Analyze:
+
+- policy engine unavailable
+- policy store unavailable
+- stale policy
+- corrupt policy
+- invalid policy
+- missing policy
+- conflicting policies
+- context unavailable
+- identity unavailable
+- tenant information unavailable
+- approval unavailable
+- audit unavailable
+
+For each determine:
+
+- fail closed?
+- fail open?
+- retry?
+- cached decision?
+- human escalation?
+- deny?
+- degraded mode?
+
+======================================================================
+44. PERFORMANCE
+======================================================================
+
+Authorization must not become a major latency bottleneck.
+
+Analyze:
+
+- evaluation latency
+- context lookup
+- policy compilation
+- caching
+- local evaluation
+- remote evaluation
+- database queries
+
+Determine the Day-1 performance target conceptually.
+
+Do not invent unrealistic numerical SLAs without evidence.
+
+======================================================================
+45. SECURITY THREAT MODEL
+======================================================================
+
+Analyze attacks against the Governance Plane:
+
+- policy bypass
+- policy injection
+- policy tampering
+- privilege escalation
+- confused deputy
+- forged identity
+- tenant breakout
+- stale authorization
+- replayed approval
+- approval substitution
+- tool escalation
+- policy cache poisoning
+- compromised runtime
+- compromised tool
+- malicious model output
+
+Determine mitigations.
+
+======================================================================
+46. ARCHITECTURE SELECTION MATRIX
+======================================================================
+
+Provide a comparison of at least three meaningful governance architectures.
+
+Include:
+
+| Criterion |
+| Security |
+| Correctness |
+| Day-1 simplicity |
+| Performance |
+| Auditability |
+| Policy expressiveness |
+| Multi-tenancy |
+| Failure behavior |
+| Operational complexity |
+| Testing |
+| Policy distribution |
+| Future scale |
+| Enterprise suitability |
+| Migration complexity |
+| Vendor lock-in |
+| Recommendation |
+
+Explain every significant result.
+
+======================================================================
+47. "WHY NOT?" ANALYSIS
+======================================================================
+
+For the final recommendation explicitly answer:
+
+WHY THIS POLICY ARCHITECTURE?
+
+WHY NOT CUSTOM APPLICATION LOGIC?
+
+WHY NOT OPA?
+
+WHY NOT CEDAR?
+
+WHY NOT A CENTRALIZED POLICY SERVICE?
+
+WHY NOT PURE RBAC?
+
+WHY NOT PURE ABAC?
+
+WHY NOT PURE CAPABILITY SECURITY?
+
+WHY NOT ANOTHER APPROACH IDENTIFIED DURING RESEARCH?
+
+Some of these may not be appropriate comparisons if research demonstrates
+they are not genuine alternatives. Explain that if so.
+
+======================================================================
+48. REVERSIBILITY
+======================================================================
+
+For major decisions classify:
+
+- easily reversible
+- moderately reversible
+- expensive to reverse
+- effectively irreversible
+
+Pay special attention to:
+
+- policy language
+- authorization model
+- resource model
+- identity model
+- policy storage
+- enforcement points
+
+======================================================================
+49. CONTRACT VS IMPLEMENTATION
+======================================================================
+
+Explicitly determine:
+
+WHAT MUST BE DEFINED ON DAY 1?
+
+versus:
+
+WHAT CAN REMAIN SIMPLE?
+
+For example:
+
+The policy decision contract may be stable now.
+
+The policy distribution architecture may remain local.
+
+The enforcement interface may be stable.
+
+A distributed PDP fleet may wait.
+
+Apply this principle throughout the document.
+
+======================================================================
+50. REQUIRED MERMAID DIAGRAMS
+======================================================================
+
+Include:
+
+1. High-level Governance Plane architecture
+2. Identity → Policy → Enforcement flow
+3. PDP / PEP / PIP / PAP architecture if applicable
+4. Agent tool authorization flow
+5. Human approval flow
+6. Policy lifecycle
+7. Policy versioning
+8. Day-1 deployment
+9. Future distributed policy architecture
+10. Trust boundaries
+11. CRM authorization example
+12. Policy failure/degraded-mode flow
+
+======================================================================
+51. ADR CANDIDATES
+======================================================================
+
+Identify ADRs for decisions such as:
+
+- authorization model
+- policy engine
+- PDP architecture
+- PEP architecture
+- policy storage
+- policy language
+- policy versioning
+- policy distribution
+- caching
+- fail-open/fail-closed
+- delegated authority
+- capability model
+- human approval
+- tenant authorization
+- field-level authorization
+- resource-level authorization
+
+For each:
+
+- problem
+- alternatives
+- recommendation
+- consequences
+- reversibility
+- decision deadline
+
+======================================================================
+52. DAY-1 / PREPARE / SCALE / ENTERPRISE
+======================================================================
+
+Provide a table:
+
+| Capability | Day 1 | Prepare | Scale | Enterprise |
+
+Cover:
+
+- RBAC
+- ABAC
+- capability authorization
+- agent identity
+- user identity
+- tenant policies
+- field permissions
+- resource permissions
+- policy versioning
+- policy testing
+- policy simulation
+- approval
+- risk engine
+- budget policies
+- data policies
+- model policies
+- tool policies
+- emergency controls
+- policy distribution
+- caching
+- centralized policy management
+
+======================================================================
+53. ARCHITECTURAL SELF-CRITIQUE
+======================================================================
+
+Before finalizing, explicitly challenge the recommendation.
+
+Ask:
+
+1. Did I compare multiple real architectures?
+2. Did I research actual policy engines?
+3. Did I distinguish identity from authorization?
+4. Did I separate policy definition from evaluation?
+5. Did I separate evaluation from enforcement?
+6. Did I accidentally make the LLM authoritative?
+7. Can a malicious model bypass policy?
+8. Can a malicious tool bypass policy?
+9. Can one tenant access another tenant?
+10. Can stale policy create privilege escalation?
+11. Can an approval be replayed?
+12. Can policy changes be audited?
+13. Can policy decisions be reproduced?
+14. Is Day 1 realistically implementable?
+15. Did I over-engineer?
+16. Did I create unnecessary network dependencies?
+17. Did I choose a policy engine because of popularity?
+18. Is the authorization model extensible?
+19. Can enterprise IAM be added later?
+20. Can distributed policy evaluation be added later?
+21. What assumptions could invalidate this architecture?
+
+Include:
+
+# ARCHITECTURAL SELF-CRITIQUE
+
+======================================================================
+54. FINAL RECOMMENDATION
+======================================================================
+
+End with:
+
+# FINAL GOVERNANCE & POLICY ARCHITECTURE RECOMMENDATION
+
+Answer:
+
+"What Governance and Policy architecture should this platform actually
+build?"
+
+Be concrete.
+
+Describe:
+
+- trust model
+- authority model
+- identity relationship
+- authorization model
+- policy model
+- policy engine
+- PDP
+- PEP
+- policy administration
+- policy storage
+- policy versioning
+- policy distribution
+- caching
+- failure behavior
+- human approval
+- risk
+- budget
+- data policies
+- model policies
+- tool policies
+- tenant policies
+- audit
+- Day-1 implementation
+- future evolution
+
+Then explicitly answer:
+
+"What MUST NOT be implemented on Day 1?"
+
+Then:
+
+"What future condition should trigger the next architectural evolution?"
+
+======================================================================
+55. REQUIRED OUTPUT
+======================================================================
+
+Produce:
+
+03_GOVERNANCE_POLICY_PLANE.md
+
+The document must reference:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+
+and identify any conflict with those documents.
+
+If a conflict exists, do not silently resolve it.
+
+Explicitly identify it and recommend which architectural decision should
+win.
+
+======================================================================
+56. SOURCE REQUIREMENTS
+======================================================================
+
+Include direct URLs.
+
+Prioritize:
+
+- NIST
+- OWASP
+- official policy-engine documentation
+- official identity standards
+- official cloud architecture documentation
+- official project documentation
+- academic research
+
+Do not fabricate citations.
+
+Do not cite sources that were not inspected.
+
+======================================================================
+57. ABSOLUTE FINAL INSTRUCTION
+======================================================================
+
+Act as an independent Principal Security Architect and Principal Software
+Architect.
+
+Do not optimize for agreement.
+
+Do not optimize for theoretical sophistication.
+
+Do not optimize for minimum implementation at the expense of security.
+
+Do not optimize for enterprise infrastructure at the expense of Day-1
+feasibility.
+
+Optimize for:
+
+SECURITY
++
+CORRECTNESS
++
+SIMPLICITY
++
+AUDITABILITY
++
+DETERMINISM
++
+FUTURE EVOLUTION
+
+The final architecture must be the RESULT of:
+
+    RESEARCH
+       ↓
+    REAL ALTERNATIVES
+       ↓
+    COMPARATIVE ANALYSIS
+       ↓
+    SECURITY ANALYSIS
+       ↓
+    DAY-1 FEASIBILITY ANALYSIS
+       ↓
+    SCALE ANALYSIS
+       ↓
+    ADVERSARIAL CHALLENGE
+       ↓
+    FINAL ARCHITECTURAL DECISION
+
+Do not design first and search for evidence afterward.
+
+RESEARCH FIRST.
+
+COMPARE.
+
+CHALLENGE.
+
+SELECT.
+
+THEN DESIGN.

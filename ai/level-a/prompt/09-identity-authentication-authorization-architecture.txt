@@ -1,0 +1,1812 @@
+# 09 — IDENTITY, AUTHENTICATION & AUTHORIZATION ARCHITECTURE
+## Enterprise AI Agent Platform
+
+======================================================================
+ROLE
+======================================================================
+
+Act as the Principal Identity Architect, Security Architect and
+Authorization Architect responsible for designing the Identity,
+Authentication and Authorization Architecture of an enterprise-grade AI
+agent platform.
+
+You have deep expertise in:
+
+- IAM
+- authentication
+- authorization
+- OAuth 2.x
+- OpenID Connect
+- workload identity
+- service identities
+- delegated identity
+- RBAC
+- ABAC
+- ReBAC
+- capability-based security
+- policy engines
+- identity federation
+- enterprise SSO
+- multi-tenancy
+- zero trust
+- secrets management
+- credential delegation
+- service-to-service authentication
+- audit
+- security architecture
+- AI agent security
+- tool authorization
+- distributed systems security
+
+You are working within:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_PLANE.md
+04_AGENT_RUNTIME.md
+05_MODEL_INFERENCE_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+07_KNOWLEDGE_DATA_ARCHITECTURE.md
+08_MEMORY_ARCHITECTURE.md
+
+These documents provide the current architectural context.
+
+However:
+
+THEY ARE NOT IMMUNE FROM CHALLENGE.
+
+If research demonstrates that an assumption is technically incorrect,
+incomplete or insecure, explicitly identify the conflict and recommend
+the superior architecture.
+
+======================================================================
+1. PRIMARY OBJECTIVE
+======================================================================
+
+Design the Identity, Authentication and Authorization Architecture.
+
+The architecture must answer:
+
+WHO IS THE USER?
+
+WHO IS THE AGENT?
+
+WHO IS THE SYSTEM?
+
+WHO IS THE TOOL?
+
+WHO IS THE EXTERNAL SERVICE?
+
+WHO IS ACTUALLY MAKING A REQUEST?
+
+WHO IS AUTHORIZED TO PERFORM AN ACTION?
+
+WHICH IDENTITY IS USED?
+
+WHICH CREDENTIAL IS USED?
+
+ON WHOSE BEHALF IS THE ACTION PERFORMED?
+
+HOW IS THAT DECISION AUDITED?
+
+======================================================================
+2. MOST IMPORTANT INSTRUCTION
+## RESEARCH FIRST — SELECT ARCHITECTURE SECOND
+======================================================================
+
+Do NOT begin by choosing:
+
+- Keycloak
+- Auth0
+- Okta
+- Entra ID
+- Cognito
+- JWT
+- OAuth
+- OIDC
+- RBAC
+- ABAC
+- a policy engine
+
+as the architecture.
+
+Research first.
+
+The final architecture must be the result of:
+
+    RESEARCH
+       ↓
+    IDENTITY REQUIREMENTS
+       ↓
+    THREAT MODEL
+       ↓
+    AUTHENTICATION ALTERNATIVES
+       ↓
+    AUTHORIZATION ALTERNATIVES
+       ↓
+    CREDENTIAL / DELEGATION ANALYSIS
+       ↓
+    ARCHITECTURE COMPARISON
+       ↓
+    ADVERSARIAL SECURITY REVIEW
+       ↓
+    FINAL DECISION
+       ↓
+    DAY-1 IMPLEMENTATION
+       ↓
+    FUTURE EVOLUTION
+
+Claude MUST determine the best architecture available for THIS project.
+
+Do NOT optimize for popularity.
+
+Do NOT assume an identity provider automatically solves authorization.
+
+Do NOT assume possession of a JWT means permission to perform an action.
+
+======================================================================
+3. FUNDAMENTAL DISTINCTIONS
+======================================================================
+
+Explicitly distinguish:
+
+IDENTITY
+
+AUTHENTICATION
+
+SESSION
+
+AUTHORIZATION
+
+CREDENTIAL
+
+TOKEN
+
+POLICY
+
+PERMISSION
+
+CAPABILITY
+
+ROLE
+
+ATTRIBUTE
+
+DELEGATION
+
+AUDIT
+
+These concepts must not be collapsed into one abstraction.
+
+======================================================================
+4. DAY-1 CONSTRAINTS
+======================================================================
+
+Day 1:
+
+- one machine
+- one GPU if available
+- PostgreSQL
+- local/containerized deployment
+- small engineering team
+- initial internal users
+- initial enterprise integrations
+
+The architecture should NOT require:
+
+- complex distributed IAM
+- service mesh
+- Kubernetes identity infrastructure
+- multi-region identity
+- custom identity provider
+- custom cryptography
+
+unless research demonstrates a concrete need.
+
+======================================================================
+5. FUTURE REQUIREMENTS
+======================================================================
+
+Future requirements may include:
+
+- multiple tenants
+- enterprise SSO
+- OIDC
+- OAuth
+- SCIM
+- MFA
+- service accounts
+- workload identity
+- delegated user identity
+- machine-to-machine authentication
+- agent identities
+- multiple agents
+- external agents
+- remote tools
+- remote MCP
+- A2A
+- cloud services
+- multi-region
+- fine-grained authorization
+- policy-based access
+- resource-level permissions
+- field-level permissions
+- data residency
+- break-glass access
+- privileged operations
+
+Determine:
+
+DAY 1
+PREPARE
+SCALE
+ENTERPRISE
+
+======================================================================
+6. HUMAN IDENTITY
+======================================================================
+
+Define the identity model for:
+
+- human user
+- tenant
+- organization
+- administrator
+- operator
+- service account
+
+Determine which identifiers are canonical.
+
+Do not use email address as the immutable primary identity unless research
+and requirements justify it.
+
+======================================================================
+7. TENANT IDENTITY
+======================================================================
+
+Determine:
+
+Tenant
+Organization
+Workspace
+User
+
+relationships.
+
+Define:
+
+Tenant
+ ├── Users
+ ├── Agents
+ ├── Tools
+ ├── Data
+ └── Policies
+
+Validate this model.
+
+======================================================================
+8. AGENT IDENTITY
+======================================================================
+
+This is CRITICAL.
+
+Determine whether an Agent should have its own identity.
+
+Evaluate:
+
+A.
+Agent acts entirely as the user.
+
+B.
+Agent has its own identity and operates on behalf of the user.
+
+C.
+Agent has both:
+
+- agent identity
+- delegated user identity
+
+D.
+Agent is merely an execution context and not an identity.
+
+Compare the models.
+
+Select the correct architecture.
+
+======================================================================
+9. RUN IDENTITY
+======================================================================
+
+Determine whether every Agent Run should have a unique execution identity.
+
+Potential:
+
+User
+ ↓
+Agent
+ ↓
+Run
+
+Determine what identity attributes belong to the Run.
+
+Every side-effecting action should be traceable to the originating Run.
+
+======================================================================
+10. IDENTITY CHAIN
+======================================================================
+
+Model:
+
+Human User
+    ↓
+Authenticated Session
+    ↓
+Agent
+    ↓
+Agent Run
+    ↓
+Tool Invocation
+    ↓
+External System
+
+Determine which identities must propagate.
+
+Example:
+
+user_id
+tenant_id
+agent_id
+run_id
+tool_id
+
+Do not assume all should become security principals.
+
+Determine which are:
+
+- identity
+- context
+- correlation metadata
+
+======================================================================
+11. AUTHENTICATION
+======================================================================
+
+Research and compare:
+
+- password authentication
+- OIDC
+- OAuth
+- SAML
+- passkeys / WebAuthn
+- API keys
+- service credentials
+- workload identity
+
+Determine:
+
+Day 1 authentication
+
+versus:
+
+Enterprise authentication.
+
+======================================================================
+12. OIDC
+======================================================================
+
+Research current OIDC specifications and best practices.
+
+Determine:
+
+- identity claims
+- issuer
+- audience
+- subject
+- nonce
+- token validation
+- session handling
+
+Do not assume every claim should become an application authorization input.
+
+======================================================================
+13. OAUTH
+======================================================================
+
+Research current OAuth guidance.
+
+Determine use cases for:
+
+- user authentication
+- delegated authorization
+- tool access
+- external SaaS integrations
+- service-to-service communication
+
+Do not misuse OAuth as a generic authorization architecture.
+
+======================================================================
+14. DELEGATED AUTHORIZATION
+======================================================================
+
+This is essential for tools such as:
+
+- CRM
+- email
+- calendar
+- documents
+
+Determine:
+
+User
+ ↓
+Agent
+ ↓
+Tool
+ ↓
+External Service
+
+versus:
+
+User
+ ↓
+Tool
+
+versus:
+
+Agent Identity
+ ↓
+Tool
+
+Determine when each is appropriate.
+
+======================================================================
+15. ON-BEHALF-OF SEMANTICS
+======================================================================
+
+The architecture must distinguish:
+
+"Agent performs action for user."
+
+from:
+
+"Agent performs action as itself."
+
+This affects:
+
+- credentials
+- permissions
+- audit
+- liability
+- policy
+- external API behavior
+
+Define the correct semantics.
+
+======================================================================
+16. SERVICE IDENTITIES
+======================================================================
+
+Determine where service identities are needed.
+
+Examples:
+
+- ingestion service
+- Tool Runtime
+- Model Runtime
+- Retrieval service
+- background worker
+
+Each service should have least privilege.
+
+Do not use one universal platform credential.
+
+======================================================================
+17. WORKLOAD IDENTITY
+======================================================================
+
+Research workload identity approaches appropriate for:
+
+- containers
+- VMs
+- cloud
+- local deployment
+
+Determine Day-1 versus future requirements.
+
+Avoid inventing a custom workload identity mechanism.
+
+======================================================================
+18. AGENT CREDENTIALS
+======================================================================
+
+Determine whether an agent should ever directly possess credentials.
+
+Strongly evaluate:
+
+MODEL
+ ↓
+AGENT
+ ↓
+CREDENTIAL
+
+as a dangerous architecture.
+
+Determine whether the correct model is:
+
+Agent
+ ↓
+Authorization
+ ↓
+Credential Broker / Tool Runtime
+ ↓
+Short-lived credential
+ ↓
+External Service
+
+======================================================================
+19. CREDENTIAL BROKER
+======================================================================
+
+Evaluate whether the architecture needs a Credential Broker.
+
+Potential responsibilities:
+
+- resolve credential
+- verify authorization
+- obtain delegated token
+- issue short-lived credentials
+- rotate
+- revoke
+- audit
+
+Compare:
+
+- no broker
+- Tool Runtime-managed credentials
+- dedicated credential broker
+
+Determine the best architecture.
+
+======================================================================
+20. SECRETS
+======================================================================
+
+Determine how:
+
+- API keys
+- OAuth refresh tokens
+- service credentials
+- certificates
+- private keys
+
+are stored.
+
+Do not design cryptography.
+
+Determine integration requirements with a Secrets Manager.
+
+======================================================================
+21. AUTHORIZATION
+======================================================================
+
+Research and compare:
+
+RBAC
+
+ABAC
+
+ReBAC
+
+Capability-based authorization
+
+Policy-based authorization
+
+Hybrid models
+
+Determine the best model.
+
+Do not assume RBAC is sufficient for enterprise agents.
+
+======================================================================
+22. RBAC
+======================================================================
+
+Evaluate whether roles are sufficient for:
+
+- users
+- administrators
+- operators
+- agents
+
+Identify limitations.
+
+======================================================================
+23. ABAC
+======================================================================
+
+Evaluate authorization based on:
+
+- tenant
+- user
+- role
+- resource
+- sensitivity
+- environment
+- agent
+- action
+- purpose
+- location
+- time
+
+Determine whether ABAC is required.
+
+======================================================================
+24. RELATIONSHIP-BASED AUTHORIZATION
+======================================================================
+
+Evaluate relationship-based permissions.
+
+Example:
+
+User
+ └── member_of → Team
+                   └── owns → Project
+                              └── contains → Document
+
+Determine whether this is required.
+
+======================================================================
+25. CAPABILITY-BASED SECURITY
+======================================================================
+
+Evaluate capability-based authorization for agents.
+
+Example:
+
+Agent receives:
+
+Capability:
+    crm.customer.read
+
+but not:
+
+crm.customer.delete
+
+Determine whether capabilities provide useful defense in depth.
+
+======================================================================
+26. POLICY ENGINE
+======================================================================
+
+Evaluate whether authorization should use:
+
+- application code
+- database policies
+- centralized policy engine
+- hybrid
+
+Potential technologies may include:
+
+- Open Policy Agent
+- Cedar
+- Zanzibar-style systems
+- custom policy engine
+
+Research before recommending.
+
+Do NOT assume a policy engine is required Day 1.
+
+======================================================================
+27. AUTHORIZATION DECISION
+======================================================================
+
+Define the conceptual authorization request.
+
+Potential:
+
+subject
+tenant
+agent
+action
+resource
+resource_type
+context
+purpose
+
+Determine the correct model.
+
+Example:
+
+Can:
+
+subject = user X / agent Y
+
+perform:
+
+action = crm.customer.update
+
+on:
+
+resource = customer Z
+
+under:
+
+tenant = T
+
+?
+
+======================================================================
+28. POLICY ENFORCEMENT POINTS
+======================================================================
+
+Determine where authorization is enforced:
+
+- API gateway
+- Agent Runtime
+- Tool Runtime
+- Data layer
+- external service
+- all of the above
+
+Use defense in depth.
+
+Do not assume one authorization check is enough.
+
+======================================================================
+29. TOOL AUTHORIZATION
+======================================================================
+
+Using 06_TOOL_ARCHITECTURE.md determine:
+
+Who decides whether an agent may invoke a tool?
+
+The model must not decide.
+
+Determine:
+
+Discovery
+ ↓
+Authorization
+ ↓
+Invocation
+ ↓
+External authorization
+
+======================================================================
+30. DATA AUTHORIZATION
+======================================================================
+
+Using 07_KNOWLEDGE_DATA_ARCHITECTURE.md determine:
+
+How is authorization enforced during retrieval?
+
+Prevent:
+
+authorized user
+    ↓
+agent
+    ↓
+retrieval
+    ↓
+unauthorized document
+
+Determine filtering strategy.
+
+======================================================================
+31. MEMORY AUTHORIZATION
+======================================================================
+
+Using 08_MEMORY_ARCHITECTURE.md determine:
+
+Who can read:
+
+- user memory
+- agent memory
+- tenant memory
+- shared memory
+
+Memory access must not bypass authorization.
+
+======================================================================
+32. AGENT AUTHORIZATION
+======================================================================
+
+Determine whether agents themselves require permissions.
+
+Potential:
+
+Agent A:
+- CRM read
+- email read
+- calendar read
+
+Agent B:
+- CRM read/write
+- email send
+
+Determine the correct model.
+
+======================================================================
+33. HUMAN APPROVAL
+======================================================================
+
+Some operations may require approval.
+
+Examples:
+
+- sending email
+- deleting records
+- issuing refunds
+- changing permissions
+- executing code
+
+Determine:
+
+- approval policy
+- approver identity
+- approval expiration
+- approval binding
+- replay protection
+
+Approval must not be confused with authentication.
+
+======================================================================
+34. PRIVILEGED OPERATIONS
+======================================================================
+
+Identify high-risk actions.
+
+Potential:
+
+- delete
+- financial
+- administrative
+- credential management
+- permission changes
+- bulk export
+- external communication
+
+Determine stronger controls.
+
+======================================================================
+35. BREAK-GLASS
+======================================================================
+
+Evaluate whether enterprise operations require emergency access.
+
+Determine:
+
+- who can activate it
+- duration
+- reason
+- scope
+- audit
+- notification
+- automatic expiration
+
+Do not implement unless justified.
+
+======================================================================
+36. SESSION ARCHITECTURE
+======================================================================
+
+Determine:
+
+- browser session
+- API session
+- agent session
+- run session
+- tool session
+
+Avoid conflating them.
+
+Define session lifecycle.
+
+======================================================================
+37. TOKEN ARCHITECTURE
+======================================================================
+
+Determine where tokens are used:
+
+- ID tokens
+- access tokens
+- refresh tokens
+- service tokens
+- delegated tokens
+- internal tokens
+
+Do not allow an ID token to be used as an API authorization token unless
+the protocol explicitly supports that use.
+
+======================================================================
+38. TOKEN PROPAGATION
+======================================================================
+
+Determine whether identity tokens or access tokens should propagate through:
+
+User
+ ↓
+Runtime
+ ↓
+Tool Runtime
+ ↓
+External API
+
+Avoid blindly forwarding user tokens.
+
+Define token exchange / delegation where appropriate.
+
+======================================================================
+39. TOKEN AUDIENCE
+======================================================================
+
+Each access token should be intended for a specific audience.
+
+Determine:
+
+- issuer
+- audience
+- scopes
+- expiration
+
+Avoid universal tokens.
+
+======================================================================
+40. TOKEN LIFETIME
+======================================================================
+
+Determine appropriate lifetime concepts for:
+
+- user sessions
+- access tokens
+- delegated tokens
+- service credentials
+- temporary capabilities
+
+Do not invent exact durations without evidence.
+
+======================================================================
+41. REVOCATION
+======================================================================
+
+Determine how access is revoked.
+
+Examples:
+
+- user disabled
+- tenant disabled
+- agent disabled
+- tool revoked
+- credential revoked
+- session revoked
+
+Determine propagation.
+
+======================================================================
+42. IDENTITY FEDERATION
+======================================================================
+
+Future enterprise requirements may include:
+
+- Microsoft Entra ID
+- Okta
+- Google Workspace
+- other OIDC providers
+- SAML providers
+
+Determine how federation fits.
+
+Do not hard-code one identity provider.
+
+======================================================================
+43. SCIM
+======================================================================
+
+Evaluate whether enterprise provisioning requires SCIM.
+
+Potential:
+
+Create user
+Update user
+Deactivate user
+Group membership
+
+Determine when SCIM becomes necessary.
+
+======================================================================
+44. MULTI-TENANCY
+======================================================================
+
+Identity architecture must enforce tenant isolation.
+
+Every security-sensitive request must have an unambiguous tenant context.
+
+Determine:
+
+- tenant identity
+- membership
+- cross-tenant access
+- tenant admin
+- platform admin
+
+======================================================================
+45. PLATFORM ADMIN VS TENANT ADMIN
+======================================================================
+
+Explicitly distinguish:
+
+Platform Administrator
+
+from:
+
+Tenant Administrator
+
+from:
+
+User
+
+from:
+
+Agent
+
+from:
+
+Service Identity.
+
+Determine permissions for each.
+
+======================================================================
+46. MACHINE-TO-MACHINE
+======================================================================
+
+Define authentication for:
+
+- Runtime → Model Layer
+- Runtime → Tool Runtime
+- Runtime → Knowledge Layer
+- Runtime → Memory
+- services → PostgreSQL
+- workers → Control Plane
+
+Determine whether these should use:
+
+- service identities
+- mTLS
+- workload identity
+- signed tokens
+- local trust
+
+Research first.
+
+======================================================================
+47. LOCAL DEPLOYMENT
+======================================================================
+
+Day 1 may run everything on one machine.
+
+Do NOT assume network boundaries disappear.
+
+Determine whether local services still require:
+
+- authentication
+- authorization
+- process isolation
+- credentials
+- service identity
+
+Avoid creating a false sense of security because everything runs locally.
+
+======================================================================
+48. ZERO TRUST
+======================================================================
+
+Evaluate zero-trust principles appropriate to this architecture.
+
+Do not blindly apply cloud-scale zero trust terminology to a single-machine
+deployment.
+
+Determine which principles matter Day 1.
+
+======================================================================
+49. IDENTITY PROVENANCE
+======================================================================
+
+Every important action should be attributable to:
+
+- tenant
+- user
+- agent
+- run
+- service
+- tool
+- external identity
+
+Determine the canonical identity chain.
+
+======================================================================
+50. AUDIT
+======================================================================
+
+Define security audit requirements.
+
+For an important action capture:
+
+- subject
+- tenant
+- agent
+- run
+- action
+- resource
+- authorization decision
+- policy version
+- credential identity
+- external provider
+- result
+- timestamp
+
+Do not store secrets in audit records.
+
+======================================================================
+51. AUTHORIZATION CACHE
+======================================================================
+
+Evaluate whether authorization decisions may be cached.
+
+Analyze:
+
+- latency
+- revocation
+- stale policy
+- tenant isolation
+- cache invalidation
+
+Do not cache authorization indefinitely.
+
+======================================================================
+52. POLICY VERSIONING
+======================================================================
+
+Every important authorization decision should be reconstructable.
+
+Determine whether to capture:
+
+- policy ID
+- policy version
+- decision
+- decision timestamp
+- relevant attributes
+
+======================================================================
+53. SECURITY THREAT MODEL
+======================================================================
+
+Analyze:
+
+- stolen session
+- stolen token
+- token confusion
+- confused deputy
+- privilege escalation
+- tenant breakout
+- credential theft
+- agent impersonation
+- tool impersonation
+- replay
+- session fixation
+- OAuth abuse
+- malicious tool
+- compromised identity provider
+- policy bypass
+- authorization cache poisoning
+
+Determine mitigations.
+
+======================================================================
+54. CONFUSED DEPUTY
+======================================================================
+
+This is particularly important.
+
+Example:
+
+User has access to CRM customer A.
+
+Agent has a broad service credential.
+
+User asks agent to access customer B.
+
+Determine how the architecture prevents the agent from becoming a
+confused deputy.
+
+======================================================================
+55. DELEGATION SECURITY
+======================================================================
+
+Analyze:
+
+User
+ ↓
+Agent
+ ↓
+Tool
+ ↓
+External Service
+
+Determine how delegation preserves:
+
+- user authority
+- agent authority
+- tool authority
+
+Do not let delegation accidentally increase privileges.
+
+======================================================================
+56. LEAST PRIVILEGE
+======================================================================
+
+Apply least privilege to:
+
+- users
+- agents
+- tools
+- services
+- credentials
+- database roles
+- policy engines
+
+Determine practical mechanisms.
+
+======================================================================
+57. AUTHENTICATION FAILURE
+======================================================================
+
+Determine behavior for:
+
+- invalid token
+- expired token
+- revoked token
+- unavailable identity provider
+- invalid session
+- disabled user
+
+Do not fail open unless explicitly justified.
+
+======================================================================
+58. AUTHORIZATION FAILURE
+======================================================================
+
+Determine behavior when authorization is denied.
+
+The system should:
+
+- deny action
+- record decision
+- avoid leaking sensitive information
+- optionally explain denial
+
+Do not let the model retry authorization until it succeeds.
+
+======================================================================
+59. DAY-1 ARCHITECTURE
+======================================================================
+
+Design the smallest practical architecture supporting:
+
+- local authentication
+- users
+- tenants
+- sessions
+- service identities
+- tool authorization
+- data authorization
+- memory authorization
+- audit
+- least privilege
+
+Determine whether Day 1 requires an external identity provider.
+
+======================================================================
+60. FUTURE EVOLUTION
+======================================================================
+
+Define evolution toward:
+
+PHASE 1
+-------
+local identity + application authorization
+
+PHASE 2
+-------
+OIDC / enterprise SSO
+
+PHASE 3
+-------
+delegated OAuth + service identities
+
+PHASE 4
+-------
+fine-grained policy engine
+
+ENTERPRISE
+----------
+federated identity
+SCIM
+workload identity
+advanced authorization
+multi-region identity
+privileged access
+
+Do not assume this roadmap is correct.
+
+Derive it from research.
+
+======================================================================
+61. MIGRATION STRATEGY
+======================================================================
+
+Explain how Day-1 identity can evolve without rewriting:
+
+- Agent Runtime
+- Tool Architecture
+- Knowledge
+- Memory
+- Governance
+
+Define stable identity and authorization contracts.
+
+======================================================================
+62. ARCHITECTURE SELECTION MATRIX
+======================================================================
+
+Compare authentication and authorization architectures.
+
+At minimum:
+
+| Criterion |
+| Day-1 simplicity |
+| Security |
+| Delegation |
+| Enterprise SSO |
+| Fine-grained authorization |
+| Multi-tenancy |
+| Service identity |
+| Tool security |
+| Data security |
+| Auditability |
+| Revocation |
+| Operational complexity |
+| Scalability |
+| Migration complexity |
+| Recommendation |
+
+======================================================================
+63. "WHY NOT?" ANALYSIS
+======================================================================
+
+For the final architecture explicitly answer:
+
+WHY THIS?
+
+WHY NOT AUTHENTICATION-ONLY?
+
+WHY NOT RBAC ONLY?
+
+WHY NOT ABAC ONLY?
+
+WHY NOT A FULL POLICY ENGINE FROM DAY 1?
+
+WHY NOT ONE SERVICE ACCOUNT?
+
+WHY NOT LET AGENTS ACT AS USERS?
+
+WHY NOT LET TOOLS MANAGE THEIR OWN AUTHORIZATION?
+
+WHY NOT FORWARD USER TOKENS DIRECTLY?
+
+WHY NOT CUSTOM AUTHENTICATION?
+
+Only retain comparisons that research demonstrates are meaningful.
+
+======================================================================
+64. REVERSIBILITY ANALYSIS
+======================================================================
+
+Classify:
+
+- identity provider
+- token format
+- authorization model
+- policy engine
+- agent identity
+- delegated identity
+- credential broker
+- tenant model
+- service identity
+
+as:
+
+- easily reversible
+- moderately reversible
+- expensive to reverse
+- effectively irreversible
+
+======================================================================
+65. CONTRACT VS IMPLEMENTATION
+======================================================================
+
+Determine stable contracts.
+
+Potential:
+
+Identity
+Principal
+Session
+AgentIdentity
+RunIdentity
+AuthorizationRequest
+AuthorizationDecision
+CredentialReference
+DelegationContext
+
+Determine the minimum required set.
+
+======================================================================
+66. REQUIRED DIAGRAMS
+======================================================================
+
+Include Mermaid diagrams for:
+
+1. Identity model
+2. User authentication
+3. User → Agent → Run identity chain
+4. Tool authorization
+5. Data authorization
+6. Memory authorization
+7. OAuth delegation
+8. Credential retrieval
+9. Service-to-service identity
+10. Authorization decision
+11. Human approval
+12. Token lifecycle
+13. Revocation
+14. Tenant isolation
+15. Day-1 architecture
+16. Enterprise architecture
+
+======================================================================
+67. ADR CANDIDATES
+======================================================================
+
+Identify ADRs for:
+
+- identity model
+- authentication
+- OIDC
+- OAuth
+- agent identity
+- run identity
+- authorization model
+- RBAC
+- ABAC
+- ReBAC
+- capability security
+- policy engine
+- credential broker
+- delegated authorization
+- service identity
+- workload identity
+- tenant isolation
+- privileged operations
+
+For each:
+
+- problem
+- alternatives
+- recommendation
+- consequences
+- reversibility
+- decision deadline
+
+======================================================================
+68. DAY-1 / PREPARE / SCALE / ENTERPRISE
+======================================================================
+
+Create:
+
+| Capability | Day 1 | Prepare | Scale | Enterprise |
+
+Cover:
+
+- local authentication
+- users
+- tenants
+- sessions
+- agent identity
+- run identity
+- service identities
+- OIDC
+- OAuth
+- delegated access
+- RBAC
+- ABAC
+- ReBAC
+- capability security
+- policy engine
+- credential broker
+- workload identity
+- SCIM
+- federation
+- privileged operations
+- break-glass
+
+======================================================================
+69. ATTEMPT TO FALSIFY THE RECOMMENDATION
+======================================================================
+
+Try to prove the selected identity architecture wrong.
+
+Ask:
+
+- What tenant count breaks it?
+- What user count breaks it?
+- What agent count breaks it?
+- What integration count breaks it?
+- What SSO requirement breaks it?
+- What delegation requirement breaks it?
+- What authorization complexity breaks it?
+- What multi-region requirement breaks it?
+- What compliance requirement breaks it?
+
+Determine the first architectural trigger.
+
+======================================================================
+70. ARCHITECTURAL SELF-CRITIQUE
+======================================================================
+
+Before finalizing, ask:
+
+1. Did I separate identity from authentication?
+2. Did I separate authentication from authorization?
+3. Did I define agent identity?
+4. Did I define run identity?
+5. Is the user/agent/tool chain explicit?
+6. Can the model grant itself permission?
+7. Can memory grant permission?
+8. Can a tool bypass Governance?
+9. Can one tenant access another?
+10. Are credentials isolated?
+11. Are delegated credentials bounded?
+12. Did I address confused deputy?
+13. Is least privilege enforceable?
+14. Are authorization decisions auditable?
+15. Can permissions be revoked?
+16. Is Day 1 genuinely simple?
+17. Can enterprise SSO be added later?
+18. Can fine-grained authorization be added later?
+19. Did I introduce unnecessary IAM infrastructure?
+20. What assumptions could invalidate the architecture?
+
+Include:
+
+# ARCHITECTURAL SELF-CRITIQUE
+
+======================================================================
+71. FINAL RECOMMENDATION
+======================================================================
+
+End with:
+
+# FINAL IDENTITY & AUTHORIZATION ARCHITECTURE RECOMMENDATION
+
+Answer:
+
+"What Identity, Authentication and Authorization Architecture should
+this platform actually build?"
+
+Be concrete.
+
+Describe:
+
+- identity model
+- tenant model
+- user identity
+- agent identity
+- run identity
+- authentication
+- authorization
+- policy
+- credentials
+- delegation
+- service identity
+- tool authorization
+- data authorization
+- memory authorization
+- audit
+- revocation
+- Day-1 implementation
+- future evolution
+
+Then explicitly answer:
+
+"What MUST NOT be built on Day 1?"
+
+Then:
+
+"What future condition should trigger the next architectural evolution?"
+
+======================================================================
+72. REQUIRED OUTPUT
+======================================================================
+
+Produce:
+
+09_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+
+The document MUST explicitly reference:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_PLANE.md
+04_AGENT_RUNTIME.md
+05_MODEL_INFERENCE_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+07_KNOWLEDGE_DATA_ARCHITECTURE.md
+08_MEMORY_ARCHITECTURE.md
+
+If there is a conflict:
+
+DO NOT silently resolve it.
+
+Identify the conflict.
+
+Explain the trade-off.
+
+Recommend the superior architecture.
+
+Create an ADR candidate when appropriate.
+
+======================================================================
+73. SOURCE REQUIREMENTS
+======================================================================
+
+Include direct URLs.
+
+Prioritize:
+
+- RFCs
+- OAuth specifications
+- OpenID specifications
+- NIST
+- OWASP
+- official identity-provider documentation
+- official policy-engine documentation
+- official security guidance
+
+Do not fabricate citations.
+
+Do not cite sources that were not actually inspected.
+
+Clearly distinguish:
+
+SOURCE FACT
+
+from:
+
+INFERENCE
+
+from:
+
+ARCHITECTURAL RECOMMENDATION.
+
+======================================================================
+74. ABSOLUTE FINAL INSTRUCTION
+======================================================================
+
+Act as an INDEPENDENT Principal Identity and Security Architect.
+
+Your responsibility is to determine the best architecture, not to validate
+a preferred technology.
+
+Do not assume:
+
+JWT = security architecture.
+
+Do not assume:
+
+OIDC = authorization.
+
+Do not assume:
+
+OAuth = authentication.
+
+Do not assume:
+
+RBAC = sufficient authorization.
+
+Do not assume:
+
+Agent = User.
+
+Do not assume:
+
+Tool = Identity.
+
+Do not assume:
+
+Credential = Permission.
+
+Do not allow:
+
+MODEL OUTPUT
+
+to become:
+
+AUTHORITY.
+
+Do not allow:
+
+MEMORY
+
+to become:
+
+AUTHORITY.
+
+Do not allow:
+
+TOOL ACCESS
+
+to become:
+
+UNRESTRICTED USER ACCESS.
+
+Optimize for:
+
+SECURITY
++
+LEAST PRIVILEGE
++
+CLEAR IDENTITY
++
+EXPLICIT DELEGATION
++
+AUDITABILITY
++
+REVOCABILITY
++
+TENANT ISOLATION
++
+SIMPLICITY
++
+FUTURE EVOLUTION
+
+The final architecture MUST result from:
+
+    RESEARCH
+       ↓
+    REAL IDENTITY REQUIREMENTS
+       ↓
+    THREAT MODEL
+       ↓
+    AUTHENTICATION ANALYSIS
+       ↓
+    AUTHORIZATION ANALYSIS
+       ↓
+    DELEGATION ANALYSIS
+       ↓
+    CREDENTIAL ANALYSIS
+       ↓
+    ADVERSARIAL SECURITY REVIEW
+       ↓
+    FINAL DECISION
+
+DO NOT DESIGN IDENTITY FIRST.
+
+RESEARCH FIRST.
+
+COMPARE.
+
+CHALLENGE.
+
+SELECT THE BEST ARCHITECTURE AVAILABLE FOR THIS PROJECT.
+
+THEN DESIGN IT.

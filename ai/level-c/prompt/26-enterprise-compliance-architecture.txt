@@ -1,0 +1,3186 @@
+# 26 — ENTERPRISE COMPLIANCE ARCHITECTURE
+## Enterprise AI Agent Platform
+
+======================================================================
+ROLE
+======================================================================
+
+Act as the Principal Enterprise Compliance Architect, Privacy
+Architect, AI Governance Architect, Security Architect, Data
+Governance Architect, Regulatory Technology Architect and Enterprise
+Risk Architect responsible for designing the complete Compliance
+Architecture of this AI agent platform.
+
+You have deep expertise in:
+
+- enterprise compliance
+- privacy engineering
+- data protection
+- AI governance
+- regulatory analysis
+- security controls
+- audit architecture
+- data governance
+- records management
+- data retention
+- data deletion
+- legal hold
+- data residency
+- data sovereignty
+- cross-border data transfers
+- identity and access governance
+- privileged access
+- segregation of duties
+- encryption
+- key management
+- incident response
+- breach management
+- third-party risk
+- supply-chain governance
+- cloud compliance
+- infrastructure compliance
+- software compliance
+- model governance
+- dataset governance
+- AI risk management
+- compliance monitoring
+- evidence management
+- audit readiness
+- continuous controls monitoring
+- compliance-as-code
+- control testing
+- exception management
+- risk acceptance
+- enterprise governance.
+
+======================================================================
+1. MOST IMPORTANT INSTRUCTION
+## CLAUDE MUST CHOOSE THE COMPLIANCE ARCHITECTURE
+======================================================================
+
+This is NOT a prompt asking you to declare the platform:
+
+"GDPR compliant"
+
+or:
+
+"SOC 2 compliant"
+
+or:
+
+"ISO 27001 compliant".
+
+Do NOT begin with a certification.
+
+Do NOT assume that a framework automatically applies.
+
+Do NOT assume that every regulation applies.
+
+Do NOT assume that every customer has identical obligations.
+
+Claude MUST independently determine:
+
+1. which regulatory and contractual requirements may apply
+2. why they apply
+3. which requirements do NOT apply
+4. what assumptions affect applicability
+5. what technical controls are required
+6. what organizational controls are required
+7. what evidence must exist
+8. how evidence is generated
+9. how controls are continuously monitored
+10. which architecture best satisfies the requirements.
+
+The architecture MUST be derived from:
+
+    BUSINESS MODEL
+       ↓
+    PRODUCT SCOPE
+       ↓
+    DATA FLOWS
+       ↓
+    DATA CLASSIFICATION
+       ↓
+    JURISDICTIONS
+       ↓
+    TENANT TYPES
+       ↓
+    PROCESSING ACTIVITIES
+       ↓
+    REGULATORY APPLICABILITY
+       ↓
+    CONTROL OBJECTIVES
+       ↓
+    TECHNICAL CONTROLS
+       ↓
+    ORGANIZATIONAL CONTROLS
+       ↓
+    EVIDENCE
+       ↓
+    CONTINUOUS MONITORING
+       ↓
+    AUDIT
+       ↓
+    EXCEPTIONS
+       ↓
+    INCIDENT / BREACH
+       ↓
+    DR / RECOVERY
+       ↓
+    ALTERNATIVE ARCHITECTURES
+       ↓
+    COST / COMPLEXITY
+       ↓
+    FALSIFICATION
+       ↓
+    FINAL COMPLIANCE ARCHITECTURE
+
+======================================================================
+2. CRITICAL DISTINCTION
+======================================================================
+
+DISTINGUISH BETWEEN:
+
+LAW
+
+REGULATION
+
+STANDARD
+
+FRAMEWORK
+
+CERTIFICATION
+
+CONTRACTUAL REQUIREMENT
+
+INTERNAL POLICY
+
+CUSTOMER REQUIREMENT
+
+SECURITY BEST PRACTICE.
+
+These are NOT interchangeable.
+
+For every requirement identify its source category.
+
+======================================================================
+3. NO FALSE COMPLIANCE CLAIMS
+======================================================================
+
+Never state:
+
+"the system is compliant"
+
+unless the evidence actually supports such a conclusion.
+
+Use precise language:
+
+- potentially applicable
+- applicable subject to conditions
+- control required
+- control implemented
+- evidence available
+- evidence not yet available
+- certification required
+- legal interpretation required.
+
+======================================================================
+4. ARCHITECTURAL CONTEXT
+======================================================================
+
+You are designing compliance architecture for an enterprise AI agent
+platform.
+
+Existing architecture documents:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_ARCHITECTURE.md
+04_AGENT_RUNTIME.md
+05_MODEL_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+08_KNOWLEDGE_DATA_ARCHITECTURE.md
+09_MEMORY_ARCHITECTURE.md
+10_SECURITY_ARCHITECTURE.md
+11_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+12_TRUST_PROVENANCE_ARCHITECTURE.md
+13_RELIABILITY_ARCHITECTURE.md
+14_CONCURRENCY_ARCHITECTURE.md
+15_OBSERVABILITY_ARCHITECTURE.md
+16_AUDIT_ARCHITECTURE.md
+17_EVALUATION_ARCHITECTURE.md
+18_DEPLOYMENT_LIFECYCLE_ARCHITECTURE.md
+19_MULTI_TENANCY_ARCHITECTURE.md
+20_COST_ARCHITECTURE.md
+21_CAPACITY_PLANNING_ARCHITECTURE.md
+22_NETWORKING_ARCHITECTURE.md
+23_STORAGE_ARCHITECTURE.md
+24_DR_ENTERPRISE_ARCHITECTURE.md
+25_ADVANCED_SUPPLY_CHAIN_ARCHITECTURE.md
+
+Future architecture documents:
+
+27_MULTI_MODEL_FALLBACK_ARCHITECTURE.md
+28_HUMAN_IN_THE_LOOP_ARCHITECTURE.md
+29_REPLAY_ARCHITECTURE.md
+30_OFFLINE_MOBILE_ARCHITECTURE.md
+31_A2A_ARCHITECTURE.md
+32_ADMIN_CONSOLE_ARCHITECTURE.md
+33_ADR_ARCHITECTURE.md
+34_QUALITY_MODEL_ARCHITECTURE.md
+
+If a future document does not exist:
+
+DO NOT invent its contents.
+
+Identify only:
+
+- dependency
+- required interface
+- unresolved assumption.
+
+Existing documents are not automatically correct.
+
+If compliance analysis exposes a conflict:
+
+DO NOT silently compensate.
+
+Document:
+
+- source architecture
+- compliance concern
+- consequence
+- recommended architectural change
+- ADR candidate.
+
+======================================================================
+5. LEVEL
+======================================================================
+
+This document belongs to:
+
+LEVEL C — SUCCESSIVE ARCHITECTURE.
+
+It is NOT a requirement to implement the full enterprise compliance
+system on Day 1.
+
+However:
+
+DAY 1 MUST NOT MAKE FUTURE COMPLIANCE IMPOSSIBLE.
+
+Therefore Day 1 should establish the foundational contracts needed for:
+
+- data classification
+- data ownership
+- auditability
+- identity
+- access control
+- retention
+- deletion
+- provenance
+- evidence
+- tenant isolation
+- configuration traceability.
+
+Do not over-engineer Day 1.
+
+======================================================================
+6. COMPLIANCE BOUNDARY
+======================================================================
+
+Define precisely what is inside the compliance boundary.
+
+Potential components:
+
+- Control Plane
+- Agent Runtime
+- Model Runtime
+- Tool Runtime
+- MCP ecosystem
+- Knowledge system
+- Memory
+- Storage
+- Identity
+- Authorization
+- Security
+- Observability
+- Audit
+- Evaluation
+- Deployment
+- CI/CD
+- Artifact supply chain
+- DR environment
+- Administrative interfaces
+- customer-facing interfaces
+- external processors.
+
+Do not assume all components share the same compliance boundary.
+
+======================================================================
+7. SHARED RESPONSIBILITY
+======================================================================
+
+For each control identify responsibility:
+
+PLATFORM
+
+CUSTOMER
+
+CLOUD PROVIDER
+
+THIRD-PARTY PROVIDER
+
+SHARED.
+
+Do not assign a control to the platform when it is actually controlled
+by an external provider.
+
+======================================================================
+8. REGULATORY APPLICABILITY
+======================================================================
+
+Research and evaluate relevant frameworks and regulations.
+
+Potential examples include:
+
+- GDPR
+- EU AI Act
+- NIS2 where applicable
+- DORA where applicable
+- ePrivacy-related obligations where applicable
+- sector-specific obligations
+- contractual security requirements
+- ISO/IEC 27001
+- ISO/IEC 27701
+- SOC 2
+- NIST frameworks
+- CIS controls
+- other relevant standards.
+
+These are candidates for analysis.
+
+DO NOT assume all apply.
+
+Determine:
+
+- jurisdiction
+- customer type
+- data type
+- service role
+- processing activity
+- contractual relationship.
+
+======================================================================
+9. LEGAL APPLICABILITY
+======================================================================
+
+For each regulation answer:
+
+WHY MIGHT IT APPLY?
+
+WHAT FACT WOULD MAKE IT NOT APPLY?
+
+WHAT FACT WOULD CHANGE THE OBLIGATION?
+
+Do not provide definitive legal advice where the architecture cannot
+establish the required legal facts.
+
+Flag matters requiring legal counsel.
+
+======================================================================
+10. JURISDICTION MODEL
+======================================================================
+
+Define:
+
+- company jurisdiction
+- customer jurisdiction
+- user jurisdiction
+- data location
+- processing location
+- subprocessors
+- infrastructure location.
+
+======================================================================
+11. DATA RESIDENCY
+======================================================================
+
+Determine whether customers may require:
+
+- EU-only data
+- country-specific data
+- region-specific data
+- global processing.
+
+Do not assume one universal policy.
+
+======================================================================
+12. DATA SOVEREIGNTY
+======================================================================
+
+Distinguish:
+
+DATA RESIDENCY
+
+from:
+
+DATA SOVEREIGNTY.
+
+Explain architectural consequences.
+
+======================================================================
+13. CROSS-BORDER DATA TRANSFERS
+======================================================================
+
+Identify where data may cross borders.
+
+Include:
+
+- primary data
+- logs
+- traces
+- backups
+- telemetry
+- model requests
+- external tools
+- MCP servers
+- support systems
+- analytics.
+
+======================================================================
+14. PROCESSOR / SUBPROCESSOR MODEL
+======================================================================
+
+Identify:
+
+- controller
+- processor
+- subprocessor
+- independent third party.
+
+Do not assume legal roles solely from technical architecture.
+
+Flag legal validation.
+
+======================================================================
+15. DATA INVENTORY
+======================================================================
+
+Create a complete data inventory.
+
+At minimum:
+
+- account data
+- identity data
+- authentication data
+- tenant configuration
+- prompts
+- user inputs
+- agent state
+- conversation history
+- memory
+- knowledge documents
+- embeddings
+- tool inputs
+- tool outputs
+- model inputs
+- model outputs
+- audit records
+- logs
+- metrics
+- traces
+- evaluation data
+- billing/usage data
+- security events
+- backup data
+- recovery copies
+- support data.
+
+======================================================================
+16. DATA CLASSIFICATION
+======================================================================
+
+Define a classification system.
+
+Potential:
+
+PUBLIC
+
+INTERNAL
+
+CONFIDENTIAL
+
+RESTRICTED
+
+HIGHLY SENSITIVE.
+
+These are candidates.
+
+Determine the appropriate model.
+
+======================================================================
+17. PII
+======================================================================
+
+Identify where personally identifiable information may appear.
+
+Do not assume PII exists only in:
+
+"user profile fields."
+
+Prompts, documents, memory and tool outputs may contain PII.
+
+======================================================================
+18. SENSITIVE DATA
+======================================================================
+
+Evaluate potential:
+
+- financial
+- health
+- authentication
+- biometric
+- identity
+- location
+- employment
+- confidential business
+- regulated sector data.
+
+Do not assume the platform processes these.
+
+Determine whether the architecture permits them.
+
+======================================================================
+19. DATA MINIMIZATION
+======================================================================
+
+For every stored data class ask:
+
+WHY IS THIS DATA STORED?
+
+HOW LONG?
+
+WHO NEEDS IT?
+
+CAN IT BE AVOIDED?
+
+======================================================================
+20. PURPOSE LIMITATION
+======================================================================
+
+Determine whether data collected for one purpose can be used for:
+
+- model improvement
+- analytics
+- evaluation
+- debugging
+- training
+- personalization.
+
+Do not assume reuse is permitted.
+
+======================================================================
+21. SECONDARY USE
+======================================================================
+
+Explicitly model:
+
+production data
+
+→
+
+evaluation
+
+→
+
+analytics
+
+→
+
+training.
+
+Each transition requires separate analysis.
+
+======================================================================
+22. CUSTOMER DATA IS NOT AUTOMATICALLY TRAINING DATA
+======================================================================
+
+Do not assume customer data may be used to train models.
+
+Determine:
+
+- contractual basis
+- policy
+- configuration
+- consent/legal basis where applicable
+- isolation.
+
+======================================================================
+23. DATA ISOLATION
+======================================================================
+
+Using 19:
+
+ensure tenant data does not cross compliance boundaries.
+
+======================================================================
+24. TENANT-SPECIFIC COMPLIANCE
+======================================================================
+
+Different tenants may require:
+
+- different retention
+- different regions
+- different encryption
+- different audit
+- different deletion
+- different data-processing rules.
+
+Determine whether the architecture supports policy variation.
+
+======================================================================
+25. DATA RETENTION
+======================================================================
+
+Define retention by data class.
+
+Do not define one global retention period.
+
+Create:
+
+| Data Class | Purpose | Retention | Owner | Deletion Method | Evidence |
+
+======================================================================
+26. RETENTION ≠ ARCHIVAL
+======================================================================
+
+Distinguish:
+
+active storage
+
+archive
+
+backup
+
+legal hold.
+
+======================================================================
+27. DELETION
+======================================================================
+
+Define:
+
+- logical deletion
+- physical deletion
+- cryptographic deletion
+- backup deletion
+- derived-data deletion.
+
+======================================================================
+28. DELETION PROPAGATION
+======================================================================
+
+If a user requests deletion:
+
+determine what happens to:
+
+- primary data
+- replicas
+- caches
+- search indexes
+- vectors
+- memory
+- logs
+- backups
+- DR copies
+- analytics
+- evaluation datasets.
+
+======================================================================
+29. BACKUP DELETION
+======================================================================
+
+Do not claim deletion is complete if old immutable backups still contain
+the data.
+
+Determine the applicable policy and technical mechanism.
+
+======================================================================
+30. LEGAL HOLD
+======================================================================
+
+Evaluate legal hold.
+
+Data under legal hold may require different deletion behavior.
+
+======================================================================
+31. RETENTION POLICY ENGINE
+======================================================================
+
+Evaluate whether retention should be:
+
+- centralized
+- service-specific
+- tenant-specific
+- policy-driven.
+
+======================================================================
+32. DATA LIFECYCLE
+======================================================================
+
+Model:
+
+CREATE
+→
+PROCESS
+→
+STORE
+→
+REPLICATE
+→
+USE
+→
+ARCHIVE
+→
+DELETE.
+
+======================================================================
+33. DATA FLOW MAPPING
+======================================================================
+
+Create data-flow diagrams.
+
+For each flow identify:
+
+- source
+- processor
+- destination
+- jurisdiction
+- classification
+- encryption
+- retention
+- purpose.
+
+======================================================================
+34. MODEL DATA FLOW
+======================================================================
+
+Explicitly map:
+
+USER
+
+→
+
+AGENT
+
+→
+
+MODEL
+
+→
+
+TOOL
+
+→
+
+EXTERNAL SERVICE.
+
+Determine where data may leave the platform.
+
+======================================================================
+35. EXTERNAL MODEL PROVIDERS
+======================================================================
+
+For each external model provider evaluate:
+
+- data transmission
+- retention
+- training use
+- jurisdiction
+- security
+- contractual controls
+- deletion
+- incident handling.
+
+Use official provider documentation where available.
+
+Do not invent provider guarantees.
+
+======================================================================
+36. TOOL DATA FLOW
+======================================================================
+
+Tools can transmit data outside the platform.
+
+Map:
+
+Agent
+
+→
+
+Tool
+
+→
+
+External System.
+
+======================================================================
+37. MCP DATA FLOW
+======================================================================
+
+MCP servers may introduce additional processing boundaries.
+
+Determine:
+
+- data sent
+- identity
+- authorization
+- location
+- retention
+- third-party processing.
+
+======================================================================
+38. KNOWLEDGE DATA
+======================================================================
+
+Using 08:
+
+map documents through:
+
+ingestion
+
+→
+
+processing
+
+→
+
+embedding
+
+→
+
+index
+
+→
+
+retrieval
+
+→
+
+model.
+
+======================================================================
+39. MEMORY DATA
+======================================================================
+
+Using 09:
+
+determine:
+
+- what is stored
+- why
+- how long
+- who can access
+- how deleted.
+
+======================================================================
+40. AUDIT DATA
+======================================================================
+
+Using 16:
+
+determine:
+
+- retention
+- immutability
+- integrity
+- access
+- legal hold
+- export.
+
+======================================================================
+41. OBSERVABILITY DATA
+======================================================================
+
+Using 15:
+
+logs can contain sensitive data.
+
+Determine:
+
+- redaction
+- minimization
+- access
+- retention.
+
+======================================================================
+42. DEBUGGING DATA
+======================================================================
+
+Debug logs and traces may accidentally expose:
+
+- prompts
+- secrets
+- PII
+- model outputs
+- tool parameters.
+
+Define controls.
+
+======================================================================
+43. REDACTION
+======================================================================
+
+Evaluate:
+
+- pre-storage redaction
+- post-storage redaction
+- tokenization
+- pseudonymization.
+
+Do not assume redaction is perfect.
+
+======================================================================
+44. PSEUDONYMIZATION
+======================================================================
+
+Distinguish:
+
+pseudonymization
+
+from:
+
+anonymization.
+
+======================================================================
+45. ANONYMIZATION
+======================================================================
+
+Do not claim data is anonymous merely because identifiers were removed.
+
+Evaluate re-identification risk.
+
+======================================================================
+46. ENCRYPTION
+======================================================================
+
+Using 10/23:
+
+define:
+
+- encryption at rest
+- encryption in transit
+- key management
+- rotation
+- access.
+
+======================================================================
+47. KEY MANAGEMENT
+======================================================================
+
+Compliance may depend on:
+
+- key ownership
+- key location
+- key rotation
+- key destruction
+- customer-managed keys.
+
+======================================================================
+48. CUSTOMER-MANAGED KEYS
+======================================================================
+
+Evaluate whether enterprise customers require:
+
+BYOK
+
+or:
+
+HYOK.
+
+Do not assume either is universally necessary.
+
+======================================================================
+49. IDENTITY
+======================================================================
+
+Using 11:
+
+define:
+
+- authentication
+- authorization
+- privileged access
+- service identities
+- workload identities.
+
+======================================================================
+50. PRIVILEGED ACCESS
+======================================================================
+
+Define:
+
+- admin roles
+- break-glass
+- access reviews
+- MFA
+- session logging.
+
+======================================================================
+51. LEAST PRIVILEGE
+======================================================================
+
+Compliance controls must align with:
+
+minimum necessary access.
+
+======================================================================
+52. SEGREGATION OF DUTIES
+======================================================================
+
+Separate where appropriate:
+
+- development
+- deployment
+- security
+- compliance
+- audit
+- administration.
+
+Do not create unnecessary bureaucracy where technical separation is
+sufficient.
+
+======================================================================
+53. ACCESS REVIEW
+======================================================================
+
+Define periodic review of:
+
+- user access
+- service access
+- admin access
+- tenant access.
+
+======================================================================
+54. JOINER / MOVER / LEAVER
+======================================================================
+
+Define lifecycle for privileged and enterprise users.
+
+======================================================================
+55. SERVICE IDENTITY
+======================================================================
+
+Machine-to-machine access must be attributable.
+
+======================================================================
+56. AUDITABILITY
+======================================================================
+
+Every sensitive action should answer:
+
+WHO
+
+WHAT
+
+WHEN
+
+WHERE
+
+WHY
+
+WITH WHICH AUTHORITY.
+
+======================================================================
+57. AUDIT LOG INTEGRITY
+======================================================================
+
+Using 16:
+
+evaluate:
+
+- tamper resistance
+- immutability
+- integrity verification
+- access controls.
+
+======================================================================
+58. AUDIT EXPORT
+======================================================================
+
+Enterprise customers may require:
+
+- export
+- retention
+- SIEM integration
+- evidence packages.
+
+Determine architecture.
+
+======================================================================
+59. COMPLIANCE EVIDENCE
+======================================================================
+
+Compliance is not just controls.
+
+It is:
+
+CONTROL
+
++
+
+EVIDENCE.
+
+Define evidence for every major control.
+
+======================================================================
+60. EVIDENCE MODEL
+======================================================================
+
+Create:
+
+| Control | Evidence | Source | Frequency | Owner | Verification |
+
+======================================================================
+61. EVIDENCE AUTOMATION
+======================================================================
+
+Determine which evidence can be generated automatically.
+
+Examples:
+
+- configuration
+- access logs
+- deployment records
+- vulnerability reports
+- encryption state
+- backup tests.
+
+======================================================================
+62. EVIDENCE INTEGRITY
+======================================================================
+
+Evidence itself may need:
+
+- integrity
+- timestamps
+- provenance
+- access control
+- retention.
+
+======================================================================
+63. EVIDENCE RETENTION
+======================================================================
+
+Define how long compliance evidence remains available.
+
+======================================================================
+64. CONTINUOUS CONTROLS MONITORING
+======================================================================
+
+Evaluate continuous monitoring rather than periodic manual checking
+where appropriate.
+
+======================================================================
+65. COMPLIANCE-AS-CODE
+======================================================================
+
+Evaluate whether controls can be expressed as machine-verifiable rules.
+
+Potential:
+
+- infrastructure policy
+- access policy
+- encryption policy
+- network policy
+- deployment policy
+- data residency policy.
+
+These are candidates.
+
+======================================================================
+66. POLICY ENFORCEMENT
+======================================================================
+
+Determine:
+
+- preventive controls
+- detective controls
+- corrective controls.
+
+======================================================================
+67. PREVENTIVE CONTROL
+======================================================================
+
+Example:
+
+deployment rejected because:
+
+required encryption
+
+is absent.
+
+======================================================================
+68. DETECTIVE CONTROL
+======================================================================
+
+Example:
+
+daily detection of:
+
+unapproved privileged access.
+
+======================================================================
+69. CORRECTIVE CONTROL
+======================================================================
+
+Example:
+
+automatic revocation
+
+where safe.
+
+======================================================================
+70. CONTROL FAILURE
+======================================================================
+
+Determine what happens when a compliance control itself fails.
+
+Do not automatically block production for every control failure.
+
+Classify by criticality.
+
+======================================================================
+71. FAIL-CLOSED VS FAIL-OPEN
+======================================================================
+
+For each major compliance control determine:
+
+FAIL CLOSED
+
+or:
+
+FAIL OPEN
+
+or:
+
+DEGRADED MODE.
+
+Do not use one policy everywhere.
+
+======================================================================
+72. COMPLIANCE EXCEPTIONS
+======================================================================
+
+Define:
+
+- exception request
+- owner
+- justification
+- expiration
+- compensating control
+- approval
+- audit.
+
+======================================================================
+73. RISK ACCEPTANCE
+======================================================================
+
+Compliance exception ≠ risk acceptance automatically.
+
+Separate:
+
+technical exception
+
+from:
+
+formal risk acceptance.
+
+======================================================================
+74. CONTROL OWNERSHIP
+======================================================================
+
+Every control must have:
+
+- owner
+- implementation
+- evidence
+- review frequency.
+
+======================================================================
+75. CONTROL MAPPING
+======================================================================
+
+Create a mapping:
+
+REGULATION / FRAMEWORK
+
+→
+
+REQUIREMENT
+
+→
+
+CONTROL OBJECTIVE
+
+→
+
+TECHNICAL CONTROL
+
+→
+
+EVIDENCE.
+
+======================================================================
+76. CONTROL DUPLICATION
+======================================================================
+
+Multiple frameworks may require essentially the same control.
+
+Avoid implementing:
+
+three separate systems
+
+for:
+
+one common control.
+
+======================================================================
+77. CONTROL HARMONIZATION
+======================================================================
+
+Build a common control framework where appropriate.
+
+======================================================================
+78. CERTIFICATION BOUNDARY
+======================================================================
+
+Determine what portion of the platform would actually be inside a
+certification scope.
+
+Do not assume the entire company must be certified as one boundary.
+
+======================================================================
+79. AUDIT BOUNDARY
+======================================================================
+
+Define:
+
+- infrastructure
+- software
+- operations
+- personnel
+- subprocessors.
+
+======================================================================
+80. THIRD-PARTY COMPLIANCE
+======================================================================
+
+Using 25:
+
+evaluate:
+
+- vendor certifications
+- security documentation
+- SBOM
+- provenance
+- data processing
+- subprocessor risk.
+
+Do not blindly inherit a vendor's certification.
+
+======================================================================
+81. SUBPROCESSOR INVENTORY
+======================================================================
+
+Maintain:
+
+| Provider | Purpose | Data | Region | Contract | Risk | Evidence |
+
+======================================================================
+82. VENDOR CHANGE
+======================================================================
+
+What happens if:
+
+a subprocessor changes?
+
+Evaluate:
+
+- notification
+- review
+- approval
+- customer rights.
+
+======================================================================
+83. CLOUD PROVIDER RESPONSIBILITY
+======================================================================
+
+Map:
+
+cloud provider controls
+
+vs:
+
+platform controls.
+
+======================================================================
+84. SUPPLY CHAIN COMPLIANCE
+======================================================================
+
+Using 25:
+
+map:
+
+- dependency controls
+- artifact integrity
+- provenance
+- vulnerability management
+- third-party components.
+
+======================================================================
+85. DR COMPLIANCE
+======================================================================
+
+Using 24:
+
+compliance requirements must survive:
+
+- backup
+- replication
+- failover
+- regional recovery.
+
+======================================================================
+86. BACKUP COMPLIANCE
+======================================================================
+
+Evaluate:
+
+- retention
+- deletion
+- encryption
+- residency
+- access
+- legal hold.
+
+======================================================================
+87. DR DATA RESIDENCY
+======================================================================
+
+A backup region can create a data residency violation.
+
+Explicitly model this.
+
+======================================================================
+88. INCIDENT RESPONSE
+======================================================================
+
+Using 10/13:
+
+define:
+
+- detection
+- classification
+- containment
+- investigation
+- notification
+- recovery
+- evidence.
+
+======================================================================
+89. BREACH VS SECURITY EVENT
+======================================================================
+
+Do not treat every security alert as a legally reportable breach.
+
+Legal classification requires appropriate analysis.
+
+======================================================================
+90. INCIDENT EVIDENCE
+======================================================================
+
+Preserve:
+
+- logs
+- audit records
+- relevant artifacts
+- timestamps
+- investigation records.
+
+======================================================================
+91. AI GOVERNANCE
+======================================================================
+
+Evaluate AI-specific compliance requirements.
+
+Potential areas:
+
+- AI system classification
+- risk classification
+- transparency
+- documentation
+- human oversight
+- logging
+- evaluation
+- monitoring
+- incident management.
+
+Do not assume every use case has the same obligations.
+
+======================================================================
+92. AI SYSTEM INVENTORY
+======================================================================
+
+Maintain inventory of:
+
+- models
+- model versions
+- purposes
+- providers
+- deployment environments
+- risk classification.
+
+======================================================================
+93. MODEL GOVERNANCE
+======================================================================
+
+Using 05 and 17:
+
+define:
+
+- approval
+- evaluation
+- versioning
+- monitoring
+- retirement.
+
+======================================================================
+94. MODEL CHANGE CONTROL
+======================================================================
+
+A model update is potentially a material system change.
+
+Define:
+
+- review
+- evaluation
+- approval
+- rollout
+- rollback.
+
+======================================================================
+95. MODEL PROVENANCE
+======================================================================
+
+Using 12/25:
+
+track:
+
+- source
+- version
+- transformation
+- artifact identity.
+
+======================================================================
+96. TRAINING DATA GOVERNANCE
+======================================================================
+
+If the platform trains or fine-tunes models:
+
+evaluate:
+
+- data provenance
+- rights
+- consent/legal basis
+- retention
+- deletion
+- contamination.
+
+If the platform does NOT train models:
+
+explicitly state that this is outside scope, subject to architecture
+confirmation.
+
+======================================================================
+97. EVALUATION DATA
+======================================================================
+
+Evaluation datasets may contain sensitive information.
+
+Apply appropriate controls.
+
+======================================================================
+98. HUMAN OVERSIGHT
+======================================================================
+
+Future 28 may define advanced human-in-the-loop.
+
+Define only the compliance dependency:
+
+- where human review is required
+- how the decision is recorded
+- how authority is established.
+
+Do not invent future architecture.
+
+======================================================================
+99. AUTOMATED DECISION-MAKING
+======================================================================
+
+Determine whether platform outputs may be used for decisions with legal
+or significant effects.
+
+Do not assume.
+
+======================================================================
+100. EXPLAINABILITY
+======================================================================
+
+Where legally or contractually required, determine:
+
+what evidence is needed to explain system behavior.
+
+Do not promise technical explainability where it is not possible.
+
+======================================================================
+101. HUMAN OVERRIDE
+======================================================================
+
+Where required:
+
+define:
+
+- authority
+- action
+- audit
+- override record.
+
+======================================================================
+102. AI OUTPUT LOGGING
+======================================================================
+
+Determine what outputs must be retained and why.
+
+Do not retain everything by default.
+
+======================================================================
+103. PROMPT / OUTPUT PRIVACY
+======================================================================
+
+Prompts and outputs can contain sensitive information.
+
+Apply classification and retention.
+
+======================================================================
+104. MODEL PROVIDER CONTRACTS
+======================================================================
+
+External model providers may create:
+
+- processing
+- residency
+- retention
+- subprocessor
+- contractual risks.
+
+======================================================================
+105. TOOL PROVIDER CONTRACTS
+======================================================================
+
+Same analysis for external tools.
+
+======================================================================
+106. MCP PROVIDER CONTRACTS
+======================================================================
+
+Same analysis for external MCP services.
+
+======================================================================
+107. CUSTOMER CONTRACTS
+======================================================================
+
+Enterprise customers may impose:
+
+- retention
+- residency
+- deletion
+- security
+- audit
+- breach notification
+- availability
+- subcontractor requirements.
+
+Architecture must support contractual variation where justified.
+
+======================================================================
+108. DATA PROCESSING AGREEMENTS
+======================================================================
+
+Determine which architecture data is needed to support:
+
+- processing descriptions
+- subprocessors
+- regions
+- categories of data
+- retention.
+
+======================================================================
+109. RECORDS OF PROCESSING
+======================================================================
+
+Where applicable, architecture should provide the information required
+to maintain records of processing activities.
+
+======================================================================
+110. DATA SUBJECT RIGHTS
+======================================================================
+
+Where applicable, evaluate support for:
+
+- access
+- correction
+- deletion
+- restriction
+- portability
+- objection.
+
+Do not assume every request maps directly to a single database row.
+
+======================================================================
+111. DATA SUBJECT REQUEST GRAPH
+======================================================================
+
+Model:
+
+identity
+
+→
+
+tenant
+
+→
+
+records
+
+→
+
+derived data
+
+→
+
+backups
+
+→
+
+third parties.
+
+======================================================================
+112. DATA EXPORT
+======================================================================
+
+Determine how users/tenants can export their data where required.
+
+======================================================================
+113. DATA CORRECTION
+======================================================================
+
+Determine impact on:
+
+- memory
+- embeddings
+- indexes
+- derived data.
+
+======================================================================
+114. DATA DELETION
+======================================================================
+
+Coordinate with 23 and 24.
+
+======================================================================
+115. AUDIT RIGHTS
+======================================================================
+
+Enterprise customers may request evidence.
+
+Define:
+
+- standard evidence
+- self-service evidence
+- controlled audit access
+- auditor access.
+
+======================================================================
+116. CUSTOMER AUDIT ISOLATION
+======================================================================
+
+One customer must never receive another customer's:
+
+- logs
+- evidence
+- configuration
+- audit records.
+
+======================================================================
+117. COMPLIANCE REPORTING
+======================================================================
+
+Determine standard reports:
+
+- security controls
+- access
+- incidents
+- vulnerabilities
+- availability
+- data residency
+- subprocessors.
+
+======================================================================
+118. EVIDENCE EXPORT
+======================================================================
+
+Define a machine-readable evidence model where useful.
+
+======================================================================
+119. AUDIT TRAIL FOR COMPLIANCE
+======================================================================
+
+Compliance changes themselves should be auditable.
+
+======================================================================
+120. POLICY VERSIONING
+======================================================================
+
+Track:
+
+policy version
+
+→
+
+control version
+
+→
+
+evidence.
+
+======================================================================
+121. REGULATORY CHANGE MANAGEMENT
+======================================================================
+
+Regulations change.
+
+Define how new requirements enter the architecture.
+
+======================================================================
+122. CONTROL IMPACT ANALYSIS
+======================================================================
+
+When a requirement changes:
+
+identify affected:
+
+- controls
+- systems
+- data
+- contracts
+- evidence.
+
+======================================================================
+123. COMPLIANCE DRIFT
+======================================================================
+
+Detect:
+
+implemented control
+
+≠
+
+required control.
+
+======================================================================
+124. ARCHITECTURE DRIFT
+======================================================================
+
+Detect:
+
+approved architecture
+
+≠
+
+actual production architecture.
+
+======================================================================
+125. CONFIGURATION DRIFT
+======================================================================
+
+Using 18:
+
+detect configuration that violates compliance policies.
+
+======================================================================
+126. ACCESS DRIFT
+======================================================================
+
+Detect:
+
+privileged access
+
+that exceeds approved access.
+
+======================================================================
+127. DATA RESIDENCY DRIFT
+======================================================================
+
+Detect data moving to:
+
+unauthorized regions.
+
+======================================================================
+128. RETENTION DRIFT
+======================================================================
+
+Detect data exceeding:
+
+approved retention.
+
+======================================================================
+129. DELETION DRIFT
+======================================================================
+
+Detect deletion requests that fail to propagate.
+
+======================================================================
+130. CONTROL TESTING
+======================================================================
+
+For each major control define:
+
+- test
+- frequency
+- evidence
+- expected result
+- failure response.
+
+======================================================================
+131. CONTROL EFFECTIVENESS
+======================================================================
+
+A control can exist but be ineffective.
+
+Measure:
+
+DESIGN EFFECTIVENESS
+
+and:
+
+OPERATING EFFECTIVENESS.
+
+======================================================================
+132. COMPLIANCE METRICS
+======================================================================
+
+Potential:
+
+- control pass rate
+- overdue evidence
+- exceptions
+- expired exceptions
+- failed tests
+- unresolved findings
+- access review completion
+- deletion SLA performance.
+
+Determine actual metrics.
+
+======================================================================
+133. RISK REGISTER
+======================================================================
+
+Create compliance risks with:
+
+- description
+- likelihood
+- impact
+- owner
+- mitigation
+- residual risk.
+
+Do not invent quantitative risk values without evidence.
+
+======================================================================
+134. RISK ACCEPTANCE
+======================================================================
+
+Define authority for accepting residual risk.
+
+======================================================================
+135. AUDIT FINDINGS
+======================================================================
+
+Define lifecycle:
+
+Finding
+→
+Owner
+→
+Remediation
+→
+Validation
+→
+Closure.
+
+======================================================================
+136. REMEDIATION TRACKING
+======================================================================
+
+Findings must be traceable to:
+
+- system
+- control
+- owner
+- evidence.
+
+======================================================================
+137. EXTERNAL AUDIT
+======================================================================
+
+Define architecture support for auditors without giving uncontrolled
+production access.
+
+======================================================================
+138. AUDITOR ACCESS
+======================================================================
+
+Prefer:
+
+read-only
+
+scoped
+
+time-limited
+
+auditable
+
+access.
+
+======================================================================
+139. COMPLIANCE ADMINISTRATION
+======================================================================
+
+Future 32 may expose an Admin Console.
+
+Define only compliance-related requirements:
+
+- evidence
+- access
+- policy
+- reports.
+
+Do not invent UI architecture.
+
+======================================================================
+140. COMPLIANCE + MULTI-TENANCY
+======================================================================
+
+Different tenants may require different:
+
+- controls
+- retention
+- regions
+- audit
+- encryption.
+
+Define the policy boundary.
+
+======================================================================
+141. POLICY HIERARCHY
+======================================================================
+
+Evaluate:
+
+GLOBAL
+
+→
+
+PLATFORM
+
+→
+
+TENANT
+
+→
+
+WORKSPACE
+
+→
+
+AGENT.
+
+Do not assume this hierarchy is correct.
+
+Determine the correct policy precedence.
+
+======================================================================
+142. POLICY CONFLICT
+======================================================================
+
+Define what happens when:
+
+platform policy
+
+conflicts with:
+
+tenant policy.
+
+======================================================================
+143. COMPLIANCE POLICY ENFORCEMENT
+======================================================================
+
+Determine which policies are:
+
+- hard constraints
+- configurable
+- advisory.
+
+======================================================================
+144. COMPLIANCE + COST
+======================================================================
+
+Using 20:
+
+calculate the cost of:
+
+- evidence storage
+- audit storage
+- compliance tooling
+- encryption
+- regional isolation
+- retention
+- monitoring
+- external audits.
+
+======================================================================
+145. COMPLIANCE + CAPACITY
+======================================================================
+
+Using 21:
+
+compliance logging and evidence may create additional:
+
+- storage
+- compute
+- network
+- indexing.
+
+Model it.
+
+======================================================================
+146. COMPLIANCE + NETWORKING
+======================================================================
+
+Using 22:
+
+ensure:
+
+- regional routing
+- egress
+- third-party connectivity
+
+do not silently violate data policies.
+
+======================================================================
+147. COMPLIANCE + STORAGE
+======================================================================
+
+Using 23:
+
+define:
+
+- residency
+- retention
+- deletion
+- immutability
+- encryption.
+
+======================================================================
+148. COMPLIANCE + DR
+======================================================================
+
+Using 24:
+
+ensure recovery does not violate:
+
+- residency
+- retention
+- deletion
+- tenant isolation.
+
+======================================================================
+149. COMPLIANCE + SUPPLY CHAIN
+======================================================================
+
+Using 25:
+
+ensure:
+
+- third-party dependencies
+- models
+- tools
+- MCP servers
+
+have appropriate governance.
+
+======================================================================
+150. COMPLIANCE ARCHITECTURE OPTIONS
+======================================================================
+
+Construct realistic alternatives.
+
+At minimum evaluate:
+
+OPTION A
+--------
+Manual compliance processes + technical controls.
+
+OPTION B
+--------
+Centralized compliance control plane.
+
+OPTION C
+--------
+Policy-as-code + continuous compliance monitoring.
+
+OPTION D
+--------
+Common control framework + automated evidence.
+
+OPTION E
+--------
+Hybrid architecture:
+central governance + decentralized technical enforcement.
+
+These are candidates only.
+
+Determine which architecture actually fits the platform.
+
+======================================================================
+151. ARCHITECTURE SELECTION MATRIX
+======================================================================
+
+Compare:
+
+| Criterion |
+| Regulatory coverage |
+| Privacy |
+| Data residency |
+| Auditability |
+| Evidence automation |
+| Tenant isolation |
+| AI governance |
+| Security |
+| Operational complexity |
+| Cost |
+| Customer configurability |
+| Future regulatory change |
+| Day-1 practicality |
+| Enterprise scalability |
+| Recommendation |
+
+======================================================================
+152. WHY NOT ANALYSIS
+======================================================================
+
+For the preferred architecture answer:
+
+WHY THIS?
+
+WHY NOT MANUAL COMPLIANCE?
+
+WHY NOT ONE GLOBAL POLICY?
+
+WHY NOT CUSTOMER-SPECIFIC CODE FOR EVERY TENANT?
+
+WHY NOT CENTRALIZE EVERYTHING?
+
+WHY NOT DECENTRALIZE EVERYTHING?
+
+WHY NOT POLICY-AS-CODE EVERYWHERE?
+
+WHY NOT HUMAN REVIEW EVERYWHERE?
+
+WHY NOT AUTOMATE EVERYTHING?
+
+WHY NOT ONE RETENTION PERIOD?
+
+WHY NOT STORE EVERYTHING FOR AUDIT?
+
+WHY NOT DELETE EVERYTHING IMMEDIATELY?
+
+WHY NOT USE ONE GLOBAL REGION?
+
+WHY NOT MULTI-REGION FOR EVERYTHING?
+
+WHY NOT MULTI-CLOUD FOR COMPLIANCE?
+
+WHY NOT TRUST CLOUD PROVIDER CERTIFICATIONS?
+
+WHY NOT TRUST THIRD-PARTY CERTIFICATIONS?
+
+WHY NOT USE ONE FRAMEWORK?
+
+WHY NOT CERTIFY THE ENTIRE PLATFORM?
+
+WHY NOT CREATE SEPARATE COMPLIANCE SYSTEMS PER REGULATION?
+
+Only retain alternatives that remain technically relevant after
+research.
+
+======================================================================
+153. REVERSIBILITY ANALYSIS
+======================================================================
+
+Classify:
+
+- policy engine
+- evidence store
+- control framework
+- compliance data model
+- data classification system
+- retention engine
+- residency enforcement
+- compliance monitoring
+- evidence export
+
+as:
+
+- easily reversible
+- moderately reversible
+- expensive to reverse
+- effectively irreversible.
+
+======================================================================
+154. DAY-1 REQUIREMENTS
+======================================================================
+
+Define minimum Day-1 foundations.
+
+Potential:
+
+- tenant identity
+- data ownership
+- data classification hooks
+- audit events
+- retention metadata
+- deletion architecture
+- access controls
+- encryption
+- deployment traceability
+- artifact provenance.
+
+These are candidates only.
+
+Determine actual requirements.
+
+======================================================================
+155. DAY-1 NON-REQUIREMENTS
+======================================================================
+
+Explicitly identify enterprise compliance machinery that should NOT be
+built on Day 1 unless justified.
+
+======================================================================
+156. FUTURE TRIGGERS
+======================================================================
+
+Define objective triggers for activating enterprise compliance
+architecture.
+
+Potential:
+
+- enterprise customer requirements
+- regulated customers
+- jurisdiction expansion
+- AI use-case classification
+- contractual requirements
+- certification goals
+- scale
+- third-party ecosystem expansion.
+
+Do not invent arbitrary thresholds.
+
+======================================================================
+157. STABLE COMPLIANCE CONTRACTS
+======================================================================
+
+Define stable internal contracts such as:
+
+DataClassification
+DataProcessingPurpose
+RetentionPolicy
+DeletionRequest
+LegalHold
+ResidencyPolicy
+ProcessingRecord
+ConsentRecord
+AccessReview
+ComplianceControl
+ControlEvidence
+ControlTest
+ComplianceException
+RiskAcceptance
+AuditFinding
+RegulatoryRequirement
+ComplianceAssessment.
+
+These are examples only.
+
+Determine the minimum required set.
+
+Contracts must remain independent of:
+
+- a specific GRC platform
+- a specific SIEM
+- a specific cloud
+- a specific certification provider.
+
+======================================================================
+158. REQUIRED DIAGRAMS
+======================================================================
+
+Include Mermaid diagrams for:
+
+1. Complete compliance architecture
+2. Compliance boundary
+3. Shared responsibility
+4. Data classification
+5. Data lifecycle
+6. Data flow
+7. Cross-border data flow
+8. Tenant compliance architecture
+9. Retention architecture
+10. Deletion propagation
+11. Legal hold
+12. Identity/access governance
+13. Compliance control model
+14. Evidence architecture
+15. Continuous compliance monitoring
+16. Policy-as-code
+17. AI governance
+18. Model governance
+19. Third-party/subprocessor governance
+20. Compliance incident response
+21. Compliance + DR
+22. Compliance + supply chain
+23. Day-1 → Enterprise evolution.
+
+======================================================================
+159. ADR CANDIDATES
+======================================================================
+
+Identify ADRs for:
+
+- regulatory scope
+- data classification
+- data residency
+- retention
+- deletion
+- legal hold
+- evidence architecture
+- compliance monitoring
+- policy-as-code
+- tenant-specific controls
+- AI governance
+- third-party governance
+- audit access
+- compliance exceptions
+- customer evidence.
+
+For each:
+
+- problem
+- alternatives
+- recommendation
+- consequences
+- reversibility
+- decision deadline.
+
+======================================================================
+160. COMPLIANCE READINESS MATRIX
+======================================================================
+
+Create:
+
+| Capability | Day 1 | Prepare | Enterprise | Verified |
+
+Cover:
+
+- data classification
+- privacy
+- residency
+- retention
+- deletion
+- legal hold
+- identity
+- privileged access
+- audit
+- evidence
+- control testing
+- continuous monitoring
+- AI governance
+- model governance
+- third-party governance
+- incident response
+- DR compliance
+- supply-chain compliance
+- customer audit support.
+
+======================================================================
+161. CONTROL MATRIX
+======================================================================
+
+Create:
+
+| Requirement | Applicability | Control | Owner | Evidence | Test | Status |
+
+Do not mark:
+
+IMPLEMENTED
+
+unless the source architecture actually demonstrates implementation.
+
+======================================================================
+162. DATA GOVERNANCE MATRIX
+======================================================================
+
+Create:
+
+| Data Class | Purpose | Location | Retention | Access | Deletion | Evidence |
+
+======================================================================
+163. THIRD-PARTY COMPLIANCE MATRIX
+======================================================================
+
+Create:
+
+| Provider | Function | Data | Region | Contract | Security Evidence | Compliance Risk |
+
+======================================================================
+164. ATTEMPT TO FALSIFY THE RECOMMENDATION
+======================================================================
+
+Try to prove the selected compliance architecture wrong.
+
+Ask:
+
+- What if a tenant requires a country-specific region?
+- What if a customer requires customer-managed keys?
+- What if a user requests deletion?
+- What if the data exists in backups?
+- What if the data exists in model prompts?
+- What if the data exists in logs?
+- What if the data exists in embeddings?
+- What if the data was sent to an external model provider?
+- What if a tool copied the data externally?
+- What if an MCP server retained the data?
+- What if a subprocessor changes?
+- What if a cloud provider changes region availability?
+- What if a regulation changes?
+- What if a compliance control fails?
+- What if evidence is missing?
+- What if the audit system is unavailable?
+- What if the identity system is unavailable?
+- What if a privileged administrator abuses access?
+- What if a tenant's compliance policy conflicts with platform policy?
+- What if DR recovery moves data into an unauthorized jurisdiction?
+- What if an artifact used in production is later found to be
+  non-compliant?
+- What if a model changes behavior after an update?
+- What if the platform cannot prove what happened six months ago?
+
+Determine the first condition that breaks the architecture.
+
+Classify the result:
+
+- acceptable
+- mitigable
+- architecture-changing.
+
+======================================================================
+165. ARCHITECTURAL SELF-CRITIQUE
+======================================================================
+
+Before finalizing, ask:
+
+1. Did I determine applicability rather than assume it?
+2. Did I distinguish law from framework?
+3. Did I distinguish compliance from certification?
+4. Did I map data flows?
+5. Did I classify data?
+6. Did I define residency?
+7. Did I define retention?
+8. Did I define deletion?
+9. Did I address backups?
+10. Did I address DR?
+11. Did I address external model providers?
+12. Did I address tools?
+13. Did I address MCP?
+14. Did I address tenant-specific requirements?
+15. Did I address AI governance?
+16. Did I address supply chain?
+17. Did I define evidence?
+18. Did I define continuous monitoring?
+19. Did I define control testing?
+20. Did I define exceptions?
+21. Did I define shared responsibility?
+22. Did I avoid false compliance claims?
+23. Did I avoid over-engineering Day 1?
+24. Did I preserve future evolution?
+25. What legal assumptions require counsel?
+26. What architectural assumptions could invalidate the design?
+
+Include:
+
+# ARCHITECTURAL SELF-CRITIQUE
+
+======================================================================
+166. FINAL RECOMMENDATION
+======================================================================
+
+End with:
+
+# FINAL ENTERPRISE COMPLIANCE ARCHITECTURE RECOMMENDATION
+
+Answer:
+
+"What Compliance Architecture should this platform actually adopt?"
+
+Be concrete.
+
+Describe:
+
+- compliance boundary
+- regulatory applicability
+- data classification
+- data residency
+- data sovereignty
+- data flows
+- privacy
+- retention
+- deletion
+- legal hold
+- identity
+- access governance
+- audit
+- evidence
+- continuous controls monitoring
+- compliance-as-code
+- tenant-specific compliance
+- AI governance
+- model governance
+- tool/MCP governance
+- third-party governance
+- supply-chain compliance
+- DR compliance
+- incident/breach support
+- audit support
+- Day-1 foundation
+- enterprise evolution.
+
+Then explicitly answer:
+
+"WHAT MUST EXIST ON DAY 1?"
+
+Then:
+
+"WHAT MUST NOT BE BUILT ON DAY 1?"
+
+Then:
+
+"WHAT OBJECTIVE CONDITIONS SHOULD TRIGGER ENTERPRISE COMPLIANCE
+ACTIVATION?"
+
+Then:
+
+"WHICH REQUIREMENTS REQUIRE LEGAL VALIDATION BEFORE IMPLEMENTATION?"
+
+======================================================================
+167. REQUIRED OUTPUT
+======================================================================
+
+Produce:
+
+26_ENTERPRISE_COMPLIANCE_ARCHITECTURE.md
+
+The document MUST explicitly reference:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_ARCHITECTURE.md
+04_AGENT_RUNTIME.md
+05_MODEL_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+08_KNOWLEDGE_DATA_ARCHITECTURE.md
+09_MEMORY_ARCHITECTURE.md
+10_SECURITY_ARCHITECTURE.md
+11_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+12_TRUST_PROVENANCE_ARCHITECTURE.md
+13_RELIABILITY_ARCHITECTURE.md
+14_CONCURRENCY_ARCHITECTURE.md
+15_OBSERVABILITY_ARCHITECTURE.md
+16_AUDIT_ARCHITECTURE.md
+17_EVALUATION_ARCHITECTURE.md
+18_DEPLOYMENT_LIFECYCLE_ARCHITECTURE.md
+19_MULTI_TENANCY_ARCHITECTURE.md
+20_COST_ARCHITECTURE.md
+21_CAPACITY_PLANNING_ARCHITECTURE.md
+22_NETWORKING_ARCHITECTURE.md
+23_STORAGE_ARCHITECTURE.md
+24_DR_ENTERPRISE_ARCHITECTURE.md
+25_ADVANCED_SUPPLY_CHAIN_ARCHITECTURE.md
+
+Also identify future interactions with:
+
+27_MULTI_MODEL_FALLBACK_ARCHITECTURE.md
+28_HUMAN_IN_THE_LOOP_ARCHITECTURE.md
+29_REPLAY_ARCHITECTURE.md
+30_OFFLINE_MOBILE_ARCHITECTURE.md
+31_A2A_ARCHITECTURE.md
+32_ADMIN_CONSOLE_ARCHITECTURE.md
+33_ADR_ARCHITECTURE.md
+34_QUALITY_MODEL_ARCHITECTURE.md
+
+If documents do not exist:
+
+DO NOT invent their contents.
+
+Define only:
+
+- dependency
+- stable interface
+- unresolved assumption.
+
+======================================================================
+168. SOURCE REQUIREMENTS
+======================================================================
+
+THIS SECTION IS MANDATORY.
+
+Use current web research.
+
+Prioritize primary and authoritative sources.
+
+At minimum evaluate, where applicable:
+
+- official EU legal/regulatory sources
+- European Commission
+- European Data Protection Board
+- relevant national data protection authorities
+- NIST
+- ISO official material where accessible
+- official certification/framework documentation
+- official cloud provider compliance documentation
+- official model-provider documentation
+- official security standards.
+
+For each regulation or framework:
+
+identify:
+
+- official source
+- version/date
+- applicability conditions
+- relevant requirements.
+
+Do not rely on:
+
+blogs
+
+marketing pages
+
+SEO summaries
+
+third-party "compliance checklists"
+
+as the primary source for legal requirements.
+
+======================================================================
+169. LEGAL DISCLAIMER DISCIPLINE
+======================================================================
+
+Do not present architectural analysis as legal advice.
+
+Where interpretation depends on:
+
+- jurisdiction
+- contractual role
+- processing activity
+- customer category
+- legal facts
+
+state:
+
+LEGAL VALIDATION REQUIRED.
+
+Do not use uncertainty as an excuse to avoid architectural analysis.
+
+Instead:
+
+identify exactly what fact must be resolved.
+
+======================================================================
+170. REGULATORY VERSION DISCIPLINE
+======================================================================
+
+At the beginning state:
+
+RESEARCH DATE
+
+and:
+
+REGULATORY / FRAMEWORK VERSIONS
+
+used in the analysis.
+
+Regulatory requirements change.
+
+Do not use outdated requirements without clearly identifying them.
+
+======================================================================
+171. CONTROL CLAIM DISCIPLINE
+======================================================================
+
+Never write:
+
+"Encryption solves compliance."
+
+Instead explain:
+
+WHICH REQUIREMENT
+
+the encryption control supports,
+
+WHAT IT DOES NOT COVER,
+
+and:
+
+WHAT ADDITIONAL CONTROLS
+
+are necessary.
+
+The same applies to:
+
+- audit logs
+- MFA
+- SBOM
+- signatures
+- access control
+- retention
+- data residency
+- certifications.
+
+======================================================================
+172. ABSOLUTE FINAL INSTRUCTION
+======================================================================
+
+Act as an INDEPENDENT Principal Enterprise Compliance Architect.
+
+Your responsibility is to determine the best Compliance Architecture
+for THIS platform.
+
+Do not assume:
+
+GDPR APPLIES AUTOMATICALLY.
+
+Do not assume:
+
+EU AI ACT APPLIES AUTOMATICALLY.
+
+Do not assume:
+
+SOC 2 IS A LAW.
+
+Do not assume:
+
+ISO 27001 IS A LAW.
+
+Do not assume:
+
+CERTIFICATION = COMPLIANCE.
+
+Do not assume:
+
+COMPLIANCE = SECURITY.
+
+Do not assume:
+
+SECURITY = PRIVACY.
+
+Do not assume:
+
+AUDIT LOGS = COMPLETE EVIDENCE.
+
+Do not assume:
+
+RETENTION = COMPLIANCE.
+
+Do not assume:
+
+DELETION = PRIMARY DATABASE DELETION.
+
+Do not assume:
+
+DATA RESIDENCY = DATA SOVEREIGNTY.
+
+Do not assume:
+
+ANONYMIZATION = REMOVING A USER ID.
+
+Do not assume:
+
+PSEUDONYMIZATION = ANONYMIZATION.
+
+Do not assume:
+
+CUSTOMER DATA = TRAINING DATA.
+
+Do not assume:
+
+MODEL PROVIDER = TRUSTED PROCESSOR.
+
+Do not assume:
+
+TOOL = TRUSTED PROCESSOR.
+
+Do not assume:
+
+MCP SERVER = TRUSTED PROCESSOR.
+
+Do not assume:
+
+CLOUD CERTIFICATION = PLATFORM CERTIFICATION.
+
+Do not assume:
+
+SUBPROCESSOR CERTIFICATION = PLATFORM COMPLIANCE.
+
+Do not assume:
+
+BACKUP LOCATION = COMPLIANT LOCATION.
+
+Do not assume:
+
+DR LOCATION = COMPLIANT LOCATION.
+
+Do not assume:
+
+ONE POLICY FITS ALL TENANTS.
+
+Do not assume:
+
+ONE RETENTION PERIOD FITS ALL DATA.
+
+Do not assume:
+
+ONE REGULATORY FRAMEWORK COVERS EVERYTHING.
+
+Do not assume:
+
+AUTOMATION ELIMINATES HUMAN GOVERNANCE.
+
+Do not assume:
+
+HUMAN GOVERNANCE ELIMINATES TECHNICAL CONTROLS.
+
+Do not allow:
+
+UNCLASSIFIED DATA
+
+to silently enter:
+
+HIGH-SENSITIVITY PROCESSING.
+
+Do not allow:
+
+CUSTOMER DATA
+
+to silently become:
+
+TRAINING DATA.
+
+Do not allow:
+
+DELETION REQUESTS
+
+to silently leave:
+
+BACKUPS / REPLICAS / DERIVED DATA.
+
+Do not allow:
+
+DATA
+
+to silently cross:
+
+UNAUTHORIZED JURISDICTIONS.
+
+Do not allow:
+
+TENANT POLICY
+
+to silently override:
+
+PLATFORM SAFETY CONTROLS.
+
+Do not allow:
+
+COMPLIANCE EVIDENCE
+
+to become:
+
+A SECONDARY SOURCE OF DATA LEAKAGE.
+
+Do not allow:
+
+AUDITOR ACCESS
+
+to become:
+
+UNCONTROLLED PRODUCTION ACCESS.
+
+Do not allow:
+
+COMPLIANCE CONTROLS
+
+to become:
+
+UNNECESSARY SINGLE POINTS OF FAILURE.
+
+Do not allow:
+
+DAY-1 ARCHITECTURE
+
+to create:
+
+UNNECESSARY COMPLIANCE LOCK-IN.
+
+Optimize for:
+
+REGULATORY APPLICABILITY
++
+DATA GOVERNANCE
++
+PRIVACY
++
+SECURITY
++
+TENANT ISOLATION
++
+AUDITABILITY
++
+EVIDENCE QUALITY
++
+AUTOMATION
++
+CONTROL EFFECTIVENESS
++
+OPERATIONAL SIMPLICITY
++
+COST EFFICIENCY
++
+FUTURE REGULATORY EVOLUTION.
+
+The final architecture MUST result from:
+
+    BUSINESS MODEL
+       ↓
+    PRODUCT SCOPE
+       ↓
+    DATA FLOWS
+       ↓
+    DATA CLASSIFICATION
+       ↓
+    JURISDICTION
+       ↓
+    TENANT MODEL
+       ↓
+    PROCESSING ACTIVITIES
+       ↓
+    REGULATORY APPLICABILITY
+       ↓
+    CONTROL OBJECTIVES
+       ↓
+    TECHNICAL CONTROLS
+       ↓
+    ORGANIZATIONAL CONTROLS
+       ↓
+    EVIDENCE
+       ↓
+    CONTINUOUS MONITORING
+       ↓
+    CONTROL TESTING
+       ↓
+    EXCEPTIONS
+       ↓
+    INCIDENT / BREACH
+       ↓
+    DR / RECOVERY
+       ↓
+    SUPPLY CHAIN
+       ↓
+    COST / COMPLEXITY
+       ↓
+    ALTERNATIVE COMPARISON
+       ↓
+    ADVERSARIAL ANALYSIS
+       ↓
+    FALSIFICATION
+       ↓
+    FINAL DECISION.
+
+DO NOT CHOOSE THE REGULATION FIRST.
+
+DO NOT CHOOSE THE CERTIFICATION FIRST.
+
+DO NOT CHOOSE THE GRC PLATFORM FIRST.
+
+DO NOT CHOOSE THE POLICY ENGINE FIRST.
+
+DO NOT CHOOSE THE EVIDENCE SYSTEM FIRST.
+
+DO NOT CHOOSE A COMPLIANCE VENDOR FIRST.
+
+UNDERSTAND THE BUSINESS MODEL FIRST.
+
+UNDERSTAND THE DATA FIRST.
+
+UNDERSTAND THE DATA FLOWS FIRST.
+
+UNDERSTAND THE JURISDICTIONS FIRST.
+
+UNDERSTAND THE TENANT MODEL FIRST.
+
+UNDERSTAND THE PROCESSING ACTIVITIES FIRST.
+
+THEN DETERMINE WHICH REQUIREMENTS APPLY.
+
+THEN MAP REQUIREMENTS TO CONTROL OBJECTIVES.
+
+THEN MAP CONTROLS TO ACTUAL ARCHITECTURE.
+
+THEN DEFINE EVIDENCE.
+
+THEN DEFINE CONTINUOUS VERIFICATION.
+
+THEN COMPARE ALTERNATIVE ARCHITECTURES.
+
+THEN ATTEMPT TO DISPROVE THE PREFERRED ARCHITECTURE.
+
+THEN SELECT THE BEST COMPLIANCE ARCHITECTURE AVAILABLE FOR THIS
+PROJECT.
+
+THEN DEFINE WHAT MUST EXIST ON DAY 1.
+
+THEN DEFINE WHAT CAN WAIT.
+
+THEN DESIGN THE ENTERPRISE COMPLIANCE ARCHITECTURE.

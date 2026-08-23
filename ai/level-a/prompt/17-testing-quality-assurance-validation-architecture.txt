@@ -1,0 +1,2085 @@
+# 17 — TESTING, QUALITY ASSURANCE & VALIDATION ARCHITECTURE
+## Enterprise AI Agent Platform
+
+======================================================================
+ROLE
+======================================================================
+
+Act as the Principal Test Architect, Quality Engineering Architect,
+AI Evaluation Architect, Reliability Engineer and Software Validation
+Architect responsible for designing the complete Testing, Quality
+Assurance and Validation Architecture of an enterprise-grade AI agent
+platform.
+
+You have deep expertise in:
+
+- software testing
+- test architecture
+- quality engineering
+- unit testing
+- integration testing
+- contract testing
+- end-to-end testing
+- system testing
+- acceptance testing
+- regression testing
+- property-based testing
+- fuzz testing
+- mutation testing
+- performance testing
+- load testing
+- stress testing
+- chaos testing
+- security testing
+- AI evaluation
+- LLM evaluation
+- agent evaluation
+- retrieval evaluation
+- tool-use evaluation
+- workflow validation
+- distributed systems testing
+- infrastructure testing
+- database testing
+- API testing
+- model testing
+- prompt testing
+- red teaming
+- release validation
+- production validation
+
+You are working within:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_PLANE.md
+04_AGENT_RUNTIME.md
+05_MODEL_INFERENCE_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+07_KNOWLEDGE_DATA_ARCHITECTURE.md
+08_MEMORY_ARCHITECTURE.md
+09_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+10_AGENT_COMMUNICATION_MULTI_AGENT_ARCHITECTURE.md
+11_EVENTING_WORKFLOW_DURABLE_EXECUTION_ARCHITECTURE.md
+12_OBSERVABILITY_EVALUATION_RELIABILITY_ARCHITECTURE.md
+13_SECURITY_ARCHITECTURE.md
+14_DATA_GOVERNANCE_PRIVACY_COMPLIANCE_ARCHITECTURE.md
+15_DEPLOYMENT_INFRASTRUCTURE_RUNTIME_PLATFORM_ARCHITECTURE.md
+16_CICD_RELEASE_SUPPLY_CHAIN_ARCHITECTURE.md
+
+These documents provide the current architectural context.
+
+However:
+
+THEY ARE NOT IMMUNE FROM CHALLENGE.
+
+If research demonstrates that an assumption is technically incorrect,
+incomplete, obsolete or insufficient for reliable validation, explicitly
+identify the conflict and recommend the superior architecture.
+
+======================================================================
+1. PRIMARY OBJECTIVE
+======================================================================
+
+Design the complete Testing, Quality Assurance and Validation
+Architecture.
+
+The architecture must answer:
+
+HOW DO WE KNOW THE SYSTEM WORKS?
+
+HOW DO WE KNOW IT STILL WORKS AFTER A CHANGE?
+
+HOW DO WE KNOW AN AGENT MADE THE CORRECT DECISION?
+
+HOW DO WE KNOW A TOOL WAS USED CORRECTLY?
+
+HOW DO WE KNOW RETRIEVAL IS CORRECT?
+
+HOW DO WE KNOW MEMORY IS CORRECT?
+
+HOW DO WE KNOW AUTHORIZATION IS CORRECT?
+
+HOW DO WE KNOW WORKFLOWS ARE CORRECT?
+
+HOW DO WE KNOW MULTI-AGENT COMMUNICATION IS CORRECT?
+
+HOW DO WE KNOW SECURITY CONTROLS WORK?
+
+HOW DO WE KNOW PERFORMANCE IS ACCEPTABLE?
+
+HOW DO WE KNOW A NEW MODEL DID NOT REGRESS QUALITY?
+
+HOW DO WE KNOW A NEW PROMPT DID NOT BREAK BEHAVIOR?
+
+HOW DO WE KNOW A DATABASE MIGRATION DID NOT BREAK RUNNING WORKFLOWS?
+
+HOW DO WE KNOW THE DEPLOYMENT IS HEALTHY?
+
+HOW DO WE KNOW THE PRODUCTION SYSTEM IS STILL CORRECT?
+
+======================================================================
+2. MOST IMPORTANT INSTRUCTION
+## RESEARCH FIRST — SELECT ARCHITECTURE SECOND
+======================================================================
+
+DO NOT begin by selecting:
+
+- pytest
+- Playwright
+- Cypress
+- JUnit
+- Jest
+- k6
+- Locust
+- a specific AI evaluation framework
+- a specific LLM judge
+- a testing SaaS platform
+
+as the architecture.
+
+Research first.
+
+Research current approaches to:
+
+- test pyramids
+- testing in distributed systems
+- contract testing
+- property-based testing
+- mutation testing
+- integration testing
+- end-to-end testing
+- AI evaluation
+- agent evaluation
+- retrieval evaluation
+- LLM-as-a-judge
+- human evaluation
+- security testing
+- performance testing
+- chaos engineering
+- production validation
+- continuous testing
+- release gates
+
+Prioritize:
+
+- official documentation
+- standards
+- academic research
+- authoritative engineering literature
+- current framework documentation.
+
+Then identify meaningful architectural alternatives.
+
+Then compare them.
+
+Then select the architecture best suited to THIS project.
+
+Then attempt to falsify the decision.
+
+Required process:
+
+    RESEARCH
+       ↓
+    TEST REQUIREMENTS
+       ↓
+    QUALITY MODEL
+       ↓
+    TEST LEVELS
+       ↓
+    TEST DATA ARCHITECTURE
+       ↓
+    EVALUATION ARCHITECTURE
+       ↓
+    AUTOMATION ARCHITECTURE
+       ↓
+    SECURITY / RELIABILITY ANALYSIS
+       ↓
+    ADVERSARIAL CHALLENGE
+       ↓
+    FINAL DECISION
+       ↓
+    DAY-1 IMPLEMENTATION
+       ↓
+    FUTURE EVOLUTION
+
+CLAUDE MUST DETERMINE THE BEST TESTING AND VALIDATION ARCHITECTURE
+AVAILABLE FOR THIS PROJECT.
+
+======================================================================
+3. CENTRAL PRINCIPLE
+======================================================================
+
+A test suite is NOT:
+
+"all the tests we can write."
+
+A good test architecture maximizes:
+
+DEFECT DETECTION
++
+SIGNAL QUALITY
++
+MAINTAINABILITY
++
+SPEED
++
+REPRODUCIBILITY
++
+COVERAGE OF REAL FAILURE MODES
+
+while minimizing:
+
+FLAKINESS
++
+DUPLICATION
++
+COST
++
+FALSE CONFIDENCE.
+
+======================================================================
+4. CRITICAL DISTINCTION
+======================================================================
+
+Explicitly distinguish:
+
+UNIT TEST
+
+INTEGRATION TEST
+
+CONTRACT TEST
+
+COMPONENT TEST
+
+SYSTEM TEST
+
+END-TO-END TEST
+
+ACCEPTANCE TEST
+
+REGRESSION TEST
+
+SECURITY TEST
+
+PERFORMANCE TEST
+
+AI EVALUATION
+
+HUMAN EVALUATION
+
+CHAOS TEST
+
+PRODUCTION VALIDATION.
+
+Do not collapse these into "automated tests."
+
+======================================================================
+5. DAY-1 CONSTRAINTS
+======================================================================
+
+Day 1:
+
+- one machine
+- one GPU if available
+- Qwen3.5 9B
+- PostgreSQL
+- local/containerized deployment
+- small engineering team.
+
+The testing architecture must be practical for a small team.
+
+Do NOT create:
+
+- a giant dedicated test platform
+- dozens of testing environments
+- a separate evaluation cluster
+- complex test orchestration
+
+unless research demonstrates a real requirement.
+
+======================================================================
+6. DAY-1 QUALITY REQUIREMENT
+======================================================================
+
+Simple does NOT mean:
+
+- manually tested only
+- no regression suite
+- no security testing
+- no integration testing
+- no reproducibility
+- no performance baseline.
+
+Day 1 should have a minimum reliable test pyramid.
+
+======================================================================
+7. FUTURE REQUIREMENTS
+======================================================================
+
+Future requirements may include:
+
+- many engineers
+- many agents
+- many tools
+- many models
+- many tenants
+- distributed deployment
+- enterprise integrations
+- regulated workloads
+- high release frequency
+- continuous evaluation.
+
+Determine:
+
+DAY 1
+PREPARE
+SCALE
+ENTERPRISE
+
+======================================================================
+8. QUALITY MODEL
+======================================================================
+
+Define what "quality" means.
+
+At minimum consider:
+
+CORRECTNESS
+
+RELIABILITY
+
+SECURITY
+
+PERFORMANCE
+
+DATA QUALITY
+
+AI QUALITY
+
+USABILITY
+
+OPERABILITY
+
+COMPATIBILITY
+
+COMPLIANCE.
+
+Do not assume all dimensions are equally measurable.
+
+======================================================================
+9. TEST PYRAMID
+======================================================================
+
+Research whether the classic test pyramid is sufficient.
+
+Evaluate:
+
+- unit tests
+- component tests
+- integration tests
+- contract tests
+- system tests
+- end-to-end tests
+- AI evaluations.
+
+Determine the appropriate distribution.
+
+======================================================================
+10. UNIT TESTING
+======================================================================
+
+Define unit-testing boundaries.
+
+Potential targets:
+
+- parsers
+- validators
+- policy logic
+- authorization logic
+- workflow state transitions
+- data transformations
+- retry logic
+- budgeting
+- scheduling.
+
+Do not unit-test framework behavior unnecessarily.
+
+======================================================================
+11. COMPONENT TESTING
+======================================================================
+
+Test components in realistic isolation.
+
+Potential:
+
+- Agent Runtime
+- Tool Runtime
+- Model adapter
+- Retrieval service
+- Memory service
+- Workflow engine
+- Policy engine.
+
+Determine the correct boundaries.
+
+======================================================================
+12. INTEGRATION TESTING
+======================================================================
+
+Test real interactions:
+
+- PostgreSQL
+- model runtime
+- retrieval
+- memory
+- tools
+- workflow
+- identity
+- authorization.
+
+Prefer realistic dependencies where behavior matters.
+
+======================================================================
+13. CONTRACT TESTING
+======================================================================
+
+This is CRITICAL.
+
+Define contracts for:
+
+- API
+- tool schemas
+- agent messages
+- workflow events
+- model adapters
+- retrieval interfaces
+- memory interfaces
+- authorization decisions
+- event schemas.
+
+Determine which contracts require automated tests.
+
+======================================================================
+14. SCHEMA TESTING
+======================================================================
+
+Validate:
+
+- request schemas
+- response schemas
+- tool schemas
+- event schemas
+- workflow state
+- database schemas.
+
+Determine compatibility rules.
+
+======================================================================
+15. BACKWARD COMPATIBILITY
+======================================================================
+
+Determine which interfaces require:
+
+- backward compatibility
+- forward compatibility
+- versioning.
+
+Especially analyze:
+
+- workflows
+- events
+- tools
+- agents
+- database schema.
+
+======================================================================
+16. API TESTING
+======================================================================
+
+Test:
+
+- authentication
+- authorization
+- validation
+- errors
+- rate limiting
+- idempotency
+- pagination
+- concurrency.
+
+Do not rely solely on happy-path API tests.
+
+======================================================================
+17. NEGATIVE TESTING
+======================================================================
+
+For every important API/tool define:
+
+- invalid input
+- missing fields
+- extra fields
+- wrong types
+- unauthorized request
+- expired credential
+- forbidden action
+- oversized request.
+
+======================================================================
+18. PROPERTY-BASED TESTING
+======================================================================
+
+Research where property-based testing is useful.
+
+Potential:
+
+- parsers
+- state machines
+- authorization
+- serialization
+- workflow transitions
+- scheduling
+- retry behavior.
+
+Do not apply it where examples provide better signal.
+
+======================================================================
+19. FUZZ TESTING
+======================================================================
+
+Evaluate fuzzing for:
+
+- APIs
+- parsers
+- file processing
+- schemas
+- tool arguments
+- event payloads.
+
+======================================================================
+20. MUTATION TESTING
+======================================================================
+
+Evaluate whether mutation testing is useful for critical logic.
+
+Potential:
+
+- authorization
+- policy
+- workflow state
+- financial calculations
+- security boundaries.
+
+Do not run expensive mutation testing everywhere.
+
+======================================================================
+21. AGENT TESTING
+======================================================================
+
+This is CRITICAL.
+
+An agent cannot be tested only through exact output matching.
+
+Define tests for:
+
+- task completion
+- correct tool selection
+- correct arguments
+- policy compliance
+- refusal
+- recovery
+- loops
+- unnecessary actions
+- hallucinations
+- escalation.
+
+======================================================================
+22. AGENT TEST TYPES
+======================================================================
+
+Define:
+
+DETERMINISTIC AGENT TESTS
+
+BEHAVIORAL TESTS
+
+ADVERSARIAL TESTS
+
+EVALUATION DATASETS
+
+HUMAN REVIEW.
+
+Determine the appropriate combination.
+
+======================================================================
+23. MODEL-IN-THE-LOOP TESTING
+======================================================================
+
+Determine when tests should use:
+
+- real model
+- mocked model
+- deterministic fake
+- smaller test model.
+
+Avoid making every unit test depend on GPU inference.
+
+======================================================================
+24. MODEL MOCKING
+======================================================================
+
+Define when a model should be mocked.
+
+Use mocks for:
+
+- infrastructure behavior
+- retry logic
+- parsing
+- error handling.
+
+Use real models for:
+
+- model behavior
+- prompt behavior
+- tool selection
+- reasoning-dependent behavior.
+
+======================================================================
+25. MODEL REGRESSION TESTING
+======================================================================
+
+Every model change should be evaluated against:
+
+- golden dataset
+- safety dataset
+- tool-use dataset
+- retrieval dataset
+- end-to-end dataset.
+
+Using 12 define evaluation integration.
+
+======================================================================
+26. PROMPT TESTING
+======================================================================
+
+Prompts are production behavior.
+
+Test:
+
+- instruction following
+- structured outputs
+- refusals
+- tool selection
+- edge cases
+- adversarial inputs.
+
+Prompt changes must be regression-tested.
+
+======================================================================
+27. AGENT CONFIGURATION TESTING
+======================================================================
+
+Test changes to:
+
+- tools
+- policies
+- memory
+- retrieval
+- system instructions
+- budgets
+- limits.
+
+======================================================================
+28. TOOL TESTING
+======================================================================
+
+Using 06 define:
+
+- unit tests
+- schema tests
+- authorization tests
+- integration tests
+- failure tests
+- adversarial tests.
+
+======================================================================
+29. TOOL CONTRACT TESTING
+======================================================================
+
+Validate:
+
+- input schema
+- output schema
+- error schema
+- authorization
+- timeout
+- idempotency.
+
+======================================================================
+30. TOOL FAILURE TESTING
+======================================================================
+
+Test:
+
+- timeout
+- rate limit
+- malformed response
+- unavailable service
+- partial response
+- authorization denial
+- duplicate invocation.
+
+======================================================================
+31. RETRIEVAL TESTING
+======================================================================
+
+Using 07 define:
+
+- retrieval correctness
+- relevance
+- recall
+- ranking
+- authorization filtering
+- freshness
+- citation.
+
+======================================================================
+32. RETRIEVAL REGRESSION
+======================================================================
+
+A change to:
+
+- embedding model
+- chunking
+- index
+- reranker
+- query strategy
+
+must be evaluated.
+
+======================================================================
+33. MEMORY TESTING
+======================================================================
+
+Using 08 define:
+
+- memory creation
+- retrieval
+- update
+- deletion
+- isolation
+- provenance
+- poisoning resistance.
+
+======================================================================
+34. MEMORY REGRESSION
+======================================================================
+
+Test:
+
+- stale memory
+- contradictory memory
+- malicious memory
+- unauthorized memory
+- cross-user memory.
+
+======================================================================
+35. AUTHORIZATION TESTING
+======================================================================
+
+Using 09 define a comprehensive matrix.
+
+For each:
+
+SUBJECT
+
+RESOURCE
+
+ACTION
+
+CONTEXT
+
+EXPECTED DECISION.
+
+Authorization tests must include negative cases.
+
+======================================================================
+36. TENANT ISOLATION TESTING
+======================================================================
+
+This is CRITICAL.
+
+Test:
+
+Tenant A
+attempts to access
+Tenant B.
+
+Across:
+
+- database
+- files
+- retrieval
+- memory
+- caches
+- telemetry
+- workflows
+- tools
+- exports.
+
+======================================================================
+37. SECURITY TESTING
+======================================================================
+
+Using 13 define:
+
+- prompt injection
+- indirect injection
+- tool poisoning
+- privilege escalation
+- SSRF
+- data exfiltration
+- malicious documents
+- malicious tools
+- malicious agents
+- supply-chain attacks.
+
+======================================================================
+38. RED TEAM TESTING
+======================================================================
+
+Define a repeatable AI red-team suite.
+
+Every discovered attack should become a regression case where possible.
+
+======================================================================
+39. WORKFLOW TESTING
+======================================================================
+
+Using 11 test:
+
+- state transitions
+- retries
+- timeouts
+- cancellation
+- approval
+- resumption
+- crash recovery
+- duplicate events
+- out-of-order events.
+
+======================================================================
+40. DURABILITY TESTING
+======================================================================
+
+Test:
+
+Process crashes
+ ↓
+Restart
+ ↓
+Workflow resumes correctly.
+
+Do not assume durable execution works merely because the code uses a
+database.
+
+======================================================================
+41. MULTI-AGENT TESTING
+======================================================================
+
+Using 10 test:
+
+- delegation
+- authentication
+- authorization
+- task propagation
+- failure
+- timeout
+- loops
+- malicious agent
+- incorrect agent selection.
+
+======================================================================
+42. EVENT TESTING
+======================================================================
+
+Using 11 test:
+
+- schema
+- ordering
+- duplication
+- replay
+- idempotency
+- loss
+- malformed payloads.
+
+======================================================================
+43. DATABASE TESTING
+======================================================================
+
+Test:
+
+- migrations
+- constraints
+- indexes
+- transactions
+- concurrency
+- rollback
+- backup/restore.
+
+======================================================================
+44. MIGRATION TESTING
+======================================================================
+
+Every schema migration must be tested against:
+
+- fresh database
+- existing database
+- representative data
+- running application.
+
+======================================================================
+45. BACKUP/RESTORE TESTING
+======================================================================
+
+Test that backups can actually restore:
+
+- PostgreSQL
+- documents
+- workflow state
+- critical configuration.
+
+======================================================================
+46. DATA GOVERNANCE TESTING
+======================================================================
+
+Using 14 test:
+
+- retention
+- deletion
+- export
+- correction
+- lineage
+- tenant isolation
+- external transfer restrictions.
+
+======================================================================
+47. DELETION TESTING
+======================================================================
+
+A deletion test should verify derived data.
+
+Example:
+
+Document deleted.
+
+Verify:
+
+- document removed
+- chunks handled
+- embeddings handled
+- caches handled
+- derived memory handled
+- retrieval no longer returns source.
+
+======================================================================
+48. OBSERVABILITY TESTING
+======================================================================
+
+Using 12 test:
+
+- trace propagation
+- log correlation
+- metrics
+- audit events
+- incident reconstruction.
+
+======================================================================
+49. RELEASE TESTING
+======================================================================
+
+Using 16 determine release validation.
+
+A release must be tested before production.
+
+======================================================================
+50. ENVIRONMENT PARITY
+======================================================================
+
+Determine what must remain consistent between:
+
+development
+test
+staging
+production.
+
+Do not require identical infrastructure if unnecessary.
+
+======================================================================
+51. TEST ENVIRONMENT ARCHITECTURE
+======================================================================
+
+Determine:
+
+- ephemeral environments
+- shared test environment
+- local environment
+- staging.
+
+Compare trade-offs.
+
+======================================================================
+52. TEST DATA ARCHITECTURE
+======================================================================
+
+Define:
+
+- synthetic data
+- fixtures
+- generated data
+- sanitized production data
+- evaluation datasets.
+
+Using 14 ensure privacy.
+
+======================================================================
+53. TEST DATA ISOLATION
+======================================================================
+
+Test data must not accidentally reach:
+
+- production
+- customer environments
+- telemetry
+- evaluation datasets.
+
+======================================================================
+54. GOLDEN DATASETS
+======================================================================
+
+Using 12 define versioning.
+
+Each case should have:
+
+- input
+- expected behavior
+- evaluation criteria
+- version
+- provenance.
+
+======================================================================
+55. EXPECTED OUTPUTS
+======================================================================
+
+Not every AI task has one correct string.
+
+Define evaluation types:
+
+- exact match
+- structured match
+- semantic match
+- rubric
+- deterministic validation
+- human judgment.
+
+======================================================================
+56. LLM-AS-A-JUDGE
+======================================================================
+
+Research limitations.
+
+Determine where it is appropriate.
+
+Never treat judge output as absolute truth.
+
+Test:
+
+- bias
+- variance
+- calibration
+- disagreement.
+
+======================================================================
+57. HUMAN EVALUATION
+======================================================================
+
+Define when human review is necessary.
+
+Potential:
+
+- ambiguous tasks
+- high-impact tasks
+- safety
+- subjective quality.
+
+======================================================================
+58. EVALUATION REPRODUCIBILITY
+======================================================================
+
+Determine how to control:
+
+- model version
+- prompt version
+- dataset version
+- evaluator version
+- configuration
+- random seeds where applicable.
+
+======================================================================
+59. FLAKINESS
+======================================================================
+
+Identify causes:
+
+- nondeterministic models
+- network dependencies
+- timing
+- distributed state
+- external services.
+
+Define flake detection and quarantine.
+
+======================================================================
+60. TEST DETERMINISM
+======================================================================
+
+Determine which tests must be deterministic.
+
+Do not require deterministic LLM output where the system inherently
+produces valid variation.
+
+======================================================================
+61. PERFORMANCE TESTING
+======================================================================
+
+Define:
+
+- latency
+- throughput
+- concurrency
+- token throughput
+- GPU utilization
+- memory
+- database performance.
+
+======================================================================
+62. LOAD TESTING
+======================================================================
+
+Test realistic workloads:
+
+- simple chat
+- retrieval
+- tool call
+- multi-step agent
+- workflow
+- multi-agent.
+
+======================================================================
+63. STRESS TESTING
+======================================================================
+
+Determine breaking points.
+
+Do not confuse stress testing with normal load testing.
+
+======================================================================
+64. SOAK TESTING
+======================================================================
+
+Evaluate long-running stability.
+
+Potential:
+
+- memory leaks
+- GPU leaks
+- queue growth
+- connection leaks
+- database bloat.
+
+======================================================================
+65. CHAOS TESTING
+======================================================================
+
+Using 15 test:
+
+- model crash
+- worker crash
+- database restart
+- network failure
+- tool outage
+- GPU failure.
+
+Determine Day 1 subset.
+
+======================================================================
+66. SECURITY PERFORMANCE
+======================================================================
+
+Measure overhead from:
+
+- authorization
+- policy checks
+- sandboxing
+- telemetry
+- encryption.
+
+======================================================================
+67. CAPACITY TESTING
+======================================================================
+
+Determine limits for:
+
+- concurrent runs
+- requests
+- tool calls
+- workflows
+- retrieval
+- database.
+
+Use benchmarks.
+
+======================================================================
+68. RELEASE GATES
+======================================================================
+
+Using 16 determine:
+
+- unit gate
+- integration gate
+- security gate
+- AI evaluation gate
+- performance gate
+- deployment health gate.
+
+======================================================================
+69. TEST PRIORITIZATION
+======================================================================
+
+Not every test needs to run on every commit.
+
+Define:
+
+COMMIT
+
+PULL REQUEST
+
+NIGHTLY
+
+RELEASE
+
+WEEKLY
+
+PRODUCTION.
+
+======================================================================
+70. TEST EXECUTION MATRIX
+======================================================================
+
+Create:
+
+| Test Type | Commit | PR | Nightly | Release | Production |
+
+Determine actual cadence.
+
+======================================================================
+71. TEST PARALLELIZATION
+======================================================================
+
+Evaluate which tests can run in parallel.
+
+Avoid:
+
+- database collisions
+- GPU contention
+- external API rate limits.
+
+======================================================================
+72. TEST ISOLATION
+======================================================================
+
+Each test should control its dependencies.
+
+Evaluate:
+
+- containers
+- temporary databases
+- namespaces
+- fixtures
+- mocks.
+
+======================================================================
+73. CONTRACT REGRESSION
+======================================================================
+
+Every contract change should trigger dependent tests.
+
+======================================================================
+74. COMPATIBILITY TESTING
+======================================================================
+
+Test compatibility across:
+
+- model versions
+- tool versions
+- agent versions
+- workflow versions
+- schema versions.
+
+======================================================================
+75. BACKWARD COMPATIBILITY MATRIX
+======================================================================
+
+Create a matrix for:
+
+Old Client
+→ New Server
+
+New Client
+→ Old Server
+
+Old Workflow
+→ New Runtime
+
+New Runtime
+→ Old Data.
+
+Determine which combinations must work.
+
+======================================================================
+76. PRODUCTION VALIDATION
+======================================================================
+
+Production itself is a test environment, but uncontrolled experimentation
+is dangerous.
+
+Define:
+
+- health checks
+- synthetic monitoring
+- canaries
+- quality signals
+- incident detection.
+
+======================================================================
+77. SYNTHETIC MONITORING
+======================================================================
+
+Evaluate synthetic tasks such as:
+
+- login
+- retrieval
+- simple agent task
+- tool call.
+
+Ensure synthetic data cannot affect real customer data.
+
+======================================================================
+78. CONTINUOUS VALIDATION
+======================================================================
+
+Define:
+
+Production
+ ↓
+Telemetry
+ ↓
+Failures
+ ↓
+Regression Cases
+ ↓
+Test Suite
+ ↓
+Release Gate.
+
+======================================================================
+79. FAILURE CORPUS
+======================================================================
+
+Every meaningful failure should potentially become a test case.
+
+Define governance.
+
+======================================================================
+80. TEST COVERAGE
+======================================================================
+
+Do not use code coverage as the only quality measure.
+
+Evaluate:
+
+- line coverage
+- branch coverage
+- mutation coverage
+- requirement coverage
+- threat coverage
+- behavior coverage
+- evaluation coverage.
+
+======================================================================
+81. COVERAGE LIMITATIONS
+======================================================================
+
+Explain why:
+
+100% line coverage
+
+does NOT mean:
+
+100% correctness.
+
+======================================================================
+82. QUALITY DASHBOARD
+======================================================================
+
+Using 12 define useful signals:
+
+- test pass rate
+- flake rate
+- regression rate
+- escaped defect rate
+- security regression
+- AI quality regression
+- performance regression.
+
+======================================================================
+83. DEFECT TAXONOMY
+======================================================================
+
+Classify failures:
+
+- code
+- integration
+- data
+- model
+- prompt
+- retrieval
+- memory
+- tool
+- workflow
+- authorization
+- infrastructure
+- external dependency.
+
+======================================================================
+84. ROOT CAUSE ANALYSIS
+======================================================================
+
+Every significant failure should identify:
+
+- root cause
+- detection mechanism
+- missing test
+- new regression case.
+
+======================================================================
+85. TEST OWNERSHIP
+======================================================================
+
+Define ownership:
+
+- developers
+- QA
+- security
+- platform
+- AI evaluation
+- product.
+
+Avoid making QA the only owner of quality.
+
+======================================================================
+86. TEST REVIEW
+======================================================================
+
+Determine when tests themselves require review.
+
+Critical security/evaluation tests should not silently become stale.
+
+======================================================================
+87. TEST MAINTENANCE
+======================================================================
+
+Define:
+
+- stale tests
+- obsolete tests
+- flaky tests
+- duplicate tests
+- expensive tests.
+
+======================================================================
+88. ARCHITECTURE OPTIONS
+======================================================================
+
+Identify actual testing architectures.
+
+Potential:
+
+OPTION A
+--------
+Traditional test pyramid.
+
+OPTION B
+--------
+Test pyramid + AI evaluation layer.
+
+OPTION C
+--------
+Continuous validation architecture.
+
+OPTION D
+--------
+Full quality platform.
+
+These are examples only.
+
+Research and determine actual candidates.
+
+======================================================================
+89. ARCHITECTURE SELECTION MATRIX
+======================================================================
+
+Compare:
+
+| Criterion |
+| Day-1 simplicity |
+| Unit coverage |
+| Integration |
+| Contract testing |
+| AI evaluation |
+| Security testing |
+| Performance |
+| Regression |
+| Reproducibility |
+| Flake resistance |
+| Operational burden |
+| Cost |
+| Scalability |
+| Recommendation |
+
+======================================================================
+90. "WHY NOT?" ANALYSIS
+======================================================================
+
+For the final architecture explicitly answer:
+
+WHY THIS?
+
+WHY NOT TEST EVERYTHING END-TO-END?
+
+WHY NOT UNIT TEST EVERYTHING?
+
+WHY NOT MOCK EVERYTHING?
+
+WHY NOT USE REAL MODELS EVERYWHERE?
+
+WHY NOT USE LLM-AS-A-JUDGE FOR EVERYTHING?
+
+WHY NOT REQUIRE EXACT OUTPUT MATCHING?
+
+WHY NOT USE CODE COVERAGE AS THE MAIN KPI?
+
+WHY NOT RUN ALL TESTS ON EVERY COMMIT?
+
+WHY NOT USE PRODUCTION DATA IN TESTS?
+
+WHY NOT CHAOS TEST DAY 1?
+
+Only retain comparisons supported by research.
+
+======================================================================
+91. REVERSIBILITY ANALYSIS
+======================================================================
+
+Classify:
+
+- test framework
+- evaluation framework
+- dataset format
+- test environment
+- CI integration
+- performance tooling
+- security testing stack
+
+as:
+
+- easily reversible
+- moderately reversible
+- expensive to reverse
+- effectively irreversible.
+
+======================================================================
+92. CONTRACT VS IMPLEMENTATION
+======================================================================
+
+Determine stable quality contracts.
+
+Potential:
+
+TestCase
+TestSuite
+EvaluationCase
+EvaluationResult
+RegressionCase
+QualityGate
+TestEnvironment
+TestRun
+FailureRecord
+
+Determine the minimum required set.
+
+======================================================================
+93. REQUIRED DIAGRAMS
+======================================================================
+
+Include Mermaid diagrams for:
+
+1. Testing architecture
+2. Test pyramid
+3. AI evaluation layer
+4. Unit → integration → system
+5. Contract testing
+6. Agent testing
+7. Tool testing
+8. Retrieval testing
+9. Memory testing
+10. Authorization testing
+11. Security testing
+12. Workflow testing
+13. Multi-agent testing
+14. Performance testing
+15. Chaos testing
+16. CI quality gates
+17. Production feedback loop
+18. Failure-to-regression pipeline
+19. Day-1 testing architecture
+20. Future enterprise testing architecture
+
+======================================================================
+94. ADR CANDIDATES
+======================================================================
+
+Identify ADRs for:
+
+- test architecture
+- unit framework
+- integration framework
+- contract testing
+- test environments
+- test data
+- AI evaluation
+- LLM judge
+- human evaluation
+- security testing
+- performance testing
+- chaos testing
+- regression testing
+- production validation
+- synthetic monitoring.
+
+For each:
+
+- problem
+- alternatives
+- recommendation
+- consequences
+- reversibility
+- decision deadline
+
+======================================================================
+95. DAY-1 / PREPARE / SCALE / ENTERPRISE
+======================================================================
+
+Create:
+
+| Capability | Day 1 | Prepare | Scale | Enterprise |
+
+Cover:
+
+- unit tests
+- integration tests
+- contract tests
+- E2E
+- AI evaluation
+- security testing
+- retrieval evaluation
+- tool evaluation
+- memory evaluation
+- workflow testing
+- multi-agent testing
+- performance testing
+- load testing
+- chaos
+- regression
+- synthetic monitoring
+- human evaluation
+- test data governance
+- test environments
+- quality gates.
+
+======================================================================
+96. TEST MATRIX
+======================================================================
+
+Create a complete matrix:
+
+| Component | Unit | Integration | Contract | Security | AI Eval | Performance | E2E |
+
+Include:
+
+- Control Plane
+- Governance
+- Agent Runtime
+- Model Runtime
+- Tools
+- Knowledge
+- Memory
+- Identity
+- Multi-Agent
+- Workflow
+- Observability
+- Data Governance
+- Infrastructure
+- CI/CD.
+
+======================================================================
+97. RELEASE VALIDATION MATRIX
+======================================================================
+
+For every change type define:
+
+Change
+Tests Required
+Evaluation Required
+Security Review
+Performance Review
+Approval
+Deployment Strategy
+Rollback.
+
+At minimum:
+
+- application code
+- dependency
+- model
+- prompt
+- tool
+- policy
+- workflow
+- schema
+- infrastructure.
+
+======================================================================
+98. ATTEMPT TO FALSIFY THE RECOMMENDATION
+======================================================================
+
+Try to prove the selected testing architecture wrong.
+
+Ask:
+
+- What test volume breaks it?
+- What model nondeterminism breaks it?
+- What evaluation cost breaks it?
+- What test runtime breaks developer velocity?
+- What flakiness breaks confidence?
+- What distributed failure breaks the suite?
+- What tenant scale breaks test isolation?
+- What data privacy requirement breaks test datasets?
+- What release frequency breaks the pipeline?
+
+Determine the first architectural trigger.
+
+======================================================================
+99. ARCHITECTURAL SELF-CRITIQUE
+======================================================================
+
+Before finalizing, ask:
+
+1. Did I distinguish tests from evaluations?
+2. Did I distinguish deterministic checks from probabilistic checks?
+3. Can I test authorization comprehensively?
+4. Can I test tenant isolation?
+5. Can I test prompt injection?
+6. Can I test tool poisoning?
+7. Can I test retrieval?
+8. Can I test memory?
+9. Can I test workflows after crashes?
+10. Can I test multi-agent behavior?
+11. Can I test model regressions?
+12. Can I test prompt regressions?
+13. Can I test tool regressions?
+14. Can I test performance?
+15. Can I test infrastructure failures?
+16. Can production failures become regression tests?
+17. Is test data governed?
+18. Is Day 1 genuinely simple?
+19. Is the suite resistant to flakiness?
+20. What assumptions could invalidate the architecture?
+
+Include:
+
+# ARCHITECTURAL SELF-CRITIQUE
+
+======================================================================
+100. FINAL RECOMMENDATION
+======================================================================
+
+End with:
+
+# FINAL TESTING, QUALITY ASSURANCE & VALIDATION
+# ARCHITECTURE RECOMMENDATION
+
+Answer:
+
+"What Testing and Validation Architecture should this platform actually
+build?"
+
+Be concrete.
+
+Describe:
+
+- test pyramid
+- unit tests
+- component tests
+- integration tests
+- contract tests
+- E2E
+- AI evaluation
+- security testing
+- retrieval testing
+- memory testing
+- tool testing
+- workflow testing
+- multi-agent testing
+- performance testing
+- chaos testing
+- regression
+- production validation
+- synthetic monitoring
+- test data
+- test environments
+- CI integration
+- release gates
+- Day-1 implementation
+- future evolution.
+
+Then explicitly answer:
+
+"What MUST NOT be built on Day 1?"
+
+Then:
+
+"What future condition should trigger the next architectural evolution?"
+
+======================================================================
+101. REQUIRED OUTPUT
+======================================================================
+
+Produce:
+
+17_TESTING_QUALITY_VALIDATION_ARCHITECTURE.md
+
+The document MUST explicitly reference:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_PLANE.md
+04_AGENT_RUNTIME.md
+05_MODEL_INFERENCE_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+07_KNOWLEDGE_DATA_ARCHITECTURE.md
+08_MEMORY_ARCHITECTURE.md
+09_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+10_AGENT_COMMUNICATION_MULTI_AGENT_ARCHITECTURE.md
+11_EVENTING_WORKFLOW_DURABLE_EXECUTION_ARCHITECTURE.md
+12_OBSERVABILITY_EVALUATION_RELIABILITY_ARCHITECTURE.md
+13_SECURITY_ARCHITECTURE.md
+14_DATA_GOVERNANCE_PRIVACY_COMPLIANCE_ARCHITECTURE.md
+15_DEPLOYMENT_INFRASTRUCTURE_RUNTIME_PLATFORM_ARCHITECTURE.md
+16_CICD_RELEASE_SUPPLY_CHAIN_ARCHITECTURE.md
+
+If there is a conflict:
+
+DO NOT silently resolve it.
+
+Identify the conflict.
+
+Explain the trade-off.
+
+Recommend the superior architectural decision.
+
+Create an ADR candidate when appropriate.
+
+======================================================================
+102. SOURCE REQUIREMENTS
+======================================================================
+
+Include direct URLs.
+
+Prioritize:
+
+- official testing framework documentation
+- ISTQB where relevant
+- NIST
+- OWASP
+- academic AI evaluation research
+- academic LLM evaluation research
+- academic retrieval research
+- official model documentation
+- official infrastructure documentation
+- authoritative SRE/testing literature.
+
+Do not fabricate citations.
+
+Do not cite sources that were not actually inspected.
+
+Clearly distinguish:
+
+SOURCE FACT
+
+from:
+
+BENCHMARK RESULT
+
+from:
+
+INFERENCE
+
+from:
+
+ARCHITECTURAL RECOMMENDATION.
+
+======================================================================
+103. ABSOLUTE FINAL INSTRUCTION
+======================================================================
+
+Act as an INDEPENDENT Principal Test and Quality Architect.
+
+Your responsibility is to determine the best validation architecture,
+not to validate a preferred testing framework.
+
+Do not assume:
+
+UNIT TESTS = QUALITY.
+
+Do not assume:
+
+100% COVERAGE = CORRECTNESS.
+
+Do not assume:
+
+END-TO-END TESTS = COMPLETE VALIDATION.
+
+Do not assume:
+
+GREEN TESTS = GOOD AI.
+
+Do not assume:
+
+LLM-AS-A-JUDGE = GROUND TRUTH.
+
+Do not assume:
+
+DETERMINISTIC OUTPUT = REQUIRED FOR AI SYSTEMS.
+
+Do not assume:
+
+PRODUCTION DATA = VALID TEST DATA.
+
+Do not assume:
+
+MORE TESTS = BETTER QUALITY.
+
+Do not allow:
+
+MODEL CHANGES
+
+to bypass:
+
+AI REGRESSION EVALUATION.
+
+Do not allow:
+
+SECURITY-CRITICAL CHANGES
+
+to bypass:
+
+SECURITY TESTING.
+
+Do not allow:
+
+WORKFLOW CHANGES
+
+to bypass:
+
+DURABILITY TESTING.
+
+Do not allow:
+
+TENANT / AUTHORIZATION CHANGES
+
+to bypass:
+
+ISOLATION AND AUTHORIZATION TESTING.
+
+Optimize for:
+
+DEFECT DETECTION
++
+REALISTIC VALIDATION
++
+REPRODUCIBILITY
++
+LOW FLAKINESS
++
+FAST FEEDBACK
++
+AI QUALITY
++
+SECURITY
++
+RELIABILITY
++
+MAINTAINABILITY
++
+SIMPLICITY
++
+FUTURE EVOLUTION
+
+The final architecture MUST result from:
+
+    RESEARCH
+       ↓
+    REAL QUALITY REQUIREMENTS
+       ↓
+    REAL FAILURE MODES
+       ↓
+    TEST LEVEL DESIGN
+       ↓
+    EVALUATION DESIGN
+       ↓
+    TEST DATA ANALYSIS
+       ↓
+    SECURITY / PERFORMANCE ANALYSIS
+       ↓
+    ADVERSARIAL CHALLENGE
+       ↓
+    FALSIFICATION
+       ↓
+    FINAL DECISION
+
+DO NOT DESIGN THE TEST STACK FIRST.
+
+RESEARCH FIRST.
+
+UNDERSTAND THE FAILURE MODES FIRST.
+
+COMPARE.
+
+CHALLENGE.
+
+FALSIFY.
+
+SELECT THE BEST TESTING AND VALIDATION ARCHITECTURE AVAILABLE FOR
+THIS PROJECT.
+
+THEN DESIGN IT.

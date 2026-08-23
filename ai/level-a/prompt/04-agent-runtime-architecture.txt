@@ -1,0 +1,1946 @@
+# 04 — AGENT RUNTIME ARCHITECTURE
+## Enterprise AI Agent Platform
+
+======================================================================
+ROLE
+======================================================================
+
+Act as the Principal Software Architect and Distributed Systems Architect
+responsible for designing the Agent Runtime of an enterprise-grade AI
+agent platform.
+
+You have deep expertise in:
+
+- distributed systems
+- workflow engines
+- agent runtimes
+- state machines
+- task orchestration
+- LLM agent architectures
+- planning systems
+- execution engines
+- durable execution
+- workflow recovery
+- event-driven systems
+- concurrency
+- retries
+- compensation
+- idempotency
+- human-in-the-loop workflows
+- model serving
+- tool execution
+- memory systems
+- observability
+- reliability engineering
+- security architecture
+- enterprise SaaS systems
+
+You are working within:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_PLANE.md
+
+These documents provide the current architectural context.
+
+However:
+
+THEY ARE NOT AUTHORITY OVER TECHNICAL TRUTH.
+
+If research demonstrates that an assumption in those documents is wrong,
+you MUST identify the conflict and recommend the technically superior
+architecture.
+
+======================================================================
+1. PRIMARY OBJECTIVE
+======================================================================
+
+Design the Agent Runtime that executes agent tasks.
+
+The runtime is responsible for turning:
+
+    USER INTENT
+        ↓
+    AGENT CONFIGURATION
+        ↓
+    PLAN
+        ↓
+    EXECUTION
+        ↓
+    VERIFICATION
+        ↓
+    RESULT
+
+into a reliable, observable, auditable and secure execution.
+
+However, do NOT assume that this simple sequence is sufficient.
+
+Research modern agent runtimes and determine the appropriate architecture.
+
+======================================================================
+2. MOST IMPORTANT INSTRUCTION
+## RESEARCH FIRST — DESIGN SECOND
+======================================================================
+
+Do NOT begin by designing the runtime.
+
+First research:
+
+- modern agent architectures
+- workflow engines
+- durable execution
+- state-machine architectures
+- graph-based execution
+- agent planning
+- agent loops
+- tool execution architectures
+- LLM runtime patterns
+- recovery mechanisms
+- human-in-the-loop systems
+- distributed execution
+
+Then identify competing architectures.
+
+Then compare them.
+
+Then select the best architecture for THIS project.
+
+Then attempt to disprove it.
+
+Then design the runtime.
+
+The required process is:
+
+    RESEARCH
+       ↓
+    REQUIREMENTS
+       ↓
+    CANDIDATE RUNTIME ARCHITECTURES
+       ↓
+    ARCHITECTURE SELECTION ANALYSIS
+       ↓
+    TRADE-OFF ANALYSIS
+       ↓
+    ADVERSARIAL CHALLENGE
+       ↓
+    FINAL ARCHITECTURAL DECISION
+       ↓
+    DAY-1 IMPLEMENTATION
+       ↓
+    FUTURE EVOLUTION
+
+The architecture must be the RESULT of the research.
+
+======================================================================
+3. DAY-1 CONSTRAINTS
+======================================================================
+
+The Day-1 runtime must operate on:
+
+- one modest machine
+- one GPU if available
+- Qwen3.5 9B
+- PostgreSQL
+- local/containerized services
+- limited CPU
+- limited RAM
+- limited VRAM
+- small engineering team
+
+There is NO mandatory:
+
+- Kubernetes
+- distributed scheduler
+- distributed workflow engine
+- service mesh
+- multi-GPU runtime
+- multiple inference workers
+- cloud LLM
+- distributed event bus
+- multi-region
+- microservice architecture
+
+The runtime must remain understandable and debuggable by a small team.
+
+======================================================================
+4. FUTURE REQUIREMENTS
+======================================================================
+
+The runtime may eventually need:
+
+- multiple concurrent agent executions
+- multiple workers
+- multiple GPUs
+- multiple models
+- model routing
+- remote tool execution
+- long-running workflows
+- scheduled workflows
+- durable execution
+- distributed execution
+- task queues
+- horizontal scaling
+- tenant quotas
+- resource-aware scheduling
+- workflow recovery
+- human approval pauses
+- retries
+- compensation
+- cancellation
+- timeouts
+- execution replay
+- deterministic replay where practical
+- multi-region execution
+- enterprise SLOs
+
+The architecture must permit this evolution without forcing all of it into
+Day 1.
+
+======================================================================
+5. WHAT EXACTLY IS AN AGENT RUNTIME?
+======================================================================
+
+Define the runtime precisely.
+
+Determine the responsibilities of:
+
+- Orchestrator
+- Planner
+- Executor
+- Model Router
+- Model Runtime
+- Tool Router
+- Tool Runtime
+- State Manager
+- Memory Manager
+- Verifier
+- Retry Manager
+- Timeout Manager
+- Cancellation Manager
+- Budget Manager
+- Approval Manager
+- Recovery Manager
+- Compensation Manager
+- Scheduler
+- Worker
+- Run Manager
+
+Do NOT assume all these components need to exist.
+
+Determine which are:
+
+- logical responsibilities
+- modules
+- interfaces
+- processes
+- services
+- future components
+
+======================================================================
+6. ARCHITECTURE SELECTION ANALYSIS
+======================================================================
+
+This is mandatory.
+
+Identify at least THREE meaningful candidate runtime architectures.
+
+Potential candidates include:
+
+OPTION A
+--------
+Simple agent loop:
+
+observe
+think
+act
+observe
+repeat
+
+OPTION B
+--------
+Graph/state-machine runtime.
+
+OPTION C
+--------
+Workflow-oriented runtime with explicit durable execution.
+
+OPTION D
+--------
+Modular runtime with synchronous execution Day 1 and durable workflow
+execution later.
+
+OPTION E
+--------
+Hybrid agent + workflow architecture.
+
+These are examples only.
+
+Research and identify the actual strongest alternatives.
+
+Do not manufacture alternatives merely to satisfy the requirement.
+
+======================================================================
+7. RESEARCH TARGETS
+======================================================================
+
+Research relevant architectures and implementations, including where
+appropriate:
+
+- LangGraph
+- Temporal
+- durable execution systems
+- workflow engines
+- state-machine systems
+- Kubernetes controller patterns
+- AWS agent runtime architectures
+- Microsoft agent runtime architectures
+- Google agent architectures
+- relevant academic agent research
+- relevant LLM agent execution research
+
+Investigate:
+
+- execution semantics
+- state
+- durability
+- retries
+- recovery
+- branching
+- loops
+- human approval
+- cancellation
+- timeouts
+- parallelism
+- persistence
+- replay
+
+Do not assume any framework should be adopted.
+
+Extract architectural patterns.
+
+======================================================================
+8. CORE EXECUTION MODEL
+======================================================================
+
+The project currently proposes:
+
+PLAN
+  ↓
+EXECUTE
+  ↓
+VERIFY
+
+Evaluate whether this is sufficient.
+
+Potential models to investigate:
+
+A.
+
+PLAN
+ ↓
+EXECUTE
+ ↓
+VERIFY
+
+B.
+
+PLAN
+ ↓
+EXECUTE
+ ↓
+OBSERVE
+ ↓
+REPLAN
+
+C.
+
+STATE MACHINE
+
+D.
+
+GRAPH EXECUTION
+
+E.
+
+WORKFLOW + AGENT LOOP
+
+Determine which model best fits:
+
+- deterministic enterprise workflows
+- agentic reasoning
+- tool execution
+- long-running operations
+- human approval
+- failure recovery
+
+It is possible that the correct answer is a hybrid.
+
+Determine it through research.
+
+======================================================================
+9. AGENT LOOP VS WORKFLOW
+======================================================================
+
+This is a critical architectural question.
+
+Determine where the system should use:
+
+AGENTIC LOOP
+
+versus:
+
+DETERMINISTIC WORKFLOW
+
+For example:
+
+An agent may reason about:
+
+"What should I do next?"
+
+But once it decides:
+
+"Update CRM opportunity"
+
+the execution may need deterministic workflow semantics.
+
+Analyze the boundary.
+
+Determine whether the platform should support:
+
+- agent-controlled loops
+- explicit workflows
+- agent-generated plans
+- compiled plans
+- deterministic workflow execution
+- hybrid execution
+
+======================================================================
+10. PLANNER
+======================================================================
+
+Analyze the Planner.
+
+Determine:
+
+- what inputs it receives
+- what output it generates
+- whether plans are structured
+- whether plans are executable
+- whether plans are validated
+- whether plans are policy-checked
+- whether plans are persisted
+- whether plans are versioned
+- whether plans may change during execution
+
+Evaluate:
+
+free-form planning
+
+versus:
+
+structured plan representation.
+
+Do NOT allow LLM output to directly become trusted execution instructions
+without appropriate validation and policy enforcement.
+
+======================================================================
+11. PLAN REPRESENTATION
+======================================================================
+
+Define a conceptual plan representation.
+
+For example:
+
+Plan
+ ├── step
+ ├── action
+ ├── input
+ ├── dependency
+ ├── condition
+ ├── retry policy
+ ├── timeout
+ └── verification
+
+Do not assume this schema is correct.
+
+Determine the minimum useful representation.
+
+The plan should be:
+
+- inspectable
+- versionable
+- auditable
+- testable
+- policy-checkable
+- executable
+
+======================================================================
+12. PLAN VALIDATION
+======================================================================
+
+Determine what happens between:
+
+MODEL PLAN
+
+and:
+
+EXECUTION.
+
+Evaluate validation for:
+
+- schema
+- tool existence
+- tool version
+- authorization
+- resource access
+- parameter validity
+- budget
+- tenant restrictions
+- risk
+- side effects
+- policy
+- dependencies
+
+Determine whether the plan is:
+
+- fully validated before execution
+- incrementally validated
+- validated at each tool call
+- hybrid
+
+======================================================================
+13. POLICY ENFORCEMENT
+======================================================================
+
+Using 03_GOVERNANCE_POLICY_PLANE.md, determine exactly where policy
+enforcement occurs.
+
+Evaluate:
+
+Plan-level policy evaluation
+
+versus:
+
+Step-level policy evaluation
+
+versus:
+
+Tool-level enforcement
+
+versus:
+
+Multiple enforcement points.
+
+The runtime MUST NOT bypass Governance.
+
+Determine the minimum secure enforcement architecture.
+
+======================================================================
+14. EXECUTOR
+======================================================================
+
+Define the Executor.
+
+Determine whether it should:
+
+- execute tools
+- invoke models
+- manage state
+- enforce budgets
+- perform retries
+- verify outputs
+- emit events
+- handle compensation
+
+Do not create a giant "god executor".
+
+Determine clear responsibilities.
+
+======================================================================
+15. TOOL EXECUTION
+======================================================================
+
+Define the flow:
+
+Agent
+ ↓
+Tool Router
+ ↓
+Policy Enforcement
+ ↓
+Tool Runtime
+ ↓
+External System
+
+Determine whether the runtime should invoke tools directly or through a
+separate Tool Runtime abstraction.
+
+This must align with 06_TOOL_ARCHITECTURE.md eventually.
+
+======================================================================
+16. MODEL EXECUTION
+======================================================================
+
+Define the relationship between:
+
+Agent Runtime
+
+and:
+
+Model Architecture.
+
+The runtime should not depend on the physical Qwen implementation.
+
+Determine the contract between:
+
+Agent Runtime
+       ↓
+ModelProvider / ModelRuntime
+
+and define:
+
+- request
+- response
+- streaming
+- timeout
+- cancellation
+- model version
+- usage metadata
+- errors
+- retries
+
+======================================================================
+17. STATE MANAGEMENT
+======================================================================
+
+Determine what state an execution requires.
+
+Potential state:
+
+- run ID
+- tenant
+- agent
+- agent version
+- workflow
+- workflow version
+- plan
+- current step
+- completed steps
+- pending steps
+- tool results
+- model results
+- approvals
+- errors
+- retries
+- timestamps
+- budget usage
+- policy decisions
+
+Do not assume this is complete.
+
+Determine the canonical execution state.
+
+======================================================================
+18. STATE MACHINE
+======================================================================
+
+Determine whether each execution should have explicit states.
+
+Potential states:
+
+CREATED
+QUEUED
+RUNNING
+WAITING_APPROVAL
+WAITING_TOOL
+WAITING_MODEL
+PAUSED
+RETRYING
+VERIFYING
+COMPLETED
+FAILED
+CANCELLED
+TIMED_OUT
+COMPENSATING
+COMPENSATED
+DEGRADED
+
+Do not assume these are correct.
+
+Derive the appropriate state model.
+
+Define:
+
+- valid transitions
+- invalid transitions
+- transition authority
+- transition persistence
+- recovery after process crash
+
+======================================================================
+19. DURABILITY
+======================================================================
+
+Determine what "durable execution" should mean for this platform.
+
+Evaluate:
+
+- in-memory execution
+- database-backed state
+- event log
+- workflow engine
+- durable task system
+
+Day 1 must remain simple.
+
+Determine what state MUST survive process failure.
+
+Do not introduce a full durable workflow engine unless justified.
+
+======================================================================
+20. FAILURE RECOVERY
+======================================================================
+
+Analyze failure during:
+
+- planning
+- model invocation
+- tool invocation
+- policy evaluation
+- human approval
+- verification
+- persistence
+- external API call
+
+For each determine:
+
+- retry
+- fail
+- resume
+- compensate
+- restart
+- human escalation
+
+======================================================================
+21. RETRIES
+======================================================================
+
+Design retry semantics.
+
+Differentiate:
+
+SAFE TO RETRY
+
+from:
+
+UNSAFE TO RETRY.
+
+Consider:
+
+- read operations
+- writes
+- payments
+- email
+- CRM updates
+- external APIs
+
+Evaluate:
+
+- idempotency keys
+- exponential backoff
+- maximum attempts
+- retry classification
+- retry budgets
+- dead-letter behavior
+
+Do not blindly retry side effects.
+
+======================================================================
+22. IDEMPOTENCY
+======================================================================
+
+Idempotency is a core reliability requirement.
+
+Determine how the runtime handles duplicate execution.
+
+Potential identifiers:
+
+- run_id
+- step_id
+- execution_id
+- idempotency_key
+
+Determine which operations require idempotency.
+
+Define how external tool calls can participate.
+
+======================================================================
+23. TIMEOUTS
+======================================================================
+
+Define timeout hierarchy.
+
+Potential levels:
+
+- overall run timeout
+- step timeout
+- model timeout
+- tool timeout
+- approval timeout
+- verification timeout
+
+Determine propagation semantics.
+
+======================================================================
+24. CANCELLATION
+======================================================================
+
+Analyze cancellation.
+
+Determine how to cancel:
+
+- model generation
+- tool calls
+- workflows
+- waiting approvals
+- queued tasks
+- retries
+
+Determine safe cancellation boundaries.
+
+======================================================================
+25. HUMAN APPROVAL
+======================================================================
+
+Integrate human approval with the runtime.
+
+A run may become:
+
+WAITING_APPROVAL
+
+Determine:
+
+- what state is persisted
+- what exactly requires approval
+- who may approve
+- whether the plan may change
+- whether approval is scoped
+- approval expiration
+- approval replay prevention
+- audit
+- resume semantics
+
+======================================================================
+26. VERIFIER
+======================================================================
+
+The runtime must not assume that successful execution means correct
+execution.
+
+Analyze the Verifier.
+
+Determine whether verification should evaluate:
+
+- tool response
+- state change
+- expected outcome
+- policy compliance
+- business invariants
+- schema correctness
+- agent result
+
+Determine:
+
+- deterministic verification
+- model-based verification
+- hybrid verification
+
+Be especially careful about trusting the same model that performed the
+action to verify itself.
+
+======================================================================
+27. PLAN DEVIATION
+======================================================================
+
+Determine whether the runtime should detect deviations from the original
+plan.
+
+For example:
+
+Plan:
+1. find customer
+2. update address
+3. confirm update
+
+Agent instead:
+
+1. find customer
+2. export customer data
+3. call unrelated tool
+
+Determine how deviation should be detected.
+
+Evaluate:
+
+- step identity
+- allowed transitions
+- capability constraints
+- policy re-evaluation
+- graph constraints
+
+======================================================================
+28. LOOP DETECTION
+======================================================================
+
+Agentic loops can become infinite.
+
+Determine how to detect:
+
+- repeated steps
+- repeated tool calls
+- repeated state
+- repeated model outputs
+- oscillation
+- token exhaustion
+- budget exhaustion
+- time exhaustion
+
+Determine Day-1 mechanisms.
+
+======================================================================
+29. BUDGET ENFORCEMENT
+======================================================================
+
+Runtime should enforce execution budgets.
+
+Potential budgets:
+
+- token budget
+- model calls
+- tool calls
+- wall-clock time
+- financial cost
+- retries
+- steps
+
+Determine whether budget policy is:
+
+- decided by Governance
+- enforced by Runtime
+- monitored by Resource Plane
+
+Define the boundary.
+
+======================================================================
+30. CONCURRENCY
+======================================================================
+
+Determine runtime concurrency model.
+
+Day 1:
+
+- potentially one active run
+- limited hardware
+
+Future:
+
+- multiple concurrent runs
+- multiple workers
+- multiple tenants
+- fair scheduling
+
+Evaluate:
+
+- synchronous execution
+- thread pool
+- async execution
+- process workers
+- task queue
+- distributed workers
+
+Do not introduce distributed scheduling prematurely.
+
+======================================================================
+31. PARALLEL EXECUTION
+======================================================================
+
+Determine whether plan steps may execute in parallel.
+
+Example:
+
+Step A: retrieve CRM record
+Step B: retrieve company metadata
+
+Both may execute concurrently.
+
+Determine:
+
+- dependency model
+- concurrency limits
+- resource constraints
+- tenant quotas
+- ordering
+- failure semantics
+
+======================================================================
+32. FAIR SCHEDULING
+======================================================================
+
+Future multi-tenant workloads may require:
+
+- tenant fairness
+- priority
+- quotas
+- backpressure
+- starvation prevention
+
+Determine what scheduling abstraction should exist Day 1.
+
+======================================================================
+33. LONG-RUNNING WORKFLOWS
+======================================================================
+
+Determine whether the runtime should eventually support tasks lasting:
+
+- seconds
+- minutes
+- hours
+- days
+
+Examples:
+
+- waiting for approval
+- waiting for external CRM event
+- customer follow-up workflow
+- scheduled action
+
+Determine whether the architecture needs durable workflow semantics.
+
+======================================================================
+34. MEMORY
+======================================================================
+
+Define the boundary between:
+
+Runtime State
+
+and:
+
+Agent Memory.
+
+Runtime state should include what is necessary to execute the current run.
+
+Memory should represent knowledge or historical information.
+
+Do not merge them.
+
+Coordinate with 07_KNOWLEDGE_DATA_ARCHITECTURE.md and 08_MEMORY_ARCHITECTURE.md
+when those documents are produced.
+
+======================================================================
+35. EXECUTION CONTEXT
+======================================================================
+
+Define the execution context.
+
+Potential fields:
+
+- run_id
+- tenant_id
+- user_id
+- agent_id
+- agent_version
+- workflow_id
+- workflow_version
+- model_id
+- model_version
+- policy_version
+- tool versions
+- correlation_id
+- trace_id
+- budget
+- deadline
+- capabilities
+
+Determine the canonical context model.
+
+======================================================================
+36. EXECUTION SNAPSHOT
+======================================================================
+
+Determine whether a run should capture an immutable execution snapshot.
+
+Potentially:
+
+- agent configuration
+- model version
+- tool versions
+- workflow version
+- policy version
+- relevant configuration
+- plan
+- runtime parameters
+
+Determine whether snapshotting is necessary for:
+
+- audit
+- replay
+- debugging
+- reproducibility
+- recovery
+
+======================================================================
+37. REPLAY
+======================================================================
+
+Determine what replay means.
+
+Possible models:
+
+- re-run from scratch
+- replay state transitions
+- replay recorded tool results
+- deterministic replay
+- debugging replay
+
+Determine what is realistically possible with an LLM.
+
+Do not promise deterministic replay if model behavior cannot guarantee it.
+
+======================================================================
+38. EVENT MODEL
+======================================================================
+
+Evaluate whether the runtime should emit events such as:
+
+RunCreated
+RunStarted
+PlanCreated
+StepStarted
+PolicyChecked
+ToolCalled
+ToolCompleted
+ModelCalled
+ModelCompleted
+ApprovalRequested
+ApprovalGranted
+ApprovalRejected
+VerificationStarted
+VerificationCompleted
+RunCompleted
+RunFailed
+
+Determine:
+
+- which events are useful
+- which are persisted
+- which are telemetry only
+- whether event sourcing is necessary
+
+Do NOT assume event sourcing is required.
+
+======================================================================
+39. OBSERVABILITY
+======================================================================
+
+Define runtime observability.
+
+At minimum consider:
+
+- run traces
+- step traces
+- model traces
+- tool traces
+- policy traces
+- state transitions
+- latency
+- token usage
+- tool usage
+- retries
+- errors
+- queue time
+- execution time
+
+Coordinate with the future Observability document.
+
+======================================================================
+40. SECURITY
+======================================================================
+
+The runtime must not be trusted merely because it is internal.
+
+Analyze:
+
+- compromised agent
+- malicious model output
+- tool compromise
+- prompt injection
+- forged execution context
+- privilege escalation
+- tenant breakout
+- replay attacks
+- malicious plan
+- malicious tool arguments
+
+Determine runtime security boundaries.
+
+======================================================================
+41. AGENT IDENTITY
+======================================================================
+
+Determine how the runtime represents agent identity.
+
+A run should be attributable to:
+
+- user
+- tenant
+- agent
+- agent version
+- runtime
+- worker
+
+Determine which identity belongs in:
+
+- authentication
+- authorization
+- audit
+- tracing
+
+Coordinate with Identity / Authorization architecture.
+
+======================================================================
+42. ERROR MODEL
+======================================================================
+
+Define error categories.
+
+Potential categories:
+
+- validation error
+- authorization error
+- policy error
+- model error
+- tool error
+- network error
+- timeout
+- cancellation
+- state error
+- dependency error
+- business rule violation
+- verification failure
+- resource exhaustion
+
+Determine:
+
+- retryable
+- non-retryable
+- compensatable
+- human-reviewable
+
+======================================================================
+43. COMPENSATION
+======================================================================
+
+Analyze compensation for multi-step operations.
+
+Example:
+
+1. Create CRM opportunity
+2. Send email
+3. Create calendar appointment
+
+If step 3 fails:
+
+Can step 2 be compensated?
+Can step 1 be compensated?
+
+Determine whether Saga-like patterns are needed.
+
+Do not introduce distributed transactions.
+
+Determine the appropriate Day-1 pattern.
+
+======================================================================
+44. TRANSACTIONS
+======================================================================
+
+Determine where database transactions are appropriate.
+
+Do not assume an entire agent execution should be one transaction.
+
+Analyze transaction boundaries around:
+
+- state changes
+- tool invocation metadata
+- audit
+- configuration
+- execution state
+
+======================================================================
+45. RUNTIME / CONTROL PLANE BOUNDARY
+======================================================================
+
+Using 02_CONTROL_PLANE.md, define:
+
+What does Runtime read from Control Plane?
+
+What does Runtime write back?
+
+Should Runtime depend on Control Plane during execution?
+
+Evaluate:
+
+A.
+Runtime calls Control Plane for every execution decision.
+
+B.
+Runtime loads immutable configuration snapshot.
+
+C.
+Runtime caches configuration.
+
+D.
+Runtime receives versioned configuration.
+
+E.
+Hybrid.
+
+Determine the best architecture.
+
+======================================================================
+46. RUNTIME / GOVERNANCE BOUNDARY
+======================================================================
+
+Using 03_GOVERNANCE_POLICY_PLANE.md, define:
+
+- where authorization occurs
+- where policy is evaluated
+- where enforcement occurs
+- where risk is calculated
+- where approval is requested
+- where approval state is persisted
+
+The Runtime must never create an implicit policy bypass.
+
+======================================================================
+47. RUNTIME / MODEL BOUNDARY
+======================================================================
+
+The Runtime must not depend directly on Qwen3.5 9B.
+
+Define:
+
+ModelProvider
+ModelRuntime
+ModelRequest
+ModelResponse
+
+Determine which fields are required.
+
+Day 1 has one model.
+
+Future may have:
+
+- Qwen variants
+- local models
+- cloud models
+- multiple inference workers
+
+======================================================================
+48. RUNTIME / TOOL BOUNDARY
+======================================================================
+
+The Runtime must not embed business-specific tool logic.
+
+Define:
+
+Tool interface
+Tool invocation
+Tool result
+Tool error
+Tool version
+Tool identity
+Tool capabilities
+
+Coordinate with the Tool Architecture document.
+
+======================================================================
+49. DAY-1 IMPLEMENTATION
+======================================================================
+
+Design the smallest runtime capable of supporting:
+
+- one agent
+- Qwen3.5 9B
+- a small number of tools
+- PostgreSQL
+- basic policy enforcement
+- execution state
+- retries
+- timeouts
+- verification
+- audit
+- observability
+
+Determine which components should be:
+
+- modules
+- interfaces
+- classes
+- processes
+- services
+
+Do not prematurely split the runtime into microservices.
+
+======================================================================
+50. FUTURE EVOLUTION
+======================================================================
+
+Define how Day 1 can evolve toward:
+
+PHASE 1
+-------
+single runtime
+
+PHASE 2
+-------
+worker pool
+
+PHASE 3
+-------
+distributed runtime
+
+PHASE 4
+-------
+durable workflow platform
+
+ENTERPRISE
+----------
+multi-region / advanced scheduling / HA
+
+Do not assume this exact roadmap.
+
+Derive the appropriate evolution path.
+
+======================================================================
+51. MIGRATION STRATEGY
+======================================================================
+
+Explain how to extract components later without rewriting the execution
+model.
+
+Potential extraction boundaries:
+
+- scheduler
+- model runtime
+- tool runtime
+- state store
+- policy evaluation
+- workflow engine
+- worker pool
+
+Determine which boundaries are likely to remain stable.
+
+======================================================================
+52. ARCHITECTURE SELECTION MATRIX
+======================================================================
+
+Provide a detailed comparison of the major runtime architectures.
+
+At minimum evaluate:
+
+| Criterion |
+| Day-1 simplicity |
+| Agent flexibility |
+| Determinism |
+| Reliability |
+| Durability |
+| Recovery |
+| Human approval |
+| Tool execution |
+| Model integration |
+| Concurrency |
+| Long-running workflows |
+| Observability |
+| Replay |
+| Testing |
+| Operational complexity |
+| Resource requirements |
+| Future scalability |
+| Migration complexity |
+| Recommendation |
+
+Explain the conclusions.
+
+======================================================================
+53. "WHY NOT?" ANALYSIS
+======================================================================
+
+For the selected runtime architecture answer:
+
+WHY THIS?
+
+WHY NOT A SIMPLE AGENT LOOP?
+
+WHY NOT A PURE GRAPH RUNTIME?
+
+WHY NOT A PURE WORKFLOW ENGINE?
+
+WHY NOT TEMPORAL FROM DAY 1?
+
+WHY NOT LANGGRAPH FROM DAY 1?
+
+WHY NOT A CUSTOM DURABLE EXECUTION ENGINE?
+
+WHY NOT MICROSERVICES?
+
+WHY NOT A MODULAR MONOLITH?
+
+Only include comparisons that are genuinely relevant after research.
+
+If a candidate is not technically meaningful, explain why.
+
+======================================================================
+54. REVERSIBILITY ANALYSIS
+======================================================================
+
+Classify major runtime decisions as:
+
+- easily reversible
+- moderately reversible
+- expensive to reverse
+- effectively irreversible
+
+Pay particular attention to:
+
+- execution model
+- state model
+- plan representation
+- workflow representation
+- event model
+- persistence model
+- worker interface
+
+======================================================================
+55. CONTRACT VS IMPLEMENTATION
+======================================================================
+
+Determine what contracts should exist Day 1.
+
+Examples:
+
+Run
+ExecutionContext
+Plan
+PlanStep
+ModelProvider
+ToolProvider
+PolicyDecision
+VerificationResult
+ExecutionState
+
+But do not assume these are correct.
+
+Determine the minimum stable contracts.
+
+Then identify what can remain as a simple local implementation.
+
+======================================================================
+56. REQUIRED SEQUENCE DIAGRAMS
+======================================================================
+
+Include Mermaid sequence diagrams for:
+
+1. Simple read-only agent task
+
+2. Tool execution
+
+3. Tool execution requiring approval
+
+4. Failed tool execution with retry
+
+5. Verification failure
+
+6. Agent replanning
+
+7. Process crash and recovery
+
+8. Long-running workflow
+
+9. Runtime startup / configuration loading
+
+10. Runtime execution with Control Plane unavailable
+
+11. Policy denial
+
+12. Successful multi-step workflow
+
+======================================================================
+57. REQUIRED STATE DIAGRAM
+======================================================================
+
+Provide a Mermaid state diagram for the execution lifecycle.
+
+Include:
+
+- valid states
+- transitions
+- failure states
+- retry
+- cancellation
+- approval
+- recovery
+
+======================================================================
+58. REQUIRED ARCHITECTURE DIAGRAMS
+======================================================================
+
+Include:
+
+1. High-level runtime architecture
+2. Runtime component boundaries
+3. Runtime / Control Plane boundary
+4. Runtime / Governance boundary
+5. Runtime / Model boundary
+6. Runtime / Tool boundary
+7. Day-1 deployment
+8. Future distributed runtime
+9. Execution state persistence
+10. Worker architecture
+
+======================================================================
+59. ADR CANDIDATES
+======================================================================
+
+Identify ADR candidates for:
+
+- execution model
+- agent loop vs workflow
+- graph vs state machine
+- modular monolith vs distributed runtime
+- state persistence
+- durability
+- retry model
+- idempotency
+- compensation
+- verification
+- plan representation
+- replay
+- event model
+- concurrency
+- scheduling
+- worker architecture
+- long-running workflows
+
+For each provide:
+
+- problem
+- alternatives
+- recommendation
+- consequences
+- reversibility
+- decision deadline
+
+======================================================================
+60. DAY-1 / PREPARE / SCALE / ENTERPRISE
+======================================================================
+
+Create:
+
+| Capability | Day 1 | Prepare | Scale | Enterprise |
+
+Cover:
+
+- planner
+- orchestrator
+- executor
+- state
+- model router
+- tool router
+- verifier
+- retry
+- timeout
+- cancellation
+- loop detection
+- plan deviation
+- budget
+- approval
+- compensation
+- scheduler
+- worker pool
+- queue
+- durable execution
+- replay
+- distributed execution
+- fair scheduling
+- multi-region
+
+======================================================================
+61. PERFORMANCE AND CAPACITY
+======================================================================
+
+Determine the variables that matter:
+
+- runs/sec
+- concurrent runs
+- model calls/run
+- tool calls/run
+- average execution time
+- queue depth
+- tokens/run
+- tool latency
+- database latency
+
+Do not invent benchmark results.
+
+Define what should be measured during Day 1.
+
+Determine what future measurements would trigger architectural evolution.
+
+======================================================================
+62. FAILURE BUDGET
+======================================================================
+
+Determine how runtime reliability should be measured.
+
+Consider:
+
+- execution success rate
+- retry rate
+- tool failure rate
+- model failure rate
+- verification failure rate
+- recovery success
+- stuck runs
+- abandoned runs
+- timeout rate
+
+Determine which metrics are architectural indicators.
+
+======================================================================
+63. SECURITY THREAT MODEL
+======================================================================
+
+Analyze:
+
+- malicious plan
+- malicious tool arguments
+- prompt injection
+- indirect prompt injection
+- tool compromise
+- forged state
+- forged execution context
+- privilege escalation
+- tenant breakout
+- replay
+- state tampering
+- malicious model output
+
+Determine mitigations.
+
+======================================================================
+64. ATTEMPT TO FALSIFY THE RECOMMENDATION
+======================================================================
+
+After choosing the runtime architecture, attempt to prove it is wrong.
+
+Ask:
+
+- At what concurrency does it fail?
+- At what workflow duration does it fail?
+- At what number of tenants does it fail?
+- At what number of workers does it fail?
+- What failure mode exposes the design weakness?
+- What feature would require a different runtime?
+- What security requirement could invalidate it?
+- What consistency requirement could invalidate it?
+
+Then determine whether the architecture survives.
+
+======================================================================
+65. ARCHITECTURAL SELF-CRITIQUE
+======================================================================
+
+Before finalizing, ask:
+
+1. Did I actually compare real runtime architectures?
+2. Did I distinguish agent loops from deterministic workflows?
+3. Did I evaluate durable execution?
+4. Did I avoid premature Temporal/Kubernetes/distributed infrastructure?
+5. Did I create explicit execution state?
+6. Can a crashed process recover?
+7. Are retries safe?
+8. Are side effects protected by idempotency?
+9. Can human approval pause and resume execution?
+10. Can the runtime operate if Control Plane is temporarily unavailable?
+11. Can policy enforcement occur without bypass?
+12. Is the model treated as untrusted with respect to authority?
+13. Can tools be replaced?
+14. Can Qwen be replaced?
+15. Can workers be added?
+16. Can multiple models be introduced?
+17. Can long-running workflows be introduced?
+18. Can executions be audited?
+19. Can executions be replayed realistically?
+20. Did I introduce unnecessary abstractions?
+21. Is the Day-1 design genuinely implementable?
+22. What assumptions could invalidate the architecture?
+
+Include:
+
+# ARCHITECTURAL SELF-CRITIQUE
+
+======================================================================
+66. FINAL RECOMMENDATION
+======================================================================
+
+End with:
+
+# FINAL AGENT RUNTIME ARCHITECTURE RECOMMENDATION
+
+Answer:
+
+"What Agent Runtime should this platform actually build?"
+
+Be concrete.
+
+Describe:
+
+- execution model
+- planner
+- orchestrator
+- executor
+- state
+- persistence
+- model interface
+- tool interface
+- policy enforcement
+- verification
+- retries
+- timeouts
+- cancellation
+- approval
+- compensation
+- concurrency
+- scheduling
+- observability
+- audit
+- Day-1 deployment
+- future evolution
+
+Then answer:
+
+"What MUST NOT be built on Day 1?"
+
+Then:
+
+"What future condition should trigger the next architectural evolution?"
+
+======================================================================
+67. REQUIRED OUTPUT
+======================================================================
+
+Produce:
+
+04_AGENT_RUNTIME.md
+
+The document must explicitly reference:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_PLANE.md
+
+If a decision conflicts with an earlier document:
+
+DO NOT silently resolve the conflict.
+
+Identify it.
+
+Explain the conflict.
+
+Recommend which architectural decision should prevail.
+
+If necessary, identify an ADR that must supersede the previous decision.
+
+======================================================================
+68. SOURCE REQUIREMENTS
+======================================================================
+
+Include direct URLs.
+
+Prioritize:
+
+- official specifications
+- official project documentation
+- official vendor architectures
+- academic research
+- high-quality engineering publications
+
+Do not fabricate citations.
+
+Do not cite sources that were not inspected.
+
+======================================================================
+69. ABSOLUTE FINAL INSTRUCTION
+======================================================================
+
+Act as an INDEPENDENT Principal Architect.
+
+Do not optimize for agreement.
+
+Do not optimize for theoretical sophistication.
+
+Do not optimize for minimum implementation if that compromises reliability.
+
+Do not optimize for enterprise infrastructure if the requirements do not
+justify it.
+
+Optimize for:
+
+CORRECTNESS
++
+RELIABILITY
++
+SECURITY
++
+OBSERVABILITY
++
+AUDITABILITY
++
+DAY-1 SIMPLICITY
++
+FUTURE EVOLUTION
+
+The architecture must be the result of:
+
+    RESEARCH
+       ↓
+    REAL ALTERNATIVES
+       ↓
+    COMPARATIVE ANALYSIS
+       ↓
+    EXECUTION SEMANTICS
+       ↓
+    FAILURE ANALYSIS
+       ↓
+    SECURITY ANALYSIS
+       ↓
+    DAY-1 FEASIBILITY
+       ↓
+    SCALE ANALYSIS
+       ↓
+    ADVERSARIAL CHALLENGE
+       ↓
+    FINAL DECISION
+
+Do NOT design the runtime first and then search for evidence to justify it.
+
+RESEARCH FIRST.
+
+COMPARE.
+
+CHALLENGE.
+
+SELECT.
+
+THEN DESIGN.

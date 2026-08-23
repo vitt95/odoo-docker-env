@@ -1,0 +1,3249 @@
+# 24 — DISASTER RECOVERY ENTERPRISE ARCHITECTURE
+## Enterprise AI Agent Platform
+
+======================================================================
+ROLE
+======================================================================
+
+Act as the Principal Disaster Recovery Architect, Business Continuity
+Architect, Distributed Systems Architect, Reliability Architect,
+Cloud Infrastructure Architect, Security Architect and Enterprise
+Platform Architect responsible for designing the complete Disaster
+Recovery Architecture of this AI agent platform.
+
+You have deep expertise in:
+
+- disaster recovery
+- business continuity
+- high availability
+- fault-tolerant distributed systems
+- regional failure
+- multi-region architecture
+- database recovery
+- storage recovery
+- application recovery
+- control-plane recovery
+- data-plane recovery
+- identity recovery
+- networking recovery
+- Kubernetes recovery
+- cloud infrastructure recovery
+- backup
+- replication
+- failover
+- failback
+- active/active
+- active/passive
+- warm standby
+- cold standby
+- pilot light
+- immutable backups
+- point-in-time recovery
+- data integrity
+- RPO
+- RTO
+- recovery testing
+- chaos engineering
+- incident response
+- dependency analysis
+- operational resilience
+- tenant recovery
+- security recovery
+- cost optimization.
+
+======================================================================
+1. ARCHITECTURAL CONTEXT
+======================================================================
+
+You are designing DR for an enterprise AI agent platform composed of
+multiple interacting subsystems.
+
+Existing architecture documents:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_ARCHITECTURE.md
+04_AGENT_RUNTIME.md
+05_MODEL_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+08_KNOWLEDGE_DATA_ARCHITECTURE.md
+09_MEMORY_ARCHITECTURE.md
+10_SECURITY_ARCHITECTURE.md
+11_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+12_TRUST_PROVENANCE_ARCHITECTURE.md
+13_RELIABILITY_ARCHITECTURE.md
+14_CONCURRENCY_ARCHITECTURE.md
+15_OBSERVABILITY_ARCHITECTURE.md
+16_AUDIT_ARCHITECTURE.md
+17_EVALUATION_ARCHITECTURE.md
+18_DEPLOYMENT_LIFECYCLE_ARCHITECTURE.md
+19_MULTI_TENANCY_ARCHITECTURE.md
+20_COST_ARCHITECTURE.md
+21_CAPACITY_PLANNING_ARCHITECTURE.md
+22_NETWORKING_ARCHITECTURE.md
+23_STORAGE_ARCHITECTURE.md
+
+Future architecture documents include:
+
+25_ADVANCED_SUPPLY_CHAIN_ARCHITECTURE.md
+26_ENTERPRISE_COMPLIANCE_ARCHITECTURE.md
+27_MULTI_MODEL_FALLBACK_ARCHITECTURE.md
+28_HUMAN_IN_THE_LOOP_ARCHITECTURE.md
+29_REPLAY_ARCHITECTURE.md
+30_OFFLINE_MOBILE_ARCHITECTURE.md
+31_A2A_ARCHITECTURE.md
+32_ADMIN_CONSOLE_ARCHITECTURE.md
+33_ADR_ARCHITECTURE.md
+34_QUALITY_MODEL_ARCHITECTURE.md
+
+If a referenced future document does not exist:
+
+DO NOT invent its contents.
+
+Instead:
+
+- identify the dependency
+- identify the interface that DR requires
+- define the minimum stable contract
+- explicitly mark the assumption as unresolved.
+
+Existing documents are not automatically correct.
+
+If DR analysis exposes an architectural weakness in another document:
+
+DO NOT silently compensate for it.
+
+Identify:
+
+- the conflict
+- the affected architecture
+- the consequence
+- the recommended change
+- whether an ADR is required.
+
+======================================================================
+2. MOST IMPORTANT INSTRUCTION
+## CLAUDE MUST CHOOSE THE DR ARCHITECTURE
+======================================================================
+
+This is NOT a prompt asking you to implement a predetermined DR design.
+
+Claude MUST independently determine the best Disaster Recovery
+Architecture for THIS platform.
+
+DO NOT begin with:
+
+- active/active
+- active/passive
+- warm standby
+- cold standby
+- pilot light
+- multi-region
+- Kubernetes replication
+- database replication
+- cloud-native DR
+- backup-only DR.
+
+These are candidate strategies.
+
+They are NOT assumptions.
+
+First understand the system.
+
+Then understand the failure modes.
+
+Then determine business criticality.
+
+Then determine recovery requirements.
+
+Then analyze dependencies.
+
+Then compare DR architectures.
+
+Then attempt to disprove the preferred architecture.
+
+Then select the best architecture.
+
+The process MUST be:
+
+    SYSTEM MODEL
+       ↓
+    FAILURE MODEL
+       ↓
+    BUSINESS CRITICALITY
+       ↓
+    DEPENDENCY GRAPH
+       ↓
+    RPO
+       ↓
+    RTO
+       ↓
+    DATA RECOVERY
+       ↓
+    APPLICATION RECOVERY
+       ↓
+    CONTROL PLANE RECOVERY
+       ↓
+    DATA PLANE RECOVERY
+       ↓
+    NETWORK RECOVERY
+       ↓
+    IDENTITY RECOVERY
+       ↓
+    SECURITY RECOVERY
+       ↓
+    TENANT RECOVERY
+       ↓
+    OBSERVABILITY RECOVERY
+       ↓
+    OPERATIONAL RECOVERY
+       ↓
+    ARCHITECTURE OPTIONS
+       ↓
+    COST MODEL
+       ↓
+    RECOVERY TESTING
+       ↓
+    ADVERSARIAL FAILURE
+       ↓
+    FALSIFICATION
+       ↓
+    FINAL DR DECISION
+
+======================================================================
+3. LEVEL
+======================================================================
+
+This document belongs to:
+
+LEVEL C — SUCCESSIVE ARCHITECTURE.
+
+It is NOT a Day-1 requirement to implement full enterprise DR.
+
+However:
+
+Day 1 MUST NOT make enterprise DR impossible.
+
+Therefore this document has two responsibilities:
+
+1. Define the future enterprise DR architecture.
+2. Define the Day-1 architectural contracts required to evolve into it.
+
+Do not over-engineer Day 1.
+
+Do not create enterprise DR infrastructure prematurely.
+
+But do not permit Day-1 architectural decisions that create
+unnecessary future lock-in.
+
+======================================================================
+4. CENTRAL PRINCIPLE
+======================================================================
+
+DISASTER RECOVERY ≠ HIGH AVAILABILITY.
+
+HIGH AVAILABILITY attempts to prevent or minimize service interruption.
+
+DISASTER RECOVERY assumes that a sufficiently severe failure WILL
+occur and defines how the system is reconstructed or restored.
+
+Do not confuse:
+
+- redundancy
+- replication
+- failover
+- backup
+- restore
+- disaster recovery.
+
+Each solves a different problem.
+
+======================================================================
+5. DISASTER RECOVERY SCOPE
+======================================================================
+
+Define DR for:
+
+- Control Plane
+- Agent Runtime
+- Model Runtime
+- Tool Runtime
+- MCP ecosystem
+- Knowledge
+- Memory
+- Storage
+- Identity
+- Authorization
+- Security
+- Networking
+- Observability
+- Audit
+- Evaluation
+- Cost/usage
+- Tenant state
+- Deployment state
+- Configuration
+- Secrets references
+- External integrations.
+
+======================================================================
+6. FAILURE MODEL
+======================================================================
+
+Do NOT begin with "region failure".
+
+Build a complete failure taxonomy.
+
+At minimum analyze:
+
+LEVEL 1
+-------
+Process failure
+
+LEVEL 2
+-------
+Container failure
+
+LEVEL 3
+-------
+Node failure
+
+LEVEL 4
+-------
+Availability-zone failure
+
+LEVEL 5
+-------
+Cluster failure
+
+LEVEL 6
+-------
+Storage subsystem failure
+
+LEVEL 7
+-------
+Database failure
+
+LEVEL 8
+-------
+Network failure
+
+LEVEL 9
+-------
+Identity failure
+
+LEVEL 10
+--------
+Control Plane failure
+
+LEVEL 11
+--------
+Data Plane failure
+
+LEVEL 12
+--------
+Cloud service failure
+
+LEVEL 13
+--------
+Region failure
+
+LEVEL 14
+--------
+Provider-wide failure
+
+LEVEL 15
+--------
+Configuration corruption
+
+LEVEL 16
+--------
+Credential compromise
+
+LEVEL 17
+--------
+Malicious deletion
+
+LEVEL 18
+--------
+Ransomware / destructive attack
+
+LEVEL 19
+--------
+Software deployment failure
+
+LEVEL 20
+--------
+Data corruption
+
+LEVEL 21
+--------
+Operator error
+
+LEVEL 22
+--------
+Dependency failure
+
+LEVEL 23
+--------
+External model-provider outage
+
+LEVEL 24
+--------
+External tool-provider outage.
+
+For each failure:
+
+- probability
+- impact
+- blast radius
+- detection
+- containment
+- recovery strategy
+- recovery dependency
+- expected recovery time.
+
+Do not invent probabilities without evidence.
+
+======================================================================
+7. FAILURE DOMAINS
+======================================================================
+
+Map:
+
+PROCESS
+NODE
+ZONE
+CLUSTER
+REGION
+PROVIDER.
+
+For each:
+
+identify what redundancy exists.
+
+======================================================================
+8. FAILURE DOMAIN INDEPENDENCE
+======================================================================
+
+Redundancy is only meaningful if replicas do not share the same
+failure domain.
+
+Ask:
+
+Does the "backup" depend on the same:
+
+- region?
+- credentials?
+- control plane?
+- storage?
+- network?
+- administrator?
+- identity provider?
+
+as production?
+
+======================================================================
+9. CORRELATED FAILURE
+======================================================================
+
+Identify correlated failures.
+
+Examples:
+
+Production
++
+Backup
+
+using:
+
+same credentials
+
+same region
+
+same infrastructure provider
+
+may fail together.
+
+======================================================================
+10. BUSINESS CRITICALITY
+======================================================================
+
+Classify platform capabilities:
+
+CRITICAL
+
+HIGH
+
+MEDIUM
+
+LOW
+
+REBUILDABLE.
+
+Do not assign values arbitrarily.
+
+Derive criticality from:
+
+- user impact
+- business impact
+- security impact
+- financial impact
+- contractual requirements
+- operational requirements.
+
+======================================================================
+11. RPO
+======================================================================
+
+Define:
+
+RECOVERY POINT OBJECTIVE.
+
+RPO means:
+
+How much data loss is acceptable after a disaster?
+
+Do NOT assign one RPO to the entire platform.
+
+Different data classes may have different RPOs.
+
+======================================================================
+12. RPO MATRIX
+======================================================================
+
+Create:
+
+| Data/System | Criticality | RPO | Reason | Recovery Mechanism |
+
+Cover:
+
+- control-plane configuration
+- tenant configuration
+- authorization
+- agent state
+- workflow state
+- conversation history
+- memory
+- knowledge
+- documents
+- embeddings
+- audit
+- usage
+- evaluation
+- deployment configuration.
+
+If the existing architecture does not provide enough information to
+derive an RPO:
+
+STATE THE GAP.
+
+Do not invent the requirement.
+
+======================================================================
+13. RTO
+======================================================================
+
+Define:
+
+RECOVERY TIME OBJECTIVE.
+
+RTO means:
+
+How long may the capability remain unavailable?
+
+Again:
+
+DO NOT ASSIGN ONE RTO TO EVERYTHING.
+
+======================================================================
+14. RTO MATRIX
+======================================================================
+
+Create:
+
+| Capability | RTO | Dependency | Recovery Strategy |
+
+Include:
+
+- Control Plane
+- Agent Runtime
+- Model Runtime
+- Tool Runtime
+- Knowledge
+- Memory
+- Identity
+- Authorization
+- Storage
+- Audit
+- Observability
+- Tenant access.
+
+======================================================================
+15. RPO/RTO VALIDATION
+======================================================================
+
+RPO/RTO must be validated against:
+
+- business requirements
+- architecture
+- actual recovery mechanisms
+- cost.
+
+Do not claim:
+
+"RTO = 15 minutes"
+
+unless the architecture and recovery procedure can actually achieve it.
+
+======================================================================
+16. RECOVERY STRATEGY CANDIDATES
+======================================================================
+
+Research and compare:
+
+- backup and restore
+- cold standby
+- pilot light
+- warm standby
+- active/passive
+- active/active
+- multi-region
+- multi-provider.
+
+These are candidates only.
+
+Determine which is appropriate for each subsystem.
+
+======================================================================
+17. NO SINGLE DR STRATEGY
+======================================================================
+
+Do not assume the entire platform needs one DR strategy.
+
+For example:
+
+Control Plane
+
+may use one strategy.
+
+Storage
+
+may use another.
+
+Agent Runtime
+
+may use another.
+
+Audit
+
+may use another.
+
+The final architecture may therefore be HYBRID.
+
+======================================================================
+18. BACKUP
+======================================================================
+
+Define:
+
+- what is backed up
+- how often
+- where
+- retention
+- encryption
+- access control
+- integrity verification
+- restore testing.
+
+======================================================================
+19. BACKUP ≠ DR
+======================================================================
+
+Explain the difference.
+
+A backup that exists but cannot be restored is not a reliable DR
+mechanism.
+
+======================================================================
+20. REPLICATION ≠ BACKUP
+======================================================================
+
+Explain why.
+
+Replication may reproduce:
+
+logical corruption
+
+or:
+
+malicious deletion.
+
+Therefore independent recovery points may still be required.
+
+======================================================================
+21. IMMUTABLE RECOVERY
+======================================================================
+
+Evaluate:
+
+immutable backups
+
+object lock
+
+air-gapped backups
+
+offline copies
+
+isolated recovery accounts.
+
+Do not assume all are necessary.
+
+Determine the appropriate level.
+
+======================================================================
+22. BACKUP SECURITY
+======================================================================
+
+A compromised production credential must NOT automatically be able to:
+
+destroy every recovery copy.
+
+Evaluate separation of:
+
+production credentials
+
+backup administration
+
+restore administration.
+
+======================================================================
+23. BACKUP ENCRYPTION
+======================================================================
+
+Define:
+
+- encryption at rest
+- key management
+- rotation
+- recovery of encryption keys.
+
+======================================================================
+24. KEY RECOVERY
+======================================================================
+
+A backup encrypted with a key that cannot be recovered is useless.
+
+Define the DR dependency:
+
+DATA
+
++
+KEY
+
+must both be recoverable.
+
+======================================================================
+25. IDENTITY RECOVERY
+======================================================================
+
+This is CRITICAL.
+
+A recovered application is useless if:
+
+users cannot authenticate.
+
+Define recovery for:
+
+- identity provider
+- service identities
+- workload identities
+- authorization
+- certificates
+- secrets references.
+
+======================================================================
+26. IDENTITY PROVIDER FAILURE
+======================================================================
+
+Model:
+
+Identity provider unavailable.
+
+Determine:
+
+- fail closed
+- degraded operation
+- cached identity
+- emergency access.
+
+Do not assume indefinite cached authentication is acceptable.
+
+======================================================================
+27. AUTHORIZATION RECOVERY
+======================================================================
+
+Authorization policy must be recoverable.
+
+Define:
+
+source of truth
+
+backup
+
+replication
+
+recovery.
+
+======================================================================
+28. CONTROL PLANE RECOVERY
+======================================================================
+
+Determine:
+
+What must be recovered first?
+
+Potential dependencies:
+
+Identity
+→
+Control Plane
+→
+Data Plane.
+
+But do not assume this ordering.
+
+Build the actual dependency graph.
+
+======================================================================
+29. CONTROL PLANE STATE
+======================================================================
+
+Identify:
+
+- configuration
+- policies
+- agents
+- tools
+- models
+- tenants
+- deployment state.
+
+Determine which is authoritative.
+
+======================================================================
+30. DATA PLANE RECOVERY
+======================================================================
+
+Define recovery of:
+
+- Agent Runtime
+- Model Runtime
+- Tool Runtime
+- MCP Runtime.
+
+======================================================================
+31. MODEL RUNTIME RECOVERY
+======================================================================
+
+Determine whether the model runtime:
+
+- can be reconstructed
+- requires GPU infrastructure
+- depends on model artifacts
+- depends on external model providers.
+
+======================================================================
+32. GPU RECOVERY
+======================================================================
+
+Using 05 and the Resource/GPU architecture:
+
+define:
+
+- GPU availability
+- capacity recovery
+- model loading
+- warm-up
+- artifact retrieval
+- driver/runtime compatibility.
+
+Do not assume GPU capacity is immediately available during a regional
+disaster.
+
+======================================================================
+33. MODEL ARTIFACT RECOVERY
+======================================================================
+
+If models are locally hosted:
+
+define recovery of:
+
+- weights
+- tokenizer
+- configuration
+- runtime
+- dependencies.
+
+======================================================================
+34. EXTERNAL MODEL PROVIDER FAILURE
+======================================================================
+
+If the platform depends on external model providers:
+
+DR cannot guarantee their recovery.
+
+Define:
+
+- provider dependency
+- fallback
+- degradation
+- outage detection.
+
+Do not design 27 in detail here.
+
+Only define the DR dependency boundary.
+
+======================================================================
+35. AGENT STATE RECOVERY
+======================================================================
+
+Using 04 and 23:
+
+define recovery of:
+
+- running agents
+- workflow state
+- checkpoints
+- memory
+- conversation history.
+
+======================================================================
+36. IN-FLIGHT RUNS
+======================================================================
+
+This is CRITICAL.
+
+What happens to an agent execution that was running when the disaster
+occurred?
+
+Options include:
+
+- restart
+- resume
+- replay
+- abandon
+- compensate.
+
+Determine the correct behavior.
+
+======================================================================
+37. EXACTLY-ONCE CLAIMS
+======================================================================
+
+Do NOT assume that DR can preserve exactly-once execution automatically.
+
+Analyze:
+
+external side effects
+
+and:
+
+replayed actions.
+
+======================================================================
+38. SIDE EFFECT RECOVERY
+======================================================================
+
+An agent may have performed:
+
+- API calls
+- emails
+- database writes
+- payments
+- external mutations.
+
+A recovery system must not blindly replay them.
+
+======================================================================
+39. IDEMPOTENCY
+======================================================================
+
+Using 13/14:
+
+define idempotency requirements for recoverable operations.
+
+======================================================================
+40. CHECKPOINTING
+======================================================================
+
+Determine what state must be checkpointed to support recovery.
+
+Do not checkpoint everything.
+
+Checkpoint only what materially improves recovery.
+
+======================================================================
+41. RECOVERY GRANULARITY
+======================================================================
+
+Evaluate:
+
+SYSTEM RECOVERY
+
+vs:
+
+TENANT RECOVERY
+
+vs:
+
+WORKFLOW RECOVERY
+
+vs:
+
+RUN RECOVERY.
+
+======================================================================
+42. PARTIAL RECOVERY
+======================================================================
+
+The platform should ideally support:
+
+recover critical capabilities first
+
+and:
+
+non-critical capabilities later.
+
+======================================================================
+43. DEGRADED MODE
+======================================================================
+
+Define whether the system can operate with reduced functionality.
+
+Potential:
+
+- no new indexing
+- read-only knowledge
+- reduced model capacity
+- limited tool access
+- delayed analytics.
+
+These are candidates.
+
+Determine actual degraded modes.
+
+======================================================================
+44. CONTROL PLANE VS DATA PLANE
+======================================================================
+
+Evaluate independent recovery.
+
+A Control Plane disaster should not automatically destroy Data Plane
+state.
+
+======================================================================
+45. DATA PLANE VS CONTROL PLANE
+======================================================================
+
+Determine whether recovered Data Plane workloads can operate while
+Control Plane is unavailable.
+
+If not:
+
+identify why.
+
+======================================================================
+46. NETWORK RECOVERY
+======================================================================
+
+Using 22:
+
+define recovery of:
+
+- DNS
+- ingress
+- load balancing
+- private connectivity
+- egress
+- service discovery
+- network policies.
+
+======================================================================
+47. DNS RECOVERY
+======================================================================
+
+Define:
+
+- authoritative DNS
+- TTL
+- failover records
+- propagation assumptions.
+
+Do not claim DNS failover is instantaneous.
+
+======================================================================
+48. TRAFFIC REDIRECTION
+======================================================================
+
+Evaluate:
+
+- DNS failover
+- global load balancing
+- application-level routing
+- static redirection.
+
+Choose based on actual architecture.
+
+======================================================================
+49. NETWORK IDENTITY
+======================================================================
+
+Recovered workloads need valid:
+
+service identity
+
+and:
+
+authorization.
+
+======================================================================
+50. STORAGE RECOVERY
+======================================================================
+
+Using 23:
+
+define recovery of:
+
+- database
+- object storage
+- vector storage
+- search
+- cache
+- audit storage.
+
+======================================================================
+51. DATABASE RECOVERY
+======================================================================
+
+Evaluate:
+
+- backup restore
+- replica promotion
+- cross-region replica
+- logical replication
+- physical replication.
+
+Determine based on actual requirements.
+
+======================================================================
+52. OBJECT STORAGE RECOVERY
+======================================================================
+
+Define:
+
+- replicated objects
+- versioning
+- immutable backups
+- restore.
+
+======================================================================
+53. VECTOR STORAGE RECOVERY
+======================================================================
+
+Determine whether vectors are:
+
+- replicated
+- backed up
+- rebuilt.
+
+If rebuildable:
+
+define the source and expected recovery time.
+
+======================================================================
+54. SEARCH RECOVERY
+======================================================================
+
+If search indexes are derived:
+
+prefer rebuilding from authoritative data where appropriate.
+
+======================================================================
+55. CACHE RECOVERY
+======================================================================
+
+Cache should normally be treated as:
+
+rebuildable.
+
+Verify whether any architecture violates this principle.
+
+======================================================================
+56. MEMORY RECOVERY
+======================================================================
+
+Using 09:
+
+classify which memory is:
+
+critical
+
+vs:
+
+rebuildable
+
+vs:
+
+optional.
+
+======================================================================
+57. KNOWLEDGE RECOVERY
+======================================================================
+
+Define:
+
+Raw data
+→
+Parsing
+→
+Chunking
+→
+Embedding
+→
+Index.
+
+Determine which stages must be restored versus rebuilt.
+
+======================================================================
+58. AUDIT RECOVERY
+======================================================================
+
+Audit data may have stronger durability requirements than ordinary
+application logs.
+
+Define:
+
+- replication
+- backup
+- retention
+- integrity.
+
+======================================================================
+59. OBSERVABILITY RECOVERY
+======================================================================
+
+Determine what observability is required DURING recovery.
+
+Do not make observability depend entirely on the failed environment.
+
+======================================================================
+60. OUT-OF-BAND OBSERVABILITY
+======================================================================
+
+Evaluate whether critical recovery telemetry should exist outside the
+primary platform.
+
+======================================================================
+61. TENANT RECOVERY
+======================================================================
+
+Using 19:
+
+define:
+
+- tenant-specific recovery
+- full platform recovery
+- selective restoration.
+
+======================================================================
+62. TENANT ISOLATION DURING RECOVERY
+======================================================================
+
+Recovery must not accidentally mix:
+
+Tenant A
+
+with:
+
+Tenant B.
+
+======================================================================
+63. TENANT DATA RESTORE
+======================================================================
+
+Evaluate:
+
+- full tenant restore
+- point-in-time restore
+- object-level restore
+- database-level restore.
+
+======================================================================
+64. TENANT DELETION VS BACKUP
+======================================================================
+
+A deleted tenant may still exist in backups.
+
+Define the lifecycle.
+
+Do not claim deletion is complete merely because the primary database
+was deleted.
+
+======================================================================
+65. SECURITY INCIDENT RECOVERY
+======================================================================
+
+DR must include:
+
+compromise.
+
+A disaster can be:
+
+SECURITY-INDUCED.
+
+======================================================================
+66. COMPROMISED RECOVERY
+======================================================================
+
+Do not restore compromised credentials or compromised configuration
+blindly.
+
+======================================================================
+67. CLEAN ROOM RECOVERY
+======================================================================
+
+Evaluate clean-room restoration for severe compromise.
+
+======================================================================
+68. RANSOMWARE
+======================================================================
+
+Threat-model:
+
+production encrypted/corrupted
+
++
+backup systems attacked.
+
+Determine independent recovery mechanisms.
+
+======================================================================
+69. MALICIOUS ADMIN
+======================================================================
+
+Threat-model:
+
+privileged administrator deletes:
+
+production
++
+backup.
+
+Determine separation of authority.
+
+======================================================================
+70. SUPPLY CHAIN INCIDENT
+======================================================================
+
+Future 25 may expand this.
+
+DR must at least consider:
+
+compromised deployment artifact.
+
+Do not automatically restore a compromised artifact.
+
+======================================================================
+71. CONFIGURATION CORRUPTION
+======================================================================
+
+Infrastructure can remain available while configuration becomes
+catastrophically wrong.
+
+Recovery must include:
+
+configuration state.
+
+======================================================================
+72. CONFIGURATION BACKUP
+======================================================================
+
+Define backup/versioning of:
+
+- infrastructure
+- network
+- policies
+- deployment
+- application configuration.
+
+======================================================================
+73. INFRASTRUCTURE AS CODE
+======================================================================
+
+Using 18:
+
+determine whether infrastructure can be reconstructed from code.
+
+But remember:
+
+IaC alone does not restore:
+
+runtime state.
+
+======================================================================
+74. RECOVERY ARTIFACTS
+======================================================================
+
+Define the minimum artifacts required to rebuild the platform.
+
+Potential:
+
+- infrastructure definitions
+- container images
+- model artifacts
+- configuration
+- secrets references
+- database backups
+- object storage
+- policies
+- identity configuration.
+
+Determine actual set.
+
+======================================================================
+75. ARTIFACT INDEPENDENCE
+======================================================================
+
+Recovery artifacts must not depend exclusively on the failed
+environment.
+
+======================================================================
+76. IMAGE REGISTRY
+======================================================================
+
+If container images are required:
+
+define registry recovery.
+
+======================================================================
+77. IMAGE INTEGRITY
+======================================================================
+
+Recovered artifacts must be verified.
+
+Coordinate with 25.
+
+======================================================================
+78. VERSION PINNING
+======================================================================
+
+Recovery must know exactly which versions were running.
+
+======================================================================
+79. DEPLOYMENT REPRODUCIBILITY
+======================================================================
+
+A recovery environment should be reproducible.
+
+Define:
+
+version
+
+configuration
+
+dependency
+
+artifact.
+
+======================================================================
+80. SECRET RECOVERY
+======================================================================
+
+Secrets must be recoverable securely.
+
+But:
+
+backup copies of secrets
+
+must not become an uncontrolled security risk.
+
+======================================================================
+81. CERTIFICATE RECOVERY
+======================================================================
+
+Recovered infrastructure needs valid certificates.
+
+======================================================================
+82. KEY RECOVERY
+======================================================================
+
+Cryptographic keys may be a hidden DR dependency.
+
+Explicitly model:
+
+data
+
+→
+
+key
+
+→
+
+identity.
+
+======================================================================
+83. EXTERNAL DEPENDENCIES
+======================================================================
+
+Build an external dependency inventory.
+
+At minimum:
+
+- cloud provider
+- identity provider
+- model providers
+- tool providers
+- MCP servers
+- DNS
+- certificate authority
+- package registries
+- container registries
+- observability provider.
+
+======================================================================
+84. EXTERNAL DEPENDENCY FAILURE
+======================================================================
+
+For each:
+
+Can the platform:
+
+- replace it?
+- bypass it?
+- degrade?
+- wait?
+- recover independently?
+
+======================================================================
+85. PROVIDER LOCK-IN
+======================================================================
+
+Evaluate:
+
+What happens if the primary cloud provider becomes unavailable?
+
+Do NOT automatically design multi-cloud.
+
+Determine whether multi-cloud materially improves resilience.
+
+======================================================================
+86. MULTI-CLOUD
+======================================================================
+
+Compare:
+
+single-cloud multi-region
+
+vs:
+
+multi-cloud.
+
+Include:
+
+- complexity
+- operational cost
+- identity
+- networking
+- storage portability
+- observability
+- deployment
+- consistency.
+
+======================================================================
+87. ACTIVE/ACTIVE
+======================================================================
+
+Evaluate critically.
+
+Ask:
+
+What data consistency model is required?
+
+What happens during partition?
+
+What happens to writes?
+
+What happens to agent executions?
+
+======================================================================
+88. ACTIVE/PASSIVE
+======================================================================
+
+Evaluate:
+
+- simplicity
+- cost
+- recovery time
+- stale state
+- failover complexity.
+
+======================================================================
+89. WARM STANDBY
+======================================================================
+
+Evaluate:
+
+- startup time
+- cost
+- capacity
+- synchronization.
+
+======================================================================
+90. COLD STANDBY
+======================================================================
+
+Evaluate:
+
+- cost
+- recovery time
+- rebuild reliability.
+
+======================================================================
+91. PILOT LIGHT
+======================================================================
+
+Evaluate:
+
+- minimal always-on infrastructure
+- restoration process
+- operational complexity.
+
+======================================================================
+92. HYBRID DR
+======================================================================
+
+Determine whether different subsystems should use different strategies.
+
+======================================================================
+93. RECOVERY ORDER
+======================================================================
+
+Create a dependency-aware recovery sequence.
+
+Do not simply write:
+
+1. database
+2. application
+3. users.
+
+Build the actual dependency graph.
+
+======================================================================
+94. RECOVERY GRAPH
+======================================================================
+
+Represent:
+
+Identity
+↓
+Network
+↓
+Storage
+↓
+Control Plane
+↓
+Data Plane
+↓
+Integrations
+↓
+Users
+
+only if this reflects the actual architecture.
+
+Do not assume this ordering.
+
+======================================================================
+95. RECOVERY WAVES
+======================================================================
+
+Define:
+
+WAVE 0
+--------
+Recovery prerequisites.
+
+WAVE 1
+--------
+Critical infrastructure.
+
+WAVE 2
+--------
+Core platform.
+
+WAVE 3
+--------
+Data services.
+
+WAVE 4
+--------
+Non-critical services.
+
+WAVE 5
+--------
+Full restoration.
+
+Determine actual waves.
+
+======================================================================
+96. RECOVERY AUTOMATION
+======================================================================
+
+Evaluate which steps should be automated.
+
+Do not automate irreversible operations without safeguards.
+
+======================================================================
+97. MANUAL RECOVERY
+======================================================================
+
+Identify unavoidable manual decisions.
+
+Examples:
+
+- declaring disaster
+- selecting recovery point
+- validating data integrity
+- authorizing failover.
+
+======================================================================
+98. RECOVERY AUTHORITY
+======================================================================
+
+Define who can declare:
+
+DISASTER MODE.
+
+Avoid ambiguous authority.
+
+======================================================================
+99. BREAK-GLASS
+======================================================================
+
+Recovery may occur while normal identity systems are degraded.
+
+Define emergency access.
+
+======================================================================
+100. RECOVERY AUDIT
+======================================================================
+
+Every privileged recovery action should be auditable where possible.
+
+======================================================================
+101. FAILOVER
+======================================================================
+
+Define:
+
+- trigger
+- decision
+- authorization
+- execution
+- validation
+- user redirection.
+
+======================================================================
+102. AUTOMATIC FAILOVER
+======================================================================
+
+Do not automatically fail over every failure.
+
+Automatic failover can convert:
+
+temporary degradation
+
+into:
+
+large-scale data divergence.
+
+Determine appropriate boundaries.
+
+======================================================================
+103. MANUAL FAILOVER
+======================================================================
+
+Determine where human confirmation is required.
+
+======================================================================
+104. FAILBACK
+======================================================================
+
+Failover is not complete until:
+
+normal service can eventually be restored.
+
+Define:
+
+DR region
+→
+primary region.
+
+======================================================================
+105. FAILBACK SAFETY
+======================================================================
+
+Do not simply reverse traffic.
+
+Reconcile:
+
+- writes
+- state
+- versions
+- external side effects.
+
+======================================================================
+106. DATA RECONCILIATION
+======================================================================
+
+If both environments accepted writes:
+
+define reconciliation.
+
+======================================================================
+107. SPLIT-BRAIN
+======================================================================
+
+Prevent:
+
+two regions
+
+both believing they are primary.
+
+======================================================================
+108. LEADER AUTHORITY
+======================================================================
+
+Define authoritative region ownership.
+
+======================================================================
+109. FENCING
+======================================================================
+
+If required:
+
+fence failed region before promoting another.
+
+======================================================================
+110. TRAFFIC FENCING
+======================================================================
+
+Prevent clients from continuing to write to the failed environment.
+
+======================================================================
+111. DATA FENCING
+======================================================================
+
+Prevent stale nodes from writing to authoritative storage.
+
+======================================================================
+112. RECOVERY VALIDATION
+======================================================================
+
+Recovery is not successful because:
+
+"the application started."
+
+Validate:
+
+- identity
+- authorization
+- storage
+- tenant isolation
+- agent execution
+- model execution
+- tools
+- audit
+- observability.
+
+======================================================================
+113. DATA INTEGRITY VALIDATION
+======================================================================
+
+Verify:
+
+- checksums
+- record counts
+- versions
+- referential integrity
+- object integrity
+- vector/index consistency.
+
+======================================================================
+114. FUNCTIONAL VALIDATION
+======================================================================
+
+Perform synthetic transactions.
+
+======================================================================
+115. SECURITY VALIDATION
+======================================================================
+
+Verify:
+
+- tenant isolation
+- authorization
+- network policies
+- secrets
+- certificates
+- external access.
+
+======================================================================
+116. OBSERVABILITY VALIDATION
+======================================================================
+
+Recovery environment must be observable.
+
+======================================================================
+117. RECOVERY TESTING
+======================================================================
+
+DR architecture is incomplete without testing.
+
+Create a test program.
+
+======================================================================
+118. TEST TYPES
+======================================================================
+
+Evaluate:
+
+- tabletop
+- restore test
+- component failover
+- zone failure
+- region failure
+- dependency failure
+- security recovery
+- full disaster simulation.
+
+======================================================================
+119. TABLETOP EXERCISE
+======================================================================
+
+Simulate:
+
+"Primary region is unavailable."
+
+Participants must determine:
+
+- who declares disaster
+- what happens first
+- what is recovered
+- what data is lost
+- what remains unavailable.
+
+======================================================================
+120. RESTORE TEST
+======================================================================
+
+Actually restore:
+
+database
+
+and:
+
+object storage.
+
+Measure:
+
+RTO
+
+and:
+
+RPO.
+
+======================================================================
+121. REGION FAILURE TEST
+======================================================================
+
+Where safe and practical:
+
+simulate or conduct controlled regional recovery.
+
+Do not equate:
+
+"we have replicated data"
+
+with:
+
+"we have successfully recovered."
+
+======================================================================
+122. CHAOS TESTING
+======================================================================
+
+Evaluate failure injection for:
+
+- database
+- storage
+- network
+- DNS
+- identity
+- region.
+
+======================================================================
+123. RECOVERY DRILLS
+======================================================================
+
+Define:
+
+monthly
+
+quarterly
+
+annual
+
+or evidence-based cadence.
+
+Do not choose cadence without considering system risk.
+
+======================================================================
+124. RECOVERY METRICS
+======================================================================
+
+Track:
+
+- actual RTO
+- actual RPO
+- restore success rate
+- failover duration
+- failback duration
+- recovery errors
+- missing data
+- manual steps
+- recovery automation coverage.
+
+======================================================================
+125. RTO/RPO DRIFT
+======================================================================
+
+Requirements and reality can diverge.
+
+Continuously compare:
+
+TARGET
+
+vs:
+
+ACTUAL.
+
+======================================================================
+126. RECOVERY DOCUMENTATION
+======================================================================
+
+Define:
+
+- runbooks
+- recovery procedures
+- dependency map
+- contact information
+- access procedures
+- validation procedures.
+
+======================================================================
+127. RUNBOOK VERSIONING
+======================================================================
+
+Recovery procedures must be version-controlled.
+
+======================================================================
+128. RUNBOOK TESTING
+======================================================================
+
+A runbook is not trusted merely because it exists.
+
+Test it.
+
+======================================================================
+129. HUMAN DEPENDENCY
+======================================================================
+
+Identify recovery procedures that depend on one person.
+
+Avoid:
+
+"only one engineer knows how to recover the database."
+
+======================================================================
+130. RECOVERY ACCESS
+======================================================================
+
+Recovery credentials and permissions must themselves be recoverable.
+
+======================================================================
+131. DR ENVIRONMENT SECURITY
+======================================================================
+
+The DR environment must not be:
+
+"less secure because it is temporary."
+
+======================================================================
+132. DR NETWORKING
+======================================================================
+
+Using 22:
+
+define:
+
+- network topology
+- ingress
+- egress
+- private connectivity
+- DNS
+- service discovery
+- network policy.
+
+======================================================================
+133. DR STORAGE
+======================================================================
+
+Using 23:
+
+define:
+
+- replication
+- backup
+- restore
+- object storage
+- vector rebuild
+- database recovery.
+
+======================================================================
+134. DR IDENTITY
+======================================================================
+
+Using 11:
+
+define:
+
+- users
+- service identities
+- workload identities
+- authorization.
+
+======================================================================
+135. DR SECURITY
+======================================================================
+
+Using 10:
+
+define:
+
+- secrets
+- certificates
+- keys
+- security policies.
+
+======================================================================
+136. DR OBSERVABILITY
+======================================================================
+
+Using 15:
+
+define:
+
+- metrics
+- logs
+- traces
+- recovery telemetry.
+
+======================================================================
+137. DR AUDIT
+======================================================================
+
+Using 16:
+
+define:
+
+- recovery events
+- privileged actions
+- failover decisions
+- restore actions.
+
+======================================================================
+138. DR MULTI-TENANCY
+======================================================================
+
+Using 19:
+
+ensure:
+
+tenant isolation
+
+survives:
+
+recovery.
+
+======================================================================
+139. DR COST
+======================================================================
+
+Using 20:
+
+calculate:
+
+- standby infrastructure
+- replication
+- backup
+- storage
+- network transfer
+- operational cost
+- testing cost.
+
+======================================================================
+140. DR CAPACITY
+======================================================================
+
+Using 21:
+
+ensure the DR environment can actually support the expected workload.
+
+A standby region with:
+
+30% of required capacity
+
+does not provide:
+
+100% recovery capacity.
+
+======================================================================
+141. CAPACITY DEGRADATION
+======================================================================
+
+Evaluate whether DR should operate:
+
+100%
+
+or:
+
+reduced capacity.
+
+Define the acceptable degraded state.
+
+======================================================================
+142. MODEL CAPACITY DURING DR
+======================================================================
+
+AI systems have unusual capacity characteristics.
+
+Determine:
+
+- GPU scarcity
+- model loading
+- inference capacity
+- queueing
+- fallback.
+
+======================================================================
+143. TOOL CAPACITY DURING DR
+======================================================================
+
+External tools may have:
+
+- rate limits
+- quotas
+- regional availability.
+
+Include them.
+
+======================================================================
+144. NETWORK CAPACITY DURING DR
+======================================================================
+
+Cross-region recovery may create:
+
+large data transfer.
+
+Model it.
+
+======================================================================
+145. STORAGE CAPACITY DURING DR
+======================================================================
+
+Recovery can temporarily require:
+
+more storage
+
+than normal.
+
+Include:
+
+- restored copy
+- active copy
+- backup copy
+- indexes.
+
+======================================================================
+146. RECOVERY COST SPIKE
+======================================================================
+
+Disaster recovery may temporarily cost significantly more.
+
+Model:
+
+recovery burst cost.
+
+======================================================================
+147. DR COST OPTIMIZATION
+======================================================================
+
+Do not optimize DR solely for minimum standby cost.
+
+Optimize:
+
+risk-adjusted total cost.
+
+======================================================================
+148. DR ARCHITECTURE OPTIONS
+======================================================================
+
+Construct realistic alternatives.
+
+At minimum evaluate:
+
+OPTION A
+--------
+Backup + restore.
+
+OPTION B
+--------
+Single-region HA + warm standby.
+
+OPTION C
+--------
+Multi-zone + cross-region active/passive.
+
+OPTION D
+--------
+Multi-region active/active.
+
+OPTION E
+--------
+Hybrid subsystem-specific DR.
+
+OPTION F
+--------
+Multi-provider recovery.
+
+These are candidates only.
+
+Research and determine whether they actually fit the platform.
+
+======================================================================
+149. ARCHITECTURE SELECTION MATRIX
+======================================================================
+
+Compare:
+
+| Criterion |
+| RPO |
+| RTO |
+| Availability |
+| Data consistency |
+| Complexity |
+| Operational burden |
+| Security |
+| Tenant isolation |
+| Recovery reliability |
+| Testing complexity |
+| Cost |
+| Provider dependence |
+| Day-1 compatibility |
+| Future scalability |
+| Recommendation |
+
+======================================================================
+150. WHY NOT ANALYSIS
+======================================================================
+
+For the selected architecture explicitly answer:
+
+WHY THIS?
+
+WHY NOT BACKUP + RESTORE?
+
+WHY NOT COLD STANDBY?
+
+WHY NOT PILOT LIGHT?
+
+WHY NOT WARM STANDBY?
+
+WHY NOT ACTIVE/PASSIVE?
+
+WHY NOT ACTIVE/ACTIVE?
+
+WHY NOT MULTI-REGION EVERYTHING?
+
+WHY NOT MULTI-CLOUD?
+
+WHY NOT SINGLE-CLOUD MULTI-REGION?
+
+WHY NOT AUTOMATIC FAILOVER?
+
+WHY NOT MANUAL FAILOVER?
+
+WHY NOT SYNCHRONOUS REPLICATION?
+
+WHY NOT ASYNCHRONOUS REPLICATION?
+
+WHY NOT REBUILD EVERYTHING FROM SCRATCH?
+
+WHY NOT KEEP EVERYTHING HOT IN DR?
+
+WHY NOT FULL CAPACITY IN DR?
+
+WHY NOT REDUCED CAPACITY?
+
+WHY NOT ONE DR STRATEGY FOR EVERYTHING?
+
+Only retain alternatives that remain technically relevant after research.
+
+======================================================================
+151. REVERSIBILITY ANALYSIS
+======================================================================
+
+Classify:
+
+- replication architecture
+- region topology
+- failover mechanism
+- database strategy
+- storage strategy
+- DNS strategy
+- identity strategy
+- standby capacity
+- multi-cloud dependency
+
+as:
+
+- easily reversible
+- moderately reversible
+- expensive to reverse
+- effectively irreversible.
+
+======================================================================
+152. DAY-1 COMPATIBILITY
+======================================================================
+
+Define:
+
+WHAT MUST DAY 1 DO?
+
+Examples may include:
+
+- backups
+- versioned configuration
+- reproducible deployment
+- data ownership
+- recovery-friendly IDs
+- auditability
+- storage contracts
+- identity recovery hooks.
+
+These are candidates.
+
+Determine actual requirements.
+
+======================================================================
+153. WHAT DAY 1 MUST NOT DO
+======================================================================
+
+Explicitly identify enterprise DR complexity that should NOT be built
+Day 1.
+
+Do not over-engineer.
+
+======================================================================
+154. FUTURE TRIGGERS
+======================================================================
+
+Define objective triggers for moving from:
+
+Day 1
+
+to:
+
+Enterprise DR.
+
+Potential triggers:
+
+- tenant requirements
+- contractual RTO/RPO
+- revenue exposure
+- regulatory requirements
+- workload scale
+- regional risk
+- customer concentration
+- availability requirements.
+
+Do not invent numerical thresholds unless justified.
+
+======================================================================
+155. RECOVERY CONTRACTS
+======================================================================
+
+Define stable contracts such as:
+
+RecoveryPoint
+RecoveryTarget
+RecoveryPlan
+RecoveryDependency
+RecoveryState
+FailoverDecision
+RecoveryRun
+RecoveryValidation
+RecoveryArtifact.
+
+These are examples only.
+
+Determine the minimum required set.
+
+The contracts must remain independent of:
+
+- AWS
+- Azure
+- GCP
+- Kubernetes
+- Terraform
+- any particular DR vendor.
+
+======================================================================
+156. REQUIRED DIAGRAMS
+======================================================================
+
+Include Mermaid diagrams for:
+
+1. Complete DR architecture
+2. Failure domains
+3. Dependency graph
+4. RPO/RTO model
+5. Backup architecture
+6. Replication architecture
+7. Primary → DR region
+8. Failover
+9. Failback
+10. Control Plane recovery
+11. Data Plane recovery
+12. Storage recovery
+13. Identity recovery
+14. Network recovery
+15. Tenant recovery
+16. Security incident recovery
+17. Clean-room recovery
+18. Recovery waves
+19. Recovery validation
+20. DR testing architecture
+21. Day-1 → Enterprise evolution.
+
+======================================================================
+157. ADR CANDIDATES
+======================================================================
+
+Identify ADRs for:
+
+- DR strategy
+- region topology
+- replication
+- backup
+- RPO
+- RTO
+- failover
+- failback
+- standby capacity
+- identity recovery
+- network recovery
+- storage recovery
+- tenant recovery
+- security recovery
+- multi-cloud.
+
+For each:
+
+- problem
+- alternatives
+- recommendation
+- consequences
+- reversibility
+- decision deadline.
+
+======================================================================
+158. DR READINESS MATRIX
+======================================================================
+
+Create:
+
+| Capability | Day 1 | Prepare | Enterprise | Verified |
+
+Cover:
+
+- backups
+- restore
+- replication
+- failover
+- failback
+- identity recovery
+- network recovery
+- storage recovery
+- Control Plane
+- Data Plane
+- GPU/model recovery
+- tenant recovery
+- security recovery
+- observability
+- audit
+- recovery testing.
+
+======================================================================
+159. RECOVERY DEPENDENCY MATRIX
+======================================================================
+
+Create:
+
+| Component | Requires | Can Recover Independently? | Critical Dependency |
+
+Do this for every major subsystem.
+
+======================================================================
+160. RECOVERY TEST MATRIX
+======================================================================
+
+Create:
+
+| Failure | Detection | Recovery | RPO | RTO | Validation |
+
+At minimum:
+
+- database failure
+- zone failure
+- region failure
+- storage corruption
+- malicious deletion
+- credential compromise
+- identity outage
+- DNS outage
+- network outage
+- model provider outage
+- tool provider outage
+- container registry outage
+- deployment corruption
+- control-plane corruption.
+
+======================================================================
+161. SECURITY RECOVERY TEST MATRIX
+======================================================================
+
+Create:
+
+| Attack | Recovery Risk | Control | Recovery Method |
+
+Include:
+
+- ransomware
+- malicious deletion
+- stolen credentials
+- compromised admin
+- compromised image
+- corrupted configuration
+- compromised backup.
+
+======================================================================
+162. ATTEMPT TO FALSIFY THE RECOMMENDATION
+======================================================================
+
+Try to prove the selected DR architecture wrong.
+
+Ask:
+
+- What if the entire primary region disappears?
+- What if the database is corrupted before replication?
+- What if backups are encrypted by an attacker?
+- What if identity is unavailable?
+- What if DNS fails?
+- What if the cloud provider has a control-plane outage?
+- What if the DR region lacks GPU capacity?
+- What if the model artifact is unavailable?
+- What if the container registry is unavailable?
+- What if the DR environment has stale configuration?
+- What if both regions accidentally become active?
+- What if failover itself corrupts state?
+- What if external tools are unavailable?
+- What if tenants require different recovery points?
+- What if recovery traffic saturates the network?
+- What if restoration takes longer than expected?
+- What if the backup succeeds but restore fails?
+- What if the latest backup is logically corrupted?
+- What if the recovery credentials are unavailable?
+- What if the DR environment is compromised too?
+
+Determine the first condition that breaks the architecture.
+
+Then determine whether that condition is:
+
+- acceptable
+- mitigable
+- architecture-changing.
+
+======================================================================
+163. ARCHITECTURAL SELF-CRITIQUE
+======================================================================
+
+Before finalizing, ask:
+
+1. Did I distinguish HA from DR?
+2. Did I define failure domains?
+3. Did I define RPO?
+4. Did I define RTO?
+5. Did I avoid inventing requirements?
+6. Did I map dependencies?
+7. Did I account for identity recovery?
+8. Did I account for key recovery?
+9. Did I account for storage recovery?
+10. Did I account for network recovery?
+11. Did I account for Control Plane recovery?
+12. Did I account for Data Plane recovery?
+13. Did I account for in-flight agent executions?
+14. Did I account for external side effects?
+15. Did I account for tenant isolation?
+16. Did I account for malicious recovery scenarios?
+17. Did I distinguish replication from backup?
+18. Did I test restore?
+19. Did I account for GPU/model recovery?
+20. Did I account for external dependencies?
+21. Did I account for recovery capacity?
+22. Did I account for recovery cost?
+23. Did I define failback?
+24. Did I address split-brain?
+25. Did I identify Day-1 requirements?
+26. Did I avoid unnecessary Day-1 complexity?
+27. What assumptions could invalidate the architecture?
+
+Include:
+
+# ARCHITECTURAL SELF-CRITIQUE
+
+======================================================================
+164. FINAL RECOMMENDATION
+======================================================================
+
+End with:
+
+# FINAL DISASTER RECOVERY ARCHITECTURE RECOMMENDATION
+
+Answer:
+
+"What Disaster Recovery Architecture should this platform actually
+adopt?"
+
+Be concrete.
+
+Describe:
+
+- failure model
+- criticality
+- RPO
+- RTO
+- backup strategy
+- replication strategy
+- regional strategy
+- failover
+- failback
+- Control Plane recovery
+- Data Plane recovery
+- Agent Runtime recovery
+- Model Runtime recovery
+- GPU recovery
+- Tool/MCP recovery
+- Storage recovery
+- Knowledge recovery
+- Memory recovery
+- Identity recovery
+- Network recovery
+- Tenant recovery
+- Security recovery
+- Observability recovery
+- Audit recovery
+- capacity
+- cost
+- recovery testing
+- Day-1 preparation
+- future enterprise evolution.
+
+Then explicitly answer:
+
+"WHAT MUST BE BUILT BEFORE ENTERPRISE DR IS ACTIVATED?"
+
+Then:
+
+"WHAT MUST NOT BE BUILT ON DAY 1?"
+
+Then:
+
+"WHAT OBJECTIVE CONDITION SHOULD TRIGGER THE TRANSITION TO THIS DR
+ARCHITECTURE?"
+
+======================================================================
+165. REQUIRED OUTPUT
+======================================================================
+
+Produce:
+
+24_DR_ENTERPRISE_ARCHITECTURE.md
+
+The document MUST explicitly reference:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_ARCHITECTURE.md
+04_AGENT_RUNTIME.md
+05_MODEL_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+08_KNOWLEDGE_DATA_ARCHITECTURE.md
+09_MEMORY_ARCHITECTURE.md
+10_SECURITY_ARCHITECTURE.md
+11_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+12_TRUST_PROVENANCE_ARCHITECTURE.md
+13_RELIABILITY_ARCHITECTURE.md
+14_CONCURRENCY_ARCHITECTURE.md
+15_OBSERVABILITY_ARCHITECTURE.md
+16_AUDIT_ARCHITECTURE.md
+17_EVALUATION_ARCHITECTURE.md
+18_DEPLOYMENT_LIFECYCLE_ARCHITECTURE.md
+19_MULTI_TENANCY_ARCHITECTURE.md
+20_COST_ARCHITECTURE.md
+21_CAPACITY_PLANNING_ARCHITECTURE.md
+22_NETWORKING_ARCHITECTURE.md
+23_STORAGE_ARCHITECTURE.md
+
+Also identify future interactions with:
+
+25_ADVANCED_SUPPLY_CHAIN_ARCHITECTURE.md
+26_ENTERPRISE_COMPLIANCE_ARCHITECTURE.md
+27_MULTI_MODEL_FALLBACK_ARCHITECTURE.md
+28_HUMAN_IN_THE_LOOP_ARCHITECTURE.md
+29_REPLAY_ARCHITECTURE.md
+30_OFFLINE_MOBILE_ARCHITECTURE.md
+31_A2A_ARCHITECTURE.md
+32_ADMIN_CONSOLE_ARCHITECTURE.md
+33_ADR_ARCHITECTURE.md
+34_QUALITY_MODEL_ARCHITECTURE.md
+
+If these documents do not exist:
+
+DO NOT invent their content.
+
+Define only:
+
+- dependency
+- stable interface
+- unresolved assumption.
+
+======================================================================
+166. SOURCE REQUIREMENTS
+======================================================================
+
+THIS SECTION IS MANDATORY.
+
+Use current web research.
+
+Research at minimum:
+
+- NIST business continuity / contingency guidance
+- NIST Zero Trust where relevant to recovery identity
+- NIST cybersecurity incident recovery guidance
+- official cloud disaster recovery guidance
+- official Kubernetes disaster recovery guidance where relevant
+- official database backup/recovery documentation
+- official object-storage durability/recovery documentation
+- authoritative distributed-systems research
+- authoritative resilience engineering research.
+
+Prioritize primary sources.
+
+When evaluating specific technologies:
+
+use their official documentation.
+
+Do not rely on marketing claims alone.
+
+Do not fabricate:
+
+- RPO
+- RTO
+- availability
+- durability
+- recovery time
+- replication guarantees
+- failover guarantees
+- provider capabilities
+- cost.
+
+Clearly distinguish:
+
+SOURCE FACT
+
+from:
+
+BUSINESS REQUIREMENT
+
+from:
+
+BENCHMARK
+
+from:
+
+MEASUREMENT
+
+from:
+
+INFERENCE
+
+from:
+
+ARCHITECTURAL RECOMMENDATION.
+
+======================================================================
+167. RPO/RTO DISCIPLINE
+======================================================================
+
+CRITICAL:
+
+Never invent an RPO or RTO simply to complete a table.
+
+If the source architecture does not define a requirement:
+
+write:
+
+"RPO NOT YET DEFINED"
+
+or:
+
+"RTO NOT YET DEFINED"
+
+and identify what decision is required.
+
+If you propose a target:
+
+label it:
+
+PROPOSED TARGET
+
+and explain the assumption.
+
+======================================================================
+168. TESTING DISCIPLINE
+======================================================================
+
+Never claim:
+
+"DR works"
+
+because:
+
+- backups exist
+- replication exists
+- infrastructure exists.
+
+DR is only considered validated when recovery has been tested.
+
+Every major recovery objective must map to:
+
+TEST
+
+→
+
+MEASUREMENT
+
+→
+
+RESULT
+
+→
+
+REMEDIATION.
+
+======================================================================
+169. VERSION AND DATE DISCIPLINE
+======================================================================
+
+At the beginning of the document state:
+
+RESEARCH DATE
+
+TEST DATE
+
+and relevant versions of:
+
+- Kubernetes
+- database
+- storage
+- networking
+- identity infrastructure
+- deployment infrastructure
+
+for technologies actually selected.
+
+======================================================================
+170. ABSOLUTE FINAL INSTRUCTION
+======================================================================
+
+Act as an INDEPENDENT Principal Disaster Recovery Architect.
+
+Your responsibility is to determine the best DR architecture for THIS
+platform.
+
+Do not assume:
+
+BACKUP = DR.
+
+Do not assume:
+
+REPLICATION = DR.
+
+Do not assume:
+
+HA = DR.
+
+Do not assume:
+
+MULTI-REGION = DR.
+
+Do not assume:
+
+ACTIVE/ACTIVE = BEST.
+
+Do not assume:
+
+ACTIVE/PASSIVE = BEST.
+
+Do not assume:
+
+MULTI-CLOUD = MORE RESILIENT.
+
+Do not assume:
+
+MORE REPLICAS = BETTER RECOVERY.
+
+Do not assume:
+
+AUTOMATIC FAILOVER = SAFER.
+
+Do not assume:
+
+MANUAL FAILOVER = SAFER.
+
+Do not assume:
+
+THE CLOUD PROVIDER WILL ALWAYS BE AVAILABLE.
+
+Do not assume:
+
+IDENTITY WILL ALWAYS BE AVAILABLE.
+
+Do not assume:
+
+GPU CAPACITY WILL BE AVAILABLE DURING A DISASTER.
+
+Do not assume:
+
+MODEL ARTIFACTS WILL BE AVAILABLE.
+
+Do not assume:
+
+CONTAINER REGISTRIES WILL BE AVAILABLE.
+
+Do not assume:
+
+EXTERNAL TOOLS WILL BE AVAILABLE.
+
+Do not assume:
+
+BACKUPS ARE VALID UNTIL RESTORED.
+
+Do not assume:
+
+REPLICATION PROTECTS AGAINST CORRUPTION.
+
+Do not assume:
+
+FAILOVER IS COMPLETE WHEN TRAFFIC MOVES.
+
+Do not assume:
+
+FAILBACK IS SIMPLY FAILOVER IN REVERSE.
+
+Do not assume:
+
+RECOVERED APPLICATIONS ARE SAFE WITHOUT SECURITY VALIDATION.
+
+Do not assume:
+
+TENANT ISOLATION SURVIVES RECOVERY AUTOMATICALLY.
+
+Do not allow:
+
+A FAILED REGION
+
+to remain:
+
+WRITE-AUTHORITATIVE
+
+after another region becomes primary.
+
+Do not allow:
+
+RECOVERY CREDENTIALS
+
+to depend entirely on:
+
+THE FAILED ENVIRONMENT.
+
+Do not allow:
+
+BACKUPS
+
+to be destroyed by:
+
+THE SAME PRIVILEGED PATH AS PRODUCTION.
+
+Do not allow:
+
+IN-FLIGHT AGENT ACTIONS
+
+to be blindly replayed.
+
+Do not allow:
+
+RECOVERY
+
+to introduce:
+
+CROSS-TENANT DATA EXPOSURE.
+
+Do not allow:
+
+A DR ENVIRONMENT
+
+to be:
+
+LESS SECURE THAN PRODUCTION.
+
+Do not allow:
+
+DAY-1 ARCHITECTURE
+
+to create unnecessary:
+
+DR LOCK-IN.
+
+Optimize for:
+
+RECOVERABILITY
++
+DATA INTEGRITY
++
+PREDICTABLE RPO
++
+PREDICTABLE RTO
++
+SECURITY
++
+TENANT ISOLATION
++
+OPERATIONAL SIMPLICITY
++
+TESTABILITY
++
+COST EFFICIENCY
++
+FUTURE EVOLUTION.
+
+The final architecture MUST result from:
+
+    SYSTEM MODEL
+       ↓
+    FAILURE MODEL
+       ↓
+    BUSINESS CRITICALITY
+       ↓
+    DEPENDENCY GRAPH
+       ↓
+    RPO
+       ↓
+    RTO
+       ↓
+    DATA RECOVERY
+       ↓
+    APPLICATION RECOVERY
+       ↓
+    IDENTITY
+       ↓
+    NETWORK
+       ↓
+    SECURITY
+       ↓
+    TENANT RECOVERY
+       ↓
+    CAPACITY
+       ↓
+    COST
+       ↓
+    ALTERNATIVE COMPARISON
+       ↓
+    TESTING
+       ↓
+    ADVERSARIAL FAILURE
+       ↓
+    FALSIFICATION
+       ↓
+    FINAL DECISION.
+
+DO NOT CHOOSE THE DR STRATEGY FIRST.
+
+DO NOT CHOOSE ACTIVE/ACTIVE FIRST.
+
+DO NOT CHOOSE MULTI-REGION FIRST.
+
+DO NOT CHOOSE MULTI-CLOUD FIRST.
+
+DO NOT CHOOSE REPLICATION FIRST.
+
+DO NOT CHOOSE BACKUP FIRST.
+
+UNDERSTAND THE FAILURE MODEL FIRST.
+
+UNDERSTAND THE BUSINESS CRITICALITY FIRST.
+
+UNDERSTAND THE DEPENDENCY GRAPH FIRST.
+
+UNDERSTAND THE DATA RECOVERY REQUIREMENTS FIRST.
+
+UNDERSTAND THE APPLICATION RECOVERY REQUIREMENTS FIRST.
+
+UNDERSTAND IDENTITY RECOVERY FIRST.
+
+UNDERSTAND SECURITY RECOVERY FIRST.
+
+UNDERSTAND TENANT RECOVERY FIRST.
+
+THEN COMPARE THE AVAILABLE DR ARCHITECTURES.
+
+THEN ATTEMPT TO DISPROVE THE PREFERRED OPTION.
+
+THEN SELECT THE BEST ARCHITECTURE AVAILABLE FOR THIS PROJECT.
+
+THEN DEFINE WHAT MUST EXIST ON DAY 1 TO MAKE THAT FUTURE ARCHITECTURE
+POSSIBLE.
+
+THEN DESIGN THE ENTERPRISE DR ARCHITECTURE.

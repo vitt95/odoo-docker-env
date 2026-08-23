@@ -1,0 +1,2167 @@
+# 05 — RESOURCE / GPU ARCHITECTURE
+## Enterprise AI Agent Platform
+
+======================================================================
+ROLE
+======================================================================
+
+Act as the Principal AI Infrastructure Architect, GPU Architect,
+Performance Architect, Resource Scheduling Architect and Distributed
+Systems Architect responsible for designing the complete Resource and
+GPU Architecture of an enterprise-grade AI agent platform.
+
+You have deep expertise in:
+
+- GPU architecture
+- NVIDIA CUDA
+- GPU memory / VRAM
+- CPU/GPU heterogeneous systems
+- AI inference workloads
+- LLM inference
+- Qwen model architecture
+- quantization
+- batching
+- continuous batching
+- KV cache
+- context windows
+- speculative decoding
+- tensor parallelism
+- pipeline parallelism
+- model parallelism
+- multi-GPU systems
+- GPU scheduling
+- GPU isolation
+- GPU sharing
+- NVIDIA MIG
+- CUDA processes
+- GPU memory management
+- CPU scheduling
+- NUMA
+- memory bandwidth
+- PCIe
+- NVLink
+- storage throughput
+- model loading
+- inference concurrency
+- resource quotas
+- admission control
+- backpressure
+- workload scheduling
+- capacity planning
+- performance benchmarking
+- autoscaling
+- heterogeneous hardware
+- Kubernetes GPU scheduling
+- container GPU access
+- AI serving infrastructure.
+
+You are working within:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_ARCHITECTURE.md
+04_AGENT_RUNTIME.md
+05_MODEL_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+08_KNOWLEDGE_DATA_ARCHITECTURE.md
+09_MEMORY_ARCHITECTURE.md
+10_SECURITY_ARCHITECTURE.md
+11_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+13_RELIABILITY_ARCHITECTURE.md
+15_OBSERVABILITY_ARCHITECTURE.md
+16_AUDIT_ARCHITECTURE.md
+17_EVALUATION_ARCHITECTURE.md
+18_DEPLOYMENT_LIFECYCLE_ARCHITECTURE.md
+
+If the exact filenames differ from the current repository, use the
+actual filenames available in the project and explicitly document the
+mapping.
+
+These documents provide the current architectural context.
+
+However:
+
+THEY ARE NOT IMMUNE FROM CHALLENGE.
+
+If research demonstrates that an assumption in another document is
+technically incorrect, incomplete, obsolete or suboptimal, explicitly
+identify the conflict and recommend the superior architecture.
+
+======================================================================
+1. PRIMARY OBJECTIVE
+======================================================================
+
+Design the complete Resource and GPU Architecture.
+
+The architecture must answer:
+
+HOW ARE CPU, MEMORY, GPU, STORAGE AND NETWORK RESOURCES REPRESENTED?
+
+HOW DOES AN AGENT RUN CONSUME RESOURCES?
+
+HOW DOES MODEL INFERENCE CONSUME GPU RESOURCES?
+
+HOW IS GPU MEMORY MANAGED?
+
+HOW IS CONCURRENCY CONTROLLED?
+
+HOW ARE MULTIPLE REQUESTS SHARED ON A GPU?
+
+HOW DO WE PREVENT ONE WORKLOAD FROM STARVING OTHERS?
+
+HOW DO WE REPRESENT RESOURCE REQUIREMENTS?
+
+HOW DO WE RESERVE RESOURCES?
+
+HOW DO WE RELEASE RESOURCES?
+
+HOW DO WE HANDLE RESOURCE EXHAUSTION?
+
+HOW DOES THE SYSTEM EVOLVE FROM ONE GPU TO MULTIPLE GPUS?
+
+HOW DOES IT EVOLVE FROM ONE MACHINE TO MULTIPLE MACHINES?
+
+HOW DO WE SUPPORT DIFFERENT GPU CLASSES?
+
+HOW DO WE SUPPORT DIFFERENT MODEL SIZES?
+
+HOW DO WE SUPPORT MULTIPLE MODEL INSTANCES?
+
+HOW DO WE SUPPORT FUTURE GPU POOLS?
+
+======================================================================
+2. MOST IMPORTANT INSTRUCTION
+## RESEARCH FIRST — SELECT ARCHITECTURE SECOND
+======================================================================
+
+DO NOT begin by selecting:
+
+- a GPU
+- CUDA
+- NVIDIA MIG
+- Kubernetes
+- vLLM
+- SGLang
+- Ray
+- Triton
+- Slurm
+- a cloud GPU provider
+- a GPU scheduler
+- a hardware vendor
+
+as the architecture.
+
+Research first.
+
+Research current authoritative and technically credible information
+about:
+
+- Qwen3.5 9B inference requirements
+- GPU memory requirements
+- quantization
+- KV cache
+- context length
+- batching
+- inference concurrency
+- GPU utilization
+- model serving
+- GPU scheduling
+- CUDA resource behavior
+- container GPU isolation
+- NVIDIA MIG where relevant
+- multi-GPU inference
+- tensor parallelism
+- model parallelism
+- GPU sharing
+- resource quotas
+- AI workload scheduling
+- capacity planning.
+
+Prioritize:
+
+- official NVIDIA documentation
+- official Qwen documentation
+- official inference-runtime documentation
+- official CUDA documentation
+- peer-reviewed / technically authoritative sources
+- credible benchmark evidence.
+
+Do not rely on marketing claims.
+
+Then identify meaningful architecture alternatives.
+
+Then compare them.
+
+Then select the architecture best suited to THIS project.
+
+Then attempt to falsify the decision.
+
+Required process:
+
+    RESEARCH
+       ↓
+    REAL WORKLOAD ANALYSIS
+       ↓
+    RESOURCE MODEL
+       ↓
+    GPU MEMORY MODEL
+       ↓
+    CONCURRENCY MODEL
+       ↓
+    SCHEDULING OPTIONS
+       ↓
+    ARCHITECTURAL ALTERNATIVES
+       ↓
+    PERFORMANCE ANALYSIS
+       ↓
+    SECURITY / ISOLATION ANALYSIS
+       ↓
+    COST ANALYSIS
+       ↓
+    ADVERSARIAL CHALLENGE
+       ↓
+    FALSIFICATION
+       ↓
+    FINAL DECISION
+       ↓
+    DAY-1 IMPLEMENTATION
+       ↓
+    FUTURE EVOLUTION
+
+CLAUDE MUST DETERMINE THE BEST RESOURCE / GPU ARCHITECTURE AVAILABLE
+FOR THIS PROJECT.
+
+======================================================================
+3. CRITICAL SCOPE BOUNDARY
+======================================================================
+
+This document is NOT primarily a hardware purchasing document.
+
+It is an ARCHITECTURAL RESOURCE MODEL.
+
+The objective is to define:
+
+RESOURCE CONTRACTS
+
+RESOURCE BUDGETS
+
+RESOURCE REQUIREMENTS
+
+RESOURCE ALLOCATION
+
+RESOURCE LIMITS
+
+RESOURCE OBSERVABILITY
+
+RESOURCE FAILURE BEHAVIOR
+
+RESOURCE EVOLUTION.
+
+Hardware recommendations are subordinate to these contracts.
+
+======================================================================
+4. DAY-1 CONSTRAINTS
+======================================================================
+
+Day 1:
+
+- one machine
+- one GPU if available
+- Qwen3.5 9B
+- PostgreSQL
+- local/containerized deployment
+- small engineering team.
+
+The architecture should be capable of operating with:
+
+ONE GPU
+
+without requiring:
+
+- GPU cluster
+- distributed scheduler
+- Kubernetes
+- GPU federation
+- complex resource orchestration.
+
+Do NOT build a sophisticated GPU scheduler Day 1 unless research proves
+it necessary.
+
+======================================================================
+5. DAY-1 DESIGN PRINCIPLE
+======================================================================
+
+Day 1 should be:
+
+SIMPLE
+
+but:
+
+EVOLUTION-READY.
+
+The architecture must NOT encode assumptions such as:
+
+"there is exactly one GPU"
+
+or:
+
+"there is exactly one model"
+
+or:
+
+"the model always fits on one GPU"
+
+or:
+
+"all workloads have identical resource requirements."
+
+Instead establish abstractions that permit future evolution.
+
+======================================================================
+6. FUTURE REQUIREMENTS
+======================================================================
+
+Future requirements may include:
+
+- multiple GPUs
+- heterogeneous GPUs
+- multiple model replicas
+- multiple models
+- larger models
+- higher concurrency
+- GPU pools
+- multiple machines
+- regional GPU pools
+- GPU autoscaling
+- model-specific scheduling
+- tenant resource quotas
+- priority scheduling.
+
+Determine:
+
+DAY 1
+PREPARE
+SCALE
+ENTERPRISE
+
+======================================================================
+7. RESOURCE TAXONOMY
+======================================================================
+
+Define the resource classes.
+
+At minimum evaluate:
+
+CPU
+
+MEMORY
+
+GPU
+
+VRAM
+
+STORAGE
+
+NETWORK
+
+DATABASE CONNECTIONS
+
+CONCURRENT AGENT RUNS
+
+MODEL CONTEXT
+
+TOOL CONCURRENCY
+
+WORKFLOW CONCURRENCY.
+
+Determine which are first-class schedulable resources.
+
+======================================================================
+8. RESOURCE CONTRACT
+======================================================================
+
+Define a conceptual resource contract.
+
+Potential fields:
+
+resource_type
+resource_class
+requested
+reserved
+allocated
+used
+limit
+priority
+deadline
+tenant
+workload
+location.
+
+These are examples only.
+
+Determine the actual model.
+
+======================================================================
+9. RESOURCE BUDGET
+======================================================================
+
+Using 04_AGENT_RUNTIME.md define how an agent run receives a budget.
+
+Potential dimensions:
+
+- maximum execution time
+- maximum model tokens
+- maximum tool calls
+- maximum concurrent tools
+- maximum memory
+- maximum GPU time
+- maximum workflow duration.
+
+Determine which are technically enforceable.
+
+======================================================================
+10. GPU RESOURCE MODEL
+======================================================================
+
+Represent GPU resources logically.
+
+Potential:
+
+GPU
+GPU_INSTANCE
+GPU_PARTITION
+GPU_POOL
+GPU_CAPACITY.
+
+Determine the correct abstraction.
+
+======================================================================
+11. GPU IDENTITY
+======================================================================
+
+Determine whether each GPU needs stable identity.
+
+Potential:
+
+- physical device ID
+- PCIe identity
+- UUID
+- logical resource ID.
+
+Determine what should be exposed to the application.
+
+======================================================================
+12. GPU CAPABILITIES
+======================================================================
+
+Define GPU capability metadata.
+
+Potential:
+
+- VRAM
+- compute capability
+- architecture
+- CUDA compatibility
+- tensor-core capability
+- supported precision
+- bandwidth.
+
+Do not hard-code vendor-specific assumptions unless required.
+
+======================================================================
+13. HETEROGENEOUS GPU SUPPORT
+======================================================================
+
+Determine whether the architecture should support:
+
+GPU A
+
+and:
+
+GPU B
+
+with different:
+
+- VRAM
+- compute capability
+- performance.
+
+A workload should be able to express requirements without knowing
+specific hardware identifiers where possible.
+
+======================================================================
+14. RESOURCE REQUIREMENTS
+======================================================================
+
+Define how a workload says:
+
+"I need a GPU with at least X characteristics."
+
+Potential:
+
+minimum_vram
+compute_class
+precision_support
+architecture
+exclusive_access.
+
+Determine the minimum useful abstraction.
+
+======================================================================
+15. RESOURCE ALLOCATION
+======================================================================
+
+Define lifecycle:
+
+REQUEST
+ ↓
+ADMIT
+ ↓
+RESERVE
+ ↓
+ALLOCATE
+ ↓
+RUN
+ ↓
+RELEASE.
+
+Determine where allocation is enforced.
+
+======================================================================
+16. ADMISSION CONTROL
+======================================================================
+
+When resources are unavailable:
+
+- queue
+- reject
+- degrade
+- retry
+- reschedule.
+
+Determine the correct behavior per workload type.
+
+======================================================================
+17. RESOURCE STARVATION
+======================================================================
+
+Prevent:
+
+One workload
+ ↓
+consumes all GPU capacity
+ ↓
+other workloads
+ ↓
+starve.
+
+Evaluate:
+
+- concurrency limits
+- quotas
+- priorities
+- fair sharing
+- admission control.
+
+======================================================================
+18. PRIORITY
+======================================================================
+
+Determine whether workloads require priority.
+
+Potential:
+
+interactive
+
+batch
+
+background
+
+evaluation
+
+maintenance.
+
+Do not implement complex priority scheduling unless justified.
+
+======================================================================
+19. FAIRNESS
+======================================================================
+
+Evaluate:
+
+- FIFO
+- weighted fairness
+- priority
+- tenant quotas.
+
+Determine what is appropriate.
+
+======================================================================
+20. GPU EXCLUSIVITY
+======================================================================
+
+Determine when a workload should receive:
+
+EXCLUSIVE GPU
+
+versus:
+
+SHARED GPU.
+
+Potential reasons:
+
+- model size
+- security
+- performance
+- determinism
+- memory pressure.
+
+======================================================================
+21. GPU SHARING
+======================================================================
+
+Compare:
+
+- process sharing
+- inference batching
+- time slicing
+- MIG
+- multiple model instances.
+
+Determine which mechanisms are actually useful.
+
+======================================================================
+22. MIG
+======================================================================
+
+Research NVIDIA MIG.
+
+Determine:
+
+- supported hardware
+- isolation
+- memory partitioning
+- scheduling implications
+- operational complexity.
+
+Do not recommend MIG simply because it exists.
+
+======================================================================
+23. MODEL SERVING CONCURRENCY
+======================================================================
+
+Using 04 and the model architecture determine:
+
+- request concurrency
+- batch size
+- continuous batching
+- sequence limits
+- context limits
+- KV cache pressure.
+
+======================================================================
+24. KV CACHE
+======================================================================
+
+This is CRITICAL.
+
+Research how KV cache affects:
+
+- VRAM
+- context length
+- concurrency
+- throughput.
+
+Do not estimate blindly.
+
+Define how the architecture should account for KV cache.
+
+======================================================================
+25. CONTEXT LENGTH
+======================================================================
+
+Determine how context length affects:
+
+- memory
+- latency
+- concurrency
+- GPU capacity.
+
+Do not assume the maximum theoretical context is always operationally
+appropriate.
+
+======================================================================
+26. BATCHING
+======================================================================
+
+Evaluate:
+
+- static batching
+- dynamic batching
+- continuous batching.
+
+Determine the correct strategy for interactive agent workloads.
+
+======================================================================
+27. LATENCY VS THROUGHPUT
+======================================================================
+
+Interactive agent workloads may prefer latency.
+
+Batch evaluation workloads may prefer throughput.
+
+Define workload classes.
+
+======================================================================
+28. RESOURCE CLASSIFICATION
+======================================================================
+
+Potential classes:
+
+INTERACTIVE
+
+BATCH
+
+EVALUATION
+
+BACKGROUND
+
+MAINTENANCE.
+
+Determine whether these classes are useful.
+
+======================================================================
+29. MODEL-SPECIFIC RESOURCES
+======================================================================
+
+Different models may require different:
+
+- VRAM
+- CPU
+- context
+- throughput.
+
+Determine how the resource model expresses model requirements.
+
+======================================================================
+30. MULTIPLE MODEL INSTANCES
+======================================================================
+
+Evaluate future:
+
+Model A
++
+Model B
+
+on:
+
+one GPU
+
+versus:
+
+multiple GPUs.
+
+Determine scheduling implications.
+
+======================================================================
+31. MODEL COLOCATION
+======================================================================
+
+Determine whether models can safely share a GPU.
+
+Consider:
+
+- VRAM
+- latency
+- interference
+- cache
+- security.
+
+======================================================================
+32. MODEL EVICTION
+======================================================================
+
+Evaluate whether models may be:
+
+- loaded permanently
+- loaded on demand
+- evicted
+- swapped.
+
+Do not introduce model eviction without evidence that it solves a real
+problem.
+
+======================================================================
+33. MODEL WARMING
+======================================================================
+
+Define:
+
+cold start
+
+warm start
+
+warm model.
+
+Determine whether model warm-up is required.
+
+======================================================================
+34. MODEL LOADING RESOURCE BUDGET
+======================================================================
+
+Model loading can consume significant:
+
+- RAM
+- VRAM
+- disk I/O
+- CPU.
+
+Define how it is controlled.
+
+======================================================================
+35. CPU / GPU PIPELINE
+======================================================================
+
+Model inference is not GPU-only.
+
+Analyze:
+
+CPU
+ ↓
+tokenization
+ ↓
+input preparation
+ ↓
+GPU
+ ↓
+generation
+ ↓
+post-processing.
+
+Identify bottlenecks.
+
+======================================================================
+36. CPU PINNING
+======================================================================
+
+Evaluate CPU affinity and pinning.
+
+Do not introduce NUMA optimization Day 1 unless required.
+
+======================================================================
+37. NUMA
+======================================================================
+
+Research when NUMA matters for multi-GPU systems.
+
+Define future trigger.
+
+======================================================================
+38. PCIe
+======================================================================
+
+Analyze when PCIe bandwidth can become a bottleneck.
+
+Especially for:
+
+- multiple GPUs
+- model loading
+- host-device transfers.
+
+======================================================================
+39. NVLINK
+======================================================================
+
+Evaluate whether future multi-GPU architecture could benefit from
+NVLink or equivalent high-bandwidth interconnect.
+
+Do not assume it is required.
+
+======================================================================
+40. MULTI-GPU STRATEGIES
+======================================================================
+
+Compare:
+
+OPTION A
+--------
+Model replication.
+
+OPTION B
+--------
+Tensor parallelism.
+
+OPTION C
+--------
+Pipeline parallelism.
+
+OPTION D
+--------
+Data parallelism.
+
+OPTION E
+--------
+Hybrid.
+
+Determine which applies to:
+
+- larger models
+- higher concurrency
+- higher throughput.
+
+======================================================================
+41. MODEL REPLICATION
+======================================================================
+
+Multiple replicas can increase throughput.
+
+But they require:
+
+- GPU memory
+- scheduling
+- load balancing
+- model loading
+- deployment.
+
+Determine the correct trigger.
+
+======================================================================
+42. TENSOR PARALLELISM
+======================================================================
+
+Research applicability.
+
+Determine when model size justifies it.
+
+======================================================================
+43. PIPELINE PARALLELISM
+======================================================================
+
+Evaluate whether it is relevant to this platform.
+
+Do not include it merely because it is a standard distributed-AI concept.
+
+======================================================================
+44. DATA PARALLELISM
+======================================================================
+
+Determine whether independent inference replicas provide sufficient
+scaling before more complex parallelism.
+
+======================================================================
+45. GPU POOL
+======================================================================
+
+Define a future logical:
+
+GPU POOL
+
+with:
+
+- capabilities
+- available capacity
+- reservations
+- workloads.
+
+Day 1 may implement this as a conceptual abstraction only.
+
+======================================================================
+46. GPU SCHEDULER
+======================================================================
+
+Evaluate whether scheduling belongs in:
+
+- Agent Runtime
+- Model Runtime
+- Control Plane
+- dedicated resource scheduler
+- infrastructure orchestrator.
+
+Determine the best boundary.
+
+======================================================================
+47. DO NOT DUPLICATE SCHEDULERS
+======================================================================
+
+If Kubernetes or another orchestrator already schedules GPUs, determine
+what application-level scheduling is still necessary.
+
+Avoid:
+
+scheduler inside scheduler inside scheduler.
+
+======================================================================
+48. CONTROL PLANE INTERACTION
+======================================================================
+
+Using 02 determine whether the Control Plane owns:
+
+- resource definitions
+- resource policies
+- quotas
+- workload placement.
+
+Do not move runtime scheduling logic into the Control Plane without
+justification.
+
+======================================================================
+49. GOVERNANCE INTERACTION
+======================================================================
+
+Using 02/03 determine whether resource policies may depend on:
+
+- tenant
+- workload class
+- agent
+- model
+- environment.
+
+======================================================================
+50. IDENTITY / AUTHORIZATION INTERACTION
+======================================================================
+
+Using 11 determine whether resource requests require:
+
+- tenant authorization
+- quota authorization
+- model authorization.
+
+======================================================================
+51. SECURITY INTERACTION
+======================================================================
+
+Using 10 determine:
+
+- GPU isolation
+- container isolation
+- process isolation
+- privileged GPU access
+- device exposure.
+
+======================================================================
+52. OBSERVABILITY INTERACTION
+======================================================================
+
+Using 15 define:
+
+- GPU utilization
+- VRAM utilization
+- temperature
+- power
+- utilization over time
+- inference queue
+- batch size
+- tokens/sec
+- latency
+- OOM events.
+
+Only include metrics that are actually useful.
+
+======================================================================
+53. AUDIT INTERACTION
+======================================================================
+
+Using 16 determine whether resource allocation decisions require audit.
+
+Potential:
+
+- resource requested
+- allocation
+- rejection
+- override
+- quota change.
+
+======================================================================
+54. EVALUATION INTERACTION
+======================================================================
+
+Using 17 determine resource requirements for:
+
+- model evaluations
+- regression suites
+- benchmarks
+- red-team workloads.
+
+Evaluation should not starve interactive production traffic.
+
+======================================================================
+55. RELIABILITY INTERACTION
+======================================================================
+
+Using 13 determine behavior for:
+
+- GPU failure
+- OOM
+- model crash
+- CUDA error
+- thermal issue
+- device disappearance.
+
+======================================================================
+56. DEPLOYMENT INTERACTION
+======================================================================
+
+Using 18 determine:
+
+- GPU-aware deployment
+- model rollout
+- warm-up
+- rollback
+- capacity checks.
+
+======================================================================
+57. RESOURCE LIMITS
+======================================================================
+
+Define limits for:
+
+- GPU memory
+- CPU
+- RAM
+- concurrent requests
+- model context
+- generation length
+- batch size.
+
+Determine where enforcement occurs.
+
+======================================================================
+58. OOM HANDLING
+======================================================================
+
+Define behavior when GPU memory is exhausted.
+
+Potential:
+
+- reject request
+- reduce concurrency
+- shorten context
+- retry elsewhere
+- restart model
+- fail gracefully.
+
+Do not hide OOM conditions with uncontrolled retries.
+
+======================================================================
+59. RESOURCE LEAKS
+======================================================================
+
+Define detection for:
+
+- GPU memory leaks
+- CPU memory leaks
+- file descriptor leaks
+- CUDA context leaks
+- worker leaks.
+
+======================================================================
+60. RESOURCE RELEASE
+======================================================================
+
+A completed or cancelled workload must release resources.
+
+Define:
+
+- normal release
+- timeout release
+- crash release
+- forced cleanup.
+
+======================================================================
+61. CANCELLATION
+======================================================================
+
+Resource allocation must interact correctly with cancellation.
+
+Example:
+
+User cancels run
+ ↓
+Agent cancels
+ ↓
+Model generation stops
+ ↓
+GPU capacity becomes available.
+
+======================================================================
+62. TIMEOUTS
+======================================================================
+
+Define resource timeout semantics.
+
+Potential:
+
+- queue timeout
+- allocation timeout
+- execution timeout
+- cleanup timeout.
+
+======================================================================
+63. RESOURCE QUOTAS
+======================================================================
+
+Evaluate quotas at:
+
+- user
+- tenant
+- agent
+- workload class
+- environment.
+
+======================================================================
+64. RESOURCE RESERVATIONS
+======================================================================
+
+Determine whether important workloads can reserve capacity.
+
+Potential:
+
+interactive production
+vs
+evaluation.
+
+======================================================================
+65. BURSTING
+======================================================================
+
+Evaluate whether a workload can temporarily exceed normal resource
+limits.
+
+Define safe boundaries.
+
+======================================================================
+66. BACKPRESSURE
+======================================================================
+
+When GPU capacity is exhausted:
+
+DO NOT blindly accept infinite requests.
+
+Define:
+
+queue
+
+reject
+
+degrade
+
+or:
+
+shed load.
+
+======================================================================
+67. RESOURCE PRIORITY
+======================================================================
+
+If priorities exist:
+
+determine:
+
+- priority classes
+- fairness
+- starvation prevention
+- emergency workloads.
+
+======================================================================
+68. TENANT RESOURCE ISOLATION
+======================================================================
+
+Using 14 and 11 determine future support for:
+
+Tenant A
+and
+Tenant B
+
+without one consuming all GPU capacity.
+
+Day 1 may only need the abstraction.
+
+======================================================================
+69. MULTI-TENANT GPU SCHEDULING
+======================================================================
+
+Evaluate:
+
+- hard quotas
+- soft quotas
+- weighted fairness
+- reserved capacity.
+
+Do not build enterprise scheduling Day 1.
+
+======================================================================
+70. COST INTERACTION
+======================================================================
+
+Using future cost architecture determine whether resource usage should
+be measurable by:
+
+- tenant
+- model
+- run
+- workload
+- GPU time
+- tokens.
+
+======================================================================
+71. CAPACITY PLANNING INTERACTION
+======================================================================
+
+Resource metrics must support future capacity planning.
+
+Define minimum useful measurements.
+
+======================================================================
+72. RESOURCE ACCOUNTING
+======================================================================
+
+Determine whether to record:
+
+requested
+reserved
+allocated
+actual.
+
+This distinction is important for capacity planning.
+
+======================================================================
+73. RESOURCE TELEMETRY
+======================================================================
+
+Do not log every low-level metric simply because it is available.
+
+Define high-value telemetry.
+
+======================================================================
+74. BENCHMARKING
+======================================================================
+
+Design benchmark methodology for:
+
+- latency
+- throughput
+- tokens/sec
+- VRAM
+- concurrency
+- batch size.
+
+Do not provide fabricated benchmark values.
+
+======================================================================
+75. BENCHMARK MATRIX
+======================================================================
+
+Benchmark across:
+
+- context size
+- generation length
+- concurrency
+- batch size
+- model precision
+- GPU class.
+
+======================================================================
+76. PERFORMANCE REGRESSION
+======================================================================
+
+A model/runtime change may reduce performance without causing functional
+failure.
+
+Define performance regression detection.
+
+======================================================================
+77. CAPACITY THRESHOLDS
+======================================================================
+
+Do not invent thresholds.
+
+Define how thresholds should be empirically established.
+
+======================================================================
+78. RESOURCE FAILURE MODES
+======================================================================
+
+Analyze:
+
+- GPU unavailable
+- GPU OOM
+- CUDA failure
+- driver failure
+- model load failure
+- model crash
+- CPU exhaustion
+- RAM exhaustion
+- disk exhaustion
+- network saturation.
+
+======================================================================
+79. DEGRADED MODE
+======================================================================
+
+Determine whether the platform can degrade:
+
+- smaller model
+- lower concurrency
+- queued requests
+- disabled background work.
+
+Do not assume fallback models exist.
+
+======================================================================
+80. MULTI-MODEL FALLBACK INTERACTION
+======================================================================
+
+27 is Level C.
+
+Therefore Day 1 should NOT implement a full multi-model fallback system.
+
+But determine whether the resource abstraction must avoid preventing it later.
+
+======================================================================
+81. OFFLINE / BATCH WORK
+======================================================================
+
+Evaluation and maintenance jobs may use GPUs opportunistically.
+
+Define how background workloads avoid starving interactive traffic.
+
+======================================================================
+82. GPU HEALTH
+======================================================================
+
+Determine useful health signals:
+
+- device availability
+- memory
+- errors
+- temperature
+- utilization.
+
+Define when a GPU should be considered unhealthy.
+
+======================================================================
+83. GPU DRAINING
+======================================================================
+
+A GPU may need maintenance.
+
+Define:
+
+ACTIVE
+DRAINING
+UNAVAILABLE
+FAILED.
+
+Determine whether this abstraction is required.
+
+======================================================================
+84. WORKLOAD DRAINING
+======================================================================
+
+Before removing a GPU:
+
+- stop new workloads
+- allow current work to finish where possible
+- migrate/restart where necessary.
+
+======================================================================
+85. GPU FAILURE RECOVERY
+======================================================================
+
+Determine behavior when a GPU disappears.
+
+Possible:
+
+- fail workload
+- restart model
+- reschedule
+- failover.
+
+Day 1 may only restart locally.
+
+Define future evolution.
+
+======================================================================
+86. RESOURCE SCHEDULING OPTIONS
+======================================================================
+
+Identify actual alternatives.
+
+Potential:
+
+OPTION A
+--------
+No application scheduler; model runtime controls concurrency.
+
+OPTION B
+--------
+Lightweight application-level resource manager.
+
+OPTION C
+--------
+Dedicated resource scheduler.
+
+OPTION D
+--------
+Infrastructure/orchestrator-managed scheduling.
+
+OPTION E
+--------
+Hybrid.
+
+These are examples only.
+
+Research and determine the real candidates.
+
+======================================================================
+87. ARCHITECTURE SELECTION MATRIX
+======================================================================
+
+Compare:
+
+| Criterion |
+| Day-1 simplicity |
+| GPU efficiency |
+| VRAM control |
+| Concurrency |
+| Fairness |
+| Isolation |
+| Multi-GPU evolution |
+| Multi-node evolution |
+| Heterogeneous GPUs |
+| Observability |
+| Reliability |
+| Operational complexity |
+| Cost |
+| Recommendation |
+
+======================================================================
+88. "WHY NOT?" ANALYSIS
+======================================================================
+
+For the final architecture explicitly answer:
+
+WHY THIS?
+
+WHY NOT BUILD A GPU SCHEDULER DAY 1?
+
+WHY NOT KUBERNETES?
+
+WHY NOT MIG?
+
+WHY NOT MULTI-GPU DAY 1?
+
+WHY NOT MULTI-MODEL DAY 1?
+
+WHY NOT GPU SHARING?
+
+WHY NOT ONE MODEL PER GPU?
+
+WHY NOT MAXIMUM BATCHING?
+
+WHY NOT MAXIMUM CONTEXT?
+
+WHY NOT ALWAYS REJECT WHEN BUSY?
+
+WHY NOT ALWAYS QUEUE?
+
+WHY NOT RAY?
+
+WHY NOT SLURM?
+
+WHY NOT DISTRIBUTED INFERENCE?
+
+Only retain comparisons supported by research.
+
+======================================================================
+89. REVERSIBILITY ANALYSIS
+======================================================================
+
+Classify:
+
+- resource abstraction
+- scheduling model
+- GPU runtime
+- batching strategy
+- GPU sharing
+- MIG
+- multi-GPU strategy
+- model replication
+- resource quotas
+- hardware assumptions
+
+as:
+
+- easily reversible
+- moderately reversible
+- expensive to reverse
+- effectively irreversible.
+
+======================================================================
+90. CONTRACT VS IMPLEMENTATION
+======================================================================
+
+Determine stable resource contracts.
+
+Potential:
+
+ResourceRequirement
+ResourceBudget
+ResourceReservation
+ResourceAllocation
+ResourceUsage
+ResourceClass
+GPUCapability
+GPUPool
+WorkloadPriority
+
+Determine the minimum required set.
+
+======================================================================
+91. REQUIRED DIAGRAMS
+======================================================================
+
+Include Mermaid diagrams for:
+
+1. Resource architecture
+2. Day-1 single-GPU architecture
+3. Resource request lifecycle
+4. GPU allocation lifecycle
+5. Agent → model → GPU flow
+6. CPU/GPU pipeline
+7. GPU memory / KV-cache relationship
+8. Concurrency model
+9. Admission control
+10. Backpressure
+11. Resource quotas
+12. GPU health lifecycle
+13. GPU draining
+14. GPU failure recovery
+15. Multi-GPU future architecture
+16. GPU pool future architecture
+17. Heterogeneous GPU architecture
+18. Multi-node future architecture
+19. Resource observability
+20. Day-1 → enterprise evolution
+
+======================================================================
+92. ADR CANDIDATES
+======================================================================
+
+Identify ADRs for:
+
+- resource model
+- GPU abstraction
+- resource requirements
+- scheduling boundary
+- GPU sharing
+- batching
+- concurrency
+- KV-cache strategy
+- multi-GPU strategy
+- model replication
+- GPU pool
+- quotas
+- priority
+- MIG
+- heterogeneous GPUs
+- resource accounting.
+
+For each:
+
+- problem
+- alternatives
+- recommendation
+- consequences
+- reversibility
+- decision deadline
+
+======================================================================
+93. DAY-1 / PREPARE / SCALE / ENTERPRISE
+======================================================================
+
+Create:
+
+| Capability | Day 1 | Prepare | Scale | Enterprise |
+
+Cover:
+
+- resource abstraction
+- CPU
+- RAM
+- GPU
+- VRAM
+- resource requirements
+- resource budgets
+- admission control
+- concurrency
+- batching
+- KV cache
+- GPU sharing
+- quotas
+- priorities
+- resource accounting
+- GPU health
+- GPU draining
+- multi-GPU
+- GPU pools
+- heterogeneous GPUs
+- multi-node
+- autoscaling
+- tenant quotas.
+
+======================================================================
+94. RESOURCE TEST MATRIX
+======================================================================
+
+Create:
+
+| Scenario | Expected Behavior | Detection | Recovery | Regression Test |
+
+At minimum include:
+
+- GPU OOM
+- CPU exhaustion
+- RAM exhaustion
+- GPU unavailable
+- GPU failure
+- model load failure
+- model crash
+- queue saturation
+- concurrent request spike
+- long context
+- large batch
+- cancellation
+- timeout
+- worker crash
+- GPU draining
+- resource leak
+- tenant quota exceeded.
+
+======================================================================
+95. BENCHMARK PLAN
+======================================================================
+
+Define exactly how Claude should benchmark the chosen architecture.
+
+At minimum measure:
+
+- time to first token
+- tokens/sec
+- end-to-end latency
+- concurrency
+- GPU utilization
+- VRAM usage
+- CPU usage
+- RAM usage
+- queue time
+- batch behavior.
+
+Do not fabricate numbers.
+
+Define the benchmark methodology.
+
+======================================================================
+96. ATTEMPT TO FALSIFY THE RECOMMENDATION
+======================================================================
+
+Try to prove the selected architecture wrong.
+
+Ask:
+
+- What concurrency breaks it?
+- What context length breaks it?
+- What model size breaks it?
+- What GPU size breaks it?
+- What VRAM pressure breaks it?
+- What GPU count breaks it?
+- What tenant count breaks it?
+- What workload mix breaks it?
+- What evaluation workload breaks it?
+- What availability requirement breaks it?
+- What hardware heterogeneity breaks it?
+
+Determine the first architectural trigger.
+
+======================================================================
+97. ARCHITECTURAL SELF-CRITIQUE
+======================================================================
+
+Before finalizing, ask:
+
+1. Did I separate resource contracts from hardware?
+2. Did I avoid assuming one GPU forever?
+3. Did I avoid building a scheduler prematurely?
+4. Did I model VRAM?
+5. Did I model KV cache?
+6. Did I model context length?
+7. Did I model concurrency?
+8. Did I model batching?
+9. Did I define admission control?
+10. Did I define backpressure?
+11. Did I define resource release?
+12. Did I define GPU failure behavior?
+13. Did I define GPU draining?
+14. Can the architecture evolve to multiple GPUs?
+15. Can it evolve to heterogeneous GPUs?
+16. Can it evolve to multiple machines?
+17. Can it support future tenant quotas?
+18. Can evaluation workloads coexist with production?
+19. Is Day 1 genuinely simple?
+20. What assumptions could invalidate the architecture?
+
+Include:
+
+# ARCHITECTURAL SELF-CRITIQUE
+
+======================================================================
+98. FINAL RECOMMENDATION
+======================================================================
+
+End with:
+
+# FINAL RESOURCE / GPU ARCHITECTURE RECOMMENDATION
+
+Answer:
+
+"What Resource and GPU Architecture should this platform actually
+build?"
+
+Be concrete.
+
+Describe:
+
+- resource model
+- CPU model
+- memory model
+- GPU abstraction
+- VRAM management
+- resource requirements
+- resource budgets
+- allocation
+- admission control
+- concurrency
+- batching
+- KV cache
+- GPU sharing
+- GPU health
+- failure behavior
+- observability
+- resource accounting
+- Day-1 implementation
+- future multi-GPU evolution
+- future multi-node evolution.
+
+Then explicitly answer:
+
+"What MUST NOT be built on Day 1?"
+
+Then:
+
+"What future condition should trigger the next architectural evolution?"
+
+======================================================================
+99. REQUIRED OUTPUT
+======================================================================
+
+Produce:
+
+05_RESOURCE_GPU_ARCHITECTURE.md
+
+The document MUST explicitly reference:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_ARCHITECTURE.md
+04_AGENT_RUNTIME.md
+05_MODEL_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+08_KNOWLEDGE_DATA_ARCHITECTURE.md
+09_MEMORY_ARCHITECTURE.md
+10_SECURITY_ARCHITECTURE.md
+11_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+13_RELIABILITY_ARCHITECTURE.md
+15_OBSERVABILITY_ARCHITECTURE.md
+16_AUDIT_ARCHITECTURE.md
+17_EVALUATION_ARCHITECTURE.md
+18_DEPLOYMENT_LIFECYCLE_ARCHITECTURE.md
+
+Also explicitly identify interactions with future:
+
+12_TRUST_PROVENANCE_ARCHITECTURE.md
+14_CONCURRENCY_ARCHITECTURE.md
+19_MULTI_TENANCY_ARCHITECTURE.md
+20_COST_ARCHITECTURE.md
+21_CAPACITY_PLANNING_ARCHITECTURE.md
+22_NETWORKING_ARCHITECTURE.md
+23_STORAGE_ARCHITECTURE.md
+27_MULTI_MODEL_FALLBACK_ARCHITECTURE.md
+
+If these documents do not yet exist:
+
+DO NOT invent their content.
+
+Instead:
+
+identify the future dependency
+
+and define what contract must remain stable.
+
+If there is a conflict with another architecture document:
+
+DO NOT silently resolve it.
+
+Identify the conflict.
+
+Explain the trade-off.
+
+Recommend the superior architectural decision.
+
+Create an ADR candidate when appropriate.
+
+======================================================================
+100. SOURCE REQUIREMENTS
+======================================================================
+
+Include direct URLs.
+
+Prioritize:
+
+- official NVIDIA documentation
+- official CUDA documentation
+- official Qwen documentation
+- official vLLM documentation
+- official SGLang documentation
+- official TensorRT / Triton documentation where relevant
+- official Kubernetes GPU documentation where relevant
+- official NVIDIA MIG documentation
+- official Linux documentation
+- credible benchmark/research sources.
+
+Do not fabricate citations.
+
+Do not cite sources that were not actually inspected.
+
+Every important hardware or performance claim must be supported by an
+actual source or benchmark.
+
+Clearly distinguish:
+
+SOURCE FACT
+
+from:
+
+BENCHMARK RESULT
+
+from:
+
+CALCULATION
+
+from:
+
+INFERENCE
+
+from:
+
+ARCHITECTURAL RECOMMENDATION.
+
+======================================================================
+101. HARDWARE CLAIM DISCIPLINE
+======================================================================
+
+Never write:
+
+"GPU X is definitely sufficient"
+
+unless the claim is supported by:
+
+- model configuration
+- precision
+- context assumptions
+- KV-cache assumptions
+- concurrency assumptions
+- benchmark or calculation.
+
+Do not use theoretical VRAM requirements as production capacity.
+
+Explicitly distinguish:
+
+MODEL WEIGHTS
+
+KV CACHE
+
+ACTIVATIONS
+
+RUNTIME OVERHEAD
+
+CUDA / FRAMEWORK OVERHEAD
+
+SYSTEM MEMORY.
+
+======================================================================
+102. PERFORMANCE CLAIM DISCIPLINE
+======================================================================
+
+Never invent:
+
+- tokens/sec
+- latency
+- concurrency
+- GPU utilization
+- memory consumption.
+
+If a number is unavailable:
+
+say:
+
+"must be benchmarked."
+
+Then define the benchmark.
+
+======================================================================
+103. ABSOLUTE FINAL INSTRUCTION
+======================================================================
+
+Act as an INDEPENDENT Principal AI Infrastructure and Resource Architect.
+
+Your responsibility is to determine the best Resource/GPU architecture,
+not to validate a preferred GPU, framework, scheduler or cloud provider.
+
+Do not assume:
+
+ONE GPU FOREVER.
+
+Do not assume:
+
+MORE GPU = MORE PERFORMANCE.
+
+Do not assume:
+
+MORE VRAM = BETTER ARCHITECTURE.
+
+Do not assume:
+
+MAXIMUM CONTEXT = BEST SYSTEM.
+
+Do not assume:
+
+MAXIMUM BATCH = BEST LATENCY.
+
+Do not assume:
+
+GPU SHARING = ALWAYS EFFICIENT.
+
+Do not assume:
+
+MIG = REQUIRED.
+
+Do not assume:
+
+KUBERNETES = GPU SCHEDULER WE NEED.
+
+Do not assume:
+
+RAY = REQUIRED.
+
+Do not assume:
+
+SLURM = REQUIRED.
+
+Do not assume:
+
+MULTI-GPU = REQUIRED DAY 1.
+
+Do not assume:
+
+A MODEL FITTING IN VRAM = PRODUCTION CAPACITY IS SOLVED.
+
+Do not allow:
+
+RESOURCE ASSUMPTIONS
+
+to become:
+
+ARCHITECTURAL LOCK-IN.
+
+The architecture must be able to evolve from:
+
+1 GPU
+   ↓
+multiple GPUs
+   ↓
+GPU pool
+   ↓
+multiple machines
+   ↓
+heterogeneous infrastructure
+
+without requiring a fundamental rewrite of the Agent Runtime.
+
+Optimize for:
+
+RESOURCE EFFICIENCY
++
+PREDICTABILITY
++
+RESOURCE ISOLATION
++
+BACKPRESSURE
++
+OBSERVABILITY
++
+RELIABILITY
++
+SIMPLICITY
++
+MULTI-GPU EVOLUTION
++
+MULTI-NODE EVOLUTION
++
+FUTURE FLEXIBILITY
+
+The final architecture MUST result from:
+
+    RESEARCH
+       ↓
+    REAL WORKLOAD ANALYSIS
+       ↓
+    RESOURCE MODEL
+       ↓
+    GPU MEMORY MODEL
+       ↓
+    CONCURRENCY ANALYSIS
+       ↓
+    SCHEDULING ALTERNATIVES
+       ↓
+    PERFORMANCE ANALYSIS
+       ↓
+    SECURITY / RELIABILITY ANALYSIS
+       ↓
+    BENCHMARKING
+       ↓
+    ADVERSARIAL CHALLENGE
+       ↓
+    FALSIFICATION
+       ↓
+    FINAL DECISION
+
+DO NOT DESIGN THE GPU STACK FIRST.
+
+RESEARCH FIRST.
+
+UNDERSTAND THE WORKLOAD FIRST.
+
+MODEL THE RESOURCE REQUIREMENTS.
+
+BENCHMARK WHERE NECESSARY.
+
+COMPARE.
+
+CHALLENGE.
+
+FALSIFY.
+
+SELECT THE BEST RESOURCE / GPU ARCHITECTURE AVAILABLE FOR THIS
+PROJECT.
+
+THEN DESIGN IT.

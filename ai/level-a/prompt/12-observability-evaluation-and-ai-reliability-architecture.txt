@@ -1,0 +1,2143 @@
+# 12 — OBSERVABILITY, EVALUATION & AI RELIABILITY ARCHITECTURE
+## Enterprise AI Agent Platform
+
+======================================================================
+ROLE
+======================================================================
+
+Act as the Principal Observability Architect, AI Evaluation Architect,
+Reliability Engineer and AI Systems Quality Architect responsible for
+designing the Observability, Evaluation and Reliability Architecture of
+an enterprise-grade AI agent platform.
+
+You have deep expertise in:
+
+- observability
+- distributed tracing
+- metrics
+- structured logging
+- OpenTelemetry
+- reliability engineering
+- SRE
+- AI evaluation
+- LLM evaluation
+- agent evaluation
+- benchmark design
+- regression testing
+- quality measurement
+- hallucination evaluation
+- retrieval evaluation
+- tool-use evaluation
+- workflow evaluation
+- security evaluation
+- red teaming
+- incident investigation
+- model monitoring
+- data quality
+- cost observability
+- performance engineering
+- distributed systems
+
+You are working within:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_PLANE.md
+04_AGENT_RUNTIME.md
+05_MODEL_INFERENCE_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+07_KNOWLEDGE_DATA_ARCHITECTURE.md
+08_MEMORY_ARCHITECTURE.md
+09_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+10_AGENT_COMMUNICATION_MULTI_AGENT_ARCHITECTURE.md
+11_EVENTING_WORKFLOW_DURABLE_EXECUTION_ARCHITECTURE.md
+
+These documents provide the current architectural context.
+
+However:
+
+THEY ARE NOT IMMUNE FROM CHALLENGE.
+
+If research demonstrates that an assumption is technically incorrect,
+incomplete or suboptimal, explicitly identify the conflict and recommend
+the superior architecture.
+
+======================================================================
+1. PRIMARY OBJECTIVE
+======================================================================
+
+Design the complete Observability, Evaluation and AI Reliability
+Architecture.
+
+The architecture must allow the engineering team to answer:
+
+WHAT HAPPENED?
+
+WHAT DID THE USER ASK?
+
+WHAT DID THE AGENT UNDERSTAND?
+
+WHICH AGENT RUN OCCURRED?
+
+WHICH MODEL WAS USED?
+
+WHICH PROMPT / CONFIGURATION VERSION WAS USED?
+
+WHICH TOOLS WERE CALLED?
+
+WHICH DATA WAS RETRIEVED?
+
+WHICH MEMORY WAS USED?
+
+WHICH POLICIES WERE APPLIED?
+
+WHICH AUTHORIZATION DECISIONS OCCURRED?
+
+WHICH OTHER AGENTS WERE CALLED?
+
+WHAT WAS THE WORKFLOW STATE?
+
+WHERE DID FAILURE OCCUR?
+
+WHY DID THE AGENT PRODUCE THIS RESULT?
+
+HOW LONG DID IT TAKE?
+
+HOW MANY TOKENS WERE USED?
+
+WHAT DID IT COST?
+
+WAS THE RESULT CORRECT?
+
+WAS IT SAFE?
+
+DID THE SYSTEM REGRESS?
+
+======================================================================
+2. MOST IMPORTANT INSTRUCTION
+## RESEARCH FIRST — SELECT ARCHITECTURE SECOND
+======================================================================
+
+DO NOT begin by selecting:
+
+- Prometheus
+- Grafana
+- OpenTelemetry
+- Jaeger
+- Elasticsearch
+- Langfuse
+- Phoenix
+- a vendor-specific AI observability platform
+- a tracing database
+
+as the architecture.
+
+Research first.
+
+Research:
+
+- modern observability architectures
+- OpenTelemetry
+- distributed tracing
+- AI/LLM observability
+- agent tracing
+- evaluation frameworks
+- LLM-as-a-judge limitations
+- offline evaluation
+- online evaluation
+- regression testing
+- dataset-based evaluation
+- human evaluation
+- safety evaluation
+- retrieval evaluation
+- tool-use evaluation
+- reliability engineering
+- SLOs / SLIs
+- incident analysis
+
+Then identify real architectural alternatives.
+
+Then compare them.
+
+Then select the architecture best suited to THIS project.
+
+Then attempt to falsify the decision.
+
+Required process:
+
+    RESEARCH
+       ↓
+    OBSERVABILITY REQUIREMENTS
+       ↓
+    EVALUATION REQUIREMENTS
+       ↓
+    RELIABILITY REQUIREMENTS
+       ↓
+    ARCHITECTURAL ALTERNATIVES
+       ↓
+    DATA / TELEMETRY MODEL
+       ↓
+    SECURITY / PRIVACY ANALYSIS
+       ↓
+    OPERATIONAL ANALYSIS
+       ↓
+    ADVERSARIAL CHALLENGE
+       ↓
+    FINAL DECISION
+       ↓
+    DAY-1 IMPLEMENTATION
+       ↓
+    FUTURE EVOLUTION
+
+THE FINAL ARCHITECTURE MUST BE THE RESULT OF THIS PROCESS.
+
+======================================================================
+3. FUNDAMENTAL DISTINCTIONS
+======================================================================
+
+Explicitly distinguish:
+
+LOGGING
+
+METRICS
+
+TRACES
+
+AUDIT
+
+TELEMETRY
+
+EVALUATION
+
+BENCHMARK
+
+TEST
+
+INCIDENT
+
+ALERT
+
+SLO
+
+QUALITY SIGNAL
+
+Do not collapse these into one generic "observability" system.
+
+In particular:
+
+LOG ≠ TRACE
+
+TRACE ≠ AUDIT
+
+AUDIT ≠ DEBUG LOG
+
+METRIC ≠ QUALITY SCORE
+
+EVALUATION ≠ MONITORING
+
+MODEL SCORE ≠ GROUND TRUTH
+
+======================================================================
+4. DAY-1 CONSTRAINTS
+======================================================================
+
+Day 1:
+
+- one machine
+- one GPU if available
+- Qwen3.5 9B
+- PostgreSQL
+- local/containerized deployment
+- small engineering team
+
+Avoid mandatory:
+
+- distributed telemetry cluster
+- Kafka
+- dedicated log cluster
+- complex observability platform
+- multi-region monitoring
+- massive time-series infrastructure
+
+unless research demonstrates a concrete requirement.
+
+Strongly evaluate whether Day 1 can use:
+
+- structured logs
+- OpenTelemetry
+- PostgreSQL
+- simple metrics
+- local trace storage
+- lightweight dashboards
+
+before introducing additional infrastructure.
+
+======================================================================
+5. FUTURE REQUIREMENTS
+======================================================================
+
+Future requirements may include:
+
+- many agents
+- many tenants
+- high request volume
+- long-running workflows
+- multi-agent traces
+- model evaluations
+- large evaluation datasets
+- continuous regression testing
+- production quality monitoring
+- online evaluation
+- human review
+- safety monitoring
+- cost attribution
+- per-tenant SLOs
+- enterprise audit
+- compliance reporting
+
+Determine:
+
+DAY 1
+PREPARE
+SCALE
+ENTERPRISE
+
+======================================================================
+6. OBSERVABILITY MODEL
+======================================================================
+
+Define the observability hierarchy.
+
+Potential:
+
+Request
+  ↓
+Session
+  ↓
+Agent Run
+  ↓
+Model Invocation
+  ↓
+Tool Call
+  ↓
+Retrieval
+  ↓
+Memory Access
+  ↓
+Agent-to-Agent Call
+  ↓
+Workflow Step
+  ↓
+External API
+
+Determine the correct hierarchy.
+
+Do not assume every operation must be represented as a trace span.
+
+======================================================================
+7. TRACE MODEL
+======================================================================
+
+Using:
+
+04_AGENT_RUNTIME.md
+06_TOOL_ARCHITECTURE.md
+07_KNOWLEDGE_DATA_ARCHITECTURE.md
+08_MEMORY_ARCHITECTURE.md
+09_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+10_AGENT_COMMUNICATION_MULTI_AGENT_ARCHITECTURE.md
+11_EVENTING_WORKFLOW_DURABLE_EXECUTION_ARCHITECTURE.md
+
+define a canonical execution trace.
+
+Potential identifiers:
+
+trace_id
+span_id
+run_id
+session_id
+workflow_id
+execution_id
+task_id
+tool_call_id
+model_invocation_id
+retrieval_id
+memory_access_id
+
+Determine which are actually required.
+
+Do not create redundant IDs without purpose.
+
+======================================================================
+8. DISTRIBUTED TRACING
+======================================================================
+
+Research OpenTelemetry and relevant standards.
+
+Determine how trace context propagates across:
+
+User
+ ↓
+API
+ ↓
+Agent Runtime
+ ↓
+Model
+ ↓
+Tool
+ ↓
+External API
+
+and:
+
+Agent A
+ ↓
+Agent B
+ ↓
+Agent C
+
+and:
+
+Workflow
+ ↓
+Worker
+ ↓
+Tool.
+
+Determine the correct propagation model.
+
+======================================================================
+9. TRACE CORRELATION
+======================================================================
+
+A single user action may create:
+
+- API requests
+- model calls
+- retrieval calls
+- memory queries
+- tool calls
+- child agent tasks
+- workflow steps
+
+All should be correlated.
+
+Determine how.
+
+======================================================================
+10. LOGGING
+======================================================================
+
+Define structured logging requirements.
+
+Potential fields:
+
+timestamp
+level
+service
+tenant_id
+user_id
+agent_id
+run_id
+trace_id
+event_type
+component
+status
+error_code
+
+Determine the canonical schema.
+
+Avoid logging:
+
+- secrets
+- access tokens
+- credentials
+- unnecessary personal information
+- raw sensitive documents
+
+======================================================================
+11. LOG LEVELS
+======================================================================
+
+Define:
+
+DEBUG
+INFO
+WARN
+ERROR
+
+and potentially:
+
+TRACE
+
+Determine appropriate usage.
+
+Do not rely on arbitrary string logging.
+
+======================================================================
+12. METRICS
+======================================================================
+
+Define operational metrics.
+
+Potential:
+
+- request rate
+- error rate
+- latency
+- queue depth
+- worker utilization
+- GPU utilization
+- model latency
+- token throughput
+- tool latency
+- retrieval latency
+- memory latency
+- workflow latency
+- retry count
+- failure count
+
+Determine the minimum useful metric set.
+
+======================================================================
+13. AI-SPECIFIC METRICS
+======================================================================
+
+Determine whether the system should measure:
+
+- tool-call success rate
+- tool-call accuracy
+- retrieval hit rate
+- retrieval relevance
+- citation correctness
+- hallucination indicators
+- refusal correctness
+- task completion
+- user correction rate
+- agent loop rate
+- escalation rate
+- human intervention rate
+
+Do not turn every AI behavior into an arbitrary metric.
+
+Define measurable signals carefully.
+
+======================================================================
+14. COST OBSERVABILITY
+======================================================================
+
+Determine how to measure:
+
+- input tokens
+- output tokens
+- model calls
+- embedding calls
+- reranking
+- tool calls
+- external API calls
+- GPU utilization
+- execution time
+
+Cost attribution should support:
+
+- user
+- tenant
+- agent
+- workflow
+- run
+- model
+- tool
+
+Do not invent monetary prices when the infrastructure does not provide
+them.
+
+Separate:
+
+USAGE
+
+from:
+
+COST.
+
+======================================================================
+15. MODEL OBSERVABILITY
+======================================================================
+
+For each model invocation capture where appropriate:
+
+- model
+- model version
+- prompt version
+- configuration
+- temperature or relevant generation parameters
+- input token count
+- output token count
+- latency
+- stop reason
+- tool-call decision
+- result status
+
+Do not automatically log full prompts or responses if doing so creates
+privacy/security problems.
+
+======================================================================
+16. MODEL VERSIONING
+======================================================================
+
+A production result depends on more than:
+
+MODEL NAME.
+
+Capture where relevant:
+
+- model version
+- prompt version
+- system configuration
+- tool schema version
+- policy version
+- retrieval configuration
+- embedding version
+- memory configuration
+
+Determine the minimum reproducibility metadata.
+
+======================================================================
+17. PROMPT OBSERVABILITY
+======================================================================
+
+Determine how to version:
+
+- system prompts
+- developer prompts
+- agent instructions
+- tool instructions
+- evaluation prompts
+
+Do not rely on free-text prompt changes without versioning.
+
+======================================================================
+18. PROMPT DATA SECURITY
+======================================================================
+
+Prompt data may contain:
+
+- personal information
+- confidential enterprise data
+- credentials
+- customer data
+
+Determine:
+
+- redaction
+- filtering
+- sampling
+- encryption
+- access control
+- retention
+
+Observability must not become a data-exfiltration mechanism.
+
+======================================================================
+19. RESPONSE OBSERVABILITY
+======================================================================
+
+Determine what should be captured from model outputs.
+
+Potential:
+
+- final response
+- structured result
+- tool calls
+- citations
+- refusal
+- safety result
+- confidence indicators
+
+Do not assume storing every raw response forever is appropriate.
+
+======================================================================
+20. TOOL OBSERVABILITY
+======================================================================
+
+Using 06_TOOL_ARCHITECTURE.md define:
+
+Tool invocation trace.
+
+Capture:
+
+- tool
+- version
+- input schema
+- authorization decision
+- execution latency
+- result status
+- error
+- external request ID where relevant
+
+Never log secrets.
+
+======================================================================
+21. RETRIEVAL OBSERVABILITY
+======================================================================
+
+Using 07_KNOWLEDGE_DATA_ARCHITECTURE.md determine what to observe.
+
+Potential:
+
+- query
+- retrieval mode
+- filters
+- number of candidates
+- ranking
+- reranking
+- selected sources
+- source versions
+- latency
+- freshness
+- authorization filtering
+
+Determine what can safely be stored.
+
+======================================================================
+22. MEMORY OBSERVABILITY
+======================================================================
+
+Using 08_MEMORY_ARCHITECTURE.md determine:
+
+- memory reads
+- memory writes
+- memory candidate creation
+- memory retrieval
+- memory correction
+- memory deletion
+- memory provenance
+
+Do not log private memory unnecessarily.
+
+======================================================================
+23. AUTHORIZATION OBSERVABILITY
+======================================================================
+
+Using 09_IDENTITY_AUTHORIZATION_ARCHITECTURE.md determine how to observe:
+
+- authorization request
+- authorization decision
+- policy
+- policy version
+- subject
+- resource
+- action
+
+Do not log credentials.
+
+======================================================================
+24. AGENT-TO-AGENT OBSERVABILITY
+======================================================================
+
+Using 10_AGENT_COMMUNICATION_MULTI_AGENT_ARCHITECTURE.md capture:
+
+- caller agent
+- receiving agent
+- parent run
+- child run
+- task
+- delegation
+- latency
+- outcome
+- budget
+- error
+
+Distributed agent calls must be visible in one trace.
+
+======================================================================
+25. WORKFLOW OBSERVABILITY
+======================================================================
+
+Using 11_EVENTING_WORKFLOW_DURABLE_EXECUTION_ARCHITECTURE.md capture:
+
+- workflow
+- execution
+- step
+- attempt
+- queue latency
+- execution latency
+- retry
+- wait
+- approval
+- cancellation
+- failure
+- completion
+
+======================================================================
+26. AUDIT VS OBSERVABILITY
+======================================================================
+
+Define the boundary.
+
+Operational observability answers:
+
+"What happened technically?"
+
+Security audit answers:
+
+"Who did what?"
+
+Evaluation answers:
+
+"Was it correct?"
+
+These systems may correlate through IDs.
+
+They must not be blindly merged.
+
+======================================================================
+27. AUDIT IMMUTABILITY
+======================================================================
+
+Determine requirements for audit integrity.
+
+Potential:
+
+- append-only storage
+- restricted access
+- tamper evidence
+- retention
+- export
+
+Do not design a full compliance system unless required.
+
+======================================================================
+28. EVALUATION ARCHITECTURE
+======================================================================
+
+This is CRITICAL.
+
+Design a dedicated AI Evaluation Architecture.
+
+It must answer:
+
+DID THE SYSTEM WORK?
+
+not merely:
+
+DID THE SYSTEM RUN?
+
+======================================================================
+29. EVALUATION LEVELS
+======================================================================
+
+Define evaluation at:
+
+1. Model level
+2. Prompt level
+3. Retrieval level
+4. Tool level
+5. Agent level
+6. Workflow level
+7. End-to-end system level
+
+Determine what each level measures.
+
+======================================================================
+30. MODEL EVALUATION
+======================================================================
+
+Evaluate:
+
+- reasoning
+- instruction following
+- structured output
+- factuality
+- refusal behavior
+- safety
+- tool selection
+
+Use appropriate benchmark types.
+
+Do not assume benchmark performance equals production quality.
+
+======================================================================
+31. RETRIEVAL EVALUATION
+======================================================================
+
+Using 07_KNOWLEDGE_DATA_ARCHITECTURE.md define metrics such as:
+
+- recall
+- precision
+- MRR
+- NDCG
+- hit rate
+- source correctness
+- citation correctness
+
+Determine which are useful.
+
+======================================================================
+32. TOOL-USE EVALUATION
+======================================================================
+
+Measure:
+
+- correct tool selection
+- correct arguments
+- correct sequence
+- authorization compliance
+- recovery from tool failure
+- unnecessary tool calls
+
+======================================================================
+33. AGENT EVALUATION
+======================================================================
+
+Evaluate:
+
+- task completion
+- planning quality
+- tool selection
+- policy compliance
+- memory usage
+- retrieval quality
+- unnecessary actions
+- loops
+- hallucinations
+- escalation behavior
+
+======================================================================
+34. WORKFLOW EVALUATION
+======================================================================
+
+Evaluate:
+
+- state transitions
+- correct branching
+- retries
+- cancellation
+- approval handling
+- side-effect correctness
+- recovery
+- idempotency
+
+======================================================================
+35. END-TO-END EVALUATION
+======================================================================
+
+Evaluate complete user tasks.
+
+Example:
+
+User asks:
+
+"Prepare the monthly sales report and send it to the finance team."
+
+Evaluate:
+
+- understanding
+- retrieval
+- calculations
+- tool use
+- permissions
+- artifact generation
+- approval
+- sending
+- final response.
+
+======================================================================
+36. EVALUATION DATASETS
+======================================================================
+
+Design:
+
+- golden datasets
+- regression datasets
+- adversarial datasets
+- safety datasets
+- retrieval datasets
+- tool-use datasets
+- workflow datasets
+
+Determine how datasets are versioned.
+
+======================================================================
+37. GOLDEN DATA
+======================================================================
+
+A golden dataset should contain where appropriate:
+
+- input
+- expected behavior
+- expected output
+- acceptable alternatives
+- required constraints
+- source references
+
+Do not assume every task has one exact answer.
+
+======================================================================
+38. HUMAN EVALUATION
+======================================================================
+
+Determine where humans are required.
+
+Potential:
+
+- subjective quality
+- complex reasoning
+- safety
+- business usefulness
+- ambiguous tasks
+
+Define annotation workflow.
+
+======================================================================
+39. LLM-AS-A-JUDGE
+======================================================================
+
+This is CRITICAL.
+
+Research the strengths and limitations of LLM-as-a-judge.
+
+Do not treat an LLM judge as ground truth.
+
+Evaluate:
+
+- judge bias
+- model correlation
+- verbosity bias
+- position bias
+- self-preference
+- reproducibility
+- calibration
+
+Determine where LLM judges are appropriate.
+
+======================================================================
+40. AUTOMATED EVALUATION
+======================================================================
+
+Determine which evaluations can be deterministic.
+
+Examples:
+
+- schema validity
+- tool parameters
+- authorization
+- exact identifiers
+- numerical calculations
+- state transitions
+- latency
+- token usage
+
+Prefer deterministic evaluation where possible.
+
+======================================================================
+41. HYBRID EVALUATION
+======================================================================
+
+For complex tasks combine:
+
+- deterministic checks
+- retrieval metrics
+- LLM judge
+- human evaluation
+
+Determine the correct architecture.
+
+======================================================================
+42. EVALUATION PIPELINE
+======================================================================
+
+Define:
+
+Dataset
+ ↓
+System Version
+ ↓
+Execution
+ ↓
+Telemetry
+ ↓
+Evaluator
+ ↓
+Metrics
+ ↓
+Comparison
+ ↓
+Regression Decision
+
+Determine the correct architecture.
+
+======================================================================
+43. REGRESSION TESTING
+======================================================================
+
+Every meaningful change may affect:
+
+- model
+- prompt
+- retrieval
+- memory
+- tool
+- policy
+- workflow
+
+Determine regression strategy.
+
+A change should not be accepted merely because:
+
+"the demo still works."
+
+======================================================================
+44. VERSION MATRIX
+======================================================================
+
+Determine whether evaluation must identify:
+
+- model version
+- prompt version
+- agent version
+- tool version
+- retrieval version
+- embedding version
+- memory version
+- policy version
+- workflow version
+
+This is necessary to explain regressions.
+
+======================================================================
+45. OFFLINE EVALUATION
+======================================================================
+
+Determine when to run evaluation before deployment.
+
+Potential triggers:
+
+- model change
+- prompt change
+- tool schema change
+- retrieval change
+- policy change
+
+======================================================================
+46. ONLINE EVALUATION
+======================================================================
+
+Evaluate production signals.
+
+Potential:
+
+- user feedback
+- task completion
+- corrections
+- escalation
+- retries
+- abandonment
+- safety violations
+
+Do not automatically treat user satisfaction as correctness.
+
+======================================================================
+47. CANARY EVALUATION
+======================================================================
+
+Evaluate whether new versions should be tested on a subset of traffic.
+
+Determine:
+
+- traffic selection
+- tenant isolation
+- rollback
+- metrics
+- minimum sample size
+
+======================================================================
+48. A/B TESTING
+======================================================================
+
+Evaluate whether A/B testing is appropriate for:
+
+- prompts
+- models
+- retrieval
+- agent strategies
+
+Do not use A/B tests where safety or correctness makes uncontrolled
+experimentation inappropriate.
+
+======================================================================
+49. QUALITY GATES
+======================================================================
+
+Define release gates.
+
+Potential:
+
+- no critical security regression
+- no authorization regression
+- retrieval quality threshold
+- task success threshold
+- latency threshold
+- cost threshold
+
+Do not invent arbitrary thresholds.
+
+Define how thresholds are established.
+
+======================================================================
+50. SLI / SLO ARCHITECTURE
+======================================================================
+
+Research SRE principles.
+
+Define SLIs for:
+
+- availability
+- latency
+- workflow completion
+- tool success
+- model availability
+- retrieval availability
+
+Potential AI quality SLI:
+
+"successful task completion rate"
+
+Determine whether this is measurable.
+
+Do not call subjective quality an SLO without a reliable measurement method.
+
+======================================================================
+51. ERROR BUDGET
+======================================================================
+
+Evaluate whether traditional error budgets apply to:
+
+- model errors
+- tool errors
+- agent failures
+- workflow failures
+
+Determine where the concept works and where it does not.
+
+======================================================================
+52. INCIDENT DETECTION
+======================================================================
+
+Determine how to detect:
+
+- elevated error rates
+- latency degradation
+- tool failure
+- retrieval failure
+- model failure
+- agent loops
+- abnormal token consumption
+- abnormal cost
+- security anomalies
+
+======================================================================
+53. ALERTING
+======================================================================
+
+Alerts should be:
+
+- actionable
+- low-noise
+- tied to symptoms
+- prioritized
+
+Do not create alerts for every metric.
+
+======================================================================
+54. ANOMALY DETECTION
+======================================================================
+
+Evaluate anomaly detection for:
+
+- token spikes
+- tool-call spikes
+- agent recursion
+- unusual data access
+- unusual tenant activity
+- sudden quality degradation
+
+Determine whether Day 1 requires statistical anomaly detection.
+
+======================================================================
+55. AI SAFETY OBSERVABILITY
+======================================================================
+
+Determine how to observe:
+
+- prompt injection
+- data exfiltration
+- unsafe tool use
+- policy violations
+- unauthorized actions
+- malicious memory
+- malicious documents
+- agent loops
+
+Safety telemetry must not itself expose sensitive data.
+
+======================================================================
+56. PRIVACY
+======================================================================
+
+Observability may contain highly sensitive information.
+
+Determine:
+
+- data minimization
+- redaction
+- access control
+- retention
+- encryption
+- tenant isolation
+- sampling
+
+Do not store raw prompts/responses indiscriminately.
+
+======================================================================
+57. PII REDACTION
+======================================================================
+
+Evaluate:
+
+- deterministic redaction
+- structured field filtering
+- tokenization
+- pseudonymization
+
+Do not rely solely on an LLM to redact sensitive information.
+
+======================================================================
+58. TELEMETRY RETENTION
+======================================================================
+
+Determine retention separately for:
+
+- metrics
+- traces
+- logs
+- audit
+- evaluation data
+- raw model outputs
+
+Not everything requires identical retention.
+
+======================================================================
+59. SAMPLING
+======================================================================
+
+Evaluate trace sampling:
+
+- head-based
+- tail-based
+- error-based
+- tenant-based
+- high-value-task sampling
+
+Determine Day-1 strategy.
+
+======================================================================
+60. DATA VOLUME
+======================================================================
+
+Estimate telemetry growth from:
+
+- model calls
+- tool calls
+- retrieval
+- memory
+- workflows
+- agent-to-agent calls.
+
+Determine when current storage becomes inadequate.
+
+Do not invent precise numbers without benchmark evidence.
+
+======================================================================
+61. INCIDENT INVESTIGATION
+======================================================================
+
+Design an investigation workflow.
+
+Example:
+
+User reports:
+"Agent sent the wrong customer email."
+
+Engineer should be able to trace:
+
+User request
+ ↓
+Agent Run
+ ↓
+Model decision
+ ↓
+Memory
+ ↓
+Retrieval
+ ↓
+Tool authorization
+ ↓
+Tool invocation
+ ↓
+External API
+ ↓
+Final response.
+
+Determine what data must exist to reconstruct this.
+
+======================================================================
+62. ROOT CAUSE ANALYSIS
+======================================================================
+
+Classify failures:
+
+- infrastructure
+- model
+- prompt
+- retrieval
+- memory
+- tool
+- authorization
+- workflow
+- data
+- human approval
+- external dependency.
+
+Determine how telemetry supports classification.
+
+======================================================================
+63. ERROR TAXONOMY
+======================================================================
+
+Define canonical error classes.
+
+Potential:
+
+AUTHENTICATION_ERROR
+AUTHORIZATION_ERROR
+VALIDATION_ERROR
+MODEL_ERROR
+TOOL_ERROR
+RETRIEVAL_ERROR
+MEMORY_ERROR
+WORKFLOW_ERROR
+EXTERNAL_SERVICE_ERROR
+TIMEOUT
+RATE_LIMIT
+POLICY_DENIAL
+
+Determine the correct taxonomy.
+
+======================================================================
+64. COST / QUALITY TRADE-OFF
+======================================================================
+
+Evaluate relationships between:
+
+- model size
+- tokens
+- latency
+- retrieval depth
+- reranking
+- tool calls
+- agent delegation
+- workflow steps
+- quality.
+
+Do not optimize one dimension blindly.
+
+======================================================================
+65. PERFORMANCE PROFILING
+======================================================================
+
+Determine how to break end-to-end latency into:
+
+- queue
+- model
+- retrieval
+- memory
+- tool
+- workflow
+- network
+- external service.
+
+======================================================================
+66. BENCHMARKING
+======================================================================
+
+Design benchmark categories:
+
+- model inference
+- retrieval
+- memory
+- tool calls
+- workflows
+- end-to-end tasks
+
+Benchmarks must be reproducible enough to compare versions.
+
+======================================================================
+67. LOAD TESTING
+======================================================================
+
+Determine Day-1 load tests for:
+
+- concurrent users
+- concurrent agents
+- concurrent tool calls
+- workflow execution
+- retrieval
+- database
+- GPU.
+
+Do not invent capacity claims.
+
+======================================================================
+68. CHAOS / FAILURE TESTING
+======================================================================
+
+Evaluate controlled failures:
+
+- model unavailable
+- database unavailable
+- tool unavailable
+- worker crash
+- network timeout
+- retrieval failure
+- memory failure
+- authorization service failure.
+
+Determine which belong Day 1.
+
+======================================================================
+69. EVALUATION SECURITY
+======================================================================
+
+Evaluation datasets may contain sensitive data.
+
+Determine:
+
+- access control
+- tenant isolation
+- anonymization
+- retention
+- dataset versioning
+- evaluator permissions.
+
+======================================================================
+70. EVALUATION CONTAMINATION
+======================================================================
+
+Research risks of:
+
+- benchmark leakage
+- test set contamination
+- training/evaluation overlap
+- evaluator overfitting
+
+Determine how to preserve meaningful evaluation.
+
+======================================================================
+71. EVALUATION DRIFT
+======================================================================
+
+A dataset may stop representing production.
+
+Determine how to refresh evaluation datasets.
+
+Potential:
+
+- production samples
+- human-reviewed failures
+- incident-derived cases
+- adversarial cases.
+
+======================================================================
+72. FAILURE CORPUS
+======================================================================
+
+Every important production failure should potentially become:
+
+- regression case
+- evaluation example
+- adversarial test
+- monitoring signal
+
+Define the feedback loop.
+
+======================================================================
+73. CONTINUOUS IMPROVEMENT LOOP
+======================================================================
+
+Define:
+
+Production
+ ↓
+Telemetry
+ ↓
+Failure Detection
+ ↓
+Human Analysis
+ ↓
+Evaluation Case
+ ↓
+Fix
+ ↓
+Offline Evaluation
+ ↓
+Release
+ ↓
+Production Monitoring
+
+Determine the correct governance.
+
+======================================================================
+74. DAY-1 ARCHITECTURE
+======================================================================
+
+Design the smallest practical architecture.
+
+Strongly evaluate:
+
+- structured application logs
+- OpenTelemetry
+- PostgreSQL
+- basic metrics
+- trace collection
+- versioned evaluation datasets
+- deterministic evaluation
+- selected LLM-as-judge
+- regression suite
+
+Do not build an enormous observability platform Day 1.
+
+======================================================================
+75. FUTURE EVOLUTION
+======================================================================
+
+Define triggers for introducing:
+
+- Prometheus
+- Grafana
+- Jaeger
+- Tempo
+- Loki
+- ClickHouse
+- dedicated observability platform
+- evaluation platform
+- distributed telemetry backend
+- centralized log platform
+
+Do not introduce technology simply because it is popular.
+
+For every future technology specify the architectural trigger.
+
+======================================================================
+76. MIGRATION STRATEGY
+======================================================================
+
+Explain how Day-1 observability can evolve without rewriting:
+
+- Agent Runtime
+- Tool Runtime
+- Model Runtime
+- Knowledge
+- Memory
+- Identity
+- Workflow
+- Multi-Agent.
+
+Define stable telemetry contracts.
+
+======================================================================
+77. ARCHITECTURE SELECTION MATRIX
+======================================================================
+
+Compare observability architectures.
+
+At minimum:
+
+OPTION A
+--------
+Application logs + PostgreSQL + basic metrics.
+
+OPTION B
+--------
+OpenTelemetry + local telemetry backend.
+
+OPTION C
+--------
+OpenTelemetry + dedicated metrics/logs/traces stack.
+
+OPTION D
+--------
+Full AI observability platform.
+
+OPTION E
+--------
+Hybrid.
+
+Evaluate:
+
+| Criterion |
+| Day-1 simplicity |
+| Debuggability |
+| Distributed tracing |
+| AI tracing |
+| Evaluation |
+| Privacy |
+| Audit integration |
+| Cost |
+| Scalability |
+| Operational complexity |
+| Vendor lock-in |
+| Migration complexity |
+| Recommendation |
+
+======================================================================
+78. "WHY NOT?" ANALYSIS
+======================================================================
+
+For the final architecture explicitly answer:
+
+WHY THIS?
+
+WHY NOT LOGS ONLY?
+
+WHY NOT METRICS ONLY?
+
+WHY NOT OPEN-TELEMETRY EVERYTHING FROM DAY 1?
+
+WHY NOT A FULL OBSERVABILITY PLATFORM?
+
+WHY NOT LLM-AS-A-JUDGE FOR EVERYTHING?
+
+WHY NOT USER FEEDBACK AS THE ONLY QUALITY SIGNAL?
+
+WHY NOT OFFLINE EVALUATION ONLY?
+
+WHY NOT ONLINE EVALUATION ONLY?
+
+WHY NOT STORE ALL PROMPTS AND RESPONSES?
+
+Only retain comparisons supported by research.
+
+======================================================================
+79. REVERSIBILITY ANALYSIS
+======================================================================
+
+Classify:
+
+- telemetry schema
+- tracing standard
+- log backend
+- metric backend
+- trace backend
+- evaluation framework
+- evaluation dataset format
+- quality metrics
+- alerting system
+
+as:
+
+- easily reversible
+- moderately reversible
+- expensive to reverse
+- effectively irreversible
+
+======================================================================
+80. CONTRACT VS IMPLEMENTATION
+======================================================================
+
+Determine stable contracts.
+
+Potential:
+
+TraceContext
+ExecutionEvent
+Metric
+AuditEvent
+EvaluationCase
+EvaluationResult
+QualitySignal
+Incident
+Alert
+
+Determine the minimum required set.
+
+======================================================================
+81. REQUIRED DIAGRAMS
+======================================================================
+
+Include Mermaid diagrams for:
+
+1. Observability architecture
+2. Trace hierarchy
+3. Distributed trace propagation
+4. Agent execution trace
+5. Tool trace
+6. Retrieval trace
+7. Memory trace
+8. Agent-to-agent trace
+9. Workflow trace
+10. Audit vs observability
+11. Evaluation pipeline
+12. Regression pipeline
+13. Production feedback loop
+14. Incident investigation
+15. Privacy / redaction boundary
+16. Day-1 architecture
+17. Future architecture
+
+======================================================================
+82. ADR CANDIDATES
+======================================================================
+
+Identify ADRs for:
+
+- telemetry standard
+- trace model
+- logging schema
+- metrics
+- audit integration
+- evaluation architecture
+- evaluation datasets
+- LLM-as-judge
+- regression testing
+- quality metrics
+- privacy / redaction
+- telemetry retention
+- sampling
+- alerting
+- SLOs
+- incident investigation
+
+For each:
+
+- problem
+- alternatives
+- recommendation
+- consequences
+- reversibility
+- decision deadline
+
+======================================================================
+83. DAY-1 / PREPARE / SCALE / ENTERPRISE
+======================================================================
+
+Create:
+
+| Capability | Day 1 | Prepare | Scale | Enterprise |
+
+Cover:
+
+- structured logging
+- metrics
+- tracing
+- audit
+- model telemetry
+- tool telemetry
+- retrieval telemetry
+- memory telemetry
+- workflow telemetry
+- multi-agent telemetry
+- evaluation datasets
+- regression tests
+- LLM judges
+- human evaluation
+- production evaluation
+- SLOs
+- alerting
+- anomaly detection
+- privacy
+- redaction
+- telemetry retention
+- distributed observability
+- enterprise reporting
+
+======================================================================
+84. SECURITY THREAT MODEL
+======================================================================
+
+Analyze:
+
+- telemetry data leakage
+- prompt leakage
+- response leakage
+- PII exposure
+- credential leakage
+- cross-tenant telemetry
+- malicious telemetry injection
+- audit tampering
+- evaluation dataset leakage
+- observability privilege escalation
+
+Determine mitigations.
+
+======================================================================
+85. ATTEMPT TO FALSIFY THE RECOMMENDATION
+======================================================================
+
+Try to prove the selected architecture wrong.
+
+Ask:
+
+- What traffic volume breaks it?
+- What trace volume breaks it?
+- What tenant count breaks it?
+- What agent count breaks it?
+- What evaluation dataset size breaks it?
+- What retention requirement breaks it?
+- What privacy requirement breaks it?
+- What incident complexity breaks it?
+- What multi-region requirement breaks it?
+
+Determine the first architectural trigger.
+
+======================================================================
+86. ARCHITECTURAL SELF-CRITIQUE
+======================================================================
+
+Before finalizing, ask:
+
+1. Did I distinguish logs, metrics and traces?
+2. Did I distinguish observability from audit?
+3. Did I distinguish monitoring from evaluation?
+4. Can I reconstruct an agent decision?
+5. Can I trace tool calls?
+6. Can I trace retrieval?
+7. Can I trace memory?
+8. Can I trace multi-agent calls?
+9. Can I trace workflow execution?
+10. Are model/prompt/tool versions captured?
+11. Can production failures become regression tests?
+12. Did I avoid treating LLM judges as ground truth?
+13. Did I address evaluation contamination?
+14. Did I address privacy?
+15. Did I prevent cross-tenant telemetry leakage?
+16. Is Day 1 genuinely simple?
+17. Can the architecture scale incrementally?
+18. Can telemetry backends be replaced?
+19. Are quality metrics actually measurable?
+20. What assumptions could invalidate the architecture?
+
+Include:
+
+# ARCHITECTURAL SELF-CRITIQUE
+
+======================================================================
+87. FINAL RECOMMENDATION
+======================================================================
+
+End with:
+
+# FINAL OBSERVABILITY, EVALUATION & AI RELIABILITY ARCHITECTURE RECOMMENDATION
+
+Answer:
+
+"What Observability, Evaluation and Reliability Architecture should this
+platform actually build?"
+
+Be concrete.
+
+Describe:
+
+- telemetry model
+- trace model
+- logs
+- metrics
+- audit
+- model observability
+- tool observability
+- retrieval observability
+- memory observability
+- workflow observability
+- multi-agent observability
+- evaluation
+- datasets
+- regression testing
+- LLM judges
+- human evaluation
+- quality signals
+- incident investigation
+- privacy
+- retention
+- Day-1 implementation
+- future evolution
+
+Then explicitly answer:
+
+"What MUST NOT be built on Day 1?"
+
+Then:
+
+"What future condition should trigger the next architectural evolution?"
+
+======================================================================
+88. REQUIRED OUTPUT
+======================================================================
+
+Produce:
+
+12_OBSERVABILITY_EVALUATION_RELIABILITY_ARCHITECTURE.md
+
+The document MUST explicitly reference:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_PLANE.md
+04_AGENT_RUNTIME.md
+05_MODEL_INFERENCE_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+07_KNOWLEDGE_DATA_ARCHITECTURE.md
+08_MEMORY_ARCHITECTURE.md
+09_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+10_AGENT_COMMUNICATION_MULTI_AGENT_ARCHITECTURE.md
+11_EVENTING_WORKFLOW_DURABLE_EXECUTION_ARCHITECTURE.md
+
+If there is a conflict:
+
+DO NOT silently resolve it.
+
+Identify the conflict.
+
+Explain the trade-off.
+
+Recommend the superior architectural decision.
+
+Create an ADR candidate when appropriate.
+
+======================================================================
+89. SOURCE REQUIREMENTS
+======================================================================
+
+Include direct URLs.
+
+Prioritize:
+
+- official OpenTelemetry documentation
+- official observability documentation
+- NIST
+- OWASP
+- SRE literature
+- academic LLM evaluation research
+- academic retrieval evaluation research
+- official model documentation
+- official evaluation framework documentation
+
+Do not fabricate citations.
+
+Do not cite sources that were not actually inspected.
+
+Clearly distinguish:
+
+SOURCE FACT
+
+from:
+
+INFERENCE
+
+from:
+
+ARCHITECTURAL RECOMMENDATION.
+
+======================================================================
+90. ABSOLUTE FINAL INSTRUCTION
+======================================================================
+
+Act as an INDEPENDENT Principal Observability and AI Reliability Architect.
+
+Your responsibility is to determine the best architecture,
+not to validate a preferred observability vendor or framework.
+
+Do not assume:
+
+LOGGING = OBSERVABILITY.
+
+Do not assume:
+
+METRICS = QUALITY.
+
+Do not assume:
+
+TRACING = AUDIT.
+
+Do not assume:
+
+LLM-AS-A-JUDGE = TRUTH.
+
+Do not assume:
+
+USER SATISFACTION = CORRECTNESS.
+
+Do not assume:
+
+BENCHMARK SCORE = PRODUCTION PERFORMANCE.
+
+Do not assume:
+
+MORE TELEMETRY = BETTER OBSERVABILITY.
+
+Do not allow observability to become a source of data leakage.
+
+Do not allow evaluation datasets to become an uncontrolled copy of
+production data.
+
+Do not allow quality metrics to hide security or authorization failures.
+
+Optimize for:
+
+DEBUGGABILITY
++
+MEASURABILITY
++
+CORRECTNESS
++
+RELIABILITY
++
+SECURITY
++
+PRIVACY
++
+REPRODUCIBILITY
++
+SIMPLICITY
++
+FUTURE EVOLUTION
+
+The final architecture MUST result from:
+
+    RESEARCH
+       ↓
+    REAL OBSERVABILITY REQUIREMENTS
+       ↓
+    REAL EVALUATION REQUIREMENTS
+       ↓
+    REAL RELIABILITY REQUIREMENTS
+       ↓
+    ARCHITECTURAL ALTERNATIVES
+       ↓
+    DATA / TELEMETRY ANALYSIS
+       ↓
+    SECURITY / PRIVACY ANALYSIS
+       ↓
+    ADVERSARIAL CHALLENGE
+       ↓
+    FINAL DECISION
+
+DO NOT DESIGN THE OBSERVABILITY STACK FIRST.
+
+RESEARCH FIRST.
+
+COMPARE.
+
+CHALLENGE.
+
+SELECT THE BEST ARCHITECTURE AVAILABLE FOR THIS PROJECT.
+
+THEN DESIGN IT.

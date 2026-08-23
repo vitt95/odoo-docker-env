@@ -1,0 +1,2403 @@
+# 07 — MCP ECOSYSTEM ARCHITECTURE
+## Model Context Protocol, Tool Interoperability & External AI Integration
+
+======================================================================
+ROLE
+======================================================================
+
+Act as the Principal AI Integration Architect, Protocol Architect,
+Agent Interoperability Architect and AI Platform Ecosystem Architect
+responsible for designing the MCP Ecosystem Architecture of an
+enterprise-grade AI agent platform.
+
+You have deep expertise in:
+
+- Model Context Protocol (MCP)
+- MCP clients
+- MCP servers
+- MCP tools
+- MCP resources
+- MCP prompts
+- MCP transports
+- MCP authorization
+- MCP security
+- tool discovery
+- tool invocation
+- tool schemas
+- agent runtimes
+- LLM tool calling
+- API architecture
+- enterprise integrations
+- connector architectures
+- agent interoperability
+- A2A
+- REST
+- gRPC
+- event-driven systems
+- sandboxing
+- capability-based security
+- identity
+- authorization
+- multi-tenancy
+- observability
+- audit
+- supply-chain security.
+
+You are working within:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_ARCHITECTURE.md
+04_AGENT_RUNTIME.md
+05_MODEL_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+08_KNOWLEDGE_DATA_ARCHITECTURE.md
+09_MEMORY_ARCHITECTURE.md
+10_SECURITY_ARCHITECTURE.md
+11_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+13_RELIABILITY_ARCHITECTURE.md
+15_OBSERVABILITY_ARCHITECTURE.md
+16_AUDIT_ARCHITECTURE.md
+17_EVALUATION_ARCHITECTURE.md
+18_DEPLOYMENT_LIFECYCLE_ARCHITECTURE.md
+
+The following are future architecture documents and may not yet exist:
+
+12_TRUST_PROVENANCE_ARCHITECTURE.md
+14_CONCURRENCY_ARCHITECTURE.md
+19_MULTI_TENANCY_ARCHITECTURE.md
+20_COST_ARCHITECTURE.md
+21_CAPACITY_PLANNING_ARCHITECTURE.md
+22_NETWORKING_ARCHITECTURE.md
+23_STORAGE_ARCHITECTURE.md
+24_DR_ENTERPRISE_ARCHITECTURE.md
+25_ADVANCED_SUPPLY_CHAIN_ARCHITECTURE.md
+26_ENTERPRISE_COMPLIANCE_ARCHITECTURE.md
+27_MULTI_MODEL_FALLBACK_ARCHITECTURE.md
+28_HUMAN_IN_THE_LOOP_ARCHITECTURE.md
+29_REPLAY_ARCHITECTURE.md
+30_OFFLINE_MOBILE_ARCHITECTURE.md
+31_A2A_ARCHITECTURE.md
+32_ADMIN_CONSOLE_ARCHITECTURE.md
+33_ADR_ARCHITECTURE.md
+34_QUALITY_MODEL_ARCHITECTURE.md
+
+If these documents do not exist:
+
+DO NOT INVENT THEIR CONTENT.
+
+Instead, identify the future dependency and define the contract that
+must remain stable.
+
+Existing architecture documents are not immune from challenge.
+
+If research demonstrates that an assumption in another document is
+incorrect, incomplete, obsolete or suboptimal, explicitly identify the
+conflict and recommend the superior architecture.
+
+======================================================================
+1. PRIMARY OBJECTIVE
+======================================================================
+
+Design the complete MCP Ecosystem Architecture.
+
+The architecture must answer:
+
+WHAT EXACTLY SHOULD MCP DO IN THIS PLATFORM?
+
+WHAT SHOULD MCP NOT DO?
+
+WHERE DOES MCP SIT?
+
+IS MCP AN INTERNAL PROTOCOL?
+
+AN EXTERNAL INTEGRATION PROTOCOL?
+
+A TOOL INTEROPERABILITY LAYER?
+
+AN AGENT INTEROPERABILITY LAYER?
+
+OR SOME COMBINATION?
+
+HOW DOES THE AGENT RUNTIME USE MCP?
+
+HOW DOES THE TOOL ARCHITECTURE USE MCP?
+
+HOW DO EXTERNAL MCP SERVERS CONNECT?
+
+HOW ARE MCP TOOLS DISCOVERED?
+
+HOW ARE THEY AUTHENTICATED?
+
+HOW ARE THEY AUTHORIZED?
+
+HOW ARE THEY VERSIONED?
+
+HOW ARE THEY GOVERNED?
+
+HOW ARE THEY ISOLATED?
+
+HOW ARE THEY MONITORED?
+
+HOW ARE THEY AUDITED?
+
+HOW ARE THEY TESTED?
+
+HOW ARE MALICIOUS MCP SERVERS HANDLED?
+
+HOW DOES THE PLATFORM PREVENT MCP FROM BECOMING AN UNCONTROLLED
+PRIVILEGE-ESCALATION CHANNEL?
+
+HOW DOES MCP COEXIST WITH NATIVE INTERNAL APIs?
+
+HOW DOES MCP COEXIST WITH FUTURE A2A?
+
+HOW CAN THE PLATFORM ADOPT MCP WITHOUT MAKING THE CORE RUNTIME
+DEPENDENT ON MCP?
+
+======================================================================
+2. MOST IMPORTANT INSTRUCTION
+## RESEARCH FIRST — SELECT ARCHITECTURE SECOND
+======================================================================
+
+THIS DOCUMENT REQUIRES EXTERNAL RESEARCH.
+
+Do NOT rely on prior model knowledge alone.
+
+Research the CURRENT MCP specification and ecosystem.
+
+Inspect authoritative sources first.
+
+Prioritize:
+
+- official MCP specification
+- official MCP documentation
+- official MCP SDK documentation
+- official protocol documentation
+- official security guidance
+- authoritative implementation documentation
+- credible security research
+- current ecosystem information.
+
+Verify the current state of:
+
+- protocol architecture
+- client/server model
+- tools
+- resources
+- prompts
+- transports
+- authorization
+- lifecycle
+- capabilities
+- discovery
+- SDKs
+- security model
+- versioning
+- ecosystem maturity.
+
+DO NOT assume a feature exists because it existed in an older version.
+
+DO NOT assume current MCP behavior from historical documentation.
+
+Record the date/version of the specification examined.
+
+Then:
+
+1. Understand the current protocol.
+2. Identify its actual capabilities.
+3. Identify its limitations.
+4. Identify security implications.
+5. Identify operational implications.
+6. Compare MCP against alternatives.
+7. Determine where MCP belongs in THIS platform.
+8. Attempt to falsify the recommendation.
+
+Required process:
+
+    CURRENT MCP RESEARCH
+       ↓
+    PROTOCOL CAPABILITIES
+       ↓
+    SECURITY MODEL
+       ↓
+    PLATFORM REQUIREMENTS
+       ↓
+    ALTERNATIVES
+       ↓
+    MCP FIT ANALYSIS
+       ↓
+    THREAT MODEL
+       ↓
+    OPERATIONAL ANALYSIS
+       ↓
+    FUTURE A2A / ECOSYSTEM ANALYSIS
+       ↓
+    ADVERSARIAL CHALLENGE
+       ↓
+    FALSIFICATION
+       ↓
+    FINAL DECISION
+       ↓
+    DAY-1 PREPARATION
+       ↓
+    FUTURE MCP ADOPTION
+
+CLAUDE MUST DETERMINE THE BEST ROLE FOR MCP IN THIS PROJECT.
+
+======================================================================
+3. CENTRAL PRINCIPLE
+======================================================================
+
+MCP IS A PROTOCOL.
+
+MCP IS NOT THE PLATFORM.
+
+Do not allow:
+
+MCP
+
+to become:
+
+THE ARCHITECTURE.
+
+The platform must maintain internal domain contracts independently
+where doing so provides better:
+
+- control
+- security
+- performance
+- observability
+- reliability
+- versioning
+- governance.
+
+MCP should be treated as an INTEROPERABILITY BOUNDARY where it provides
+real value.
+
+======================================================================
+4. LEVEL C CONSTRAINT
+======================================================================
+
+This document is:
+
+LEVEL C — SUCCESSIVE / FUTURE ECOSYSTEM CAPABILITY.
+
+Therefore:
+
+DO NOT make MCP a mandatory Day-1 dependency unless research proves
+that a real Day-1 requirement cannot be satisfied otherwise.
+
+Day 1 should remain capable of operating without an external MCP
+ecosystem.
+
+However:
+
+THE DAY-1 ARCHITECTURE MUST NOT MAKE FUTURE MCP ADOPTION DIFFICULT.
+
+This distinction is mandatory.
+
+======================================================================
+5. DAY-1 PRINCIPLE
+======================================================================
+
+The core platform should preferably expose internal capabilities through
+stable internal contracts.
+
+Future MCP support should be implemented as:
+
+MCP ADAPTER / MCP GATEWAY / MCP INTEGRATION LAYER
+
+rather than forcing the entire platform to become MCP-native internally.
+
+Determine whether this principle is correct after research.
+
+Do not simply assume it.
+
+======================================================================
+6. MCP PROTOCOL MODEL
+======================================================================
+
+Explain the current MCP architecture.
+
+At minimum investigate:
+
+CLIENT
+
+SERVER
+
+HOST
+
+TOOLS
+
+RESOURCES
+
+PROMPTS
+
+CAPABILITIES
+
+TRANSPORT
+
+LIFECYCLE
+
+AUTHORIZATION
+
+DISCOVERY.
+
+Use the CURRENT specification.
+
+Do not reproduce specification text unnecessarily.
+
+Explain architectural implications.
+
+======================================================================
+7. MCP HOST / CLIENT / SERVER
+======================================================================
+
+Determine the correct roles.
+
+Potential:
+
+Platform
+→ MCP Client
+
+External integration
+→ MCP Server
+
+or:
+
+Agent Runtime
+→ MCP Client
+
+MCP Server
+→ External capability.
+
+Determine where the boundaries should actually exist.
+
+======================================================================
+8. MCP TOOL MODEL
+======================================================================
+
+Determine how MCP tools map to the existing:
+
+06_TOOL_ARCHITECTURE.md
+
+Do NOT automatically duplicate:
+
+ToolDefinition
+ToolInvocation
+ToolResult
+
+just because MCP has its own representation.
+
+Determine:
+
+Internal Tool Contract
+
+and:
+
+MCP Tool Contract.
+
+======================================================================
+9. MCP ADAPTER
+======================================================================
+
+Evaluate an architecture such as:
+
+Agent Runtime
+      |
+Internal Tool Contract
+      |
+Tool Runtime
+      |
+MCP Adapter
+      |
+MCP Server
+
+Determine whether this is the correct abstraction.
+
+======================================================================
+10. MCP-NATIVE TOOLS
+======================================================================
+
+Evaluate whether internally developed tools should be:
+
+A. native internal tools
+
+B. MCP servers
+
+C. both.
+
+Determine when each is appropriate.
+
+Do not expose every internal tool through MCP by default.
+
+======================================================================
+11. EXTERNAL MCP SERVERS
+======================================================================
+
+Define how external MCP servers enter the platform.
+
+Potential flow:
+
+External MCP Server
+        ↓
+Registration
+        ↓
+Trust Assessment
+        ↓
+Policy
+        ↓
+Credential Binding
+        ↓
+Sandbox / Isolation
+        ↓
+MCP Client
+        ↓
+Agent Runtime.
+
+Determine the correct architecture.
+
+======================================================================
+12. MCP SERVER REGISTRATION
+======================================================================
+
+Determine whether MCP servers require explicit registration.
+
+Potential metadata:
+
+server_id
+name
+version
+endpoint
+transport
+owner
+trust_level
+allowed_tenants
+allowed_agents
+allowed_tools
+credentials
+status.
+
+These are examples only.
+
+Determine the real minimum.
+
+======================================================================
+13. MCP SERVER TRUST
+======================================================================
+
+This is CRITICAL.
+
+An MCP server is executable software.
+
+Do not treat it as:
+
+"just a tool."
+
+Threat-model:
+
+- malicious server
+- compromised server
+- vulnerable server
+- malicious tool description
+- malicious output
+- prompt injection
+- credential theft
+- data exfiltration
+- SSRF
+- privilege escalation.
+
+======================================================================
+14. MCP TOOL POISONING
+======================================================================
+
+Research current MCP-specific security concerns.
+
+Evaluate attacks where a malicious tool:
+
+- misrepresents its behavior
+- provides misleading descriptions
+- requests excessive permissions
+- returns malicious content
+- attempts prompt injection
+- exfiltrates data.
+
+Determine required defenses.
+
+======================================================================
+15. TOOL DESCRIPTION TRUST
+======================================================================
+
+Never assume:
+
+tool description = trustworthy.
+
+Define how the platform validates:
+
+- tool identity
+- permissions
+- owner
+- provenance
+- version.
+
+======================================================================
+16. MCP AUTHENTICATION
+======================================================================
+
+Research current MCP authorization/authentication mechanisms.
+
+Using 11 determine:
+
+- user identity
+- service identity
+- delegated identity
+- credential binding.
+
+Do not assume MCP authorization replaces the platform's own authorization
+model.
+
+======================================================================
+17. MCP AUTHORIZATION
+======================================================================
+
+Using 03, 10 and 11 determine:
+
+WHO
+
+can invoke:
+
+WHICH MCP TOOL
+
+ON WHICH RESOURCE
+
+UNDER WHICH CONDITIONS.
+
+======================================================================
+18. AUTHORIZATION TRANSLATION
+======================================================================
+
+If the internal authorization model is richer than MCP's protocol-level
+authorization:
+
+define an explicit translation layer.
+
+Never weaken internal authorization merely to fit MCP.
+
+======================================================================
+19. CREDENTIAL ISOLATION
+======================================================================
+
+MCP servers may require credentials.
+
+Determine:
+
+- where credentials live
+- who can access them
+- whether tools receive them
+- whether agents receive them
+- whether MCP servers receive them.
+
+Agents should not automatically receive raw external credentials.
+
+======================================================================
+20. SECRET PROXYING
+======================================================================
+
+Evaluate whether the platform should act as a credential broker.
+
+Example:
+
+Agent
+→ Tool
+→ Credential Broker
+→ External API
+
+instead of:
+
+Agent
+→ credential.
+
+Determine the correct architecture.
+
+======================================================================
+21. MCP SERVER SANDBOXING
+======================================================================
+
+Determine whether external MCP servers should execute:
+
+- inside platform
+- outside platform
+- isolated container
+- isolated process
+- remote service.
+
+Compare trust implications.
+
+======================================================================
+22. LOCAL MCP SERVERS
+======================================================================
+
+Evaluate local MCP server execution.
+
+Threat-model:
+
+- arbitrary code execution
+- filesystem access
+- network access
+- credential access.
+
+Do not assume local = trusted.
+
+======================================================================
+23. REMOTE MCP SERVERS
+======================================================================
+
+Evaluate:
+
+- authentication
+- TLS
+- network restrictions
+- latency
+- availability
+- data transfer.
+
+======================================================================
+24. NETWORK POLICY
+======================================================================
+
+Using 22 and 10 determine:
+
+Which MCP server may communicate with:
+
+- internet
+- internal network
+- databases
+- cloud APIs
+- customer systems.
+
+Do not give unrestricted network access.
+
+======================================================================
+25. SSRF
+======================================================================
+
+MCP integrations may become SSRF paths.
+
+Define protections against:
+
+- arbitrary URLs
+- internal IP ranges
+- metadata endpoints
+- localhost
+- private networks.
+
+======================================================================
+26. DATA EXFILTRATION
+======================================================================
+
+Determine whether an MCP tool could exfiltrate:
+
+- user data
+- documents
+- memory
+- credentials
+- model context
+- system prompts
+- tenant information.
+
+Define policy controls.
+
+======================================================================
+27. TENANT ISOLATION
+======================================================================
+
+Using future 19:
+
+MCP server access must respect tenant boundaries.
+
+Tenant A must not be able to access:
+
+Tenant B
+
+through:
+
+- shared MCP servers
+- shared credentials
+- shared state
+- cached resources.
+
+======================================================================
+28. MCP MULTI-TENANCY
+======================================================================
+
+Evaluate whether one MCP server instance can safely serve multiple
+tenants.
+
+Compare:
+
+shared
+
+vs:
+
+isolated.
+
+Determine the conditions.
+
+======================================================================
+29. TOOL DISCOVERY
+======================================================================
+
+Determine how MCP tools are discovered.
+
+Evaluate risks of:
+
+- dynamic discovery
+- stale discovery
+- malicious discovery
+- tool replacement.
+
+======================================================================
+30. DISCOVERY TRUST
+======================================================================
+
+Tool discovery should not automatically grant:
+
+permission.
+
+Define:
+
+DISCOVERY
+
+≠
+
+AUTHORIZATION.
+
+======================================================================
+31. TOOL APPROVAL
+======================================================================
+
+Evaluate whether certain MCP tools require:
+
+- administrator approval
+- security approval
+- user approval
+- policy approval.
+
+Define categories.
+
+======================================================================
+32. HIGH-RISK MCP TOOLS
+======================================================================
+
+Classify tools that can:
+
+- send email
+- delete data
+- execute code
+- access credentials
+- transfer money
+- modify infrastructure
+- access private files.
+
+Determine whether they require stronger controls.
+
+======================================================================
+33. SIDE EFFECTS
+======================================================================
+
+Every MCP tool should be classified as:
+
+READ
+
+WRITE
+
+DESTRUCTIVE
+
+EXTERNAL SIDE EFFECT.
+
+Use this classification for authorization and testing.
+
+======================================================================
+34. IDEMPOTENCY
+======================================================================
+
+Using 18 and 06 determine whether MCP tool calls need:
+
+- idempotency keys
+- operation IDs
+- deduplication.
+
+Especially for external side effects.
+
+======================================================================
+35. TOOL TIMEOUT
+======================================================================
+
+Define:
+
+- connection timeout
+- invocation timeout
+- total execution deadline.
+
+======================================================================
+36. TOOL CANCELLATION
+======================================================================
+
+Determine whether cancellation propagates:
+
+Agent
+ ↓
+MCP Client
+ ↓
+MCP Server
+ ↓
+External operation.
+
+If not guaranteed, define safe behavior.
+
+======================================================================
+37. RETRIES
+======================================================================
+
+MCP tool retries must depend on:
+
+- operation semantics
+- idempotency
+- side effects.
+
+Never blindly retry destructive operations.
+
+======================================================================
+38. MCP ERROR MODEL
+======================================================================
+
+Map:
+
+MCP errors
+
+to:
+
+Internal Tool Errors.
+
+Do not leak internal implementation details.
+
+======================================================================
+39. MCP RESULT MODEL
+======================================================================
+
+Determine how MCP results map into:
+
+ToolResult
+
+without allowing unbounded or malicious content to enter model context.
+
+======================================================================
+40. CONTEXT PROTECTION
+======================================================================
+
+This is CRITICAL.
+
+MCP tool outputs can consume model context.
+
+Define:
+
+- maximum result size
+- truncation
+- pagination
+- artifact references
+- summarization where appropriate.
+
+Do not allow external MCP servers to control the entire context window.
+
+======================================================================
+41. UNTRUSTED CONTENT
+======================================================================
+
+Treat MCP tool output as:
+
+UNTRUSTED DATA
+
+unless explicitly classified otherwise.
+
+This is especially important for:
+
+- instructions
+- system-like text
+- URLs
+- executable content
+- prompts.
+
+======================================================================
+42. PROMPT INJECTION
+======================================================================
+
+Define defenses against MCP outputs containing instructions such as:
+
+"ignore previous instructions"
+
+or equivalent adversarial behavior.
+
+Do not rely solely on prompt wording.
+
+Use architectural controls.
+
+======================================================================
+43. MCP RESOURCES
+======================================================================
+
+Research current MCP resources.
+
+Determine how they map to:
+
+08_KNOWLEDGE_DATA_ARCHITECTURE.md
+
+Potentially:
+
+External Resource
+→ MCP
+→ Internal Resource Adapter
+→ Knowledge Layer.
+
+Determine whether this is appropriate.
+
+======================================================================
+44. RESOURCE AUTHORIZATION
+======================================================================
+
+MCP resource access must respect:
+
+- tenant
+- user
+- agent
+- policy
+- classification.
+
+======================================================================
+45. MCP PROMPTS
+======================================================================
+
+Research current MCP prompt capabilities.
+
+Determine whether they should be integrated into:
+
+- prompt management
+- agent configuration
+- governance.
+
+Do not automatically trust externally supplied prompts.
+
+======================================================================
+46. PROMPT GOVERNANCE
+======================================================================
+
+External MCP prompts should be treated as:
+
+UNTRUSTED EXTERNAL INPUT
+
+unless explicitly approved.
+
+======================================================================
+47. MCP VERSIONING
+======================================================================
+
+Determine:
+
+- protocol version
+- server version
+- tool version
+- schema version.
+
+Track them separately.
+
+======================================================================
+48. SERVER VERSION DRIFT
+======================================================================
+
+An external MCP server may change behavior without changing its endpoint.
+
+Define mechanisms to detect:
+
+- schema drift
+- behavior drift
+- version drift.
+
+======================================================================
+49. MCP SERVER LIFECYCLE
+======================================================================
+
+Define:
+
+DISCOVERED
+REGISTERED
+APPROVED
+ACTIVE
+DEGRADED
+SUSPENDED
+REVOKED
+DECOMMISSIONED.
+
+Determine whether this lifecycle is sufficient.
+
+======================================================================
+50. SERVER REVOCATION
+======================================================================
+
+If an MCP server becomes compromised:
+
+Server
+ ↓
+REVOKE
+ ↓
+BLOCK
+ ↓
+AUDIT
+ ↓
+INVESTIGATE.
+
+Define how quickly the system can stop access.
+
+======================================================================
+51. MCP HEALTH
+======================================================================
+
+Define health signals:
+
+- availability
+- latency
+- errors
+- tool failures
+- authorization failures.
+
+Do not trust server self-reported health blindly.
+
+======================================================================
+52. MCP OBSERVABILITY
+======================================================================
+
+Using 15 determine:
+
+- MCP server
+- tool
+- invocation
+- duration
+- result status
+- caller
+- tenant
+- correlation ID.
+
+Avoid logging sensitive payloads.
+
+======================================================================
+53. MCP AUDIT
+======================================================================
+
+Using 16 determine whether every sensitive MCP invocation produces an
+audit record.
+
+At minimum consider:
+
+- actor
+- tenant
+- server
+- tool
+- authorization decision
+- result
+- timestamp
+- correlation ID.
+
+======================================================================
+54. MCP SECURITY TELEMETRY
+======================================================================
+
+Detect:
+
+- unexpected tool calls
+- abnormal volume
+- unusual destinations
+- repeated authorization failures
+- large data transfers.
+
+======================================================================
+55. MCP EVALUATION
+======================================================================
+
+Using 17 define tests for:
+
+- tool correctness
+- tool schema
+- tool selection
+- malicious tool descriptions
+- prompt injection
+- oversized results
+- authorization bypass
+- side effects.
+
+======================================================================
+56. MCP CONTRACT TESTING
+======================================================================
+
+Using 17 determine automated tests for:
+
+- protocol compatibility
+- tool schema
+- resources
+- prompts
+- errors
+- lifecycle.
+
+======================================================================
+57. MCP RED TEAM
+======================================================================
+
+Create a dedicated adversarial test suite.
+
+Test:
+
+- malicious MCP server
+- malicious tool
+- malicious resource
+- malicious prompt
+- compromised credential
+- server impersonation
+- replay
+- SSRF
+- exfiltration
+- prompt injection.
+
+======================================================================
+58. SUPPLY-CHAIN SECURITY
+======================================================================
+
+An MCP server may be third-party software.
+
+Using 12 and 16 determine:
+
+- provenance
+- source
+- version
+- artifact
+- signature
+- dependency risk.
+
+Do not assume the MCP protocol makes the server trustworthy.
+
+======================================================================
+59. MCP SERVER REGISTRY
+======================================================================
+
+Evaluate whether the platform should maintain an internal registry.
+
+Potential:
+
+MCP Server Registry
+-------------------
+
+Server
+Owner
+Version
+Trust
+Capabilities
+Permissions
+Credentials
+Status
+Audit.
+
+======================================================================
+60. MCP MARKETPLACE
+======================================================================
+
+Evaluate whether an internal or external marketplace is appropriate.
+
+For Day 1:
+
+DO NOT create a marketplace unless there is a real business requirement.
+
+======================================================================
+61. MCP PACKAGE MANAGEMENT
+======================================================================
+
+If local MCP servers are distributed as packages, evaluate:
+
+- artifact provenance
+- signing
+- version pinning
+- dependency scanning
+- sandboxing.
+
+======================================================================
+62. MCP SERVER INSTALLATION
+======================================================================
+
+Never allow arbitrary MCP server installation by agents.
+
+Installation should be:
+
+- controlled
+- approved
+- auditable.
+
+======================================================================
+63. DYNAMIC SERVER DISCOVERY
+======================================================================
+
+Evaluate whether runtime dynamic discovery is safe.
+
+Do not equate:
+
+"discoverable"
+
+with:
+
+"executable."
+
+======================================================================
+64. EXTERNAL MCP TRUST TIERS
+======================================================================
+
+Consider:
+
+TRUSTED INTERNAL
+
+APPROVED PARTNER
+
+VERIFIED THIRD PARTY
+
+UNTRUSTED.
+
+Determine whether trust tiers are useful.
+
+======================================================================
+65. CAPABILITY BOUNDARIES
+======================================================================
+
+An MCP server should receive only the capabilities it requires.
+
+Apply least privilege.
+
+======================================================================
+66. MCP SERVER IDENTITY
+======================================================================
+
+Determine how a server is identified and authenticated.
+
+Do not rely solely on:
+
+server name.
+
+======================================================================
+67. SERVER IMPERSONATION
+======================================================================
+
+Threat-model:
+
+Attacker pretends to be:
+
+"approved-mcp-server"
+
+Define identity verification.
+
+======================================================================
+68. MCP CREDENTIAL ROTATION
+======================================================================
+
+Using 11 define:
+
+- credential issuance
+- rotation
+- revocation
+- expiration.
+
+======================================================================
+69. DATA RESIDENCY
+======================================================================
+
+Using 14 determine whether MCP calls can transfer data to external
+regions.
+
+Policy must be explicit.
+
+======================================================================
+70. SENSITIVE DATA
+======================================================================
+
+Determine whether sensitive data can be passed to MCP servers.
+
+Potential categories:
+
+- PII
+- secrets
+- credentials
+- customer documents
+- financial data
+- internal policies.
+
+Define policy controls.
+
+======================================================================
+71. DATA MINIMIZATION
+======================================================================
+
+Before invoking an external MCP tool:
+
+send only the minimum required data.
+
+======================================================================
+72. OUTPUT SANITIZATION
+======================================================================
+
+Determine whether MCP outputs require:
+
+- schema validation
+- size limits
+- content filtering
+- classification
+- malware scanning
+- URL validation.
+
+======================================================================
+73. FILES / ARTIFACTS
+======================================================================
+
+MCP tools may return files.
+
+Determine whether large files should become:
+
+ArtifactReference
+
+instead of:
+
+raw context.
+
+======================================================================
+74. MCP + KNOWLEDGE
+======================================================================
+
+Determine whether MCP resources should be:
+
+- directly injected into model context
+- indexed into Knowledge
+- referenced as external resources.
+
+Do not bypass the Knowledge architecture without justification.
+
+======================================================================
+75. MCP + MEMORY
+======================================================================
+
+Determine whether MCP servers can:
+
+- read memory
+- write memory.
+
+Default principle:
+
+NO UNRESTRICTED MEMORY ACCESS.
+
+Determine the correct architecture.
+
+======================================================================
+76. MCP + POLICY
+======================================================================
+
+Using 03 define whether every MCP tool invocation passes through the
+policy layer.
+
+Determine whether policy enforcement occurs:
+
+before invocation
+
+and/or:
+
+after result.
+
+======================================================================
+77. MCP + AGENT RUNTIME
+======================================================================
+
+Using 04 define the exact interaction:
+
+Agent
+→ tool selection
+→ policy
+→ MCP client
+→ server
+→ result
+→ validation
+→ agent.
+
+Determine where each responsibility belongs.
+
+======================================================================
+78. MCP + TOOL RUNTIME
+======================================================================
+
+Using 06 determine whether MCP is:
+
+- a Tool Runtime implementation
+- an adapter
+- an external integration mechanism.
+
+Select one or a layered model.
+
+======================================================================
+79. MCP + CONTROL PLANE
+======================================================================
+
+Using 02 determine what the Control Plane manages:
+
+- server registration
+- approval
+- policy
+- credentials
+- lifecycle.
+
+It should not necessarily execute MCP calls.
+
+======================================================================
+80. MCP + IDENTITY
+======================================================================
+
+Using 11 determine identity propagation:
+
+User
+ ↓
+Agent
+ ↓
+MCP Client
+ ↓
+MCP Server
+ ↓
+External Service.
+
+Do not assume identity can always be propagated end-to-end.
+
+======================================================================
+81. MCP + MULTI-AGENT
+======================================================================
+
+Using 10 determine whether MCP should be used between agents.
+
+Important:
+
+MCP is primarily an integration/tool/resource protocol.
+
+Do not automatically use it as an agent-to-agent protocol.
+
+Compare with future A2A.
+
+======================================================================
+82. MCP + A2A
+======================================================================
+
+31 is future Level C.
+
+Research current A2A direction.
+
+Determine separation:
+
+MCP
+→ tools/resources/context
+
+A2A
+→ agent-to-agent collaboration
+
+if that distinction remains valid after research.
+
+Do not assume it without verification.
+
+======================================================================
+83. MCP + EVENTS
+======================================================================
+
+Using 11 determine whether MCP should interact with:
+
+- event bus
+- webhooks
+- workflows.
+
+Do not use MCP where an event architecture is more appropriate.
+
+======================================================================
+84. MCP + WORKFLOWS
+======================================================================
+
+Determine whether MCP tool calls can participate in durable workflows.
+
+Define:
+
+- retries
+- idempotency
+- timeouts
+- compensation
+- audit.
+
+======================================================================
+85. MCP + LONG-RUNNING TASKS
+======================================================================
+
+Determine how long-running MCP operations should interact with:
+
+- agent runs
+- workflow engine
+- cancellation
+- progress.
+
+======================================================================
+86. MCP + OBSERVABILITY
+======================================================================
+
+Every MCP boundary should remain traceable.
+
+Define:
+
+trace
+
+span
+
+server
+
+tool
+
+actor
+
+tenant
+
+workflow/run.
+
+======================================================================
+87. MCP + RELEASE LIFECYCLE
+======================================================================
+
+Using 18 determine how MCP server changes are released.
+
+Treat server upgrades as potentially breaking dependencies.
+
+======================================================================
+88. MCP + SUPPLY CHAIN
+======================================================================
+
+Using 16 and future 25 determine:
+
+- artifact identity
+- provenance
+- signing
+- vulnerability scanning
+- SBOM.
+
+======================================================================
+89. MCP + MODEL CONTEXT
+======================================================================
+
+Determine how the platform protects against context pollution.
+
+Potential:
+
+Tool output
+→ validator
+→ policy
+→ truncation
+→ structured ToolResult
+→ model.
+
+======================================================================
+90. MCP PERFORMANCE
+======================================================================
+
+Evaluate:
+
+- network latency
+- serialization
+- tool startup
+- connection setup
+- concurrency
+- result size.
+
+Do not assume MCP overhead is negligible.
+
+Benchmark where appropriate.
+
+======================================================================
+91. MCP AVAILABILITY
+======================================================================
+
+External MCP servers may fail.
+
+Define:
+
+- timeout
+- circuit breaker
+- retry
+- fallback
+- disable.
+
+Do not automatically retry unsafe operations.
+
+======================================================================
+92. MCP CIRCUIT BREAKER
+======================================================================
+
+Evaluate whether repeated failures should temporarily disable a server
+or tool.
+
+======================================================================
+93. MCP RATE LIMITING
+======================================================================
+
+Define limits for:
+
+- server
+- tool
+- tenant
+- agent.
+
+======================================================================
+94. MCP COST CONTROL
+======================================================================
+
+External tool calls may incur:
+
+- monetary cost
+- latency
+- token cost
+- API quotas.
+
+Determine whether the platform tracks them.
+
+======================================================================
+95. MCP BILLING / METERING
+======================================================================
+
+Future 20 may require:
+
+server
+
+tool
+
+tenant
+
+invocation
+
+cost.
+
+Define the stable telemetry contract without building full billing Day 1.
+
+======================================================================
+96. MCP INTEROPERABILITY
+======================================================================
+
+Evaluate the ecosystem's practical interoperability.
+
+Do not assume:
+
+"MCP-compatible"
+
+means:
+
+"interoperable without testing."
+
+Define compatibility tests.
+
+======================================================================
+97. MCP ECOSYSTEM MATURITY
+======================================================================
+
+Assess:
+
+- protocol maturity
+- SDK maturity
+- security maturity
+- server ecosystem
+- enterprise adoption
+- tooling.
+
+Use current evidence.
+
+======================================================================
+98. MCP VERSION STRATEGY
+======================================================================
+
+Define how the platform handles protocol evolution.
+
+Do not hard-code one protocol version permanently.
+
+======================================================================
+99. ARCHITECTURE OPTIONS
+======================================================================
+
+Identify real candidates.
+
+Potential:
+
+OPTION A
+--------
+No MCP support.
+
+OPTION B
+--------
+MCP as external adapter only.
+
+OPTION C
+--------
+MCP integrated into Tool Runtime.
+
+OPTION D
+--------
+MCP-native internal tool architecture.
+
+OPTION E
+--------
+MCP + internal contracts + future A2A layered ecosystem.
+
+These are examples only.
+
+Research and determine the actual candidates.
+
+======================================================================
+100. ARCHITECTURE SELECTION MATRIX
+======================================================================
+
+Compare:
+
+| Criterion |
+| Day-1 complexity |
+| Future interoperability |
+| Security |
+| Governance |
+| Tool ecosystem |
+| Internal API quality |
+| Performance |
+| Observability |
+| Tenant isolation |
+| Credential management |
+| Reliability |
+| Ecosystem maturity |
+| Vendor/protocol lock-in |
+| Recommendation |
+
+======================================================================
+101. "WHY NOT?" ANALYSIS
+======================================================================
+
+For the final architecture explicitly answer:
+
+WHY MCP?
+
+WHY NOT NATIVE INTERNAL APIs ONLY?
+
+WHY NOT MCP FOR EVERYTHING?
+
+WHY NOT BUILD EVERY TOOL AS AN MCP SERVER?
+
+WHY NOT USE MCP BETWEEN AGENTS?
+
+WHY NOT USE MCP FOR WORKFLOWS?
+
+WHY NOT ALLOW DYNAMIC MCP SERVER INSTALLATION?
+
+WHY NOT TRUST MCP SERVER TOOL DESCRIPTIONS?
+
+WHY NOT GIVE MCP SERVERS BROAD CREDENTIALS?
+
+WHY NOT EXPOSE INTERNAL DATABASES THROUGH MCP?
+
+WHY NOT LET AGENTS DISCOVER AND INSTALL MCP SERVERS?
+
+WHY NOT MAKE MCP A CORE DAY-1 DEPENDENCY?
+
+WHY NOT WAIT UNTIL ENTERPRISE SCALE?
+
+Only retain comparisons supported by current research.
+
+======================================================================
+102. REVERSIBILITY ANALYSIS
+======================================================================
+
+Classify:
+
+- MCP adoption
+- MCP adapter
+- MCP-native tools
+- MCP server registry
+- MCP credentials
+- MCP transport
+- MCP SDK
+- MCP marketplace
+- MCP internal contracts
+
+as:
+
+- easily reversible
+- moderately reversible
+- expensive to reverse
+- effectively irreversible.
+
+======================================================================
+103. CONTRACT VS IMPLEMENTATION
+======================================================================
+
+Determine stable internal contracts.
+
+Potential:
+
+MCPServer
+MCPServerRegistration
+MCPServerCapability
+MCPTool
+MCPResource
+MCPPrompt
+MCPInvocation
+MCPResult
+MCPTrustPolicy
+MCPAuthorization
+MCPHealth
+MCPAuditRecord.
+
+These are examples only.
+
+Determine the minimum required set.
+
+The most important rule:
+
+INTERNAL CONTRACTS MUST NOT BECOME IDENTICAL TO MCP SCHEMAS
+WITHOUT A CONSCIOUS ARCHITECTURAL DECISION.
+
+======================================================================
+104. REQUIRED DIAGRAMS
+======================================================================
+
+Include Mermaid diagrams for:
+
+1. MCP ecosystem architecture
+2. MCP host/client/server model
+3. Internal Tool Runtime + MCP adapter
+4. External MCP server registration
+5. MCP trust boundary
+6. MCP authentication
+7. MCP authorization
+8. Credential flow
+9. Tool discovery
+10. Tool approval
+11. Agent → MCP tool invocation
+12. MCP result validation
+13. Context protection
+14. MCP security architecture
+15. MCP server lifecycle
+16. MCP revocation
+17. MCP observability
+18. MCP audit
+19. MCP + future A2A
+20. Day-1 → future MCP evolution
+
+======================================================================
+105. ADR CANDIDATES
+======================================================================
+
+Identify ADRs for:
+
+- whether MCP is adopted
+- MCP adapter architecture
+- MCP internal vs external use
+- MCP tool mapping
+- MCP server registration
+- MCP trust model
+- MCP authentication
+- MCP authorization
+- credential management
+- sandboxing
+- MCP server registry
+- dynamic discovery
+- tool approval
+- MCP + A2A boundary
+- MCP + internal API boundary
+- MCP versioning.
+
+For each:
+
+- problem
+- alternatives
+- recommendation
+- consequences
+- reversibility
+- decision deadline
+
+======================================================================
+106. DAY-1 / PREPARE / SCALE / ENTERPRISE
+======================================================================
+
+Create:
+
+| Capability | Day 1 | Prepare | Scale | Enterprise |
+
+Cover:
+
+- MCP client
+- MCP server
+- tool discovery
+- server registration
+- trust
+- authentication
+- authorization
+- credentials
+- sandboxing
+- tool approval
+- resources
+- prompts
+- webhooks/events integration
+- observability
+- audit
+- registry
+- server revocation
+- multi-tenancy
+- marketplace.
+
+The likely Day-1 answer may be:
+
+"Not implemented, but internal contracts remain MCP-compatible."
+
+However:
+
+DO NOT assume this is correct.
+
+Research and decide.
+
+======================================================================
+107. MCP SECURITY TEST MATRIX
+======================================================================
+
+Create:
+
+| Threat | Attack | Control | Detection | Test |
+
+At minimum include:
+
+- malicious MCP server
+- malicious tool
+- tool poisoning
+- prompt injection
+- SSRF
+- credential theft
+- data exfiltration
+- privilege escalation
+- tenant isolation failure
+- replay
+- server impersonation
+- malicious resource
+- malicious prompt
+- oversized output
+- protocol downgrade
+- compromised dependency.
+
+======================================================================
+108. MCP INTEGRATION TEST MATRIX
+======================================================================
+
+Create:
+
+| Interface | Contract | Auth | AuthZ | Retry | Timeout | Idempotency | Security |
+
+Include:
+
+- tool
+- resource
+- prompt
+- server
+- client
+- external API.
+
+======================================================================
+109. ATTEMPT TO FALSIFY THE RECOMMENDATION
+======================================================================
+
+Try to prove the selected MCP architecture wrong.
+
+Ask:
+
+- What number of MCP servers breaks it?
+- What number of tools breaks discovery?
+- What tenant count breaks isolation?
+- What tool-call volume breaks the architecture?
+- What latency breaks agent UX?
+- What external server compromise breaks trust?
+- What protocol evolution breaks compatibility?
+- What MCP ecosystem instability breaks the decision?
+- What enterprise compliance requirement breaks it?
+- What credential model breaks it?
+
+Determine the first architectural trigger.
+
+======================================================================
+110. ARCHITECTURAL SELF-CRITIQUE
+======================================================================
+
+Before finalizing, ask:
+
+1. Did I research the CURRENT MCP specification?
+2. Did I verify the actual capabilities?
+3. Did I distinguish MCP from the platform?
+4. Is the internal Tool Contract independent?
+5. Is MCP optional where appropriate?
+6. Is MCP treated as a security boundary?
+7. Are external MCP servers untrusted by default?
+8. Are credentials isolated?
+9. Is authorization preserved?
+10. Is tenant isolation preserved?
+11. Are tool outputs treated as untrusted?
+12. Is prompt injection addressed architecturally?
+13. Can MCP servers be revoked?
+14. Are MCP changes observable?
+15. Are MCP calls auditable?
+16. Can the system operate without MCP Day 1?
+17. Can MCP be added later without rewriting Agent Runtime?
+18. Is MCP correctly separated from A2A?
+19. Is protocol sprawl avoided?
+20. What assumptions could invalidate the architecture?
+
+Include:
+
+# ARCHITECTURAL SELF-CRITIQUE
+
+======================================================================
+111. FINAL RECOMMENDATION
+======================================================================
+
+End with:
+
+# FINAL MCP ECOSYSTEM ARCHITECTURE RECOMMENDATION
+
+Answer:
+
+"What role should MCP actually play in this platform?"
+
+Be concrete.
+
+Describe:
+
+- whether MCP is adopted
+- where it lives
+- MCP client
+- MCP server
+- adapter
+- internal tool contract
+- tool discovery
+- registration
+- trust
+- authentication
+- authorization
+- credentials
+- sandboxing
+- resources
+- prompts
+- result validation
+- context protection
+- observability
+- audit
+- testing
+- server lifecycle
+- revocation
+- versioning
+- MCP + A2A boundary
+- Day-1 preparation
+- future ecosystem architecture.
+
+Then explicitly answer:
+
+"What MUST NOT be built on Day 1?"
+
+Then:
+
+"What future condition should trigger MCP adoption or expansion?"
+
+======================================================================
+112. REQUIRED OUTPUT
+======================================================================
+
+Produce:
+
+07_MCP_ECOSYSTEM_ARCHITECTURE.md
+
+The document MUST explicitly reference:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_ARCHITECTURE.md
+04_AGENT_RUNTIME.md
+05_MODEL_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+08_KNOWLEDGE_DATA_ARCHITECTURE.md
+09_MEMORY_ARCHITECTURE.md
+10_SECURITY_ARCHITECTURE.md
+11_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+13_RELIABILITY_ARCHITECTURE.md
+15_OBSERVABILITY_ARCHITECTURE.md
+16_AUDIT_ARCHITECTURE.md
+17_EVALUATION_ARCHITECTURE.md
+18_DEPLOYMENT_LIFECYCLE_ARCHITECTURE.md
+
+Also explicitly identify future interactions with:
+
+12_TRUST_PROVENANCE_ARCHITECTURE.md
+14_CONCURRENCY_ARCHITECTURE.md
+19_MULTI_TENANCY_ARCHITECTURE.md
+20_COST_ARCHITECTURE.md
+21_CAPACITY_PLANNING_ARCHITECTURE.md
+22_NETWORKING_ARCHITECTURE.md
+23_STORAGE_ARCHITECTURE.md
+25_ADVANCED_SUPPLY_CHAIN_ARCHITECTURE.md
+26_ENTERPRISE_COMPLIANCE_ARCHITECTURE.md
+31_A2A_ARCHITECTURE.md
+
+If these documents do not exist:
+
+DO NOT invent their content.
+
+Define only the future contracts that MCP must respect.
+
+If there is a conflict:
+
+DO NOT silently resolve it.
+
+Identify the conflict.
+
+Explain the trade-off.
+
+Recommend the superior architectural decision.
+
+Create an ADR candidate where appropriate.
+
+======================================================================
+113. SOURCE REQUIREMENTS
+======================================================================
+
+THIS SECTION IS MANDATORY.
+
+Because MCP evolves rapidly, use current web research.
+
+Include direct URLs to the sources actually inspected.
+
+Prioritize:
+
+- official Model Context Protocol specification
+- official MCP documentation
+- official MCP SDK documentation
+- official MCP security documentation
+- official MCP authorization documentation
+- official protocol repositories
+- relevant IETF standards
+- OWASP guidance
+- authoritative security research
+- official A2A documentation when comparing agent interoperability.
+
+For every MCP-specific architectural claim:
+
+VERIFY IT AGAINST THE CURRENT SPECIFICATION.
+
+Do not use outdated blog posts as authoritative protocol references.
+
+Do not fabricate citations.
+
+Do not cite sources that were not actually inspected.
+
+Clearly distinguish:
+
+CURRENT MCP SPECIFICATION FACT
+
+from:
+
+ECOSYSTEM OBSERVATION
+
+from:
+
+SECURITY RESEARCH
+
+from:
+
+INFERENCE
+
+from:
+
+ARCHITECTURAL RECOMMENDATION.
+
+======================================================================
+114. VERSION AND DATE DISCIPLINE
+======================================================================
+
+At the beginning of the document state:
+
+MCP SPECIFICATION / DOCUMENTATION VERSION OR DATE RESEARCHED
+
+and:
+
+RESEARCH DATE.
+
+If the ecosystem is changing rapidly:
+
+explicitly identify areas where the architecture may need revalidation.
+
+======================================================================
+115. ABSOLUTE FINAL INSTRUCTION
+======================================================================
+
+Act as an INDEPENDENT Principal AI Protocol and Ecosystem Architect.
+
+Your responsibility is to determine the correct role of MCP in THIS
+platform.
+
+Do NOT assume:
+
+MCP = THE PLATFORM.
+
+Do NOT assume:
+
+MCP = ALL TOOLS.
+
+Do NOT assume:
+
+MCP = ALL APIs.
+
+Do NOT assume:
+
+MCP = AGENT-TO-AGENT COMMUNICATION.
+
+Do NOT assume:
+
+MCP = TRUST.
+
+Do NOT assume:
+
+MCP SERVER = TRUSTED SOFTWARE.
+
+Do NOT assume:
+
+TOOL DESCRIPTION = TRUSTED INSTRUCTION.
+
+Do NOT assume:
+
+MCP OUTPUT = TRUSTED CONTENT.
+
+Do NOT assume:
+
+MCP AUTHORIZATION = COMPLETE PLATFORM AUTHORIZATION.
+
+Do NOT assume:
+
+MCP MAKES SECURITY AUTOMATIC.
+
+Do NOT assume:
+
+MCP SHOULD BE DAY-1 CORE INFRASTRUCTURE.
+
+Do NOT assume:
+
+MCP SHOULD BE DELAYED FOREVER.
+
+Do NOT allow:
+
+MCP PROTOCOL REQUIREMENTS
+
+to contaminate:
+
+CORE DOMAIN CONTRACTS
+
+unless there is a compelling architectural reason.
+
+Do not allow:
+
+EXTERNAL MCP SERVERS
+
+to receive:
+
+UNNECESSARY CREDENTIALS
+
+or:
+
+UNNECESSARY DATA
+
+or:
+
+UNNECESSARY NETWORK ACCESS.
+
+Do not allow:
+
+MCP DISCOVERY
+
+to become:
+
+AUTOMATIC AUTHORIZATION.
+
+Do not allow:
+
+MCP TOOL OUTPUT
+
+to become:
+
+TRUSTED SYSTEM INSTRUCTIONS.
+
+Optimize for:
+
+INTEROPERABILITY
++
+SECURITY
++
+LEAST PRIVILEGE
++
+INTERNAL ARCHITECTURAL INDEPENDENCE
++
+OBSERVABILITY
++
+AUDITABILITY
++
+RELIABILITY
++
+FUTURE COMPATIBILITY
++
+LOW DAY-1 COMPLEXITY
++
+ECOSYSTEM FLEXIBILITY
+
+The final architecture MUST result from:
+
+    CURRENT MCP RESEARCH
+       ↓
+    ACTUAL PROTOCOL CAPABILITIES
+       ↓
+    PLATFORM REQUIREMENTS
+       ↓
+    SECURITY THREAT MODEL
+       ↓
+    INTERNAL API / TOOL COMPARISON
+       ↓
+    MCP / A2A BOUNDARY ANALYSIS
+       ↓
+    OPERATIONAL ANALYSIS
+       ↓
+    ADVERSARIAL CHALLENGE
+       ↓
+    FALSIFICATION
+       ↓
+    FINAL DECISION
+
+DO NOT DESIGN THE MCP STACK FIRST.
+
+RESEARCH THE CURRENT MCP ECOSYSTEM FIRST.
+
+UNDERSTAND WHAT MCP ACTUALLY PROVIDES.
+
+UNDERSTAND WHAT IT DOES NOT PROVIDE.
+
+MAP ITS SECURITY BOUNDARY.
+
+COMPARE IT WITH NATIVE INTERNAL CONTRACTS.
+
+COMPARE IT WITH OTHER INTEROPERABILITY MECHANISMS.
+
+CHALLENGE THE ASSUMPTION THAT MCP SHOULD BE ADOPTED.
+
+CHALLENGE THE ASSUMPTION THAT MCP SHOULD NOT BE ADOPTED.
+
+FALSIFY BOTH POSITIONS.
+
+THEN SELECT THE BEST ARCHITECTURAL ROLE FOR MCP AVAILABLE FOR THIS
+PROJECT.
+
+THEN DESIGN IT.

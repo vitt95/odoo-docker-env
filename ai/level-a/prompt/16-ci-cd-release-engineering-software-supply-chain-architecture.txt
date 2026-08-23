@@ -1,0 +1,2026 @@
+# 16 — CI/CD, RELEASE ENGINEERING & SOFTWARE SUPPLY-CHAIN ARCHITECTURE
+## Enterprise AI Agent Platform
+
+======================================================================
+ROLE
+======================================================================
+
+Act as the Principal DevOps Architect, Release Engineer, Software
+Supply-Chain Security Architect, Platform Engineer and AI Deployment
+Architect responsible for designing the complete CI/CD, Release
+Engineering and Software Supply-Chain Architecture of an enterprise-
+grade AI agent platform.
+
+You have deep expertise in:
+
+- CI/CD
+- Git
+- GitHub Actions
+- GitLab CI
+- Jenkins
+- Build systems
+- artifact management
+- container image construction
+- container registries
+- software supply-chain security
+- SBOM
+- SLSA
+- artifact provenance
+- signing
+- Sigstore
+- Cosign
+- dependency management
+- reproducible builds
+- hermetic builds
+- secure software development
+- release engineering
+- semantic versioning
+- feature flags
+- deployment strategies
+- canary deployments
+- blue/green deployments
+- rollback
+- database migrations
+- model deployment
+- model evaluation
+- AI/LLM release pipelines
+- prompt versioning
+- agent versioning
+- tool versioning
+- infrastructure deployment
+- GitOps
+- infrastructure as code
+- environment promotion
+- security gates
+- quality gates
+- disaster recovery
+- incident response
+
+You are working within:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_PLANE.md
+04_AGENT_RUNTIME.md
+05_MODEL_INFERENCE_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+07_KNOWLEDGE_DATA_ARCHITECTURE.md
+08_MEMORY_ARCHITECTURE.md
+09_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+10_AGENT_COMMUNICATION_MULTI_AGENT_ARCHITECTURE.md
+11_EVENTING_WORKFLOW_DURABLE_EXECUTION_ARCHITECTURE.md
+12_OBSERVABILITY_EVALUATION_RELIABILITY_ARCHITECTURE.md
+13_SECURITY_ARCHITECTURE.md
+14_DATA_GOVERNANCE_PRIVACY_COMPLIANCE_ARCHITECTURE.md
+15_DEPLOYMENT_INFRASTRUCTURE_RUNTIME_PLATFORM_ARCHITECTURE.md
+
+These documents provide the current architectural context.
+
+However:
+
+THEY ARE NOT IMMUNE FROM CHALLENGE.
+
+If research demonstrates that an assumption is technically incorrect,
+incomplete, obsolete, insecure or operationally suboptimal, explicitly
+identify the conflict and recommend the superior architecture.
+
+======================================================================
+1. PRIMARY OBJECTIVE
+======================================================================
+
+Design the complete CI/CD, Release Engineering and Software Supply-Chain
+Architecture.
+
+The architecture must answer:
+
+HOW DOES CODE ENTER THE SYSTEM?
+
+HOW IS CODE VERIFIED?
+
+HOW ARE DEPENDENCIES VERIFIED?
+
+HOW ARE ARTIFACTS BUILT?
+
+HOW DO WE KNOW AN ARTIFACT WAS BUILT FROM TRUSTED SOURCE?
+
+HOW ARE CONTAINER IMAGES BUILT?
+
+HOW ARE MODEL ARTIFACTS VERIFIED?
+
+HOW ARE PROMPTS VERSIONED?
+
+HOW ARE AGENTS VERSIONED?
+
+HOW ARE TOOLS VERSIONED?
+
+HOW ARE WORKFLOWS VERSIONED?
+
+HOW ARE DATABASE MIGRATIONS DEPLOYED?
+
+HOW ARE EVALUATIONS RUN?
+
+HOW ARE SECURITY TESTS RUN?
+
+HOW DOES A CHANGE BECOME ELIGIBLE FOR PRODUCTION?
+
+HOW IS A RELEASE PROMOTED?
+
+HOW IS A RELEASE VERIFIED?
+
+HOW IS A BAD RELEASE ROLLED BACK?
+
+HOW DO WE PREVENT A COMPROMISED DEPENDENCY FROM REACHING PRODUCTION?
+
+HOW DO WE KNOW EXACTLY WHAT IS RUNNING IN PRODUCTION?
+
+======================================================================
+2. MOST IMPORTANT INSTRUCTION
+## RESEARCH FIRST — SELECT ARCHITECTURE SECOND
+======================================================================
+
+DO NOT begin by selecting:
+
+- GitHub Actions
+- GitLab CI
+- Jenkins
+- Argo CD
+- Flux
+- Terraform
+- OpenTofu
+- Docker
+- Cosign
+- Sigstore
+- a container registry
+- a cloud provider
+
+as the architecture.
+
+Research first.
+
+Research current approaches to:
+
+- CI/CD
+- secure software supply chains
+- SLSA
+- SBOM
+- artifact provenance
+- artifact signing
+- reproducible builds
+- dependency security
+- container security
+- model artifact security
+- AI evaluation gates
+- GitOps
+- deployment automation
+- progressive delivery
+- database migration strategies
+- rollback
+- release verification.
+
+Prioritize authoritative and current sources.
+
+Then identify meaningful architectural alternatives.
+
+Then compare them.
+
+Then select the architecture best suited to THIS project.
+
+Then attempt to falsify the decision.
+
+Required process:
+
+    RESEARCH
+       ↓
+    RELEASE REQUIREMENTS
+       ↓
+    SUPPLY-CHAIN THREAT MODEL
+       ↓
+    PIPELINE REQUIREMENTS
+       ↓
+    ARCHITECTURAL ALTERNATIVES
+       ↓
+    SECURITY ANALYSIS
+       ↓
+    EVALUATION ANALYSIS
+       ↓
+    OPERATIONAL ANALYSIS
+       ↓
+    ADVERSARIAL CHALLENGE
+       ↓
+    FINAL DECISION
+       ↓
+    DAY-1 IMPLEMENTATION
+       ↓
+    FUTURE EVOLUTION
+
+CLAUDE MUST DETERMINE THE BEST CI/CD AND SUPPLY-CHAIN ARCHITECTURE
+AVAILABLE FOR THIS PROJECT.
+
+======================================================================
+3. CENTRAL PRINCIPLE
+======================================================================
+
+A deployment pipeline is a SECURITY BOUNDARY.
+
+It must not be treated merely as:
+
+"automation that runs tests."
+
+The pipeline determines:
+
+WHAT CODE
+
+WHAT DEPENDENCIES
+
+WHAT MODEL
+
+WHAT CONFIGURATION
+
+WHAT POLICY
+
+WHAT TOOLS
+
+WHAT CONTAINER
+
+WHAT INFRASTRUCTURE
+
+can enter production.
+
+Therefore:
+
+CI/CD = RELEASE CONTROL PLANE.
+
+======================================================================
+4. DAY-1 CONSTRAINTS
+======================================================================
+
+Day 1:
+
+- one machine
+- one GPU if available
+- Qwen3.5 9B
+- PostgreSQL
+- local/containerized deployment
+- small engineering team
+- low release volume
+- simple operational environment
+
+The pipeline must remain understandable by a small team.
+
+Strongly evaluate whether Day 1 requires only:
+
+- Git
+- one CI system
+- container build
+- registry
+- automated tests
+- security checks
+- evaluation checks
+- deployment
+- health verification
+- rollback.
+
+Do NOT introduce:
+
+- multi-cluster GitOps
+- complex progressive delivery
+- artifact federation
+- multiple CI platforms
+- elaborate release orchestration
+
+unless a real requirement exists.
+
+======================================================================
+5. DAY-1 MUST STILL BE REPRODUCIBLE
+======================================================================
+
+Simple does NOT mean:
+
+- manual production changes
+- undocumented deployments
+- mutable images
+- untracked configuration
+- unversioned prompts
+- unversioned models
+- unreviewed dependencies
+- impossible rollback.
+
+Every production release must be attributable to a precise version.
+
+======================================================================
+6. FUTURE REQUIREMENTS
+======================================================================
+
+Future requirements may include:
+
+- many engineers
+- many services
+- many agents
+- many tools
+- many models
+- multiple environments
+- multiple clusters
+- multiple regions
+- enterprise customers
+- regulated workloads
+- formal supply-chain assurance
+- external contributors
+- frequent deployments
+- automated canaries.
+
+Determine:
+
+DAY 1
+PREPARE
+SCALE
+ENTERPRISE
+
+======================================================================
+7. SOURCE CONTROL
+======================================================================
+
+Determine:
+
+- repository structure
+- branch strategy
+- pull requests
+- protected branches
+- code ownership
+- release tags
+- versioning.
+
+Do not assume monorepo or polyrepo.
+
+Research the actual project requirements.
+
+======================================================================
+8. MONOREPO VS POLYREPO
+======================================================================
+
+Compare:
+
+OPTION A
+--------
+Monorepo
+
+OPTION B
+--------
+Polyrepo
+
+OPTION C
+--------
+Hybrid.
+
+Evaluate:
+
+- agents
+- tools
+- infrastructure
+- prompts
+- schemas
+- workflows
+- deployment configuration.
+
+Select the appropriate model.
+
+======================================================================
+9. CHANGE OWNERSHIP
+======================================================================
+
+Determine how changes to:
+
+- security policy
+- authorization
+- tools
+- prompts
+- model configuration
+- workflows
+- infrastructure
+- database schema
+
+are reviewed.
+
+Security-sensitive files should have appropriate ownership.
+
+======================================================================
+10. BRANCH PROTECTION
+======================================================================
+
+Determine minimum protections:
+
+- pull request
+- review
+- tests
+- security checks
+- evaluation checks.
+
+Do not require unnecessary approvals for every trivial change.
+
+======================================================================
+11. COMMIT INTEGRITY
+======================================================================
+
+Evaluate:
+
+- signed commits
+- verified authors
+- protected branches
+- provenance.
+
+Determine whether signed commits are required Day 1.
+
+======================================================================
+12. DEPENDENCY MANAGEMENT
+======================================================================
+
+Inventory:
+
+- application dependencies
+- system dependencies
+- Python dependencies
+- Node dependencies
+- container base images
+- build tools
+- CI actions
+- model libraries
+- agent/tool packages.
+
+======================================================================
+13. DEPENDENCY PINNING
+======================================================================
+
+Determine appropriate pinning:
+
+- exact versions
+- lockfiles
+- hashes
+- image digests.
+
+Avoid unconstrained dependency resolution in production builds.
+
+======================================================================
+14. DEPENDENCY VULNERABILITY SCANNING
+======================================================================
+
+Determine:
+
+- when scans run
+- which vulnerabilities block release
+- severity thresholds
+- exception process
+- false positive handling.
+
+Do not automatically block every vulnerability without risk analysis.
+
+======================================================================
+15. DEPENDENCY UPDATE STRATEGY
+======================================================================
+
+Determine whether updates are:
+
+- manual
+- automated PRs
+- scheduled
+- security-triggered.
+
+Every update must pass:
+
+- tests
+- security checks
+- evaluation where relevant.
+
+======================================================================
+16. SOFTWARE BILL OF MATERIALS
+======================================================================
+
+Research SBOM standards.
+
+Determine whether to produce:
+
+- SPDX
+- CycloneDX
+- another format.
+
+For every production artifact determine whether SBOM should exist.
+
+======================================================================
+17. ARTIFACT PROVENANCE
+======================================================================
+
+This is CRITICAL.
+
+For every production artifact determine whether we should know:
+
+- source commit
+- repository
+- builder
+- build environment
+- dependencies
+- timestamp
+- pipeline
+- artifact digest.
+
+======================================================================
+18. REPRODUCIBLE BUILDS
+======================================================================
+
+Evaluate whether builds can be reproduced.
+
+Determine:
+
+- deterministic dependency resolution
+- pinned base images
+- lockfiles
+- build environment
+- timestamps
+- generated artifacts.
+
+Do not claim perfect reproducibility if the ecosystem does not support it.
+
+======================================================================
+19. BUILD ISOLATION
+======================================================================
+
+CI runners are privileged.
+
+Analyze:
+
+- runner isolation
+- ephemeral runners
+- secrets
+- network access
+- artifact access
+- untrusted pull requests.
+
+======================================================================
+20. CI RUNNER SECURITY
+======================================================================
+
+Determine:
+
+- hosted runners
+- self-hosted runners
+- ephemeral runners
+- isolated runners.
+
+Self-hosted runners must not become permanent trust anchors for arbitrary
+code.
+
+======================================================================
+21. BUILD SECRETS
+======================================================================
+
+Determine which CI steps actually need secrets.
+
+Minimize them.
+
+Never expose:
+
+- production credentials
+- database credentials
+- signing keys
+
+to arbitrary build steps.
+
+======================================================================
+22. ARTIFACT BUILDING
+======================================================================
+
+Define build pipeline:
+
+Source
+ ↓
+Dependencies
+ ↓
+Tests
+ ↓
+Security Checks
+ ↓
+Build
+ ↓
+SBOM
+ ↓
+Sign
+ ↓
+Publish
+ ↓
+Evaluate
+ ↓
+Release.
+
+Determine the correct order.
+
+======================================================================
+23. CONTAINER IMAGES
+======================================================================
+
+Using 15 determine:
+
+- image structure
+- base image
+- build
+- scan
+- sign
+- registry
+- digest.
+
+Never deploy mutable tags as the only release identity.
+
+======================================================================
+24. IMAGE SIGNING
+======================================================================
+
+Research current artifact-signing approaches.
+
+Evaluate:
+
+- Cosign
+- Sigstore
+- registry-native signing
+- other mechanisms.
+
+Do not select a tool before understanding the trust model.
+
+======================================================================
+25. REGISTRY SECURITY
+======================================================================
+
+Determine:
+
+- authentication
+- access
+- immutable tags
+- retention
+- vulnerability scanning
+- signing
+- deletion
+- provenance.
+
+======================================================================
+26. MODEL ARTIFACT PIPELINE
+======================================================================
+
+Models are production artifacts.
+
+Using 05 determine:
+
+Model Source
+ ↓
+Verification
+ ↓
+Checksum / Signature
+ ↓
+Compatibility
+ ↓
+Evaluation
+ ↓
+Security Validation
+ ↓
+Registry
+ ↓
+Deployment.
+
+======================================================================
+27. MODEL PROVENANCE
+======================================================================
+
+Determine how to record:
+
+- source
+- model identifier
+- revision
+- checksum
+- license
+- configuration
+- quantization
+- runtime compatibility.
+
+======================================================================
+28. MODEL SECURITY GATES
+======================================================================
+
+Before deployment evaluate:
+
+- artifact integrity
+- provenance
+- compatibility
+- memory requirements
+- inference correctness
+- safety
+- benchmark regression
+- latency
+- cost.
+
+======================================================================
+29. PROMPT RELEASE MANAGEMENT
+======================================================================
+
+Prompts are production artifacts.
+
+Determine:
+
+- prompt version
+- source control
+- review
+- evaluation
+- release
+- rollback.
+
+A prompt change should be capable of being identified independently from
+the application release.
+
+======================================================================
+30. AGENT VERSIONING
+======================================================================
+
+Determine how to version:
+
+- agent logic
+- instructions
+- tools
+- policies
+- memory configuration
+- retrieval configuration.
+
+======================================================================
+31. TOOL VERSIONING
+======================================================================
+
+Using 06 determine:
+
+- tool schema version
+- implementation version
+- permission changes
+- security review
+- release.
+
+A tool permission change may be security-sensitive even if code changes
+are small.
+
+======================================================================
+32. POLICY VERSIONING
+======================================================================
+
+Using 03 and 13 determine:
+
+- policy version
+- approval
+- deployment
+- rollback.
+
+Security policies should be traceable to releases.
+
+======================================================================
+33. WORKFLOW VERSIONING
+======================================================================
+
+Using 11 determine:
+
+- workflow version
+- schema version
+- migration
+- running workflow compatibility.
+
+Do not break existing durable workflows accidentally.
+
+======================================================================
+34. DATABASE MIGRATIONS
+======================================================================
+
+Define safe migration strategy.
+
+Analyze:
+
+- backward-compatible migrations
+- expand/contract
+- schema versioning
+- rollback limitations
+- long-running workflows.
+
+Never assume every migration can be rolled back automatically.
+
+======================================================================
+35. INFRASTRUCTURE RELEASES
+======================================================================
+
+Using 15 determine how infrastructure changes are:
+
+- reviewed
+- tested
+- applied
+- verified
+- rolled back.
+
+======================================================================
+36. CI PIPELINE
+======================================================================
+
+Design complete CI stages.
+
+Potential:
+
+1. formatting
+2. static analysis
+3. unit tests
+4. integration tests
+5. security scans
+6. dependency scans
+7. build
+8. SBOM
+9. artifact signing
+10. AI evaluation
+11. packaging.
+
+Determine the correct ordering.
+
+======================================================================
+37. SECURITY PIPELINE
+======================================================================
+
+Using 13 determine:
+
+- SAST
+- dependency scan
+- secret scan
+- container scan
+- IaC scan
+- license scan
+- AI security tests.
+
+======================================================================
+38. AI EVALUATION PIPELINE
+======================================================================
+
+Using 12 determine:
+
+Change
+ ↓
+Evaluation Dataset
+ ↓
+System Execution
+ ↓
+Deterministic Tests
+ ↓
+AI Evaluation
+ ↓
+Regression Comparison
+ ↓
+Quality Gate.
+
+======================================================================
+39. RELEASE GATES
+======================================================================
+
+A release should not proceed merely because tests pass.
+
+Determine gates for:
+
+- security
+- correctness
+- AI quality
+- performance
+- compatibility
+- artifact integrity.
+
+======================================================================
+40. QUALITY GATES
+======================================================================
+
+Potential:
+
+- no critical test failure
+- no critical security finding
+- no authorization regression
+- no evaluation regression
+- no schema incompatibility
+- acceptable performance.
+
+Do not invent thresholds.
+
+Define how thresholds are established.
+
+======================================================================
+41. RELEASE CANDIDATE
+======================================================================
+
+Determine whether the pipeline should create:
+
+Release Candidate
+
+before production.
+
+Define:
+
+- immutable artifact
+- version
+- metadata
+- evaluation results
+- security results.
+
+======================================================================
+42. RELEASE MANIFEST
+======================================================================
+
+Create a canonical release manifest containing, where appropriate:
+
+- application version
+- commit
+- image digest
+- model version
+- prompt version
+- agent version
+- tool versions
+- policy version
+- workflow version
+- database schema version
+- configuration version
+- evaluation result
+- security result.
+
+This manifest should make production reproducible and auditable.
+
+======================================================================
+43. ENVIRONMENT PROMOTION
+======================================================================
+
+Determine:
+
+Development
+ ↓
+Test
+ ↓
+Staging
+ ↓
+Production
+
+or a simpler path.
+
+Do not create environments without a purpose.
+
+======================================================================
+44. ARTIFACT PROMOTION
+======================================================================
+
+Prefer promoting the same immutable artifact between environments over
+rebuilding it differently for each environment.
+
+Research and justify.
+
+======================================================================
+45. CONFIGURATION PROMOTION
+======================================================================
+
+Determine how configuration differs between environments without
+creating hidden differences.
+
+======================================================================
+46. SECRETS PROMOTION
+======================================================================
+
+Secrets must never be promoted as artifacts.
+
+Only references/configuration should be promoted.
+
+======================================================================
+47. DEPLOYMENT STRATEGIES
+======================================================================
+
+Compare:
+
+- recreate
+- rolling
+- blue/green
+- canary
+- shadow
+- feature flag.
+
+Determine appropriate strategy for:
+
+- API
+- Agent Runtime
+- Model Runtime
+- tools
+- workflows.
+
+======================================================================
+48. MODEL CANARY
+======================================================================
+
+Determine whether new models can receive:
+
+- 1%
+- 5%
+- 10%
+
+or other traffic proportions.
+
+Do not invent exact percentages unless justified.
+
+Evaluate:
+
+- safety
+- quality
+- latency
+- cost
+- failure rate.
+
+======================================================================
+49. PROMPT CANARY
+======================================================================
+
+Prompt changes may be deployed independently.
+
+Determine how to safely compare:
+
+Prompt A
+
+vs
+
+Prompt B.
+
+======================================================================
+50. SHADOW DEPLOYMENT
+======================================================================
+
+Evaluate whether new models/prompts can receive copied requests without
+producing user-visible effects.
+
+Analyze:
+
+- privacy
+- cost
+- external tool calls
+- side effects.
+
+Shadow execution must NOT trigger real side effects.
+
+======================================================================
+51. ROLLBACK
+======================================================================
+
+Define rollback for:
+
+- application
+- model
+- prompt
+- tool
+- policy
+- workflow
+- infrastructure
+- database.
+
+Do not assume rollback is always possible.
+
+======================================================================
+52. ROLLBACK SAFETY
+======================================================================
+
+A rollback may itself create:
+
+- schema incompatibility
+- workflow incompatibility
+- data incompatibility.
+
+Determine safe rollback patterns.
+
+======================================================================
+53. FORWARD FIX
+======================================================================
+
+Determine when a forward fix is safer than rollback.
+
+======================================================================
+54. DEPLOYMENT VERIFICATION
+======================================================================
+
+After deployment verify:
+
+- health
+- readiness
+- latency
+- errors
+- model availability
+- tool success
+- evaluation signals
+- security signals.
+
+======================================================================
+55. AUTOMATIC ROLLBACK
+======================================================================
+
+Evaluate when automatic rollback is safe.
+
+Do not automatically roll back on every AI quality signal.
+
+Define conditions where human intervention is preferable.
+
+======================================================================
+56. RELEASE OBSERVABILITY
+======================================================================
+
+Using 12 determine correlation between:
+
+release
+
+and:
+
+- errors
+- latency
+- model quality
+- tool failures
+- cost
+- security incidents.
+
+======================================================================
+57. RELEASE AUDIT
+======================================================================
+
+Using 13 and 14 determine audit records for:
+
+- who approved
+- what changed
+- what artifact was deployed
+- where
+- when
+- why
+- result.
+
+======================================================================
+58. RELEASE SECURITY
+======================================================================
+
+Determine who can:
+
+- merge
+- build
+- sign
+- publish
+- deploy
+- approve production.
+
+No single identity should necessarily control the entire chain.
+
+======================================================================
+59. SEPARATION OF DUTIES
+======================================================================
+
+Evaluate separation between:
+
+Developer
+Build system
+Signer
+Release approver
+Deployment system.
+
+Determine the minimum useful separation for Day 1.
+
+======================================================================
+60. SIGNING KEY SECURITY
+======================================================================
+
+If artifacts are signed, determine:
+
+- where signing keys live
+- who can use them
+- rotation
+- revocation
+- CI access.
+
+Do not store long-lived signing keys casually in CI secrets.
+
+======================================================================
+61. TRUST CHAIN
+======================================================================
+
+Define:
+
+Developer
+ ↓
+Source Control
+ ↓
+CI
+ ↓
+Build
+ ↓
+Artifact
+ ↓
+Signature
+ ↓
+Registry
+ ↓
+Deployment
+ ↓
+Runtime Verification.
+
+Every transition should have a trust decision.
+
+======================================================================
+62. RUNTIME VERIFICATION
+======================================================================
+
+Determine whether production should verify:
+
+- image signature
+- digest
+- provenance
+- allowed registry
+- model artifact
+- configuration.
+
+Do not rely solely on CI.
+
+======================================================================
+63. IMAGE ADMISSION
+======================================================================
+
+If orchestration supports admission controls, evaluate:
+
+- signature verification
+- vulnerability requirements
+- trusted registry
+- provenance.
+
+Determine whether this is needed Day 1.
+
+======================================================================
+64. SUPPLY-CHAIN ATTACKS
+======================================================================
+
+Threat-model:
+
+- compromised dependency
+- compromised package maintainer
+- malicious CI action
+- compromised runner
+- compromised container base image
+- malicious model
+- malicious tool
+- compromised registry
+- stolen signing key
+- malicious pull request.
+
+======================================================================
+65. BUILD REPRODUCIBILITY
+======================================================================
+
+Determine whether another trusted environment can reproduce the artifact.
+
+If not:
+
+Document why.
+
+======================================================================
+66. BUILD ATTESTATIONS
+======================================================================
+
+Research current attestation standards.
+
+Determine whether the pipeline should produce evidence about:
+
+- source
+- builder
+- dependencies
+- tests
+- security checks.
+
+======================================================================
+67. LICENSE COMPLIANCE
+======================================================================
+
+Determine whether dependencies and models require license tracking.
+
+Include:
+
+- software licenses
+- model licenses
+- dataset licenses.
+
+Do not create legal conclusions.
+
+Flag legal review where necessary.
+
+======================================================================
+68. MODEL LICENSE GOVERNANCE
+======================================================================
+
+Model releases should record:
+
+- license
+- usage restrictions
+- source
+- revision.
+
+======================================================================
+69. DATASET RELEASE GOVERNANCE
+======================================================================
+
+Evaluation datasets may be versioned artifacts.
+
+Determine:
+
+- provenance
+- access
+- licensing
+- privacy
+- approval.
+
+======================================================================
+70. TEST DATA
+======================================================================
+
+Do not allow production customer data into CI automatically.
+
+Determine:
+
+- synthetic data
+- sanitized data
+- approved fixtures
+- isolated production-derived datasets.
+
+======================================================================
+71. SECRETS IN CI
+======================================================================
+
+Test that:
+
+- logs do not expose secrets
+- artifacts do not contain secrets
+- container layers do not contain secrets
+- test fixtures do not contain secrets.
+
+======================================================================
+72. CI NETWORK ACCESS
+======================================================================
+
+Determine whether build jobs need:
+
+- internet
+- package registries
+- model registries
+- internal services.
+
+Minimize egress.
+
+======================================================================
+73. OFFLINE / RESTRICTED BUILDS
+======================================================================
+
+Evaluate whether production builds should use:
+
+- internal dependency mirrors
+- pinned artifacts
+- restricted network access.
+
+Determine future requirement.
+
+======================================================================
+74. RELEASE REPRODUCIBILITY
+======================================================================
+
+A production release should be reconstructable from:
+
+- source
+- dependencies
+- model
+- configuration
+- pipeline metadata.
+
+Define exactly what is required.
+
+======================================================================
+75. RELEASE INVENTORY
+======================================================================
+
+Maintain a canonical inventory of deployed versions.
+
+Potential:
+
+- application
+- model
+- prompt
+- agent
+- tool
+- policy
+- workflow
+- infrastructure.
+
+======================================================================
+76. INCIDENT RESPONSE INTEGRATION
+======================================================================
+
+Using 12 and 13 determine how an incident maps to:
+
+- release
+- commit
+- artifact
+- dependency
+- model
+- prompt.
+
+======================================================================
+77. EMERGENCY RELEASE
+======================================================================
+
+Define emergency security release process.
+
+Determine how to bypass normal gates safely without destroying
+traceability.
+
+======================================================================
+78. HOTFIX
+======================================================================
+
+Determine:
+
+- minimal tests
+- security review
+- approval
+- deployment
+- post-release validation.
+
+======================================================================
+79. RELEASE FREEZE
+======================================================================
+
+Evaluate whether the platform needs:
+
+- maintenance windows
+- deployment freezes
+- high-risk periods.
+
+Do not create unnecessary process.
+
+======================================================================
+80. ARCHITECTURE OPTIONS
+======================================================================
+
+Identify real candidates.
+
+Potential:
+
+OPTION A
+--------
+Simple CI + scripted deployment.
+
+OPTION B
+--------
+CI + immutable registry + automated deployment.
+
+OPTION C
+--------
+CI + GitOps.
+
+OPTION D
+--------
+CI + progressive delivery.
+
+OPTION E
+--------
+Full software supply-chain architecture with signed artifacts,
+provenance and policy enforcement.
+
+These are examples only.
+
+Research and determine the real candidates.
+
+======================================================================
+81. ARCHITECTURE SELECTION MATRIX
+======================================================================
+
+Compare:
+
+| Criterion |
+| Day-1 simplicity |
+| Security |
+| Reproducibility |
+| Supply-chain assurance |
+| AI evaluation |
+| Model releases |
+| Prompt releases |
+| Rollback |
+| Auditability |
+| Operational burden |
+| Scalability |
+| Vendor lock-in |
+| Recommendation |
+
+======================================================================
+82. "WHY NOT?" ANALYSIS
+======================================================================
+
+For the final architecture explicitly answer:
+
+WHY THIS?
+
+WHY NOT MANUAL DEPLOYMENTS?
+
+WHY NOT GITHUB ACTIONS FOR EVERYTHING?
+
+WHY NOT JENKINS?
+
+WHY NOT GITOPS?
+
+WHY NOT KUBERNETES-BASED GITOPS?
+
+WHY NOT SIGN EVERYTHING DAY 1?
+
+WHY NOT FULL SLSA DAY 1?
+
+WHY NOT AUTOMATIC ROLLBACK?
+
+WHY NOT CANARY EVERYTHING?
+
+WHY NOT REBUILD ARTIFACTS PER ENVIRONMENT?
+
+WHY NOT USE PRODUCTION DATA IN CI?
+
+Only retain comparisons supported by research.
+
+======================================================================
+83. REVERSIBILITY ANALYSIS
+======================================================================
+
+Classify:
+
+- CI platform
+- repository model
+- registry
+- artifact format
+- signing
+- provenance
+- GitOps
+- deployment mechanism
+- release manifest
+- versioning strategy
+
+as:
+
+- easily reversible
+- moderately reversible
+- expensive to reverse
+- effectively irreversible.
+
+======================================================================
+84. CONTRACT VS IMPLEMENTATION
+======================================================================
+
+Determine stable release contracts.
+
+Potential:
+
+BuildArtifact
+ArtifactDigest
+ArtifactProvenance
+ReleaseManifest
+EvaluationResult
+SecurityResult
+Deployment
+DeploymentStatus
+Rollback
+ReleaseApproval
+
+Determine the minimum required set.
+
+======================================================================
+85. REQUIRED DIAGRAMS
+======================================================================
+
+Include Mermaid diagrams for:
+
+1. Complete CI/CD architecture
+2. Software supply chain
+3. Source → build → artifact
+4. Dependency verification
+5. Container image pipeline
+6. Model artifact pipeline
+7. Prompt/agent release pipeline
+8. Security gates
+9. AI evaluation gates
+10. Release manifest
+11. Environment promotion
+12. Artifact promotion
+13. Deployment
+14. Canary release
+15. Rollback
+16. Runtime verification
+17. Emergency release
+18. Day-1 architecture
+19. Future enterprise architecture
+
+======================================================================
+86. ADR CANDIDATES
+======================================================================
+
+Identify ADRs for:
+
+- repository model
+- CI platform
+- artifact registry
+- SBOM
+- provenance
+- signing
+- dependency management
+- runner architecture
+- deployment mechanism
+- GitOps
+- release manifest
+- model release
+- prompt release
+- agent release
+- tool release
+- workflow release
+- database migration
+- canary
+- rollback
+- emergency release.
+
+For each:
+
+- problem
+- alternatives
+- recommendation
+- consequences
+- reversibility
+- decision deadline
+
+======================================================================
+87. DAY-1 / PREPARE / SCALE / ENTERPRISE
+======================================================================
+
+Create:
+
+| Capability | Day 1 | Prepare | Scale | Enterprise |
+
+Cover:
+
+- source control
+- branch protection
+- CI
+- tests
+- dependency scanning
+- security scanning
+- SBOM
+- provenance
+- signing
+- artifact registry
+- model registry
+- prompt versioning
+- evaluation
+- release gates
+- deployment
+- rollback
+- GitOps
+- canary
+- runtime verification
+- audit
+- emergency release
+- multi-environment promotion.
+
+======================================================================
+88. RELEASE TEST MATRIX
+======================================================================
+
+Create a test matrix.
+
+For each release mechanism define:
+
+Change Type
+Risk
+Required Tests
+Security Gate
+Evaluation Gate
+Deployment Strategy
+Rollback Strategy
+Verification.
+
+At minimum include:
+
+- application code
+- dependency update
+- prompt change
+- model change
+- tool change
+- policy change
+- workflow change
+- database migration
+- infrastructure change
+- security patch.
+
+======================================================================
+89. ATTEMPT TO FALSIFY THE RECOMMENDATION
+======================================================================
+
+Try to prove the selected architecture wrong.
+
+Ask:
+
+- What release frequency breaks it?
+- What developer count breaks it?
+- What artifact count breaks it?
+- What model count breaks it?
+- What environment count breaks it?
+- What security requirement breaks it?
+- What compliance requirement breaks it?
+- What rollback scenario breaks it?
+- What compromised dependency breaks it?
+- What compromised CI runner breaks it?
+- What signing-key compromise breaks it?
+
+Determine the first architectural trigger.
+
+======================================================================
+90. ARCHITECTURAL SELF-CRITIQUE
+======================================================================
+
+Before finalizing, ask:
+
+1. Did I treat CI/CD as a security boundary?
+2. Can every production artifact be traced to source?
+3. Can every release identify its model?
+4. Can every release identify its prompt?
+5. Can every release identify its tools?
+6. Can every release identify its policy?
+7. Can every release identify its workflow version?
+8. Are dependencies pinned?
+9. Are artifacts immutable?
+10. Is provenance available?
+11. Are secrets protected?
+12. Can compromised CI runners be contained?
+13. Can bad releases be rolled back?
+14. Can database migrations be safely handled?
+15. Are AI evaluation gates included?
+16. Are security gates included?
+17. Is Day 1 genuinely simple?
+18. Can supply-chain assurance evolve incrementally?
+19. Are production releases reproducible?
+20. What assumptions could invalidate the architecture?
+
+Include:
+
+# ARCHITECTURAL SELF-CRITIQUE
+
+======================================================================
+91. FINAL RECOMMENDATION
+======================================================================
+
+End with:
+
+# FINAL CI/CD, RELEASE ENGINEERING & SOFTWARE SUPPLY-CHAIN
+# ARCHITECTURE RECOMMENDATION
+
+Answer:
+
+"What CI/CD and Software Supply-Chain Architecture should this platform
+actually build?"
+
+Be concrete.
+
+Describe:
+
+- source control
+- repository strategy
+- branch protection
+- CI
+- runners
+- dependency management
+- security scanning
+- SBOM
+- provenance
+- signing
+- artifact registry
+- model artifacts
+- prompt versioning
+- agent versioning
+- tool versioning
+- policy versioning
+- workflow versioning
+- evaluation gates
+- release gates
+- release manifest
+- deployment
+- promotion
+- canary
+- rollback
+- runtime verification
+- emergency release
+- audit
+- Day-1 implementation
+- future evolution.
+
+Then explicitly answer:
+
+"What MUST NOT be built on Day 1?"
+
+Then:
+
+"What future condition should trigger the next architectural evolution?"
+
+======================================================================
+92. REQUIRED OUTPUT
+======================================================================
+
+Produce:
+
+16_CICD_RELEASE_SUPPLY_CHAIN_ARCHITECTURE.md
+
+The document MUST explicitly reference:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_PLANE.md
+04_AGENT_RUNTIME.md
+05_MODEL_INFERENCE_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+07_KNOWLEDGE_DATA_ARCHITECTURE.md
+08_MEMORY_ARCHITECTURE.md
+09_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+10_AGENT_COMMUNICATION_MULTI_AGENT_ARCHITECTURE.md
+11_EVENTING_WORKFLOW_DURABLE_EXECUTION_ARCHITECTURE.md
+12_OBSERVABILITY_EVALUATION_RELIABILITY_ARCHITECTURE.md
+13_SECURITY_ARCHITECTURE.md
+14_DATA_GOVERNANCE_PRIVACY_COMPLIANCE_ARCHITECTURE.md
+15_DEPLOYMENT_INFRASTRUCTURE_RUNTIME_PLATFORM_ARCHITECTURE.md
+
+If there is a conflict:
+
+DO NOT silently resolve it.
+
+Identify the conflict.
+
+Explain the trade-off.
+
+Recommend the superior architectural decision.
+
+Create an ADR candidate when appropriate.
+
+======================================================================
+93. SOURCE REQUIREMENTS
+======================================================================
+
+Include direct URLs.
+
+Prioritize:
+
+- official Git documentation
+- official GitHub/GitLab/Jenkins documentation where relevant
+- SLSA
+- Sigstore
+- SPDX
+- CycloneDX
+- NIST
+- OWASP
+- CNCF
+- official container registry documentation
+- official Kubernetes documentation
+- official Qwen/model documentation
+- official vLLM/SGLang documentation
+- authoritative AI evaluation research.
+
+Do not fabricate citations.
+
+Do not cite sources that were not actually inspected.
+
+Clearly distinguish:
+
+SOURCE FACT
+
+from:
+
+BENCHMARK RESULT
+
+from:
+
+INFERENCE
+
+from:
+
+ARCHITECTURAL RECOMMENDATION.
+
+======================================================================
+94. ABSOLUTE FINAL INSTRUCTION
+======================================================================
+
+Act as an INDEPENDENT Principal Release and Supply-Chain Architect.
+
+Your responsibility is to determine the best architecture,
+not to validate a preferred CI platform, GitOps tool or signing system.
+
+Do not assume:
+
+CI/CD = SECURITY.
+
+Do not assume:
+
+GREEN TESTS = SAFE RELEASE.
+
+Do not assume:
+
+CONTAINER IMAGE = TRUSTED ARTIFACT.
+
+Do not assume:
+
+MODEL FILE = TRUSTED ARTIFACT.
+
+Do not assume:
+
+PROMPT = NON-CODE.
+
+Do not assume:
+
+CONFIGURATION = HARMLESS.
+
+Do not assume:
+
+DEPENDENCY = TRUSTED.
+
+Do not assume:
+
+SIGNED = SECURE.
+
+Do not assume:
+
+SBOM = COMPLETE SUPPLY-CHAIN SECURITY.
+
+Do not assume:
+
+ROLLBACK = ALWAYS POSSIBLE.
+
+Do not assume:
+
+CANARY = SAFE FOR SIDE EFFECTS.
+
+Do not allow:
+
+UNVERIFIED ARTIFACTS
+
+to reach:
+
+PRODUCTION.
+
+Do not allow:
+
+MODEL / PROMPT / TOOL / POLICY CHANGES
+
+to bypass:
+
+APPROPRIATE EVALUATION AND SECURITY CONTROLS.
+
+Optimize for:
+
+TRACEABILITY
++
+REPRODUCIBILITY
++
+SUPPLY-CHAIN INTEGRITY
++
+SECURITY
++
+EVALUATION
++
+RELEASE SAFETY
++
+ROLLBACK
++
+SIMPLICITY
++
+FUTURE EVOLUTION
+
+The final architecture MUST result from:
+
+    RESEARCH
+       ↓
+    REAL RELEASE REQUIREMENTS
+       ↓
+    SUPPLY-CHAIN THREAT MODEL
+       ↓
+    PIPELINE REQUIREMENTS
+       ↓
+    ARCHITECTURAL ALTERNATIVES
+       ↓
+    SECURITY / EVALUATION ANALYSIS
+       ↓
+    OPERATIONAL ANALYSIS
+       ↓
+    ADVERSARIAL CHALLENGE
+       ↓
+    FALSIFICATION
+       ↓
+    FINAL DECISION
+
+DO NOT DESIGN THE CI/CD STACK FIRST.
+
+RESEARCH FIRST.
+
+UNDERSTAND THE RELEASE LIFECYCLE FIRST.
+
+MAP THE SUPPLY CHAIN.
+
+COMPARE.
+
+CHALLENGE.
+
+FALSIFY.
+
+SELECT THE BEST ARCHITECTURE AVAILABLE FOR THIS PROJECT.
+
+THEN DESIGN IT.

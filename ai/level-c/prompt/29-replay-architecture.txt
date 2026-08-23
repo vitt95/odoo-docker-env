@@ -1,0 +1,3878 @@
+# 29 — REPLAY ARCHITECTURE
+## Enterprise AI Agent Platform
+
+======================================================================
+ROLE
+======================================================================
+
+Act as the Principal AI Systems Architect, Distributed Systems
+Architect, Agent Runtime Architect, Reliability Architect,
+Observability Architect, Audit Architect, Event-Driven Systems
+Architect, AI Evaluation Architect, Security Architect and
+Enterprise Forensics Architect responsible for designing the complete
+Replay Architecture of this platform.
+
+You have deep expertise in:
+
+- distributed systems
+- event-driven architectures
+- workflow engines
+- agent runtimes
+- LLM systems
+- inference systems
+- deterministic and non-deterministic execution
+- event sourcing
+- state machines
+- snapshots
+- checkpoints
+- distributed tracing
+- observability
+- audit systems
+- data lineage
+- provenance
+- reproducibility
+- incident investigation
+- debugging
+- evaluation
+- security forensics
+- privacy
+- compliance
+- storage architectures
+- concurrency
+- fault tolerance
+- disaster recovery.
+
+======================================================================
+1. MOST IMPORTANT INSTRUCTION
+## CLAUDE MUST CHOOSE THE REPLAY ARCHITECTURE
+======================================================================
+
+This is NOT a prompt asking you to automatically implement:
+
+- event sourcing
+- full event logs
+- deterministic replay
+- state snapshots
+- workflow snapshots
+- prompt/response recording
+- trace-based replay
+- time-travel debugging.
+
+These are candidate mechanisms.
+
+They are NOT architectural conclusions.
+
+Claude MUST independently analyze the platform and determine:
+
+WHAT "REPLAY" ACTUALLY MEANS FOR THIS SYSTEM.
+
+The architecture MUST distinguish between:
+
+- exact deterministic replay
+- logical replay
+- workflow replay
+- state reconstruction
+- audit reconstruction
+- simulation
+- evaluation replay
+- debugging replay
+- forensic reconstruction
+- partial replay
+- counterfactual replay.
+
+Claude MUST determine which forms are actually required.
+
+======================================================================
+2. CRITICAL PRINCIPLE
+======================================================================
+
+Do NOT promise:
+
+"the system can reproduce exactly what happened"
+
+unless the architecture genuinely preserves enough information to do so.
+
+LLM systems are frequently:
+
+- non-deterministic
+- provider-dependent
+- version-dependent
+- context-dependent
+- tool-dependent
+- time-dependent
+- external-state-dependent.
+
+Therefore:
+
+REPLAYABILITY MUST BE DEFINED PRECISELY.
+
+For every replay capability state whether it provides:
+
+EXACT REPLAY
+
+SEMANTIC REPLAY
+
+LOGICAL REPLAY
+
+APPROXIMATE REPLAY
+
+FORENSIC RECONSTRUCTION
+
+or:
+
+NO REPLAY GUARANTEE.
+
+======================================================================
+3. REQUIRED ARCHITECTURAL PROCESS
+======================================================================
+
+The final architecture MUST result from:
+
+    REPLAY USE CASE INVENTORY
+       ↓
+    EXECUTION MODEL
+       ↓
+    STATE MODEL
+       ↓
+    EVENT MODEL
+       ↓
+    NON-DETERMINISM ANALYSIS
+       ↓
+    EXTERNAL DEPENDENCY ANALYSIS
+       ↓
+    DATA CAPTURE REQUIREMENTS
+       ↓
+    PRIVACY / SECURITY ANALYSIS
+       ↓
+    STORAGE ANALYSIS
+       ↓
+    PERFORMANCE / COST ANALYSIS
+       ↓
+    CONSISTENCY ANALYSIS
+       ↓
+    REPLAY STRATEGIES
+       ↓
+    SNAPSHOT / CHECKPOINT ANALYSIS
+       ↓
+    TOOL / MODEL / MEMORY REPLAY
+       ↓
+    FAILURE / INCIDENT ANALYSIS
+       ↓
+    EVALUATION / TESTING
+       ↓
+    ADVERSARIAL ANALYSIS
+       ↓
+    FALSIFICATION
+       ↓
+    FINAL REPLAY ARCHITECTURE.
+
+======================================================================
+4. FIRST QUESTION
+======================================================================
+
+Before choosing any implementation:
+
+ANSWER:
+
+"WHY DOES THIS PLATFORM NEED REPLAY?"
+
+Potential reasons:
+
+- debugging
+- incident investigation
+- audit
+- compliance
+- model evaluation
+- regression testing
+- agent evaluation
+- workflow recovery
+- customer support
+- dispute resolution
+- security forensics
+- reproducibility
+- simulation
+- development
+- quality improvement.
+
+These are examples.
+
+Determine the actual requirements.
+
+======================================================================
+5. REPLAY USE CASE CLASSIFICATION
+======================================================================
+
+Classify every replay use case as:
+
+A. OPERATIONAL DEBUGGING
+
+B. INCIDENT FORENSICS
+
+C. AUDIT RECONSTRUCTION
+
+D. EVALUATION
+
+E. REGRESSION TESTING
+
+F. WORKFLOW RECOVERY
+
+G. CUSTOMER DISPUTE
+
+H. SECURITY INVESTIGATION
+
+I. DEVELOPMENT / TESTING
+
+J. COUNTERFACTUAL ANALYSIS
+
+K. MODEL COMPARISON.
+
+Determine whether additional classes are required.
+
+======================================================================
+6. REPLAY ≠ AUDIT
+======================================================================
+
+Using 16:
+
+AUDIT answers:
+
+"What happened and who did it?"
+
+REPLAY answers:
+
+"Can we reconstruct or execute the process again?"
+
+These are different systems.
+
+Do not merge them without justification.
+
+======================================================================
+7. REPLAY ≠ OBSERVABILITY
+======================================================================
+
+Using 15:
+
+Observability tells us:
+
+"What is happening / what happened operationally?"
+
+Replay determines:
+
+"Can we reconstruct the execution?"
+
+Distributed tracing alone is not automatically replay.
+
+======================================================================
+8. REPLAY ≠ BACKUP
+======================================================================
+
+Backup restores data.
+
+Replay reconstructs execution or state.
+
+Do not treat them as interchangeable.
+
+======================================================================
+9. REPLAY ≠ DISASTER RECOVERY
+======================================================================
+
+Using 24:
+
+DR restores service/state.
+
+Replay is primarily for:
+
+reconstruction / analysis / controlled re-execution.
+
+======================================================================
+10. ARCHITECTURAL CONTEXT
+======================================================================
+
+Existing architecture documents:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_ARCHITECTURE.md
+04_AGENT_RUNTIME.md
+05_MODEL_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+08_KNOWLEDGE_DATA_ARCHITECTURE.md
+09_MEMORY_ARCHITECTURE.md
+10_SECURITY_ARCHITECTURE.md
+11_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+12_TRUST_PROVENANCE_ARCHITECTURE.md
+13_RELIABILITY_ARCHITECTURE.md
+14_CONCURRENCY_ARCHITECTURE.md
+15_OBSERVABILITY_ARCHITECTURE.md
+16_AUDIT_ARCHITECTURE.md
+17_EVALUATION_ARCHITECTURE.md
+18_DEPLOYMENT_LIFECYCLE_ARCHITECTURE.md
+19_MULTI_TENANCY_ARCHITECTURE.md
+20_COST_ARCHITECTURE.md
+21_CAPACITY_PLANNING_ARCHITECTURE.md
+22_NETWORKING_ARCHITECTURE.md
+23_STORAGE_ARCHITECTURE.md
+24_DR_ENTERPRISE_ARCHITECTURE.md
+25_ADVANCED_SUPPLY_CHAIN_ARCHITECTURE.md
+26_ENTERPRISE_COMPLIANCE_ARCHITECTURE.md
+27_MULTI_MODEL_FALLBACK_ARCHITECTURE.md
+28_HUMAN_IN_THE_LOOP_ARCHITECTURE.md
+
+Future architecture documents:
+
+30_OFFLINE_MOBILE_ARCHITECTURE.md
+31_A2A_ARCHITECTURE.md
+32_ADMIN_CONSOLE_ARCHITECTURE.md
+33_ADR_ARCHITECTURE.md
+34_QUALITY_MODEL_ARCHITECTURE.md
+
+If a future document does not exist:
+
+DO NOT invent its contents.
+
+Identify only:
+
+- dependency
+- stable interface
+- unresolved assumption.
+
+If an existing architecture conflicts with the Replay Architecture:
+
+DO NOT silently compensate.
+
+Document:
+
+- source architecture
+- conflict
+- consequence
+- recommended resolution
+- ADR candidate.
+
+======================================================================
+11. LEVEL
+======================================================================
+
+This document belongs to:
+
+LEVEL C — SUCCESSIVE ARCHITECTURE.
+
+The platform does NOT need full enterprise replay on Day 1 unless actual
+requirements demand it.
+
+However:
+
+DAY 1 MUST NOT MAKE FUTURE REPLAY IMPOSSIBLE.
+
+Therefore identify the minimum metadata and stable interfaces that must
+exist from Day 1.
+
+======================================================================
+12. DEFINE "EXECUTION"
+======================================================================
+
+Define what constitutes an execution.
+
+Potential:
+
+- agent run
+- workflow run
+- model invocation
+- tool invocation
+- sub-agent invocation
+- policy evaluation
+- human approval
+- external API call.
+
+Determine actual execution boundaries.
+
+======================================================================
+13. EXECUTION IDENTITY
+======================================================================
+
+Every replayable execution should have a stable identity.
+
+Potential:
+
+- run ID
+- workflow ID
+- step ID
+- attempt ID
+- tool invocation ID
+- model invocation ID.
+
+Determine actual identity hierarchy.
+
+======================================================================
+14. CAUSAL CHAIN
+======================================================================
+
+Construct:
+
+user request
+
+→
+
+agent
+
+→
+
+model
+
+→
+
+tool
+
+→
+
+external system
+
+→
+
+result
+
+→
+
+next agent step.
+
+Replay must preserve enough causal information to reconstruct this chain.
+
+======================================================================
+15. EXECUTION GRAPH
+======================================================================
+
+Do not assume executions are linear.
+
+Agents may execute:
+
+parallel branches
+
+sub-agents
+
+retries
+
+fallback models
+
+tool calls
+
+human approvals.
+
+Represent execution as:
+
+graph
+
+where appropriate.
+
+======================================================================
+16. DAG VS GENERAL GRAPH
+======================================================================
+
+Determine whether execution is:
+
+- linear
+- DAG
+- cyclic state machine
+- arbitrary graph.
+
+Do not assume DAG.
+
+======================================================================
+17. REPLAY BOUNDARY
+======================================================================
+
+Define where replay begins and ends.
+
+Examples:
+
+- complete user request
+- individual agent step
+- model invocation
+- workflow
+- tool call
+- transaction.
+
+======================================================================
+18. FULL REPLAY
+======================================================================
+
+Evaluate whether full execution replay is necessary.
+
+Do not assume it is.
+
+======================================================================
+19. PARTIAL REPLAY
+======================================================================
+
+Evaluate:
+
+replay from checkpoint N.
+
+Potential benefits:
+
+- lower cost
+- lower latency
+- easier debugging.
+
+Potential risks:
+
+- hidden state
+- stale context
+- missing dependencies.
+
+======================================================================
+20. CHECKPOINTS
+======================================================================
+
+Evaluate checkpoints at:
+
+- workflow boundaries
+- agent steps
+- tool calls
+- model calls
+- human approvals.
+
+Do not checkpoint everything automatically.
+
+======================================================================
+21. SNAPSHOTS
+======================================================================
+
+Evaluate snapshots of:
+
+- agent state
+- workflow state
+- memory
+- tool state
+- model configuration.
+
+Determine which are actually needed.
+
+======================================================================
+22. SNAPSHOT VS EVENT LOG
+======================================================================
+
+Compare:
+
+EVENT LOG
+
+vs:
+
+SNAPSHOT
+
+vs:
+
+HYBRID.
+
+Do not assume event sourcing is automatically superior.
+
+======================================================================
+23. EVENT SOURCING
+======================================================================
+
+Evaluate event sourcing as a candidate architecture.
+
+Analyze:
+
+- storage
+- schema evolution
+- privacy
+- performance
+- replay cost
+- operational complexity.
+
+Do not select it merely because replay is required.
+
+======================================================================
+24. COMMAND LOGGING
+======================================================================
+
+Evaluate whether storing:
+
+commands
+
+is sufficient.
+
+Likely not for all external dependencies.
+
+Determine actual needs.
+
+======================================================================
+25. STATE LOGGING
+======================================================================
+
+Evaluate storing:
+
+state snapshots.
+
+======================================================================
+26. OUTPUT LOGGING
+======================================================================
+
+Evaluate storing:
+
+- model outputs
+- tool outputs
+- policy decisions
+- human decisions.
+
+======================================================================
+27. INPUT LOGGING
+======================================================================
+
+Evaluate storing:
+
+- user input
+- system instructions
+- developer policy
+- retrieved context.
+
+This is highly sensitive.
+
+Analyze privacy implications.
+
+======================================================================
+28. PROMPT RECONSTRUCTION
+======================================================================
+
+Determine whether replay requires reconstructing:
+
+exact prompt
+
+including:
+
+- system instructions
+- policy
+- memory
+- retrieval
+- tool definitions
+- conversation history.
+
+======================================================================
+29. PROMPT VERSIONING
+======================================================================
+
+A prompt is not only text.
+
+It may depend on:
+
+- policy version
+- model version
+- tool schema
+- retrieved data
+- memory state.
+
+Capture the relevant versions.
+
+======================================================================
+30. MODEL VERSION
+======================================================================
+
+Replay requires exact model identity where possible.
+
+Capture:
+
+- provider
+- model
+- version
+- artifact identity
+- deployment configuration.
+
+Do not rely only on:
+
+model alias.
+
+======================================================================
+31. MODEL NON-DETERMINISM
+======================================================================
+
+Analyze:
+
+- sampling
+- temperature
+- seed
+- provider randomness
+- distributed inference variation.
+
+Do not promise exact output reproduction unless verified.
+
+======================================================================
+32. RANDOMNESS
+======================================================================
+
+Capture random seeds where meaningful.
+
+But explicitly determine whether a seed actually guarantees
+reproducibility for the selected runtime/provider.
+
+======================================================================
+33. SAMPLING PARAMETERS
+======================================================================
+
+Capture relevant generation parameters.
+
+Potential:
+
+- temperature
+- top_p
+- max tokens
+- stop sequences.
+
+Determine actual parameters.
+
+======================================================================
+34. PROVIDER VARIATION
+======================================================================
+
+A provider can change model behavior without changing model name.
+
+Replay architecture must capture:
+
+model version / snapshot / deployment identity
+
+where available.
+
+======================================================================
+35. MODEL DEPRECATION
+======================================================================
+
+If the original model no longer exists:
+
+replay may become:
+
+forensic reconstruction
+
+rather than:
+
+exact replay.
+
+Document this explicitly.
+
+======================================================================
+36. MODEL FALLBACK
+======================================================================
+
+Using 27:
+
+replay must capture:
+
+- primary model
+- fallback model
+- failure reason
+- fallback policy
+- model transition.
+
+======================================================================
+37. FALLBACK REPLAY
+======================================================================
+
+Determine whether replay should:
+
+- reproduce fallback
+- reproduce original failure
+- use current model
+- simulate failure.
+
+These are different modes.
+
+======================================================================
+38. TOOL INVOCATION
+======================================================================
+
+Using 06:
+
+capture:
+
+- tool identity
+- tool version
+- schema
+- parameters
+- authorization
+- result
+- error
+- timing.
+
+======================================================================
+39. TOOL OUTPUT REPLAY
+======================================================================
+
+Evaluate:
+
+replaying from recorded tool outputs
+
+instead of:
+
+calling tools again.
+
+For most debugging/evaluation scenarios this may be safer.
+
+But determine actual architecture.
+
+======================================================================
+40. EXTERNAL SIDE EFFECTS
+======================================================================
+
+NEVER assume replay should re-execute:
+
+- payment
+- email
+- deletion
+- deployment
+- infrastructure modification.
+
+Replay must default toward:
+
+NO EXTERNAL SIDE EFFECTS
+
+unless explicitly authorized.
+
+======================================================================
+41. SIDE-EFFECT SANDBOX
+======================================================================
+
+Evaluate:
+
+- mock tools
+- simulation
+- dry-run
+- sandbox environments
+- recorded responses.
+
+Determine best strategy.
+
+======================================================================
+42. REPLAY SAFETY BOUNDARY
+======================================================================
+
+A replay must be technically unable to accidentally:
+
+- send real email
+- charge money
+- delete production data
+- modify production infrastructure
+- change permissions.
+
+Do not rely only on:
+
+developer discipline.
+
+======================================================================
+43. REPLAY MODE
+======================================================================
+
+Define modes such as:
+
+RECONSTRUCT
+
+SIMULATE
+
+REEXECUTE
+
+COMPARE
+
+FORENSIC.
+
+These are examples.
+
+Determine actual mode taxonomy.
+
+======================================================================
+44. RECONSTRUCTION MODE
+======================================================================
+
+Uses recorded evidence to reconstruct:
+
+what happened.
+
+No new side effects.
+
+======================================================================
+45. SIMULATION MODE
+======================================================================
+
+Executes logic against:
+
+controlled dependencies.
+
+======================================================================
+46. REEXECUTION MODE
+======================================================================
+
+Potentially calls:
+
+live or isolated dependencies.
+
+Must require explicit authorization.
+
+======================================================================
+47. COMPARISON MODE
+======================================================================
+
+Compare:
+
+original
+
+vs:
+
+new model/runtime/policy.
+
+======================================================================
+48. COUNTERFACTUAL MODE
+======================================================================
+
+Evaluate:
+
+"What would have happened if we had used Model B?"
+
+This is useful for evaluation.
+
+But it is NOT exact historical replay.
+
+Label it clearly.
+
+======================================================================
+49. REPLAY VS COUNTERFACTUAL
+======================================================================
+
+Do not mix:
+
+historical reconstruction
+
+with:
+
+alternative execution.
+
+======================================================================
+50. REPLAY ENVIRONMENT
+======================================================================
+
+Determine where replay runs:
+
+- production-adjacent
+- staging
+- isolated replay cluster
+- local
+- offline.
+
+Do not replay untrusted historical data directly into production.
+
+======================================================================
+51. ISOLATION
+======================================================================
+
+Using 10/19:
+
+replay must be isolated from:
+
+- production
+- other tenants
+- live credentials
+- privileged tools.
+
+======================================================================
+52. TENANT ISOLATION
+======================================================================
+
+Replay data may contain:
+
+customer information.
+
+Ensure tenant boundaries.
+
+======================================================================
+53. REPLAY AUTHORIZATION
+======================================================================
+
+Replay itself is a privileged capability.
+
+Define:
+
+who can replay:
+
+- own execution
+- tenant execution
+- platform execution.
+
+======================================================================
+54. REPLAY ACCESS CONTROL
+======================================================================
+
+Using 11:
+
+integrate replay permissions with existing authorization.
+
+Do not create an independent shadow permission system.
+
+======================================================================
+55. REPLAY DATA CLASSIFICATION
+======================================================================
+
+Replay records may contain:
+
+- personal data
+- secrets
+- credentials
+- confidential business data
+- model prompts
+- proprietary knowledge.
+
+Classify accordingly.
+
+======================================================================
+56. SECRET REDACTION
+======================================================================
+
+Do not store:
+
+provider credentials
+
+inside replay records.
+
+======================================================================
+57. PII REDACTION
+======================================================================
+
+Evaluate:
+
+- masking
+- tokenization
+- encryption
+- selective retention.
+
+Do not destroy the evidence required for the replay use case.
+
+======================================================================
+58. REDACTION VS REPLAY
+======================================================================
+
+Redaction can make:
+
+exact replay impossible.
+
+Document the tradeoff.
+
+======================================================================
+59. ENCRYPTION
+======================================================================
+
+Protect:
+
+- replay data at rest
+- replay data in transit.
+
+======================================================================
+60. KEY MANAGEMENT
+======================================================================
+
+Using 10:
+
+define encryption key architecture.
+
+======================================================================
+61. RETENTION
+======================================================================
+
+Replay retention must not automatically equal:
+
+audit retention.
+
+Define different policies if necessary.
+
+======================================================================
+62. DELETION
+======================================================================
+
+When replay data expires:
+
+ensure deletion across:
+
+- primary store
+- indexes
+- caches
+- replicas
+- backups where applicable.
+
+======================================================================
+63. LEGAL HOLD
+======================================================================
+
+Replay data may be subject to:
+
+legal hold.
+
+Using 26:
+
+define interaction.
+
+======================================================================
+64. DATA RESIDENCY
+======================================================================
+
+Replay records may need to remain:
+
+within a jurisdiction.
+
+======================================================================
+65. CROSS-BORDER REPLAY
+======================================================================
+
+Do not assume replay infrastructure can freely move data between
+regions.
+
+======================================================================
+66. AUDITABILITY
+======================================================================
+
+Replay operations themselves must be audited.
+
+Who replayed:
+
+what:
+
+when:
+
+why:
+
+under which authorization.
+
+======================================================================
+67. REPLAY IMMUTABILITY
+======================================================================
+
+Historical execution evidence should be tamper-evident.
+
+Evaluate:
+
+- append-only storage
+- cryptographic integrity
+- hash chains
+- signatures.
+
+Do not assume all are necessary.
+
+======================================================================
+68. PROVENANCE
+======================================================================
+
+Using 12:
+
+replay evidence must preserve provenance.
+
+======================================================================
+69. EVENT ORDER
+======================================================================
+
+Distributed systems produce:
+
+- out-of-order events
+- duplicate events
+- delayed events.
+
+Replay architecture must handle them.
+
+======================================================================
+70. EVENT TIME VS PROCESSING TIME
+======================================================================
+
+Capture both where meaningful.
+
+======================================================================
+71. CLOCK SKEW
+======================================================================
+
+Do not assume timestamps from different systems are perfectly aligned.
+
+======================================================================
+72. CAUSAL ORDER
+======================================================================
+
+Use causal identifiers where required.
+
+Potential:
+
+- parent run ID
+- trace ID
+- span ID
+- sequence number.
+
+======================================================================
+73. DUPLICATE EVENTS
+======================================================================
+
+Replay pipeline must be:
+
+idempotent.
+
+======================================================================
+74. MISSING EVENTS
+======================================================================
+
+Determine what happens when:
+
+one event is missing.
+
+Possible:
+
+- partial replay
+- reconstruction with uncertainty
+- replay failure.
+
+======================================================================
+75. CORRUPTED EVENTS
+======================================================================
+
+Detect:
+
+tampered or corrupted records.
+
+======================================================================
+76. EVENT SCHEMA
+======================================================================
+
+Define stable replay event schema.
+
+Potential:
+
+ReplayEvent
+
+with:
+
+- event ID
+- execution ID
+- parent ID
+- event type
+- timestamp
+- actor
+- component
+- version
+- payload reference
+- integrity metadata.
+
+These are examples.
+
+Determine actual schema.
+
+======================================================================
+77. SCHEMA EVOLUTION
+======================================================================
+
+Replay records may outlive:
+
+their schema.
+
+Define:
+
+- schema version
+- migration
+- compatibility.
+
+======================================================================
+78. BACKWARD COMPATIBILITY
+======================================================================
+
+A new runtime should be able to interpret old replay records where
+required.
+
+======================================================================
+79. FORWARD COMPATIBILITY
+======================================================================
+
+Do not assume old runtime can understand future event schemas.
+
+Document limitations.
+
+======================================================================
+80. PAYLOAD REFERENCES
+======================================================================
+
+Large payloads may not belong directly inside events.
+
+Evaluate:
+
+- inline payload
+- object storage
+- content-addressed storage.
+
+======================================================================
+81. CONTENT ADDRESSING
+======================================================================
+
+Evaluate content hashes for:
+
+- prompts
+- outputs
+- documents
+- tool responses
+- model artifacts.
+
+Do not assume content addressing is required everywhere.
+
+======================================================================
+82. LARGE CONTEXT
+======================================================================
+
+LLM context can be enormous.
+
+Do not blindly duplicate all context into every event.
+
+======================================================================
+83. CONTEXT DEDUPLICATION
+======================================================================
+
+Evaluate:
+
+- references
+- hashes
+- immutable blobs
+- manifests.
+
+======================================================================
+84. KNOWLEDGE REPLAY
+======================================================================
+
+Using 08:
+
+retrieved documents may change over time.
+
+Capture:
+
+- document identity
+- version
+- retrieval timestamp
+- relevant content reference
+- retrieval configuration.
+
+======================================================================
+85. RETRIEVAL REPLAY
+======================================================================
+
+Determine whether replay uses:
+
+original retrieved documents
+
+or:
+
+current retrieval index.
+
+These produce different results.
+
+======================================================================
+86. MEMORY REPLAY
+======================================================================
+
+Using 09:
+
+memory state may change.
+
+Capture sufficient information to reconstruct:
+
+relevant memory state.
+
+======================================================================
+87. MEMORY VERSIONING
+======================================================================
+
+Determine whether memory requires:
+
+- snapshot
+- event history
+- version identifier.
+
+======================================================================
+88. POLICY REPLAY
+======================================================================
+
+Using 03:
+
+capture:
+
+- policy version
+- policy decision
+- policy inputs.
+
+======================================================================
+89. AUTHORIZATION REPLAY
+======================================================================
+
+Using 11:
+
+capture enough to explain:
+
+why an action was authorized.
+
+Do NOT replay authorization against current permissions and assume it
+represents historical authorization.
+
+======================================================================
+90. HISTORICAL AUTHORIZATION
+======================================================================
+
+A user may have had permission at time T
+
+but not now.
+
+Replay must distinguish:
+
+historical state
+
+from:
+
+current authorization.
+
+======================================================================
+91. HUMAN APPROVAL REPLAY
+======================================================================
+
+Using 28:
+
+capture:
+
+- approver identity
+- authority
+- exact approved action
+- approval state
+- policy version
+- timestamp.
+
+======================================================================
+92. APPROVAL RECONSTRUCTION
+======================================================================
+
+Determine what the human saw at approval time.
+
+Do not assume the current UI can reconstruct it exactly.
+
+======================================================================
+93. MODEL INPUT REPLAY
+======================================================================
+
+Determine whether the platform can reconstruct the exact model input.
+
+Include, where relevant:
+
+- system instructions
+- user input
+- memory
+- retrieval
+- tools
+- policy context.
+
+======================================================================
+94. MODEL OUTPUT REPLAY
+======================================================================
+
+Store original output if required for:
+
+- audit
+- comparison
+- evaluation
+- debugging.
+
+======================================================================
+95. HIDDEN REASONING
+======================================================================
+
+Do not require storage or reproduction of hidden chain-of-thought.
+
+Replay architecture should rely on:
+
+observable inputs
+
+and:
+
+outputs
+
+and:
+
+execution metadata.
+
+======================================================================
+96. STREAMING REPLAY
+======================================================================
+
+Capture:
+
+- chunks
+- ordering
+- timing where necessary.
+
+Determine whether exact timing matters.
+
+======================================================================
+97. PARTIAL STREAM
+======================================================================
+
+If model streamed partially and failed:
+
+replay should reconstruct:
+
+what the user actually received.
+
+======================================================================
+98. TOOL STREAMING
+======================================================================
+
+If tools produce streaming output:
+
+capture relevant state.
+
+======================================================================
+99. HUMAN TIMING
+======================================================================
+
+Human approvals introduce time-dependent state.
+
+Replay must preserve:
+
+- approval timestamp
+- policy state
+- relevant external state.
+
+======================================================================
+100. EXTERNAL SYSTEM STATE
+======================================================================
+
+A replay cannot reproduce historical external state unless it was
+captured.
+
+Examples:
+
+- database
+- payment processor
+- CRM
+- email system
+- cloud API.
+
+======================================================================
+101. EXTERNAL STATE SNAPSHOT
+======================================================================
+
+Evaluate whether important external state requires:
+
+snapshot
+
+or:
+
+recorded response.
+
+======================================================================
+102. EXTERNAL API REPLAY
+======================================================================
+
+Prefer:
+
+recorded response
+
+for safe simulation.
+
+======================================================================
+103. API RESPONSE RECORDING
+======================================================================
+
+Capture:
+
+- status
+- headers where relevant
+- body
+- timing
+- request metadata
+- version.
+
+Do not store secrets.
+
+======================================================================
+104. EXTERNAL API VERSION
+======================================================================
+
+Capture provider/API version where relevant.
+
+======================================================================
+105. NETWORK REPLAY
+======================================================================
+
+Determine whether network-level replay is required.
+
+Usually:
+
+not necessary.
+
+Do not over-engineer.
+
+======================================================================
+106. DATABASE REPLAY
+======================================================================
+
+Do not replay production DB writes.
+
+Use:
+
+- snapshots
+- transaction logs
+- synthetic DB
+- recorded reads.
+
+Determine best strategy.
+
+======================================================================
+107. FILE SYSTEM REPLAY
+======================================================================
+
+If agents interact with files:
+
+capture:
+
+- identity
+- version
+- hash
+- relevant content.
+
+======================================================================
+108. CODE EXECUTION REPLAY
+======================================================================
+
+If agents execute code:
+
+capture:
+
+- code version
+- dependency versions
+- environment
+- inputs
+- outputs.
+
+======================================================================
+109. CONTAINER REPLAY
+======================================================================
+
+Evaluate:
+
+container/image identity
+
+for reproducibility.
+
+======================================================================
+110. DEPENDENCY REPLAY
+======================================================================
+
+Code may depend on:
+
+- packages
+- operating system
+- libraries
+- environment variables.
+
+Capture only what is required by the replay use case.
+
+======================================================================
+111. MODEL RUNTIME
+======================================================================
+
+Using 05:
+
+capture:
+
+- runtime
+- inference engine
+- configuration
+- hardware where relevant.
+
+======================================================================
+112. GPU NON-DETERMINISM
+======================================================================
+
+Do not assume identical hardware guarantees identical outputs.
+
+======================================================================
+113. HARDWARE IDENTITY
+======================================================================
+
+Determine whether hardware identity matters for:
+
+- numerical reproducibility
+- performance investigation.
+
+======================================================================
+114. TIME
+======================================================================
+
+Agents may depend on:
+
+current time.
+
+Replay must control:
+
+- clock
+- timezone
+- timestamps.
+
+======================================================================
+115. RANDOMNESS
+======================================================================
+
+Agents may depend on:
+
+- random IDs
+- random numbers
+- sampling.
+
+Capture or simulate where required.
+
+======================================================================
+116. UUID GENERATION
+======================================================================
+
+If IDs influence logic:
+
+replay must account for them.
+
+======================================================================
+117. ENVIRONMENT VARIABLES
+======================================================================
+
+Capture relevant environment configuration.
+
+Do NOT capture secrets.
+
+======================================================================
+118. FEATURE FLAGS
+======================================================================
+
+Capture:
+
+feature flag state.
+
+======================================================================
+119. CONFIGURATION
+======================================================================
+
+Capture configuration version.
+
+======================================================================
+120. DEPLOYMENT VERSION
+======================================================================
+
+Capture:
+
+- application version
+- container version
+- commit
+- deployment identity.
+
+======================================================================
+121. POLICY VERSION
+======================================================================
+
+Capture exact policy versions.
+
+======================================================================
+122. TOOL VERSION
+======================================================================
+
+Capture tool version/schema.
+
+======================================================================
+123. MEMORY VERSION
+======================================================================
+
+Capture relevant memory version.
+
+======================================================================
+124. KNOWLEDGE VERSION
+======================================================================
+
+Capture retrieval/document version.
+
+======================================================================
+125. MODEL VERSION
+======================================================================
+
+Capture model identity/version.
+
+======================================================================
+126. COMPLETE EXECUTION MANIFEST
+======================================================================
+
+Evaluate a:
+
+ReplayManifest
+
+containing references to:
+
+- execution
+- model
+- prompt
+- memory
+- knowledge
+- tools
+- policy
+- configuration
+- deployment
+- external responses
+- human approvals.
+
+Determine actual manifest structure.
+
+======================================================================
+127. REPLAY MANIFEST IMMUTABILITY
+======================================================================
+
+Replay manifests should be immutable once finalized.
+
+======================================================================
+128. REPLAY PACKAGE
+======================================================================
+
+Evaluate whether a replay can be exported as:
+
+portable package.
+
+Potential contents:
+
+- manifest
+- events
+- state snapshots
+- references
+- metadata.
+
+======================================================================
+129. PORTABILITY
+======================================================================
+
+Determine whether replay packages must work:
+
+outside the production environment.
+
+======================================================================
+130. REPLAY IMPORT
+======================================================================
+
+Imported replay data is untrusted.
+
+Validate:
+
+- integrity
+- schema
+- provenance
+- tenant authorization.
+
+======================================================================
+131. MALICIOUS REPLAY DATA
+======================================================================
+
+Threat-model:
+
+attacker crafts replay package containing:
+
+- malicious payload
+- tool invocation
+- privilege escalation
+- injection.
+
+======================================================================
+132. REPLAY AS CODE EXECUTION
+======================================================================
+
+Replay must not automatically execute:
+
+historical tool commands.
+
+======================================================================
+133. REPLAY SANDBOX
+======================================================================
+
+Evaluate:
+
+isolated execution environment.
+
+======================================================================
+134. REPLAY CREDENTIALS
+======================================================================
+
+Default:
+
+NO PRODUCTION CREDENTIALS.
+
+If live reexecution is ever permitted:
+
+require explicit authorization and scoped credentials.
+
+======================================================================
+135. REPLAY NETWORK
+======================================================================
+
+Evaluate:
+
+- no network
+- restricted network
+- allowlisted network
+- production network.
+
+Default toward isolation.
+
+======================================================================
+136. REPLAY TOOL POLICY
+======================================================================
+
+Replay must have its own tool execution policy.
+
+======================================================================
+137. REPLAY AUTHORIZATION
+======================================================================
+
+Authorization to:
+
+VIEW REPLAY
+
+must not automatically imply:
+
+EXECUTE REPLAY.
+
+======================================================================
+138. REPLAY MODES + PERMISSIONS
+======================================================================
+
+Potential:
+
+VIEW
+
+RECONSTRUCT
+
+SIMULATE
+
+COMPARE
+
+REEXECUTE.
+
+Each may require different permissions.
+
+======================================================================
+139. REPLAY COST
+======================================================================
+
+Using 20:
+
+replay can consume:
+
+- GPU
+- model tokens
+- storage
+- compute.
+
+Model cost.
+
+======================================================================
+140. REPLAY RESOURCE ISOLATION
+======================================================================
+
+Using 21:
+
+replay workloads must not starve:
+
+production workloads.
+
+======================================================================
+141. REPLAY PRIORITY
+======================================================================
+
+Evaluate:
+
+- production
+- incident
+- compliance
+- development.
+
+======================================================================
+142. REPLAY QUEUE
+======================================================================
+
+Large replay workloads may require queueing.
+
+======================================================================
+143. REPLAY RATE LIMITING
+======================================================================
+
+Prevent replay jobs from exhausting:
+
+storage / compute / model quotas.
+
+======================================================================
+144. REPLAY RETENTION COST
+======================================================================
+
+Estimate:
+
+storage growth.
+
+Do not invent exact values.
+
+Build a model.
+
+======================================================================
+145. EVENT VOLUME
+======================================================================
+
+Estimate:
+
+events per execution
+
+×
+
+executions per day
+
+×
+
+retention.
+
+Use assumptions clearly marked.
+
+======================================================================
+146. LARGE PAYLOAD COST
+======================================================================
+
+Prompt/context/output payloads can dominate storage.
+
+Analyze:
+
+- compression
+- deduplication
+- references
+- tiered storage.
+
+======================================================================
+147. HOT VS COLD REPLAY DATA
+======================================================================
+
+Evaluate:
+
+- hot
+- warm
+- cold
+- archival.
+
+======================================================================
+148. INDEXING
+======================================================================
+
+Replay search requires indexes.
+
+Potential:
+
+- execution ID
+- tenant
+- timestamp
+- agent
+- model
+- tool
+- incident ID.
+
+Determine actual indexes.
+
+======================================================================
+149. REPLAY SEARCH
+======================================================================
+
+Define how operators find:
+
+the relevant execution.
+
+======================================================================
+150. INCIDENT LINKAGE
+======================================================================
+
+Using 15/16:
+
+link replay records to:
+
+- incident
+- trace
+- audit event
+- alert.
+
+======================================================================
+151. TRACE LINKAGE
+======================================================================
+
+Using 15:
+
+Replay should integrate with:
+
+trace ID.
+
+======================================================================
+152. AUDIT LINKAGE
+======================================================================
+
+Using 16:
+
+Replay should integrate with:
+
+audit event ID.
+
+======================================================================
+153. SECURITY INCIDENT
+======================================================================
+
+Using 10:
+
+replay is a forensic capability.
+
+Preserve evidence integrity.
+
+======================================================================
+154. FORENSIC CHAIN OF CUSTODY
+======================================================================
+
+For high-assurance scenarios evaluate:
+
+- integrity
+- access logs
+- export
+- evidence hash
+- chain of custody.
+
+======================================================================
+155. EVIDENCE PRESERVATION
+======================================================================
+
+Incident evidence may need:
+
+immutable retention.
+
+======================================================================
+156. REPLAY DATA TAMPERING
+======================================================================
+
+Detect:
+
+modified historical records.
+
+======================================================================
+157. REPLAY AUTHENTICITY
+======================================================================
+
+Determine how to prove:
+
+this replay record corresponds to:
+
+the original execution.
+
+======================================================================
+158. CRYPTOGRAPHIC INTEGRITY
+======================================================================
+
+Evaluate:
+
+- hashes
+- signatures
+- Merkle structures
+- append-only storage.
+
+Do not select unnecessarily complex mechanisms.
+
+======================================================================
+159. REPLAY CONSISTENCY
+======================================================================
+
+Determine consistency guarantees for:
+
+events
+
+snapshots
+
+payloads.
+
+======================================================================
+160. SNAPSHOT CONSISTENCY
+======================================================================
+
+A snapshot taken while concurrent actions occur may be inconsistent.
+
+Analyze:
+
+- quiescence
+- checkpoint protocol
+- transactional snapshot.
+
+======================================================================
+161. DISTRIBUTED SNAPSHOT
+======================================================================
+
+If execution spans services:
+
+determine whether distributed snapshot is required.
+
+======================================================================
+162. CONCURRENCY
+======================================================================
+
+Using 14:
+
+replay must preserve or intentionally simulate:
+
+concurrent execution.
+
+======================================================================
+163. RACE CONDITIONS
+======================================================================
+
+A bug may depend on:
+
+timing.
+
+Replay must distinguish:
+
+logical order
+
+from:
+
+physical timing.
+
+======================================================================
+164. TIMING REPLAY
+======================================================================
+
+Evaluate whether replay requires:
+
+- exact timing
+- approximate timing
+- logical ordering only.
+
+Do not assume nanosecond-level replay is useful.
+
+======================================================================
+165. SCHEDULER REPLAY
+======================================================================
+
+If agent execution depends on scheduler behavior:
+
+evaluate whether scheduler decisions need recording.
+
+======================================================================
+166. ASYNC EVENTS
+======================================================================
+
+Capture asynchronous events relevant to:
+
+execution outcome.
+
+======================================================================
+167. MESSAGE QUEUES
+======================================================================
+
+If agents communicate through queues:
+
+capture:
+
+- message ID
+- ordering
+- timestamp
+- payload reference.
+
+======================================================================
+168. DUPLICATE MESSAGES
+======================================================================
+
+Replay must account for:
+
+at-least-once delivery.
+
+======================================================================
+169. MESSAGE REPLAY
+======================================================================
+
+Determine whether message replay is:
+
+- exact
+- simulated
+- reconstructed.
+
+======================================================================
+170. A2A
+======================================================================
+
+Future 31:
+
+agent-to-agent interactions must be replayable enough for:
+
+diagnosis and evaluation.
+
+Do not invent future protocol details.
+
+======================================================================
+171. MULTI-AGENT REPLAY
+======================================================================
+
+Model:
+
+agent A
+
+→
+
+agent B
+
+→
+
+agent C
+
+with:
+
+parallel branches.
+
+======================================================================
+172. AGENT IDENTITY
+======================================================================
+
+Capture:
+
+agent version
+
+and:
+
+agent configuration.
+
+======================================================================
+173. AGENT POLICY
+======================================================================
+
+Capture:
+
+policy state relevant to each agent.
+
+======================================================================
+174. AGENT MEMORY
+======================================================================
+
+Capture:
+
+memory state relevant to replay.
+
+======================================================================
+175. MODEL SWITCH
+======================================================================
+
+Using 27:
+
+capture model transitions.
+
+======================================================================
+176. HUMAN INTERVENTION
+======================================================================
+
+Using 28:
+
+capture human interventions.
+
+======================================================================
+177. HUMAN REPLAY
+======================================================================
+
+Determine whether replay reconstructs:
+
+what the human actually saw.
+
+======================================================================
+178. APPROVAL REPLAY
+======================================================================
+
+Determine whether historical approval can be:
+
+reconstructed
+
+without:
+
+re-executing authority checks as if they happened then.
+
+======================================================================
+179. POLICY DRIFT
+======================================================================
+
+Historical replay must preserve:
+
+historical policy state.
+
+======================================================================
+180. SOFTWARE DRIFT
+======================================================================
+
+Historical replay must preserve:
+
+software/runtime versions.
+
+======================================================================
+181. DATA DRIFT
+======================================================================
+
+Historical replay must preserve:
+
+relevant data versions.
+
+======================================================================
+182. MODEL DRIFT
+======================================================================
+
+Historical replay must preserve:
+
+model version and configuration.
+
+======================================================================
+183. REPLAY FIDELITY
+======================================================================
+
+Define a fidelity model.
+
+Potential levels:
+
+F0
+Audit reconstruction.
+
+F1
+Logical execution reconstruction.
+
+F2
+Deterministic replay.
+
+F3
+Controlled re-execution.
+
+F4
+Counterfactual simulation.
+
+These are examples.
+
+Claude MUST determine the best taxonomy.
+
+======================================================================
+184. FIDELITY CLAIMS
+======================================================================
+
+Every replay capability must explicitly state:
+
+WHAT IT GUARANTEES.
+
+WHAT IT DOES NOT GUARANTEE.
+
+======================================================================
+185. REPLAY VALIDATION
+======================================================================
+
+How do we know replay is correct?
+
+Evaluate:
+
+- output comparison
+- state comparison
+- event comparison
+- invariants
+- hashes
+- semantic equivalence.
+
+======================================================================
+186. OUTPUT EQUIVALENCE
+======================================================================
+
+Exact string equality may be inappropriate for LLMs.
+
+Evaluate:
+
+- exact
+- structural
+- semantic
+- task-level equivalence.
+
+======================================================================
+187. TOOL EQUIVALENCE
+======================================================================
+
+Determine whether tool outputs must match exactly.
+
+======================================================================
+188. STATE EQUIVALENCE
+======================================================================
+
+Determine whether resulting state must match exactly.
+
+======================================================================
+189. INVARIANTS
+======================================================================
+
+Define invariants such as:
+
+- no unauthorized action
+- no duplicate side effect
+- correct state transition
+- policy compliance.
+
+======================================================================
+190. REPLAY EVALUATION
+======================================================================
+
+Using 17:
+
+replay can generate:
+
+- regression tests
+- evaluation datasets
+- failure cases.
+
+======================================================================
+191. GOLDEN REPLAYS
+======================================================================
+
+Evaluate curated:
+
+golden execution traces.
+
+======================================================================
+192. REGRESSION SUITE
+======================================================================
+
+Historical failures can become:
+
+regression cases.
+
+======================================================================
+193. PRIVACY OF EVALUATION DATA
+======================================================================
+
+Do not automatically reuse customer executions as training/evaluation
+data.
+
+Respect applicable policies.
+
+======================================================================
+194. CUSTOMER CONSENT / CONTRACT
+======================================================================
+
+Determine when historical executions can be used for:
+
+evaluation.
+
+Do not assume.
+
+======================================================================
+195. MODEL COMPARISON
+======================================================================
+
+Replay can compare:
+
+Model A
+
+vs:
+
+Model B
+
+using same:
+
+input/context/tool responses.
+
+This is counterfactual comparison, not historical replay.
+
+======================================================================
+196. MODEL MIGRATION
+======================================================================
+
+Using 05/18:
+
+replay can validate:
+
+old model
+
+vs:
+
+new model.
+
+======================================================================
+197. POLICY MIGRATION
+======================================================================
+
+Replay can validate:
+
+old policy
+
+vs:
+
+new policy.
+
+======================================================================
+198. TOOL MIGRATION
+======================================================================
+
+Replay can validate:
+
+old tool
+
+vs:
+
+new tool.
+
+======================================================================
+199. REPLAY + DEPLOYMENT
+======================================================================
+
+Using 18:
+
+before production deployment:
+
+replay representative historical cases.
+
+Evaluate as a candidate control.
+
+======================================================================
+200. REPLAY + CANARY
+======================================================================
+
+Evaluate:
+
+replay
+
+→
+
+canary
+
+→
+
+production.
+
+Do not assume replay eliminates canary risk.
+
+======================================================================
+201. REPLAY + FALLBACK
+======================================================================
+
+Historical failures can test:
+
+fallback architecture.
+
+======================================================================
+202. REPLAY + HITL
+======================================================================
+
+Historical approvals can test:
+
+approval workflows.
+
+======================================================================
+203. REPLAY + OBSERVABILITY
+======================================================================
+
+Replay should integrate with:
+
+trace visualization.
+
+======================================================================
+204. REPLAY + AUDIT
+======================================================================
+
+Replay should integrate with:
+
+audit evidence.
+
+======================================================================
+205. REPLAY + DR
+======================================================================
+
+Replay should not replace:
+
+backup/DR.
+
+======================================================================
+206. REPLAY + SUPPLY CHAIN
+======================================================================
+
+Using 25:
+
+capture artifact identity where relevant.
+
+======================================================================
+207. REPLAY + NETWORK
+======================================================================
+
+Using 22:
+
+network conditions may affect behavior.
+
+Determine whether:
+
+network topology
+
+or:
+
+only external responses
+
+need replay.
+
+======================================================================
+208. REPLAY + STORAGE
+======================================================================
+
+Using 23:
+
+define:
+
+- storage tiers
+- retention
+- encryption
+- indexing.
+
+======================================================================
+209. REPLAY + MULTI-TENANCY
+======================================================================
+
+Using 19:
+
+replay data must preserve:
+
+tenant boundaries.
+
+======================================================================
+210. REPLAY + COST
+======================================================================
+
+Using 20:
+
+replay should not accidentally trigger:
+
+expensive live inference.
+
+======================================================================
+211. REPLAY + CAPACITY
+======================================================================
+
+Using 21:
+
+replay workloads need separate capacity planning.
+
+======================================================================
+212. REPLAY + SECURITY
+======================================================================
+
+Using 10:
+
+replay is a privileged forensic surface.
+
+======================================================================
+213. REPLAY + AUTHORIZATION
+======================================================================
+
+Using 11:
+
+viewing/replaying/executing require distinct permissions where needed.
+
+======================================================================
+214. REPLAY + TRUST
+======================================================================
+
+Using 12:
+
+preserve provenance.
+
+======================================================================
+215. REPLAY + RELIABILITY
+======================================================================
+
+Using 13:
+
+replay must not destabilize production.
+
+======================================================================
+216. REPLAY + CONCURRENCY
+======================================================================
+
+Using 14:
+
+model concurrent executions.
+
+======================================================================
+217. REPLAY + OBSERVABILITY
+======================================================================
+
+Using 15:
+
+link replay to traces and metrics.
+
+======================================================================
+218. REPLAY + AUDIT
+======================================================================
+
+Using 16:
+
+audit replay access and operations.
+
+======================================================================
+219. REPLAY + EVALUATION
+======================================================================
+
+Using 17:
+
+convert selected replays into evaluation cases.
+
+======================================================================
+220. REPLAY + DEPLOYMENT
+======================================================================
+
+Using 18:
+
+replay can be a deployment validation stage.
+
+======================================================================
+221. REPLAY + MULTI-TENANCY
+======================================================================
+
+Using 19:
+
+strict tenant isolation.
+
+======================================================================
+222. REPLAY + COST
+======================================================================
+
+Using 20:
+
+control replay compute/storage.
+
+======================================================================
+223. REPLAY + CAPACITY
+======================================================================
+
+Using 21:
+
+separate replay capacity from production.
+
+======================================================================
+224. REPLAY + NETWORKING
+======================================================================
+
+Using 22:
+
+replay should not inherit unrestricted production network access.
+
+======================================================================
+225. REPLAY + STORAGE
+======================================================================
+
+Using 23:
+
+design durable replay storage.
+
+======================================================================
+226. REPLAY + DR
+======================================================================
+
+Using 24:
+
+define whether replay evidence is included in DR.
+
+======================================================================
+227. REPLAY + SUPPLY CHAIN
+======================================================================
+
+Using 25:
+
+capture executable artifact identity.
+
+======================================================================
+228. REPLAY + COMPLIANCE
+======================================================================
+
+Using 26:
+
+define retention, residency and access requirements.
+
+======================================================================
+229. REPLAY + MULTI-MODEL
+======================================================================
+
+Using 27:
+
+capture:
+
+- model selection
+- fallback
+- failure
+- routing decision.
+
+======================================================================
+230. REPLAY + HITL
+======================================================================
+
+Using 28:
+
+capture:
+
+- human decision
+- authority
+- approval context
+- intervention.
+
+======================================================================
+231. REPLAY SEARCH INDEX
+======================================================================
+
+Create:
+
+| Field | Why Needed | Sensitivity | Index |
+
+Potential:
+
+- execution ID
+- tenant
+- timestamp
+- model
+- agent
+- tool
+- incident
+- policy version.
+
+======================================================================
+232. REPLAY EVENT SCHEMA
+======================================================================
+
+Create:
+
+| Field | Type | Purpose | Immutable? | Sensitive? |
+
+======================================================================
+233. REPLAY MANIFEST
+======================================================================
+
+Create:
+
+| Component | Identity | Version | Required for Replay |
+
+======================================================================
+234. REPLAY MODES MATRIX
+======================================================================
+
+Create:
+
+| Mode | Side Effects | Exactness | Authorization | Use Case |
+
+======================================================================
+235. REPLAY FIDELITY MATRIX
+======================================================================
+
+Create:
+
+| Capability | Exact | Logical | Approximate | Unsupported |
+
+======================================================================
+236. DATA RETENTION MATRIX
+======================================================================
+
+Create:
+
+| Data | Retention | Encryption | Residency | Deletion |
+
+Do not invent regulatory periods.
+
+======================================================================
+237. SECURITY MATRIX
+======================================================================
+
+Create:
+
+| Replay Capability | Required Permission | Risk | Control |
+
+======================================================================
+238. ARCHITECTURE OPTIONS
+======================================================================
+
+Evaluate at minimum:
+
+OPTION A
+--------
+Trace-based reconstruction.
+
+OPTION B
+--------
+Event log + state snapshots.
+
+OPTION C
+--------
+Full event sourcing.
+
+OPTION D
+--------
+Deterministic execution capture.
+
+OPTION E
+--------
+Hybrid architecture:
+immutable execution evidence
++
+selective snapshots
++
+recorded external responses
++
+controlled simulation/re-execution.
+
+These are candidate architectures.
+
+Claude MUST determine which is actually appropriate.
+
+======================================================================
+239. ARCHITECTURE SELECTION
+======================================================================
+
+Compare:
+
+| Criterion |
+| Replay Fidelity |
+| Operational Complexity |
+| Storage Cost |
+| Privacy |
+| Security |
+| Debugging Value |
+| Audit Value |
+| Evaluation Value |
+| Performance |
+| Scalability |
+| Determinism |
+| External Dependency Handling |
+| Day-1 Practicality |
+| Enterprise Readiness |
+| Recommendation |
+
+======================================================================
+240. WHY NOT ANALYSIS
+======================================================================
+
+Explicitly answer:
+
+WHY NOT FULL EVENT SOURCING?
+
+WHY NOT ONLY DISTRIBUTED TRACING?
+
+WHY NOT STORE EVERY PROMPT AND RESPONSE?
+
+WHY NOT SNAPSHOT EVERYTHING?
+
+WHY NOT DETERMINISTIC REPLAY?
+
+WHY NOT REEXECUTE REAL TOOLS?
+
+WHY NOT REPLAY AGAINST CURRENT DATA?
+
+WHY NOT REPLAY AGAINST CURRENT MODEL?
+
+WHY NOT STORE ALL EXTERNAL API RESPONSES?
+
+WHY NOT STORE NOTHING BEYOND AUDIT LOGS?
+
+WHY NOT USE BACKUPS?
+
+WHY NOT USE DR?
+
+WHY NOT BUILD A COMPLETE REPLAY ENGINE ON DAY 1?
+
+Only retain alternatives that survive architectural analysis.
+
+======================================================================
+241. REVERSIBILITY
+======================================================================
+
+Classify:
+
+- event schema
+- replay manifest
+- storage model
+- snapshot strategy
+- event sourcing
+- replay engine
+- simulation environment
+
+as:
+
+- easily reversible
+- moderately reversible
+- expensive
+- effectively irreversible.
+
+======================================================================
+242. DAY-1 REQUIREMENTS
+======================================================================
+
+Define the minimum Day-1 foundation.
+
+Potential:
+
+- execution IDs
+- causal IDs
+- model identity
+- tool identity
+- policy version
+- deployment identity
+- trace linkage
+- immutable execution metadata
+- state boundaries.
+
+These are candidates.
+
+Determine actual requirements.
+
+======================================================================
+243. DAY-1 NON-REQUIREMENTS
+======================================================================
+
+Explicitly identify advanced replay capabilities that should NOT be
+built on Day 1 unless justified.
+
+======================================================================
+244. FUTURE TRIGGERS
+======================================================================
+
+Define objective conditions that justify advanced replay.
+
+Potential:
+
+- enterprise incident response
+- regulated workloads
+- model migration
+- large agent deployments
+- customer disputes
+- high-risk automation
+- security forensics
+- large-scale evaluation.
+
+Determine actual triggers.
+
+======================================================================
+245. STABLE CONTRACTS
+======================================================================
+
+Define stable concepts such as:
+
+ExecutionIdentity
+ExecutionEvent
+ExecutionManifest
+ReplayRequest
+ReplayMode
+ReplayAuthorization
+ReplayResult
+ReplayFidelity
+Snapshot
+Checkpoint
+ExternalDependencyRecord
+ModelExecutionRecord
+ToolExecutionRecord
+HumanDecisionRecord.
+
+These are examples.
+
+Determine the minimum required contracts.
+
+Contracts must remain independent of:
+
+- specific workflow engine
+- specific tracing vendor
+- specific storage provider
+- specific model provider.
+
+======================================================================
+246. ADR CANDIDATES
+======================================================================
+
+Identify ADRs for:
+
+- replay model
+- event schema
+- snapshot strategy
+- replay fidelity
+- external dependency capture
+- side-effect isolation
+- replay authorization
+- replay storage
+- retention
+- forensic integrity
+- counterfactual replay.
+
+For each:
+
+- problem
+- alternatives
+- recommendation
+- consequences
+- reversibility
+- decision deadline.
+
+======================================================================
+247. REPLAY READINESS MATRIX
+======================================================================
+
+Create:
+
+| Capability | Day 1 | Prepare | Enterprise | Verified |
+
+Cover:
+
+- execution identity
+- causal graph
+- model identity
+- tool identity
+- policy version
+- configuration version
+- trace linkage
+- audit linkage
+- state checkpoint
+- event capture
+- external dependency capture
+- replay manifest
+- replay authorization
+- sandbox
+- forensic integrity
+- evaluation replay
+- counterfactual replay.
+
+======================================================================
+248. REQUIRED DIAGRAMS
+======================================================================
+
+Include Mermaid diagrams for:
+
+1. Complete replay architecture
+2. Execution graph
+3. Event flow
+4. Replay manifest
+5. Event + snapshot architecture
+6. Checkpointing
+7. Model replay
+8. Tool replay
+9. External API replay
+10. Side-effect isolation
+11. Replay sandbox
+12. Multi-agent replay
+13. Human approval replay
+14. Policy replay
+15. Memory/knowledge replay
+16. Counterfactual replay
+17. Replay storage tiers
+18. Security boundaries
+19. Incident investigation
+20. Replay → evaluation pipeline
+21. Day-1 → Enterprise evolution.
+
+======================================================================
+249. ATTEMPT TO FALSIFY THE RECOMMENDATION
+======================================================================
+
+Try to prove the selected architecture wrong.
+
+At minimum analyze:
+
+- model provider changes model behavior
+- model is retired
+- model version unavailable
+- tool version changes
+- external API disappears
+- external API changes response
+- database state unavailable
+- retrieval documents change
+- memory changes
+- policy changes
+- authorization changes
+- human approval unavailable
+- event is missing
+- event is duplicated
+- event is out of order
+- snapshot is inconsistent
+- event schema changes
+- replay data is corrupted
+- replay data is tampered with
+- PII must be deleted
+- legal hold conflicts with deletion
+- tenant isolation failure
+- replay accidentally invokes a real tool
+- replay leaks production credentials
+- replay consumes production GPU
+- replay causes cost explosion
+- replay workload starves production
+- concurrent execution creates race condition
+- random seed is insufficient
+- provider does not guarantee determinism
+- streaming response was partial
+- model fallback occurred
+- human changed the action
+- policy changed after approval
+- external state changed
+- imported replay package is malicious
+- replay is executed by unauthorized user
+- historical authorization differs from current authorization.
+
+For each:
+
+- failure mode
+- containment
+- residual risk
+- architecture impact.
+
+======================================================================
+250. ARCHITECTURAL SELF-CRITIQUE
+======================================================================
+
+Before finalizing ask:
+
+1. Did I define why replay is needed?
+2. Did I distinguish replay from audit?
+3. Did I distinguish replay from observability?
+4. Did I distinguish replay from DR?
+5. Did I distinguish exact replay from reconstruction?
+6. Did I model non-determinism?
+7. Did I model model-version drift?
+8. Did I model tool-version drift?
+9. Did I model external state?
+10. Did I model retrieval drift?
+11. Did I model memory drift?
+12. Did I model policy drift?
+13. Did I model human intervention?
+14. Did I protect against real side effects?
+15. Did I isolate replay?
+16. Did I protect tenant data?
+17. Did I protect secrets?
+18. Did I define retention?
+19. Did I define data residency?
+20. Did I define replay authorization?
+21. Did I define replay modes?
+22. Did I define fidelity guarantees?
+23. Did I define schema evolution?
+24. Did I define missing-event behavior?
+25. Did I define event ordering?
+26. Did I define snapshot consistency?
+27. Did I model replay cost?
+28. Did I separate replay capacity from production?
+29. Did I integrate observability and audit?
+30. Did I avoid over-engineering Day 1?
+31. What assumption could invalidate the architecture?
+
+Include:
+
+# ARCHITECTURAL SELF-CRITIQUE
+
+======================================================================
+251. FINAL RECOMMENDATION
+======================================================================
+
+End with:
+
+# FINAL REPLAY ARCHITECTURE RECOMMENDATION
+
+Answer:
+
+"What Replay Architecture should this platform actually build?"
+
+Be concrete.
+
+Describe:
+
+- replay use cases
+- replay modes
+- execution identity
+- causal model
+- event model
+- snapshot/checkpoint strategy
+- model capture
+- tool capture
+- external dependency strategy
+- state capture
+- memory capture
+- knowledge capture
+- policy capture
+- human approval capture
+- side-effect isolation
+- sandbox
+- authorization
+- security
+- privacy
+- retention
+- residency
+- integrity
+- observability
+- audit
+- evaluation
+- counterfactual analysis
+- Day-1 foundation
+- enterprise evolution.
+
+Then explicitly answer:
+
+"WHAT MUST EXIST ON DAY 1?"
+
+Then:
+
+"WHAT MUST NOT BE BUILT ON DAY 1?"
+
+Then:
+
+"WHAT OBJECTIVE CONDITIONS SHOULD TRIGGER ADVANCED REPLAY?"
+
+Then:
+
+"WHAT LEVEL OF REPLAY FIDELITY CAN THIS PLATFORM ACTUALLY
+GUARANTEE?"
+
+======================================================================
+252. REQUIRED OUTPUT
+======================================================================
+
+Produce:
+
+29_REPLAY_ARCHITECTURE.md
+
+The document MUST explicitly reference:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_ARCHITECTURE.md
+04_AGENT_RUNTIME.md
+05_MODEL_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+08_KNOWLEDGE_DATA_ARCHITECTURE.md
+09_MEMORY_ARCHITECTURE.md
+10_SECURITY_ARCHITECTURE.md
+11_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+12_TRUST_PROVENANCE_ARCHITECTURE.md
+13_RELIABILITY_ARCHITECTURE.md
+14_CONCURRENCY_ARCHITECTURE.md
+15_OBSERVABILITY_ARCHITECTURE.md
+16_AUDIT_ARCHITECTURE.md
+17_EVALUATION_ARCHITECTURE.md
+18_DEPLOYMENT_LIFECYCLE_ARCHITECTURE.md
+19_MULTI_TENANCY_ARCHITECTURE.md
+20_COST_ARCHITECTURE.md
+21_CAPACITY_PLANNING_ARCHITECTURE.md
+22_NETWORKING_ARCHITECTURE.md
+23_STORAGE_ARCHITECTURE.md
+24_DR_ENTERPRISE_ARCHITECTURE.md
+25_ADVANCED_SUPPLY_CHAIN_ARCHITECTURE.md
+26_ENTERPRISE_COMPLIANCE_ARCHITECTURE.md
+27_MULTI_MODEL_FALLBACK_ARCHITECTURE.md
+28_HUMAN_IN_THE_LOOP_ARCHITECTURE.md
+
+Also identify future interactions with:
+
+30_OFFLINE_MOBILE_ARCHITECTURE.md
+31_A2A_ARCHITECTURE.md
+32_ADMIN_CONSOLE_ARCHITECTURE.md
+33_ADR_ARCHITECTURE.md
+34_QUALITY_MODEL_ARCHITECTURE.md
+
+If documents do not exist:
+
+DO NOT invent their contents.
+
+Define only:
+
+- dependency
+- stable interface
+- unresolved assumption.
+
+======================================================================
+253. SOURCE REQUIREMENTS
+======================================================================
+
+THIS SECTION IS MANDATORY.
+
+Use current web research.
+
+Prioritize authoritative sources:
+
+- official distributed-systems documentation
+- official cloud storage documentation
+- official database documentation
+- NIST
+- CNCF
+- OpenTelemetry official documentation
+- official model provider documentation
+- official workflow/runtime documentation
+- relevant security standards
+- relevant privacy/compliance authorities.
+
+When discussing a technology:
+
+verify current behavior and limitations.
+
+When discussing model replay:
+
+verify current provider capabilities and reproducibility guarantees.
+
+Do not claim deterministic replay where the provider does not guarantee
+it.
+
+Clearly distinguish:
+
+SOURCE FACT
+
+from:
+
+MEASUREMENT
+
+from:
+
+INFERENCE
+
+from:
+
+ARCHITECTURAL RECOMMENDATION.
+
+======================================================================
+254. RESEARCH DATE
+======================================================================
+
+At the beginning state:
+
+RESEARCH DATE
+
+and:
+
+VERSIONS / PROVIDERS / RUNTIMES EVALUATED.
+
+======================================================================
+255. PRIVACY DISCIPLINE
+======================================================================
+
+Never assume:
+
+"we need replay"
+
+means:
+
+"store everything forever."
+
+Determine:
+
+minimum evidence required
+
+for each use case.
+
+Optimize for:
+
+minimum necessary retention
+
+while preserving the required replay capability.
+
+======================================================================
+256. SECURITY DISCIPLINE
+======================================================================
+
+Never assume:
+
+replay data is harmless.
+
+Replay records may contain:
+
+- sensitive prompts
+- proprietary information
+- credentials
+- personal data
+- model outputs
+- tool results
+- security decisions.
+
+Treat replay storage as a high-value security asset.
+
+======================================================================
+257. REPLAY SAFETY DISCIPLINE
+======================================================================
+
+Never allow a replay mechanism to accidentally execute historical
+side effects against production.
+
+The default architecture must be:
+
+OBSERVE / RECONSTRUCT / SIMULATE
+
+not:
+
+REPEAT REAL-WORLD ACTIONS.
+
+Any live re-execution must be:
+
+explicit
+
+authorized
+
+isolated
+
+scoped
+
+audited.
+
+======================================================================
+258. ABSOLUTE FINAL INSTRUCTION
+======================================================================
+
+Act as an INDEPENDENT Principal AI Replay and Distributed Systems
+Architect.
+
+Your responsibility is to determine the best Replay Architecture for
+THIS platform.
+
+Do not assume:
+
+REPLAY = EVENT SOURCING.
+
+Do not assume:
+
+REPLAY = DISTRIBUTED TRACING.
+
+Do not assume:
+
+REPLAY = SNAPSHOTS.
+
+Do not assume:
+
+REPLAY = DETERMINISTIC EXECUTION.
+
+Do not assume:
+
+REPLAY = REEXECUTION.
+
+Do not assume:
+
+AUDIT = REPLAY.
+
+Do not assume:
+
+BACKUP = REPLAY.
+
+Do not assume:
+
+DR = REPLAY.
+
+Do not assume:
+
+MODEL VERSION = MODEL BEHAVIOR.
+
+Do not assume:
+
+MODEL SEED = DETERMINISM.
+
+Do not assume:
+
+CURRENT DATA = HISTORICAL DATA.
+
+Do not assume:
+
+CURRENT POLICY = HISTORICAL POLICY.
+
+Do not assume:
+
+CURRENT AUTHORIZATION = HISTORICAL AUTHORIZATION.
+
+Do not assume:
+
+CURRENT TOOL = HISTORICAL TOOL.
+
+Do not assume:
+
+CURRENT MODEL = HISTORICAL MODEL.
+
+Do not assume:
+
+RECORDED OUTPUT = REPLAYABLE EXECUTION.
+
+Do not assume:
+
+TRACE = COMPLETE EXECUTION RECORD.
+
+Do not assume:
+
+SNAPSHOT = CONSISTENT DISTRIBUTED STATE.
+
+Do not assume:
+
+EXTERNAL API = REPRODUCIBLE.
+
+Do not allow:
+
+REPLAY
+
+to create:
+
+REAL-WORLD SIDE EFFECTS
+
+by default.
+
+Do not allow:
+
+REPLAY
+
+to bypass:
+
+SECURITY.
+
+Do not allow:
+
+REPLAY
+
+to bypass:
+
+AUTHORIZATION.
+
+Do not allow:
+
+REPLAY
+
+to cross:
+
+TENANT BOUNDARIES.
+
+Do not allow:
+
+REPLAY
+
+to expose:
+
+PRODUCTION CREDENTIALS.
+
+Do not allow:
+
+REPLAY
+
+to become:
+
+AN UNCONTROLLED COST CENTER.
+
+Do not allow:
+
+REPLAY
+
+to consume:
+
+PRODUCTION CAPACITY
+
+without explicit policy.
+
+Do not allow:
+
+HISTORICAL EVIDENCE
+
+to be silently altered.
+
+Do not allow:
+
+CURRENT STATE
+
+to be mistaken for:
+
+HISTORICAL STATE.
+
+Do not allow:
+
+COUNTERFACTUAL EXECUTION
+
+to be represented as:
+
+HISTORICAL REPLAY.
+
+Do not allow:
+
+APPROXIMATE RECONSTRUCTION
+
+to be presented as:
+
+EXACT REPRODUCTION.
+
+Optimize for:
+
+REPLAY FIDELITY
++
+SAFETY
++
+SECURITY
++
+PRIVACY
++
+TENANT ISOLATION
++
+AUDITABILITY
++
+FORENSIC VALUE
++
+DEBUGGING VALUE
++
+EVALUATION VALUE
++
+STORAGE EFFICIENCY
++
+LOW OPERATIONAL COMPLEXITY
++
+MODEL EVOLUTION
++
+TOOL EVOLUTION
++
+POLICY EVOLUTION
++
+EXTERNAL DEPENDENCY RESILIENCE
++
+FUTURE EXTENSIBILITY.
+
+The final architecture MUST result from:
+
+    REPLAY USE CASES
+       ↓
+    EXECUTION MODEL
+       ↓
+    STATE MODEL
+       ↓
+    EVENT MODEL
+       ↓
+    NON-DETERMINISM ANALYSIS
+       ↓
+    EXTERNAL DEPENDENCY ANALYSIS
+       ↓
+    DATA CAPTURE
+       ↓
+    PRIVACY / SECURITY
+       ↓
+    STORAGE
+       ↓
+    CONSISTENCY
+       ↓
+    REPLAY MODES
+       ↓
+    SNAPSHOT / CHECKPOINT
+       ↓
+    MODEL / TOOL / MEMORY / KNOWLEDGE
+       ↓
+    SIDE-EFFECT ISOLATION
+       ↓
+    EVALUATION
+       ↓
+    ADVERSARIAL ANALYSIS
+       ↓
+    FALSIFICATION
+       ↓
+    FINAL DECISION.
+
+DO NOT CHOOSE EVENT SOURCING FIRST.
+
+DO NOT CHOOSE SNAPSHOTS FIRST.
+
+DO NOT CHOOSE A REPLAY ENGINE FIRST.
+
+DO NOT CHOOSE A STORAGE TECHNOLOGY FIRST.
+
+DO NOT CHOOSE DETERMINISTIC REPLAY FIRST.
+
+DO NOT CHOOSE A TRACE VENDOR FIRST.
+
+UNDERSTAND THE REPLAY USE CASES FIRST.
+
+UNDERSTAND WHAT MUST ACTUALLY BE RECONSTRUCTED FIRST.
+
+UNDERSTAND THE NON-DETERMINISM FIRST.
+
+UNDERSTAND THE EXTERNAL DEPENDENCIES FIRST.
+
+UNDERSTAND THE PRIVACY AND SECURITY CONSTRAINTS FIRST.
+
+UNDERSTAND THE STORAGE AND COST CONSTRAINTS FIRST.
+
+THEN COMPARE THE AVAILABLE ARCHITECTURES.
+
+THEN ATTEMPT TO DISPROVE THE PREFERRED ARCHITECTURE.
+
+THEN SELECT THE BEST REPLAY ARCHITECTURE AVAILABLE FOR THIS PROJECT.
+
+THEN DEFINE THE MINIMUM DAY-1 FOUNDATIONS REQUIRED TO KEEP THAT
+ARCHITECTURE POSSIBLE.
+
+THEN DESIGN IT.

@@ -1,0 +1,2086 @@
+# 14 — DATA GOVERNANCE, PRIVACY & COMPLIANCE ARCHITECTURE
+## Enterprise AI Agent Platform
+
+======================================================================
+ROLE
+======================================================================
+
+Act as the Principal Data Architect, Privacy Architect, Data Governance
+Architect and AI Compliance Architect responsible for designing the
+complete Data Governance, Privacy and Compliance Architecture of an
+enterprise-grade AI agent platform.
+
+You have deep expertise in:
+
+- data architecture
+- data governance
+- privacy engineering
+- GDPR
+- European data protection
+- data classification
+- data lineage
+- data retention
+- data deletion
+- data residency
+- purpose limitation
+- data minimization
+- consent
+- lawful basis
+- access control
+- tenant isolation
+- data lifecycle management
+- AI governance
+- model/data governance
+- privacy-preserving architectures
+- auditability
+- enterprise compliance
+- records management
+- data subject rights
+- AI system governance
+
+You are working within:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_PLANE.md
+04_AGENT_RUNTIME.md
+05_MODEL_INFERENCE_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+07_KNOWLEDGE_DATA_ARCHITECTURE.md
+08_MEMORY_ARCHITECTURE.md
+09_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+10_AGENT_COMMUNICATION_MULTI_AGENT_ARCHITECTURE.md
+11_EVENTING_WORKFLOW_DURABLE_EXECUTION_ARCHITECTURE.md
+12_OBSERVABILITY_EVALUATION_RELIABILITY_ARCHITECTURE.md
+13_SECURITY_ARCHITECTURE.md
+
+These documents provide the current architectural context.
+
+However:
+
+THEY ARE NOT IMMUNE FROM CHALLENGE.
+
+If research demonstrates that an assumption is technically incorrect,
+incomplete, legally risky or architecturally suboptimal, explicitly
+identify the conflict and recommend the superior architecture.
+
+======================================================================
+1. PRIMARY OBJECTIVE
+======================================================================
+
+Design the complete Data Governance, Privacy and Compliance Architecture.
+
+The architecture must answer:
+
+WHAT DATA DOES THE PLATFORM PROCESS?
+
+WHO OWNS IT?
+
+WHO MAY ACCESS IT?
+
+WHY IS IT BEING PROCESSED?
+
+WHERE DOES IT COME FROM?
+
+WHERE DOES IT GO?
+
+HOW DOES IT PROPAGATE?
+
+HOW LONG IS IT RETAINED?
+
+HOW IS IT DELETED?
+
+CAN A USER REQUEST DELETION?
+
+CAN DATA BE EXPORTED?
+
+CAN DATA BE CORRECTED?
+
+CAN DATA BE ISOLATED BY TENANT?
+
+CAN DATA ENTER MODEL CONTEXT?
+
+CAN DATA ENTER MEMORY?
+
+CAN DATA ENTER EVALUATION DATASETS?
+
+CAN DATA BE SENT TO EXTERNAL SERVICES?
+
+CAN DATA BE USED FOR TRAINING?
+
+HOW CAN ALL OF THIS BE AUDITED?
+
+======================================================================
+2. MOST IMPORTANT INSTRUCTION
+## RESEARCH FIRST — SELECT ARCHITECTURE SECOND
+======================================================================
+
+DO NOT begin by selecting:
+
+- a data catalog
+- a governance platform
+- a privacy platform
+- a DLP product
+- a consent-management product
+- a compliance vendor
+- a database
+- a data lake
+- a data warehouse
+
+as the architecture.
+
+Research first.
+
+Research current authoritative requirements and practices covering:
+
+- GDPR
+- European data protection principles
+- EDPB guidance where applicable
+- data minimization
+- purpose limitation
+- storage limitation
+- data subject rights
+- privacy by design
+- privacy by default
+- processor/controller concepts
+- international data transfers
+- AI-specific data governance
+- data lineage
+- data retention
+- deletion
+- enterprise data classification
+- AI training data governance
+
+Also research relevant AI governance requirements applicable to the
+platform's intended deployment context.
+
+Do not assume that every compliance requirement applies identically to
+every deployment.
+
+Then identify meaningful architectural alternatives.
+
+Then compare them.
+
+Then select the architecture best suited to THIS project.
+
+Then attempt to falsify the decision.
+
+Required process:
+
+    RESEARCH
+       ↓
+    DATA INVENTORY
+       ↓
+    DATA CLASSIFICATION
+       ↓
+    DATA LIFECYCLE
+       ↓
+    PRIVACY REQUIREMENTS
+       ↓
+    COMPLIANCE REQUIREMENTS
+       ↓
+    ARCHITECTURAL ALTERNATIVES
+       ↓
+    DATA-FLOW ANALYSIS
+       ↓
+    SECURITY / PRIVACY ANALYSIS
+       ↓
+    OPERATIONAL ANALYSIS
+       ↓
+    ADVERSARIAL CHALLENGE
+       ↓
+    FINAL DECISION
+       ↓
+    DAY-1 IMPLEMENTATION
+       ↓
+    FUTURE EVOLUTION
+
+CLAUDE MUST DETERMINE THE BEST ARCHITECTURE AVAILABLE FOR THIS PROJECT.
+
+======================================================================
+3. FUNDAMENTAL DISTINCTIONS
+======================================================================
+
+Explicitly distinguish:
+
+DATA
+
+METADATA
+
+PERSONAL DATA
+
+SENSITIVE DATA
+
+CONFIDENTIAL DATA
+
+IDENTITY DATA
+
+CONTENT DATA
+
+TELEMETRY
+
+AUDIT DATA
+
+MEMORY
+
+KNOWLEDGE
+
+EVALUATION DATA
+
+MODEL INPUT
+
+MODEL OUTPUT
+
+ARTIFACT
+
+LINEAGE
+
+RETENTION POLICY
+
+PURPOSE
+
+LEGAL BASIS
+
+Do not collapse these into one generic "data" abstraction.
+
+In particular:
+
+DATA ≠ MEMORY
+
+MEMORY ≠ KNOWLEDGE
+
+TELEMETRY ≠ AUDIT
+
+PERSONAL DATA ≠ ALL CONFIDENTIAL DATA
+
+DATA RETENTION ≠ BACKUP RETENTION
+
+DATA DELETION ≠ DATABASE ROW DELETION
+
+======================================================================
+4. DAY-1 CONSTRAINTS
+======================================================================
+
+Day 1:
+
+- one machine
+- one GPU if available
+- Qwen3.5 9B
+- PostgreSQL
+- local/containerized deployment
+- small engineering team
+- initial internal users
+- initial enterprise integrations
+
+Do NOT introduce:
+
+- enterprise data lake
+- data mesh
+- data catalog platform
+- complex consent platform
+- dedicated DLP infrastructure
+- multi-region compliance infrastructure
+- elaborate privacy orchestration
+
+unless research demonstrates a concrete requirement.
+
+The Day-1 architecture must nevertheless establish the correct
+foundations for:
+
+- tenant isolation
+- data classification
+- retention
+- deletion
+- lineage
+- access control
+- privacy boundaries.
+
+======================================================================
+5. FUTURE REQUIREMENTS
+======================================================================
+
+Future requirements may include:
+
+- multiple tenants
+- external customers
+- enterprise SSO
+- EU-only deployments
+- data residency
+- customer-managed keys
+- regulated industries
+- DPA requirements
+- data-subject requests
+- legal holds
+- advanced retention
+- enterprise audit
+- regional processing
+- customer-controlled deletion
+- model training restrictions
+- third-party AI providers
+- external tools
+- international data transfers
+
+Determine:
+
+DAY 1
+PREPARE
+SCALE
+ENTERPRISE
+
+======================================================================
+6. DATA INVENTORY
+======================================================================
+
+Create a complete logical data inventory.
+
+At minimum include:
+
+- users
+- tenants
+- identities
+- sessions
+- agents
+- agent configurations
+- prompts
+- model inputs
+- model outputs
+- tool arguments
+- tool results
+- documents
+- document metadata
+- embeddings
+- chunks
+- retrieval results
+- memory
+- workflow state
+- events
+- jobs
+- artifacts
+- audit records
+- telemetry
+- evaluation datasets
+- evaluation results
+- credentials
+- configuration
+- backups.
+
+For each determine:
+
+- owner
+- source
+- classification
+- purpose
+- storage
+- retention
+- access
+- deletion behavior
+- downstream propagation.
+
+======================================================================
+7. DATA CLASSIFICATION
+======================================================================
+
+Research and define a practical classification system.
+
+Potential:
+
+PUBLIC
+INTERNAL
+CONFIDENTIAL
+RESTRICTED
+
+But these are examples only.
+
+Determine whether the platform requires a more useful taxonomy.
+
+Classification should drive:
+
+- storage
+- access
+- logging
+- retention
+- export
+- external sharing
+- model exposure.
+
+======================================================================
+8. PERSONAL DATA
+======================================================================
+
+Determine what platform data may constitute personal data.
+
+Potential:
+
+- names
+- email
+- user identifiers
+- IP addresses
+- conversations
+- documents
+- memory
+- telemetry
+- tool results.
+
+Do not assume that only explicit identity fields are personal data.
+
+======================================================================
+9. SPECIAL CATEGORY / SENSITIVE DATA
+======================================================================
+
+Research applicable categories.
+
+Determine whether the architecture must support stricter handling for
+sensitive data.
+
+Do not invent legal classifications.
+
+Clearly distinguish:
+
+LEGAL REQUIREMENT
+
+from:
+
+ARCHITECTURAL SAFEGUARD.
+
+======================================================================
+10. DATA CONTROLLER / PROCESSOR MODEL
+======================================================================
+
+Research the relevant legal concepts.
+
+Determine possible roles:
+
+- platform operator
+- enterprise customer
+- tenant administrator
+- third-party service
+- model provider
+- tool provider.
+
+Do not make legal conclusions without authoritative support.
+
+Explicitly identify where legal interpretation requires counsel.
+
+======================================================================
+11. PURPOSE LIMITATION
+======================================================================
+
+Every meaningful data category should have an explicit purpose.
+
+Examples:
+
+Conversation data
+→ provide requested service.
+
+Memory
+→ personalize future interactions.
+
+Telemetry
+→ operate and debug the platform.
+
+Evaluation data
+→ measure system quality.
+
+Audit
+→ security/compliance.
+
+Do not silently reuse one dataset for another purpose.
+
+======================================================================
+12. DATA MINIMIZATION
+======================================================================
+
+Determine the minimum data required for each operation.
+
+Example:
+
+Tool B does not necessarily need the entire conversation.
+
+Agent B does not necessarily need all user memory.
+
+Evaluation does not necessarily need raw production data.
+
+Observability does not necessarily need raw prompts.
+
+Determine minimization boundaries.
+
+======================================================================
+13. CONTEXT MINIMIZATION
+======================================================================
+
+Using:
+
+04_AGENT_RUNTIME.md
+07_KNOWLEDGE_DATA_ARCHITECTURE.md
+08_MEMORY_ARCHITECTURE.md
+10_AGENT_COMMUNICATION_MULTI_AGENT_ARCHITECTURE.md
+
+determine how much information should enter model context.
+
+Context should be:
+
+- relevant
+- authorized
+- minimized
+- purpose-bound.
+
+Do not equate "available to the platform" with "available to the model."
+
+======================================================================
+14. DATA PROPAGATION GRAPH
+======================================================================
+
+Build the complete lifecycle:
+
+User
+ ↓
+API
+ ↓
+Agent Runtime
+ ↓
+Model Context
+ ↓
+Retrieval
+ ↓
+Memory
+ ↓
+Tool
+ ↓
+Workflow
+ ↓
+External Service
+ ↓
+Telemetry
+ ↓
+Evaluation
+ ↓
+Backup
+
+Determine every place where data may propagate.
+
+This graph is one of the central outputs of this document.
+
+======================================================================
+15. DATA FLOW MAPPING
+======================================================================
+
+For every important data flow capture:
+
+SOURCE
+
+DATA
+
+PURPOSE
+
+DESTINATION
+
+TENANT
+
+CLASSIFICATION
+
+AUTHORIZATION
+
+ENCRYPTION
+
+RETENTION
+
+DELETION
+
+EXTERNAL TRANSFER
+
+AUDIT.
+
+======================================================================
+16. DATA LINEAGE
+======================================================================
+
+Determine lineage from:
+
+Original Source
+ ↓
+Document
+ ↓
+Chunk
+ ↓
+Embedding
+ ↓
+Retrieval
+ ↓
+Model Context
+ ↓
+Response
+ ↓
+Artifact
+
+Also:
+
+User
+ ↓
+Conversation
+ ↓
+Memory
+ ↓
+Future Context.
+
+Lineage should allow the platform to understand where information came
+from.
+
+======================================================================
+17. PROVENANCE
+======================================================================
+
+Determine provenance requirements for:
+
+- documents
+- retrieved knowledge
+- memory
+- model outputs
+- artifacts
+- evaluation cases.
+
+Do not confuse provenance with truth.
+
+======================================================================
+18. DATA RESIDENCY
+======================================================================
+
+Determine whether data residency must be supported.
+
+Potential:
+
+- EU
+- country-specific
+- tenant-selected region
+- customer-selected region.
+
+Do not introduce regional architecture Day 1 unless justified.
+
+Define the future architectural trigger.
+
+======================================================================
+19. DATA SOVEREIGNTY
+======================================================================
+
+Distinguish:
+
+DATA RESIDENCY
+
+from:
+
+DATA SOVEREIGNTY
+
+from:
+
+DATA ACCESS LOCATION
+
+from:
+
+PROCESSING LOCATION.
+
+A database may be located in one region while external processing occurs
+elsewhere.
+
+Track both.
+
+======================================================================
+20. EXTERNAL DATA TRANSFERS
+======================================================================
+
+Determine how data may leave the platform.
+
+Potential destinations:
+
+- model provider
+- external LLM API
+- CRM
+- email
+- calendar
+- storage
+- remote MCP server
+- remote agent
+- analytics provider.
+
+For each define:
+
+- authorization
+- purpose
+- classification
+- transfer restrictions
+- audit.
+
+======================================================================
+21. MODEL PROVIDER DATA POLICY
+======================================================================
+
+Determine how architecture should handle providers that may:
+
+- retain prompts
+- process prompts externally
+- use data for training
+- store telemetry
+- process data in other regions.
+
+Do not assume provider behavior.
+
+Research official provider documentation when selecting an architecture.
+
+======================================================================
+22. MODEL TRAINING DATA
+======================================================================
+
+This is CRITICAL.
+
+Determine explicitly:
+
+Can user data be used to train models?
+
+Can tenant data be used to improve the platform?
+
+Can evaluation data become training data?
+
+Can memory become training data?
+
+The default architecture should NOT silently permit secondary use.
+
+======================================================================
+23. DATASET BOUNDARIES
+======================================================================
+
+Separate:
+
+PRODUCTION DATA
+
+EVALUATION DATA
+
+TRAINING DATA
+
+ANALYTICS DATA
+
+AUDIT DATA
+
+TELEMETRY DATA
+
+These must not automatically become interchangeable.
+
+======================================================================
+24. MEMORY GOVERNANCE
+======================================================================
+
+Using 08_MEMORY_ARCHITECTURE.md determine:
+
+- who owns memory
+- purpose
+- retention
+- deletion
+- correction
+- export
+- access
+- provenance
+- poisoning risk.
+
+A user should not lose control over personal data merely because it was
+converted into a memory representation.
+
+======================================================================
+25. KNOWLEDGE GOVERNANCE
+======================================================================
+
+Using 07_KNOWLEDGE_DATA_ARCHITECTURE.md determine:
+
+- document owner
+- source
+- classification
+- retention
+- deletion
+- access
+- version
+- provenance
+- legal hold.
+
+======================================================================
+26. EMBEDDING GOVERNANCE
+======================================================================
+
+Determine whether embeddings themselves may contain sensitive information.
+
+Do not assume embeddings are anonymous.
+
+Define:
+
+- access control
+- deletion
+- retention
+- tenant isolation
+- regeneration.
+
+======================================================================
+27. VECTOR DATA DELETION
+======================================================================
+
+When a source document is deleted, determine what happens to:
+
+- chunks
+- embeddings
+- indexes
+- caches
+- retrieval traces
+- generated summaries
+- memory derived from the document.
+
+Deletion must follow the data lineage.
+
+======================================================================
+28. DERIVED DATA
+======================================================================
+
+Identify derived representations:
+
+- embeddings
+- summaries
+- classifications
+- extracted entities
+- memories
+- evaluation labels
+- model-generated artifacts.
+
+Determine whether deletion of source data should trigger deletion or
+re-evaluation of derived data.
+
+======================================================================
+29. RETENTION
+======================================================================
+
+Define retention separately for:
+
+- conversations
+- memory
+- documents
+- embeddings
+- workflow state
+- events
+- logs
+- traces
+- audit
+- evaluation datasets
+- backups.
+
+Do not use one global retention period.
+
+======================================================================
+30. RETENTION POLICY ENGINE
+======================================================================
+
+Evaluate whether retention should be:
+
+- application code
+- database jobs
+- lifecycle policies
+- centralized policy engine
+- hybrid.
+
+Determine Day 1 and future architecture.
+
+======================================================================
+31. DELETION
+======================================================================
+
+Define deletion semantics.
+
+Possible states:
+
+ACTIVE
+DELETION_REQUESTED
+DELETING
+DELETED
+LEGAL_HOLD
+
+Determine whether these are required.
+
+======================================================================
+32. HARD DELETE VS SOFT DELETE
+======================================================================
+
+Compare:
+
+- hard delete
+- soft delete
+- tombstones
+- cryptographic deletion
+- retention expiry.
+
+Determine where each is appropriate.
+
+Do not use soft delete as a substitute for actual deletion requirements.
+
+======================================================================
+33. DATA SUBJECT RIGHTS
+======================================================================
+
+Research applicable rights and determine architecture for:
+
+- access
+- correction
+- deletion
+- portability
+- objection
+- restriction
+
+where legally applicable.
+
+Do not present legal advice as architectural fact.
+
+======================================================================
+34. DATA EXPORT
+======================================================================
+
+Determine what an export should include.
+
+Potential:
+
+- profile
+- conversations
+- memory
+- documents
+- artifacts
+- metadata.
+
+Export must respect authorization and tenant boundaries.
+
+======================================================================
+35. DATA CORRECTION
+======================================================================
+
+Determine how corrections propagate to:
+
+- source data
+- memory
+- embeddings
+- derived data
+- caches
+- evaluation datasets.
+
+======================================================================
+36. DATA DELETION PROPAGATION
+======================================================================
+
+Model:
+
+Source
+ ↓
+Derived Data
+ ↓
+Cache
+ ↓
+Telemetry
+ ↓
+Backup
+
+Determine what can be deleted immediately and what requires lifecycle
+handling.
+
+Do not claim instant deletion from backups if architecture does not
+support it.
+
+======================================================================
+37. BACKUPS
+======================================================================
+
+Backups create a separate data lifecycle.
+
+Determine:
+
+- retention
+- encryption
+- access
+- deletion
+- restoration
+- legal hold
+- tenant isolation.
+
+======================================================================
+38. LEGAL HOLD
+======================================================================
+
+Evaluate whether certain data must be retained despite ordinary deletion
+policies.
+
+Do not implement a legal-hold system Day 1 unless justified.
+
+Define future trigger.
+
+======================================================================
+39. DATA ACCESS
+======================================================================
+
+Using 09_IDENTITY_AUTHORIZATION_ARCHITECTURE.md determine:
+
+- user access
+- tenant admin access
+- platform admin access
+- support access
+- automated access.
+
+Least privilege must apply to data.
+
+======================================================================
+40. SUPPORT ACCESS
+======================================================================
+
+Support engineers may need to investigate incidents.
+
+Determine whether access to customer data should require:
+
+- explicit authorization
+- approval
+- time limit
+- audit
+- masking.
+
+Do not assume support personnel automatically need unrestricted access.
+
+======================================================================
+41. PRIVACY BY DESIGN
+======================================================================
+
+Apply privacy principles to architecture from the beginning.
+
+Do not bolt privacy on after implementation.
+
+Evaluate:
+
+- minimization
+- purpose limitation
+- access control
+- deletion
+- retention
+- transparency
+- privacy defaults.
+
+======================================================================
+42. PRIVACY BY DEFAULT
+======================================================================
+
+Determine secure defaults.
+
+Examples:
+
+- no unnecessary retention
+- no training reuse
+- no cross-tenant sharing
+- no raw prompt logging
+- no unrestricted export.
+
+Defaults should minimize exposure.
+
+======================================================================
+43. CONSENT
+======================================================================
+
+Determine where consent may actually be relevant.
+
+Do not automatically use "consent" as the legal basis for every data
+processing operation.
+
+Research the appropriate architecture.
+
+======================================================================
+44. PURPOSE BINDING
+======================================================================
+
+Evaluate whether data access should carry:
+
+Purpose
+
+or equivalent contextual metadata.
+
+Potential:
+
+purpose = customer_support
+
+purpose = security_audit
+
+purpose = evaluation
+
+Determine whether purpose binding is technically enforceable and
+worthwhile.
+
+======================================================================
+45. DATA ACCESS POLICY
+======================================================================
+
+Authorization may need to consider:
+
+- identity
+- tenant
+- resource
+- action
+- purpose
+- classification
+- environment.
+
+Using 03 and 09, determine the appropriate model.
+
+======================================================================
+46. DATA MASKING
+======================================================================
+
+Evaluate:
+
+- masking
+- tokenization
+- pseudonymization
+- redaction.
+
+Determine where these belong:
+
+- UI
+- API
+- telemetry
+- evaluation
+- support
+- model context.
+
+======================================================================
+47. PSEUDONYMIZATION
+======================================================================
+
+Determine when pseudonymization is useful.
+
+Do not assume pseudonymization automatically removes privacy obligations.
+
+======================================================================
+48. ANONYMIZATION
+======================================================================
+
+Distinguish:
+
+PSEUDONYMIZATION
+
+from:
+
+ANONYMIZATION.
+
+Research the relevant legal/technical distinction.
+
+======================================================================
+49. EVALUATION DATA GOVERNANCE
+======================================================================
+
+Using 12_OBSERVABILITY_EVALUATION_RELIABILITY_ARCHITECTURE.md determine:
+
+How can production data become evaluation data?
+
+It should require explicit:
+
+- selection
+- authorization
+- minimization
+- transformation
+- versioning
+- retention.
+
+Do not automatically copy production telemetry into permanent evaluation
+datasets.
+
+======================================================================
+50. INCIDENT DATA
+======================================================================
+
+Security incidents may require preserving data.
+
+Determine interaction between:
+
+- incident response
+- ordinary retention
+- legal hold
+- privacy rights.
+
+Do not assume incident response overrides all privacy requirements.
+
+======================================================================
+51. TELEMETRY GOVERNANCE
+======================================================================
+
+Using 12 determine:
+
+- what telemetry may contain
+- classification
+- access
+- retention
+- masking
+- tenant isolation.
+
+Telemetry should be treated as data with its own lifecycle.
+
+======================================================================
+52. AUDIT DATA GOVERNANCE
+======================================================================
+
+Audit data may need longer retention than ordinary logs.
+
+Determine:
+
+- integrity
+- retention
+- access
+- deletion
+- export.
+
+======================================================================
+53. CROSS-TENANT ANALYTICS
+======================================================================
+
+Determine whether platform operators need aggregate analytics across
+tenants.
+
+If yes, evaluate:
+
+- aggregation
+- anonymization
+- pseudonymization
+- tenant isolation
+- minimum group size
+- access restrictions.
+
+Do not expose raw tenant data merely to produce platform metrics.
+
+======================================================================
+54. DATA SHARING
+======================================================================
+
+Determine when data may be shared:
+
+- user → agent
+- agent → tool
+- agent → agent
+- tenant → external service
+- platform → vendor
+- tenant → another tenant.
+
+Every sharing boundary requires explicit authorization.
+
+======================================================================
+55. THIRD-PARTY PROCESSORS
+======================================================================
+
+Determine architectural implications of external processors.
+
+Potential:
+
+- model providers
+- hosting providers
+- observability providers
+- email providers
+- storage providers
+- payment providers
+- CRM systems.
+
+Research actual data-handling behavior before recommending them.
+
+======================================================================
+56. VENDOR LOCK-IN
+======================================================================
+
+Evaluate whether choosing a provider can make data governance difficult to
+change.
+
+Consider:
+
+- data export
+- data deletion
+- data residency
+- API portability
+- encryption
+- schema portability.
+
+======================================================================
+57. CUSTOMER-MANAGED DATA
+======================================================================
+
+Future enterprise customers may require:
+
+- customer-controlled retention
+- customer-managed keys
+- customer-controlled deletion
+- region selection
+- data export
+- data residency.
+
+Determine which architectural contracts must exist Day 1 to support this
+later.
+
+======================================================================
+58. CUSTOMER-MANAGED KEYS
+======================================================================
+
+Evaluate whether tenant-specific encryption keys are required.
+
+Do not implement Day 1 unless justified.
+
+Determine future trigger.
+
+======================================================================
+59. DATA RESIDENCY ARCHITECTURE
+======================================================================
+
+Evaluate:
+
+Single region
+vs
+Regional data stores
+vs
+Regional processing
+vs
+Tenant-selected region.
+
+Determine which is appropriate at each phase.
+
+======================================================================
+60. INTERNATIONAL TRANSFERS
+======================================================================
+
+Research applicable European requirements.
+
+Determine architectural controls for:
+
+- external model calls
+- cloud services
+- remote agents
+- remote tools
+- support access.
+
+Do not provide legal conclusions beyond authoritative sources.
+
+======================================================================
+61. AI ACT / AI GOVERNANCE
+======================================================================
+
+Research the current status and applicability of the EU AI Act and other
+relevant AI governance obligations.
+
+Determine which requirements may affect:
+
+- logging
+- documentation
+- risk management
+- data governance
+- transparency
+- human oversight
+- monitoring.
+
+Clearly distinguish:
+
+LEGAL REQUIREMENT
+
+from:
+
+BEST PRACTICE
+
+from:
+
+OPTIONAL ARCHITECTURAL CONTROL.
+
+======================================================================
+62. COMPLIANCE BOUNDARIES
+======================================================================
+
+Determine which compliance frameworks may become relevant.
+
+Potential:
+
+- GDPR
+- EU AI Act
+- ISO 27001
+- SOC 2
+- ISO 27701
+- industry-specific requirements.
+
+Do not assume certification is required.
+
+Determine architectural implications only.
+
+======================================================================
+63. COMPLIANCE EVIDENCE
+======================================================================
+
+Determine what evidence the platform should be able to produce.
+
+Potential:
+
+- access logs
+- audit events
+- data lineage
+- deletion records
+- retention policies
+- policy versions
+- incident records
+- model versions
+- evaluation results.
+
+======================================================================
+64. DATA GOVERNANCE OWNERSHIP
+======================================================================
+
+Define ownership of:
+
+- user data
+- tenant data
+- platform data
+- system data
+- telemetry
+- audit
+- evaluation datasets
+- model artifacts.
+
+Do not confuse:
+
+DATA OWNER
+
+with:
+
+DATA CUSTODIAN
+
+with:
+
+SYSTEM OWNER.
+
+======================================================================
+65. DATA CATALOG
+======================================================================
+
+Evaluate whether the platform requires a data catalog.
+
+Day 1 may not.
+
+Determine when the number of datasets, tenants and integrations makes one
+valuable.
+
+======================================================================
+66. DATA LINEAGE SYSTEM
+======================================================================
+
+Evaluate whether lineage should be:
+
+- application metadata
+- event-based
+- dedicated lineage system
+- hybrid.
+
+Do not introduce a dedicated data catalog merely to store a few metadata
+fields.
+
+======================================================================
+67. DATA QUALITY
+======================================================================
+
+Define quality dimensions:
+
+- accuracy
+- completeness
+- freshness
+- consistency
+- validity
+- provenance.
+
+Apply where meaningful.
+
+======================================================================
+68. DATA RETENTION AUTOMATION
+======================================================================
+
+Determine how retention is enforced automatically.
+
+Avoid relying on administrators to remember deletion manually.
+
+======================================================================
+69. DELETION VERIFICATION
+======================================================================
+
+A deletion request should produce evidence.
+
+Determine how to verify:
+
+- primary data removed
+- derived data handled
+- caches handled
+- indexes handled
+- external systems notified where required.
+
+======================================================================
+70. DATA BREACH SUPPORT
+======================================================================
+
+Determine whether architecture can support incident investigation and
+required notification workflows.
+
+Do not make legal notification decisions automatically.
+
+Provide the evidence required for authorized personnel to make them.
+
+======================================================================
+71. DATA GOVERNANCE OPTIONS
+======================================================================
+
+Identify real architecture alternatives.
+
+Potential:
+
+OPTION A
+--------
+Application-enforced governance.
+
+OPTION B
+--------
+Centralized data governance service.
+
+OPTION C
+--------
+Policy-driven hybrid.
+
+OPTION D
+--------
+Dedicated enterprise data governance platform.
+
+These are examples only.
+
+Research and determine actual alternatives.
+
+======================================================================
+72. ARCHITECTURE SELECTION MATRIX
+======================================================================
+
+Compare:
+
+| Criterion |
+| Day-1 simplicity |
+| Privacy |
+| Tenant isolation |
+| Data lineage |
+| Retention |
+| Deletion |
+| Data residency |
+| External transfers |
+| Evaluation governance |
+| Memory governance |
+| Knowledge governance |
+| Auditability |
+| Enterprise compliance |
+| Operational complexity |
+| Scalability |
+| Recommendation |
+
+======================================================================
+73. "WHY NOT?" ANALYSIS
+======================================================================
+
+For the final architecture explicitly answer:
+
+WHY THIS?
+
+WHY NOT STORE EVERYTHING?
+
+WHY NOT RETAIN ALL TELEMETRY?
+
+WHY NOT USE PRODUCTION DATA FOR TRAINING?
+
+WHY NOT USE PRODUCTION DATA DIRECTLY FOR EVALUATION?
+
+WHY NOT KEEP SOFT-DELETED DATA FOREVER?
+
+WHY NOT PUT ALL DATA IN ONE DATABASE?
+
+WHY NOT SEND ALL CONTEXT TO EXTERNAL MODELS?
+
+WHY NOT LET ADMINS ACCESS ALL CUSTOMER DATA?
+
+WHY NOT BUILD A FULL DATA GOVERNANCE PLATFORM DAY 1?
+
+Only retain comparisons supported by research.
+
+======================================================================
+74. REVERSIBILITY ANALYSIS
+======================================================================
+
+Classify:
+
+- data model
+- classification model
+- retention model
+- deletion model
+- lineage model
+- tenant data architecture
+- regional architecture
+- external model architecture
+- evaluation data architecture
+- customer-managed keys
+
+as:
+
+- easily reversible
+- moderately reversible
+- expensive to reverse
+- effectively irreversible
+
+======================================================================
+75. CONTRACT VS IMPLEMENTATION
+======================================================================
+
+Determine stable data-governance contracts.
+
+Potential:
+
+DataClassification
+DataPurpose
+DataPolicy
+RetentionPolicy
+DeletionRequest
+DataLineage
+DataExport
+DataAccessRequest
+DataResidency
+ExternalTransfer
+
+Determine the minimum required set.
+
+======================================================================
+76. REQUIRED DIAGRAMS
+======================================================================
+
+Include Mermaid diagrams for:
+
+1. Complete data lifecycle
+2. Data classification
+3. Data propagation graph
+4. Data lineage
+5. Model-context data flow
+6. Memory data lifecycle
+7. Knowledge data lifecycle
+8. Embedding lifecycle
+9. Evaluation data lifecycle
+10. Retention
+11. Deletion propagation
+12. Backup lifecycle
+13. External data transfer
+14. Tenant data isolation
+15. Data subject request flow
+16. Data governance architecture
+17. Day-1 architecture
+18. Future enterprise architecture
+
+======================================================================
+77. ADR CANDIDATES
+======================================================================
+
+Identify ADRs for:
+
+- data classification
+- data ownership
+- purpose model
+- retention
+- deletion
+- soft vs hard delete
+- data lineage
+- memory governance
+- knowledge governance
+- embedding deletion
+- evaluation data governance
+- telemetry governance
+- data residency
+- external transfer
+- model provider data handling
+- customer-managed keys
+- regional architecture
+- data catalog
+- compliance evidence
+
+For each:
+
+- problem
+- alternatives
+- recommendation
+- consequences
+- reversibility
+- decision deadline
+
+======================================================================
+78. DAY-1 / PREPARE / SCALE / ENTERPRISE
+======================================================================
+
+Create:
+
+| Capability | Day 1 | Prepare | Scale | Enterprise |
+
+Cover:
+
+- data classification
+- tenant isolation
+- data ownership
+- purpose
+- retention
+- deletion
+- export
+- correction
+- lineage
+- provenance
+- memory governance
+- knowledge governance
+- embedding governance
+- telemetry governance
+- evaluation governance
+- backups
+- legal hold
+- data residency
+- external transfer
+- customer-managed keys
+- regional processing
+- compliance evidence
+- data catalog
+- DLP
+
+======================================================================
+79. DATA GOVERNANCE TEST MATRIX
+======================================================================
+
+Create a test matrix.
+
+For each requirement define:
+
+Requirement
+Data Type
+Attack / Failure
+Affected Component
+Expected Control
+Detection
+Mitigation
+Verification
+Regression Test
+
+At minimum include:
+
+- cross-tenant data access
+- unauthorized export
+- deletion failure
+- stale embedding
+- stale memory
+- telemetry leakage
+- evaluation dataset leakage
+- external transfer violation
+- retention failure
+- backup retention issue
+- data lineage break
+- model provider data leakage
+- unauthorized support access
+- incorrect data classification.
+
+======================================================================
+80. ATTEMPT TO FALSIFY THE RECOMMENDATION
+======================================================================
+
+Try to prove the selected architecture wrong.
+
+Ask:
+
+- What tenant count breaks it?
+- What data volume breaks it?
+- What retention requirement breaks it?
+- What deletion requirement breaks it?
+- What residency requirement breaks it?
+- What external-model requirement breaks it?
+- What customer-managed-key requirement breaks it?
+- What regulatory requirement breaks it?
+- What enterprise export requirement breaks it?
+
+Determine the first architectural trigger.
+
+======================================================================
+81. ARCHITECTURAL SELF-CRITIQUE
+======================================================================
+
+Before finalizing, ask:
+
+1. Did I inventory all important data?
+2. Did I classify it?
+3. Did I map its entire lifecycle?
+4. Did I distinguish production data from evaluation data?
+5. Did I distinguish telemetry from audit?
+6. Did I model derived data?
+7. Did I model embeddings?
+8. Did I model memory?
+9. Did I model backups?
+10. Can deletion propagate through derived data?
+11. Can tenants be isolated everywhere?
+12. Can external transfers be controlled?
+13. Can model providers receive data unexpectedly?
+14. Can production data silently become training data?
+15. Can admins access customer data without controls?
+16. Can the platform support data export?
+17. Can the platform support correction?
+18. Can the platform prove deletion?
+19. Is Day 1 genuinely simple?
+20. What assumptions could invalidate the architecture?
+
+Include:
+
+# ARCHITECTURAL SELF-CRITIQUE
+
+======================================================================
+82. FINAL RECOMMENDATION
+======================================================================
+
+End with:
+
+# FINAL DATA GOVERNANCE, PRIVACY & COMPLIANCE ARCHITECTURE RECOMMENDATION
+
+Answer:
+
+"What Data Governance, Privacy and Compliance Architecture should this
+platform actually build?"
+
+Be concrete.
+
+Describe:
+
+- data model
+- classification
+- ownership
+- purpose
+- lineage
+- provenance
+- retention
+- deletion
+- export
+- correction
+- memory governance
+- knowledge governance
+- embedding governance
+- evaluation governance
+- telemetry governance
+- tenant isolation
+- external transfers
+- model-provider boundaries
+- data residency
+- backups
+- compliance evidence
+- Day-1 implementation
+- future evolution
+
+Then explicitly answer:
+
+"What MUST NOT be built on Day 1?"
+
+Then:
+
+"What future condition should trigger the next architectural evolution?"
+
+======================================================================
+83. REQUIRED OUTPUT
+======================================================================
+
+Produce:
+
+14_DATA_GOVERNANCE_PRIVACY_COMPLIANCE_ARCHITECTURE.md
+
+The document MUST explicitly reference:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_PLANE.md
+04_AGENT_RUNTIME.md
+05_MODEL_INFERENCE_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+07_KNOWLEDGE_DATA_ARCHITECTURE.md
+08_MEMORY_ARCHITECTURE.md
+09_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+10_AGENT_COMMUNICATION_MULTI_AGENT_ARCHITECTURE.md
+11_EVENTING_WORKFLOW_DURABLE_EXECUTION_ARCHITECTURE.md
+12_OBSERVABILITY_EVALUATION_RELIABILITY_ARCHITECTURE.md
+13_SECURITY_ARCHITECTURE.md
+
+If there is a conflict:
+
+DO NOT silently resolve it.
+
+Identify the conflict.
+
+Explain the trade-off.
+
+Recommend the superior architectural decision.
+
+Create an ADR candidate when appropriate.
+
+======================================================================
+84. SOURCE REQUIREMENTS
+======================================================================
+
+Include direct URLs.
+
+Prioritize:
+
+- EUR-Lex
+- European Commission
+- European Data Protection Board
+- national data-protection authorities where relevant
+- NIST
+- ISO where authoritative material is publicly available
+- official AI governance documentation
+- official cloud/model-provider documentation
+- authoritative privacy engineering sources
+
+Do not fabricate citations.
+
+Do not cite sources that were not actually inspected.
+
+Clearly distinguish:
+
+LEGAL REQUIREMENT
+
+from:
+
+SOURCE FACT
+
+from:
+
+INFERENCE
+
+from:
+
+ARCHITECTURAL RECOMMENDATION.
+
+Where legal interpretation is uncertain:
+
+SAY SO.
+
+Do not present architectural reasoning as legal advice.
+
+======================================================================
+85. ABSOLUTE FINAL INSTRUCTION
+======================================================================
+
+Act as an INDEPENDENT Principal Data Governance and Privacy Architect.
+
+Your responsibility is to determine the best architecture,
+not to validate a preferred compliance framework or product.
+
+Do not assume:
+
+DATA = MEMORY.
+
+Do not assume:
+
+DELETING A DATABASE ROW = COMPLETE DATA DELETION.
+
+Do not assume:
+
+EMBEDDINGS = ANONYMOUS.
+
+Do not assume:
+
+TELEMETRY = HARMLESS.
+
+Do not assume:
+
+AUDIT DATA = ORDINARY LOG DATA.
+
+Do not assume:
+
+PRODUCTION DATA = TRAINING DATA.
+
+Do not assume:
+
+MODEL PROVIDERS = TRUSTED DATA PROCESSORS.
+
+Do not assume:
+
+DATA RESIDENCY = DATA SOVEREIGNTY.
+
+Do not assume:
+
+CONSENT = THE DEFAULT LEGAL BASIS.
+
+Do not assume:
+
+COMPLIANCE = SECURITY.
+
+Do not allow:
+
+DATA AVAILABLE TO THE PLATFORM
+
+to automatically become:
+
+DATA AVAILABLE TO THE MODEL.
+
+Do not allow:
+
+DATA AVAILABLE TO ONE TENANT
+
+to become:
+
+DATA AVAILABLE TO ANOTHER TENANT.
+
+Do not allow:
+
+DERIVED DATA
+
+to escape the governance of its source data.
+
+Optimize for:
+
+DATA MINIMIZATION
++
+PURPOSE LIMITATION
++
+TENANT ISOLATION
++
+LINEAGE
++
+PROVENANCE
++
+RETENTION CONTROL
++
+DELETION
++
+PRIVACY BY DESIGN
++
+EXPLICIT EXTERNAL TRANSFERS
++
+AUDITABILITY
++
+SIMPLICITY
++
+FUTURE EVOLUTION
+
+The final architecture MUST result from:
+
+    RESEARCH
+       ↓
+    REAL DATA FLOWS
+       ↓
+    REAL PRIVACY REQUIREMENTS
+       ↓
+    REAL COMPLIANCE REQUIREMENTS
+       ↓
+    ARCHITECTURAL ALTERNATIVES
+       ↓
+    DATA LIFECYCLE ANALYSIS
+       ↓
+    ADVERSARIAL PRIVACY / SECURITY ANALYSIS
+       ↓
+    FALSIFICATION
+       ↓
+    FINAL DECISION
+
+DO NOT DESIGN THE GOVERNANCE PLATFORM FIRST.
+
+RESEARCH FIRST.
+
+MAP THE DATA FIRST.
+
+COMPARE.
+
+CHALLENGE.
+
+FALSIFY.
+
+SELECT THE BEST ARCHITECTURE AVAILABLE FOR THIS PROJECT.
+
+THEN DESIGN IT.

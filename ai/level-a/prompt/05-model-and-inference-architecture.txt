@@ -1,0 +1,1753 @@
+# 05 — MODEL & INFERENCE ARCHITECTURE
+## Enterprise AI Agent Platform
+
+======================================================================
+ROLE
+======================================================================
+
+Act as the Principal AI Infrastructure Architect, LLM Systems Architect
+and Distributed Inference Architect responsible for designing the Model
+and Inference Architecture of an enterprise-grade AI agent platform.
+
+You have deep expertise in:
+
+- LLM inference
+- model serving
+- GPU architecture
+- distributed inference
+- inference scheduling
+- batching
+- continuous batching
+- KV cache
+- quantization
+- model routing
+- model gateways
+- inference workers
+- GPU resource management
+- model lifecycle management
+- AI agent architectures
+- observability
+- reliability engineering
+- multi-tenant AI infrastructure
+- cost optimization
+- performance engineering
+- cloud and on-premises AI infrastructure
+
+You are working within:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_PLANE.md
+04_AGENT_RUNTIME.md
+
+These documents provide the current architectural context.
+
+However:
+
+THEY ARE NOT IMMUNE FROM CHALLENGE.
+
+If research demonstrates that an assumption is technically incorrect,
+you MUST identify the conflict and recommend the better architecture.
+
+======================================================================
+1. PRIMARY OBJECTIVE
+======================================================================
+
+Design the Model and Inference Architecture that sits between the Agent
+Runtime and the actual model execution infrastructure.
+
+The architecture must support:
+
+Day 1:
+
+- Qwen3.5 9B
+- one model
+- one GPU if available
+- one machine
+- modest hardware
+- local inference
+- small engineering team
+
+Future:
+
+- multiple models
+- multiple model versions
+- multiple inference workers
+- multiple GPUs
+- GPU pools
+- model routing
+- model fallback
+- heterogeneous hardware
+- local models
+- cloud models
+- specialized models
+- embeddings
+- rerankers
+- multimodal models
+- tenant-specific models
+- model-specific policies
+- model canary deployments
+- model evaluation
+- model observability
+- model lifecycle management
+
+The architecture must therefore separate:
+
+MODEL IDENTITY
+
+from:
+
+MODEL IMPLEMENTATION
+
+and:
+
+MODEL SERVING INFRASTRUCTURE.
+
+======================================================================
+2. MOST IMPORTANT INSTRUCTION
+## CLAUDE MUST RESEARCH AND SELECT THE ARCHITECTURE
+======================================================================
+
+Do NOT assume that the project should use:
+
+- vLLM
+- SGLang
+- llama.cpp
+- Ollama
+- Triton
+- Kubernetes
+- a model gateway
+- a custom inference server
+- any particular quantization
+- any particular GPU topology
+
+Research first.
+
+The final architecture must be the result of:
+
+    RESEARCH
+       ↓
+    REQUIREMENTS
+       ↓
+    HARDWARE ANALYSIS
+       ↓
+    INFERENCE ARCHITECTURE ALTERNATIVES
+       ↓
+    ARCHITECTURE SELECTION ANALYSIS
+       ↓
+    PERFORMANCE / RELIABILITY ANALYSIS
+       ↓
+    ADVERSARIAL CHALLENGE
+       ↓
+    FINAL DECISION
+       ↓
+    DAY-1 IMPLEMENTATION
+       ↓
+    FUTURE EVOLUTION
+
+Claude MUST explicitly determine the best architecture available for
+THIS project.
+
+It must NOT merely recommend the most popular serving technology.
+
+======================================================================
+3. CORE ARCHITECTURAL QUESTION
+======================================================================
+
+Determine the correct boundary between:
+
+Agent Runtime
+
+and:
+
+Model / Inference Layer.
+
+The Agent Runtime should express:
+
+"I need model X to perform operation Y."
+
+The inference layer should determine:
+
+- where model X is running
+- which worker handles it
+- how the request is scheduled
+- how generation occurs
+- how resources are allocated
+- how the result is returned
+
+But determine whether this abstraction is actually appropriate.
+
+Research and decide.
+
+======================================================================
+4. DAY-1 HARDWARE
+======================================================================
+
+The Day-1 system is constrained by:
+
+- one physical machine
+- one GPU if available
+- limited VRAM
+- limited RAM
+- limited CPU
+- local storage
+- modest power / thermal envelope
+
+Qwen3.5 9B is the initial model.
+
+Do NOT assume that model size alone determines feasibility.
+
+Research:
+
+- parameter count
+- precision
+- quantization
+- KV cache requirements
+- context length
+- memory overhead
+- runtime overhead
+- concurrency
+- throughput
+- latency
+
+Determine what configurations are realistically viable.
+
+Do not fabricate benchmark numbers.
+
+Where exact performance depends on hardware, explicitly state the
+dependency.
+
+======================================================================
+5. MODEL SERVING ALTERNATIVES
+======================================================================
+
+Compare relevant serving architectures.
+
+At minimum investigate, where technically appropriate:
+
+- vLLM
+- SGLang
+- llama.cpp
+- Ollama
+- NVIDIA Triton
+- Hugging Face TGI where relevant
+- direct Transformers inference where relevant
+- custom serving architecture where justified
+
+Do not assume all are direct competitors.
+
+Explain where their architectures differ.
+
+Compare:
+
+- supported model architectures
+- quantization
+- batching
+- continuous batching
+- KV cache management
+- throughput
+- latency
+- streaming
+- concurrency
+- multi-GPU
+- distributed inference
+- hardware support
+- operational complexity
+- API compatibility
+- extensibility
+- observability
+- maturity
+- ecosystem
+- licensing
+- enterprise suitability
+
+Use current official documentation and credible technical evidence.
+
+======================================================================
+6. ARCHITECTURE SELECTION ANALYSIS
+======================================================================
+
+This is MANDATORY.
+
+Identify at least THREE genuinely meaningful model-serving architectures.
+
+Potential candidates:
+
+OPTION A
+--------
+Direct local model runtime.
+
+OPTION B
+--------
+Dedicated inference server.
+
+OPTION C
+--------
+Inference abstraction + dedicated model workers.
+
+OPTION D
+--------
+Model gateway + multiple inference backends.
+
+OPTION E
+--------
+Hybrid local inference + remote/cloud fallback.
+
+These are examples only.
+
+Determine the actual candidate architectures through research.
+
+For each candidate analyze:
+
+- architecture
+- components
+- interfaces
+- deployment
+- latency
+- throughput
+- GPU utilization
+- memory behavior
+- failure modes
+- observability
+- security
+- model lifecycle
+- model routing
+- multi-tenancy
+- Day-1 complexity
+- future scale
+- migration complexity
+- vendor lock-in
+
+Then select a winner.
+
+======================================================================
+7. MODEL ABSTRACTION
+======================================================================
+
+Determine whether the platform needs a stable abstraction such as:
+
+ModelProvider
+ModelRuntime
+InferenceProvider
+InferenceWorker
+
+Do NOT create abstractions merely because they sound architecturally
+clean.
+
+Determine which abstraction is genuinely required.
+
+The abstraction must answer:
+
+How can the Agent Runtime request inference without knowing:
+
+- GPU topology
+- serving engine
+- quantization format
+- worker location
+- local/cloud deployment
+- model loading mechanism?
+
+======================================================================
+8. MODEL IDENTITY
+======================================================================
+
+Define the difference between:
+
+Model
+
+Model Version
+
+Model Artifact
+
+Model Runtime
+
+Inference Worker
+
+Deployment
+
+Example conceptual hierarchy:
+
+Model
+  ↓
+ModelVersion
+  ↓
+ModelArtifact
+  ↓
+ModelDeployment
+  ↓
+InferenceWorker
+
+Determine whether this hierarchy is correct.
+
+Do not blindly adopt it.
+
+======================================================================
+9. MODEL REGISTRY
+======================================================================
+
+Using 02_CONTROL_PLANE.md, determine what the Model Registry should own.
+
+Potential metadata:
+
+- model_id
+- model_name
+- model_version
+- provider
+- architecture
+- parameter count
+- context length
+- capabilities
+- modalities
+- quantization
+- artifact location
+- checksum
+- license
+- security classification
+- supported hardware
+- runtime requirements
+
+Determine which belongs in:
+
+Control Plane
+
+versus:
+
+Inference infrastructure.
+
+======================================================================
+10. MODEL ARTIFACTS
+======================================================================
+
+Determine how model artifacts should be managed.
+
+Consider:
+
+- model weights
+- tokenizer
+- configuration
+- quantization metadata
+- checksums
+- manifests
+- adapters
+- LoRA
+- prompt templates
+
+Determine:
+
+- source of truth
+- artifact storage
+- integrity verification
+- versioning
+- promotion
+- rollback
+
+Day 1 should remain simple.
+
+======================================================================
+11. MODEL LOADING
+======================================================================
+
+Analyze model lifecycle:
+
+REGISTER
+ ↓
+VALIDATE
+ ↓
+DOWNLOAD / LOAD
+ ↓
+WARM
+ ↓
+READY
+ ↓
+SERVING
+ ↓
+DRAINING
+ ↓
+UNLOADING
+ ↓
+RETIRED
+
+Determine the correct state machine.
+
+Consider:
+
+- cold start
+- warm start
+- model swapping
+- memory pressure
+- GPU exhaustion
+- corrupted artifact
+- failed load
+
+======================================================================
+12. MODEL VERSIONING
+======================================================================
+
+Determine how model versions should be identified.
+
+Consider:
+
+- semantic version
+- provider version
+- model revision
+- artifact hash
+- deployment version
+
+Every execution should be able to identify exactly which model was used.
+
+Determine the minimum metadata necessary for reproducibility.
+
+======================================================================
+13. MODEL CONFIGURATION
+======================================================================
+
+Determine how to manage:
+
+- temperature
+- top_p
+- max tokens
+- stop sequences
+- sampling
+- repetition penalties
+- context limits
+- structured output
+- tool calling
+- reasoning configuration
+
+Separate:
+
+MODEL CAPABILITY
+
+from:
+
+REQUEST PARAMETERS.
+
+Determine which parameters are:
+
+- globally controlled
+- model-specific
+- tenant-specific
+- agent-specific
+- runtime-specific
+
+======================================================================
+14. STRUCTURED OUTPUT
+======================================================================
+
+Determine support for:
+
+- JSON
+- JSON Schema
+- constrained decoding
+- tool-call structures
+- schema validation
+
+This is particularly important because Agent Runtime must not blindly
+trust free-form model output.
+
+Determine:
+
+- where schema enforcement occurs
+- model runtime vs Runtime
+- validation
+- retry behavior
+- malformed output handling
+
+======================================================================
+15. TOOL CALLING
+======================================================================
+
+Determine the model-layer responsibility for tool calling.
+
+Potential model output:
+
+tool_call:
+    name
+    arguments
+
+The model layer should NOT automatically execute the tool.
+
+Determine the boundary:
+
+Model
+ ↓
+structured tool call
+ ↓
+Agent Runtime
+ ↓
+Governance
+ ↓
+Tool Runtime
+
+Validate this architecture.
+
+======================================================================
+16. STREAMING
+======================================================================
+
+Analyze streaming requirements.
+
+Determine whether the ModelProvider contract should support:
+
+- token streaming
+- partial responses
+- tool-call streaming
+- cancellation
+- backpressure
+
+Determine Day-1 implementation.
+
+======================================================================
+17. CANCELLATION
+======================================================================
+
+Model generation must support cancellation where possible.
+
+Analyze:
+
+- user cancellation
+- timeout
+- budget exhaustion
+- policy denial
+- runtime shutdown
+- worker failure
+
+Determine cancellation propagation:
+
+Runtime
+ ↓
+ModelProvider
+ ↓
+InferenceWorker
+ ↓
+Model Engine
+
+======================================================================
+18. TIMEOUTS
+======================================================================
+
+Define timeout layers:
+
+- request timeout
+- queue timeout
+- model load timeout
+- generation timeout
+- first-token timeout
+- overall execution timeout
+
+Do not invent numerical SLAs without evidence.
+
+Define the architecture and measurement requirements.
+
+======================================================================
+19. RETRIES
+======================================================================
+
+Determine which inference failures are safe to retry.
+
+Examples:
+
+- worker unavailable
+- transient network failure
+- model load failure
+- timeout
+- malformed output
+- OOM
+
+Distinguish:
+
+SAFE RETRY
+
+from:
+
+UNSAFE RETRY.
+
+Consider model stochasticity and duplicated tool-call generation.
+
+======================================================================
+20. GPU MEMORY
+======================================================================
+
+Analyze GPU memory architecture.
+
+Consider:
+
+- model weights
+- KV cache
+- activations
+- runtime overhead
+- quantization
+- context length
+- concurrency
+
+Determine what limits:
+
+- maximum context
+- concurrency
+- throughput
+- model size
+
+Do not provide fake precision.
+
+Where hardware-specific measurements are necessary, explicitly define what
+must be benchmarked.
+
+======================================================================
+21. QUANTIZATION
+======================================================================
+
+Research relevant quantization approaches.
+
+Evaluate:
+
+- FP16
+- BF16
+- INT8
+- INT4
+- AWQ
+- GPTQ
+- GGUF
+- other relevant formats
+
+Determine:
+
+- quality trade-offs
+- memory savings
+- inference compatibility
+- hardware compatibility
+- operational complexity
+
+Select the most appropriate Day-1 approach only after research.
+
+======================================================================
+22. BATCHING
+======================================================================
+
+Analyze:
+
+- static batching
+- dynamic batching
+- continuous batching
+
+Determine which is useful for:
+
+- one user
+- low concurrency
+- multiple concurrent agents
+- future worker pools
+
+Do not introduce batching complexity if it has no Day-1 benefit.
+
+======================================================================
+23. KV CACHE
+======================================================================
+
+Research KV cache behavior.
+
+Determine:
+
+- memory impact
+- context implications
+- concurrency implications
+- cache reuse
+- prefix caching
+- eviction
+
+Evaluate whether prefix caching is useful for the platform.
+
+======================================================================
+24. CONTEXT MANAGEMENT
+======================================================================
+
+The Runtime may eventually construct large prompts from:
+
+- system instructions
+- agent configuration
+- memory
+- retrieved documents
+- tool definitions
+- conversation
+- workflow state
+
+Determine:
+
+- who manages context
+- who truncates context
+- who summarizes
+- who enforces maximum context
+- who knows model-specific context limits
+
+The Model Layer should expose capabilities.
+
+The Runtime should remain responsible for semantic context construction
+unless research proves otherwise.
+
+======================================================================
+25. MODEL ROUTING
+======================================================================
+
+Future platform may support multiple models.
+
+Evaluate routing strategies:
+
+- static routing
+- capability routing
+- tenant routing
+- cost routing
+- latency routing
+- quality routing
+- policy routing
+- fallback routing
+- workload routing
+
+Determine what abstraction should exist Day 1.
+
+Do not build a complex router when there is only one model.
+
+======================================================================
+26. MODEL FALLBACK
+======================================================================
+
+Evaluate:
+
+Primary Model
+     ↓
+Failure
+     ↓
+Fallback Model
+
+Determine:
+
+- when fallback is allowed
+- whether policy permits it
+- whether output semantics remain compatible
+- whether fallback affects audit
+- whether model version changes must be recorded
+
+Do not assume fallback is always desirable.
+
+======================================================================
+27. MULTI-MODEL FUTURE
+======================================================================
+
+Determine how the architecture evolves from:
+
+Qwen3.5 9B
+
+to:
+
+- multiple Qwen variants
+- other open-source models
+- cloud models
+- specialized models
+- multimodal models
+- embedding models
+- rerankers
+
+Avoid hard-coding assumptions into the Runtime.
+
+======================================================================
+28. MULTI-GPU
+======================================================================
+
+Research when multiple GPUs become useful.
+
+Consider:
+
+- model parallelism
+- tensor parallelism
+- pipeline parallelism
+- data parallelism
+- multiple independent workers
+- GPU pooling
+
+Determine which is appropriate for this platform.
+
+Do not assume multi-GPU means tensor parallelism.
+
+Often multiple independent workers may be architecturally preferable.
+
+Determine this through analysis.
+
+======================================================================
+29. MULTIPLE INFERENCE WORKERS
+======================================================================
+
+Define:
+
+InferenceWorker
+
+Potential metadata:
+
+- worker_id
+- model_id
+- model_version
+- hardware
+- GPU
+- capacity
+- health
+- load
+- status
+
+Determine whether the Control Plane should know these details.
+
+Determine future worker registration.
+
+======================================================================
+30. SCHEDULING
+======================================================================
+
+Determine who schedules inference requests.
+
+Possibilities:
+
+- Runtime
+- Model Gateway
+- Inference Server
+- Worker Pool
+- dedicated Scheduler
+
+Day 1 may require none of these explicitly.
+
+Future scale may require:
+
+- queueing
+- load balancing
+- backpressure
+- priority
+- tenant fairness
+- GPU affinity
+
+Determine the correct evolution path.
+
+======================================================================
+31. MODEL GATEWAY
+======================================================================
+
+Evaluate whether the platform needs a Model Gateway.
+
+Potential responsibilities:
+
+- authentication
+- model routing
+- provider abstraction
+- rate limiting
+- telemetry
+- fallback
+- cost tracking
+- request normalization
+
+Compare:
+
+NO GATEWAY
+
+versus:
+
+LIGHTWEIGHT MODEL ADAPTER
+
+versus:
+
+FULL MODEL GATEWAY.
+
+Determine the best architecture.
+
+======================================================================
+32. LOCAL VS CLOUD INFERENCE
+======================================================================
+
+Evaluate future hybrid inference:
+
+LOCAL MODEL
+     ↓
+CLOUD MODEL
+
+or:
+
+LOCAL MODEL
+     +
+CLOUD MODEL
+
+Determine:
+
+- policy implications
+- data egress
+- tenant restrictions
+- cost
+- latency
+- availability
+- audit
+
+Day 1 may remain local-only.
+
+Define the future contract.
+
+======================================================================
+33. MODEL SECURITY
+======================================================================
+
+Analyze:
+
+- malicious model artifacts
+- supply-chain attacks
+- compromised model weights
+- unauthorized model loading
+- artifact tampering
+- untrusted remote models
+- model provenance
+
+Define:
+
+- checksums
+- signatures
+- provenance
+- artifact allowlists
+- model approval
+- model quarantine
+
+======================================================================
+34. MODEL LICENSING
+======================================================================
+
+Determine how model licenses should be represented.
+
+A model registry should capture relevant licensing metadata.
+
+Do not make legal conclusions.
+
+Define technical mechanisms for recording license metadata and deployment
+constraints.
+
+======================================================================
+35. OBSERVABILITY
+======================================================================
+
+Define inference observability:
+
+- request latency
+- queue latency
+- time to first token
+- generation duration
+- tokens/sec
+- input tokens
+- output tokens
+- cache usage
+- GPU utilization
+- GPU memory
+- model load time
+- errors
+- retries
+- cancellations
+
+Determine Day-1 metrics.
+
+Do not fabricate benchmark thresholds.
+
+======================================================================
+36. COST MODEL
+======================================================================
+
+Determine what should eventually be measured:
+
+- GPU time
+- tokens
+- model calls
+- worker utilization
+- cloud inference cost
+- storage
+- model loading
+
+Determine which metadata must be captured Day 1 to support future cost
+accounting.
+
+======================================================================
+37. TENANT ISOLATION
+======================================================================
+
+Future multi-tenancy may require:
+
+- model allowlists
+- GPU isolation
+- request quotas
+- concurrency quotas
+- token budgets
+- data residency
+- local-only models
+- dedicated workers
+
+Determine what belongs in:
+
+Governance
+
+Runtime
+
+Inference infrastructure
+
+Billing / Resource Plane.
+
+======================================================================
+38. FAILURE MODES
+======================================================================
+
+Analyze:
+
+- model load failure
+- worker crash
+- GPU OOM
+- CUDA failure
+- driver failure
+- corrupted model
+- timeout
+- malformed output
+- unavailable worker
+- network failure
+- model server failure
+- resource exhaustion
+
+For each determine:
+
+- retry
+- fallback
+- fail
+- restart
+- worker quarantine
+- operator intervention
+
+======================================================================
+39. HIGH AVAILABILITY
+======================================================================
+
+Day 1 does not require HA.
+
+Determine future architecture for:
+
+- multiple inference workers
+- redundant workers
+- GPU pools
+- model replicas
+- health checks
+- draining
+- failover
+
+Determine when HA becomes justified.
+
+======================================================================
+40. DEPLOYMENT ARCHITECTURE
+======================================================================
+
+Compare:
+
+A.
+Model server embedded in application process.
+
+B.
+Model server as local process.
+
+C.
+Model server as container.
+
+D.
+Dedicated inference node.
+
+E.
+Inference worker fleet.
+
+Determine the correct Day-1 architecture.
+
+======================================================================
+41. API CONTRACT
+======================================================================
+
+Define a stable conceptual ModelProvider interface.
+
+At minimum investigate:
+
+request:
+
+- model
+- model_version
+- messages / prompt
+- parameters
+- tools
+- response schema
+- timeout
+- cancellation
+- tenant
+- run_id
+
+response:
+
+- text
+- structured output
+- tool calls
+- usage
+- model identity
+- model version
+- finish reason
+- metadata
+
+Do not assume exact fields.
+
+Determine the correct contract.
+
+======================================================================
+42. MODEL CAPABILITY DISCOVERY
+======================================================================
+
+Determine whether the platform needs a capability model.
+
+Examples:
+
+- tool calling
+- structured output
+- vision
+- long context
+- reasoning
+- streaming
+- JSON schema
+- embeddings
+
+The Runtime should not need to know every model's internal implementation.
+
+======================================================================
+43. EVALUATION INTEGRATION
+======================================================================
+
+The model architecture must support future evaluation.
+
+Determine what metadata must be captured for:
+
+- model evaluation
+- A/B testing
+- regression testing
+- model comparison
+- quality measurement
+
+Coordinate with future Evaluation Architecture.
+
+======================================================================
+44. VERSION PINNING
+======================================================================
+
+Every execution should identify:
+
+- model
+- model version
+- deployment
+- serving runtime version where relevant
+- configuration version
+
+Determine which identifiers are required for reproducibility.
+
+======================================================================
+45. DAY-1 ARCHITECTURE
+======================================================================
+
+Design the smallest practical architecture for:
+
+- Qwen3.5 9B
+- one GPU
+- one machine
+- one runtime
+- PostgreSQL
+- small engineering team
+
+Determine:
+
+- inference engine
+- model packaging
+- serving boundary
+- ModelProvider
+- model configuration
+- observability
+- lifecycle
+- failure handling
+
+DO NOT choose the implementation before comparing alternatives.
+
+======================================================================
+46. FUTURE EVOLUTION
+======================================================================
+
+Define evolution toward:
+
+PHASE 1
+-------
+one model
+one worker
+one GPU
+
+PHASE 2
+-------
+multiple concurrent requests
+optimized batching
+worker lifecycle
+
+PHASE 3
+-------
+multiple workers
+multiple GPUs
+model routing
+
+PHASE 4
+-------
+heterogeneous model fleet
+cloud/local inference
+advanced scheduling
+
+ENTERPRISE
+----------
+multi-region
+tenant-aware GPU scheduling
+HA
+fleet management
+
+Derive the actual evolution path from research.
+
+======================================================================
+47. MIGRATION STRATEGY
+======================================================================
+
+Explain how Day 1 can evolve without rewriting:
+
+- Agent Runtime
+- ModelProvider contract
+- Control Plane model registry
+- policy model
+- audit model
+
+Identify stable interfaces.
+
+======================================================================
+48. ARCHITECTURE SELECTION MATRIX
+======================================================================
+
+Provide:
+
+| Criterion |
+| Day-1 feasibility |
+| Performance |
+| Latency |
+| Throughput |
+| GPU efficiency |
+| Memory efficiency |
+| Streaming |
+| Tool calling |
+| Structured output |
+| Multi-GPU |
+| Multi-worker |
+| Multi-model |
+| Reliability |
+| Observability |
+| Security |
+| Operational complexity |
+| Future scalability |
+| Vendor lock-in |
+| Recommendation |
+
+Explain the conclusions.
+
+======================================================================
+49. "WHY NOT?" ANALYSIS
+======================================================================
+
+For the selected architecture explicitly answer:
+
+WHY THIS?
+
+WHY NOT vLLM?
+
+WHY NOT SGLang?
+
+WHY NOT llama.cpp?
+
+WHY NOT Ollama?
+
+WHY NOT Triton?
+
+WHY NOT TGI?
+
+WHY NOT DIRECT TRANSFORMERS?
+
+WHY NOT A CUSTOM SERVER?
+
+Only reject technologies based on actual technical analysis.
+
+If one of these is ultimately recommended, explain why it won.
+
+======================================================================
+50. REVERSIBILITY ANALYSIS
+======================================================================
+
+Classify decisions:
+
+- inference engine
+- model API
+- model artifact format
+- quantization
+- model registry
+- worker abstraction
+- routing
+- gateway
+- local/cloud boundary
+
+as:
+
+- easily reversible
+- moderately reversible
+- expensive to reverse
+- effectively irreversible
+
+Provide stronger evidence for expensive decisions.
+
+======================================================================
+51. CONTRACT VS IMPLEMENTATION
+======================================================================
+
+Determine what must be stable Day 1.
+
+Potential contracts:
+
+- Model
+- ModelVersion
+- ModelProvider
+- ModelRequest
+- ModelResponse
+- ModelCapabilities
+- InferenceWorker
+- ModelDeployment
+
+Determine which are actually necessary.
+
+Then identify the simplest implementation behind them.
+
+======================================================================
+52. REQUIRED DIAGRAMS
+======================================================================
+
+Include Mermaid diagrams for:
+
+1. Agent Runtime → Model Layer
+2. Day-1 model serving
+3. Model lifecycle
+4. Model registry relationship
+5. Model request flow
+6. Streaming flow
+7. Model failure/retry
+8. Future multi-worker architecture
+9. Future multi-GPU architecture
+10. Future multi-model routing
+11. Local/cloud inference
+12. Model security boundary
+
+======================================================================
+53. ADR CANDIDATES
+======================================================================
+
+Identify ADRs for:
+
+- inference engine
+- model abstraction
+- model registry
+- model artifact format
+- quantization
+- serving boundary
+- worker abstraction
+- batching
+- KV cache
+- model routing
+- fallback
+- local/cloud inference
+- multi-GPU strategy
+- model lifecycle
+- version pinning
+
+For each:
+
+- problem
+- alternatives
+- recommendation
+- consequences
+- reversibility
+- decision deadline
+
+======================================================================
+54. DAY-1 / PREPARE / SCALE / ENTERPRISE
+======================================================================
+
+Create:
+
+| Capability | Day 1 | Prepare | Scale | Enterprise |
+
+Cover:
+
+- model registry
+- model versioning
+- model artifacts
+- inference server
+- ModelProvider
+- streaming
+- structured output
+- tool calling
+- quantization
+- batching
+- KV cache
+- model routing
+- fallback
+- multiple workers
+- multiple GPUs
+- GPU scheduling
+- cloud inference
+- multi-tenancy
+- cost tracking
+- model evaluation
+- HA
+- multi-region
+
+======================================================================
+55. PERFORMANCE VALIDATION PLAN
+======================================================================
+
+Do not invent performance results.
+
+Define a benchmark plan that measures:
+
+- time to first token
+- tokens/sec
+- total latency
+- concurrency
+- GPU utilization
+- GPU memory
+- KV cache behavior
+- context-length impact
+- batching efficiency
+- model load time
+- cold start
+- warm start
+
+Define the hardware and workload variables that must be recorded.
+
+The purpose is to allow the architectural decision to be validated
+empirically.
+
+======================================================================
+56. ATTEMPT TO FALSIFY THE RECOMMENDATION
+======================================================================
+
+After selecting the architecture, try to prove it wrong.
+
+Ask:
+
+- What hardware invalidates it?
+- What concurrency invalidates it?
+- What context size invalidates it?
+- What model size invalidates it?
+- What tenant count invalidates it?
+- What availability requirement invalidates it?
+- What latency requirement invalidates it?
+- What model diversity invalidates it?
+- What compliance requirement invalidates it?
+
+Determine the first architectural trigger.
+
+======================================================================
+57. ARCHITECTURAL SELF-CRITIQUE
+======================================================================
+
+Before finalizing, ask:
+
+1. Did I actually research current inference architectures?
+2. Did I compare at least three meaningful alternatives?
+3. Did I compare serving engines fairly?
+4. Did I accidentally optimize for popularity?
+5. Did I benchmark or identify what must be benchmarked?
+6. Did I separate model identity from model implementation?
+7. Did I separate Runtime from inference?
+8. Can Qwen be replaced?
+9. Can another inference engine be introduced?
+10. Can multiple workers be introduced?
+11. Can multiple GPUs be introduced?
+12. Can cloud inference be introduced?
+13. Is the ModelProvider contract sufficient?
+14. Did I introduce unnecessary gateway infrastructure?
+15. Did I introduce unnecessary routing?
+16. Is Day 1 genuinely simple?
+17. Is the model artifact supply chain secure?
+18. Can executions be reproduced?
+19. Are model versions immutable?
+20. What assumptions could invalidate this architecture?
+
+Include:
+
+# ARCHITECTURAL SELF-CRITIQUE
+
+======================================================================
+58. FINAL RECOMMENDATION
+======================================================================
+
+End with:
+
+# FINAL MODEL & INFERENCE ARCHITECTURE RECOMMENDATION
+
+Answer:
+
+"What Model and Inference architecture should this platform actually
+build?"
+
+Be concrete.
+
+Describe:
+
+- model abstraction
+- inference engine
+- model registry
+- model artifact management
+- model lifecycle
+- serving boundary
+- worker model
+- GPU strategy
+- quantization
+- batching
+- KV cache
+- streaming
+- structured output
+- tool calling
+- routing
+- fallback
+- observability
+- security
+- Day-1 deployment
+- future evolution
+
+Then explicitly answer:
+
+"What MUST NOT be built on Day 1?"
+
+Then:
+
+"What future condition should trigger the next architectural evolution?"
+
+======================================================================
+59. REQUIRED OUTPUT
+======================================================================
+
+Produce:
+
+05_MODEL_INFERENCE_ARCHITECTURE.md
+
+The document MUST explicitly reference:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_PLANE.md
+04_AGENT_RUNTIME.md
+
+If there is a conflict:
+
+DO NOT silently resolve it.
+
+Identify it.
+
+Explain it.
+
+Recommend the technically superior decision.
+
+If necessary, create an ADR candidate.
+
+======================================================================
+60. SOURCE REQUIREMENTS
+======================================================================
+
+Include direct URLs.
+
+Prioritize:
+
+- official inference-engine documentation
+- official model documentation
+- official hardware documentation
+- official standards
+- academic research
+- credible engineering benchmarks
+
+Do not fabricate benchmark numbers.
+
+Do not cite sources that were not actually inspected.
+
+Clearly distinguish:
+
+SOURCE FACT
+
+from:
+
+INFERENCE
+
+from:
+
+ARCHITECTURAL RECOMMENDATION.
+
+======================================================================
+61. ABSOLUTE FINAL INSTRUCTION
+======================================================================
+
+Act as an INDEPENDENT Principal AI Infrastructure Architect.
+
+Your job is NOT to validate the project's preferred inference technology.
+
+Your job is to determine which architecture is technically best.
+
+The architecture must optimize for:
+
+DAY-1 SIMPLICITY
++
+INFERENCE CORRECTNESS
++
+PERFORMANCE
++
+RESOURCE EFFICIENCY
++
+SECURITY
++
+RELIABILITY
++
+OBSERVABILITY
++
+MODEL PORTABILITY
++
+FUTURE SCALE
+
+The final architecture MUST be the result of:
+
+    RESEARCH
+       ↓
+    REAL ALTERNATIVES
+       ↓
+    HARDWARE ANALYSIS
+       ↓
+    SERVING ENGINE COMPARISON
+       ↓
+    ARCHITECTURE SELECTION
+       ↓
+    PERFORMANCE ANALYSIS
+       ↓
+    FAILURE ANALYSIS
+       ↓
+    ADVERSARIAL CHALLENGE
+       ↓
+    FINAL DECISION
+
+DO NOT choose the inference engine first.
+
+DO NOT design the architecture around Qwen3.5 9B.
+
+DO NOT design the architecture around a specific GPU.
+
+DO NOT assume the most popular inference engine is the best.
+
+RESEARCH FIRST.
+
+COMPARE.
+
+CHALLENGE.
+
+SELECT THE BEST ARCHITECTURE AVAILABLE FOR THIS PROJECT.
+
+THEN DESIGN IT.

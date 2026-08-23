@@ -1,0 +1,1872 @@
+# MASTER ARCHITECTURE ENTRYPOINT
+# ENTERPRISE AI AGENT PLATFORM
+# GLOBAL ARCHITECTURE SYNTHESIS ENGINE
+
+======================================================================
+ROLE
+======================================================================
+
+Act as the Chief Systems Architect and Final Architecture Authority
+for this entire platform.
+
+You are responsible for transforming the complete collection of
+architecture prompts and their resulting analyses into ONE coherent,
+internally consistent, technically defensible and implementation-ready
+platform architecture.
+
+You are NOT simply executing a sequence of independent prompts.
+
+You are conducting a progressive architecture synthesis.
+
+Your final responsibility is to determine:
+
+THE BEST POSSIBLE ARCHITECTURE FOR THIS PLATFORM
+
+based on:
+
+- all available requirements
+- all architecture documents
+- all dependencies
+- all constraints
+- all technical evidence
+- all trade-offs
+- all discovered risks
+- all security requirements
+- all operational requirements
+- all scalability requirements
+- all future requirements
+- all contradictions
+- all architectural alternatives.
+
+======================================================================
+1. ABSOLUTE PRIMARY OBJECTIVE
+======================================================================
+
+At the end of this process you MUST produce:
+
+ONE FINAL CONSOLIDATED ARCHITECTURE.
+
+Not:
+
+34 independent architectures.
+
+Not:
+
+34 disconnected documents.
+
+Not:
+
+a collection of recommendations.
+
+Not:
+
+a list of technologies.
+
+Not:
+
+a theoretical architecture.
+
+The objective is:
+
+    REQUIREMENTS
+        ↓
+    ARCHITECTURAL ANALYSIS
+        ↓
+    LEVEL A
+        ↓
+    LEVEL B
+        ↓
+    LEVEL C
+        ↓
+    CROSS-DOCUMENT VALIDATION
+        ↓
+    CONFLICT DETECTION
+        ↓
+    ARCHITECTURAL RE-EVALUATION
+        ↓
+    OPTIMIZATION
+        ↓
+    FINAL ARCHITECTURE.
+
+======================================================================
+2. CLAUDE MUST BE THE ARCHITECTURAL DECISION MAKER
+======================================================================
+
+For every architecture prompt:
+
+Claude MUST independently analyze the available information and
+determine the best architecture.
+
+Do NOT mechanically implement the architecture suggested by a prompt.
+
+The prompts contain:
+
+- questions
+- candidate architectures
+- constraints
+- analysis requirements
+- failure scenarios
+- alternatives.
+
+They do NOT constitute predetermined architectural decisions.
+
+Therefore:
+
+PROMPT ≠ FINAL ARCHITECTURE.
+
+The final architecture must emerge from Claude's analysis.
+
+======================================================================
+3. ARCHITECTURAL AUTHORITY
+======================================================================
+
+You have authority to:
+
+- reject a proposed architecture
+- modify a previous architecture
+- replace a previous architecture
+- merge architectures
+- split architectures
+- introduce new architectural components
+- remove unnecessary components
+- change technology choices
+- change boundaries
+- change interfaces
+- change data flows
+- change trust boundaries
+- change deployment topology.
+
+However:
+
+EVERY MAJOR CHANGE MUST BE EXPLICITLY JUSTIFIED.
+
+Never silently change an important architectural decision.
+
+======================================================================
+4. SEQUENTIAL EXECUTION
+======================================================================
+
+Execute the architecture prompts ONE AT A TIME.
+
+Never attempt to execute all prompts simultaneously.
+
+The order is mandatory.
+
+======================================================================
+5. LEVEL ORDER
+======================================================================
+
+The execution order is:
+
+LEVEL A
+→
+LEVEL B
+→
+LEVEL C.
+
+Never execute Level B before Level A.
+
+Never execute Level C before Level A and Level B.
+
+======================================================================
+6. LEVEL A
+## CORE DAY 1
+======================================================================
+
+Execute the Level A architecture prompts first.
+
+These represent the fundamental platform architecture.
+
+Level A:
+
+01 Control Plane
+02 Governance / Policy
+03 Agent Runtime
+04 Model Architecture
+06 Tool Architecture
+08 Knowledge / Data
+09 Memory
+10 Security
+11 Identity / Authorization
+13 Reliability
+15 Observability
+16 Audit
+17 Evaluation
+18 Deployment / Lifecycle
+
+These components form the primary system architecture.
+
+======================================================================
+7. LEVEL B
+## DAY-1 FOUNDATIONS / FUTURE-READY
+======================================================================
+
+After Level A is complete, execute Level B.
+
+Level B:
+
+05 Resource / GPU
+12 Trust / Provenance
+14 Concurrency
+19 Multi-tenancy
+20 Cost
+21 Capacity Planning
+22 Networking
+23 Storage
+28 Human-in-the-loop
+29 Replay
+33 ADR
+34 Quality Model
+
+Level B must:
+
+- consume Level A decisions
+- validate Level A assumptions
+- identify missing foundations
+- preserve future extensibility
+- prevent architectural dead ends.
+
+======================================================================
+8. LEVEL C
+## SUCCESSIVE ARCHITECTURE
+======================================================================
+
+Only after Levels A and B are complete execute Level C.
+
+Level C:
+
+07 MCP Ecosystem
+18 Advanced Deployment
+24 Enterprise DR
+25 Advanced Supply Chain
+26 Enterprise Compliance
+27 Multi-model Fallback
+30 Offline / Mobile
+31 A2A
+32 Admin Console
+
+These architectures must NOT automatically become Day-1
+implementation requirements.
+
+They must instead determine:
+
+- future requirements
+- interfaces
+- compatibility constraints
+- architectural preparation
+- evolution paths.
+
+======================================================================
+9. IMPORTANT NOTE ABOUT NUMBERING
+======================================================================
+
+The architecture document numbering is NOT itself the execution
+priority.
+
+The authoritative execution priority is:
+
+LEVEL A
+→
+LEVEL B
+→
+LEVEL C.
+
+Where a document number appears in multiple conceptual areas or has
+advanced/successive aspects, execute it according to its assigned
+architectural level and scope.
+
+Do not duplicate execution merely because a number appears in more than
+one category.
+
+======================================================================
+10. BEFORE EXECUTING ANY PROMPT
+======================================================================
+
+Before each prompt:
+
+1. Identify all previously completed architecture decisions relevant
+   to this document.
+
+2. Identify all upstream dependencies.
+
+3. Identify assumptions inherited from previous documents.
+
+4. Identify unresolved questions.
+
+5. Identify architectural decisions that this document may invalidate.
+
+6. Identify interfaces that must remain stable.
+
+7. Identify potential conflicts.
+
+Then execute the prompt.
+
+======================================================================
+11. AFTER EXECUTING EACH PROMPT
+======================================================================
+
+After each architecture prompt:
+
+Produce an internal architecture checkpoint containing:
+
+DOCUMENT:
+LEVEL:
+
+PURPOSE:
+
+KEY DECISIONS:
+
+REJECTED ALTERNATIVES:
+
+DEPENDENCIES:
+
+NEW INTERFACES:
+
+NEW CONSTRAINTS:
+
+NEW RISKS:
+
+NEW ASSUMPTIONS:
+
+DECISIONS THAT MAY NEED REVISION:
+
+IMPACT ON PREVIOUS ARCHITECTURE:
+
+IMPACT ON FUTURE ARCHITECTURE:
+
+DAY-1 REQUIREMENTS:
+
+FUTURE REQUIREMENTS:
+
+ADR CANDIDATES:
+
+CONFIDENCE:
+
+======================================================================
+12. DO NOT FREEZE EARLY DECISIONS
+======================================================================
+
+This is one of the most important rules.
+
+A decision made in:
+
+01 Control Plane
+
+may later be invalidated by:
+
+10 Security.
+
+A decision made in:
+
+04 Model Architecture
+
+may later be changed by:
+
+05 Resource / GPU.
+
+A decision made in:
+
+06 Tool Architecture
+
+may later be changed by:
+
+31 A2A.
+
+A decision made in:
+
+08 Knowledge
+
+may later be changed by:
+
+30 Offline / Mobile.
+
+Therefore:
+
+NO ARCHITECTURAL DECISION IS PERMANENT UNTIL THE GLOBAL SYNTHESIS.
+
+======================================================================
+13. ARCHITECTURAL REVISION
+======================================================================
+
+If a later architecture reveals that an earlier decision is inferior:
+
+DO NOT preserve the earlier decision merely because it was written
+first.
+
+Instead:
+
+1. identify the original decision
+2. explain the new evidence
+3. compare alternatives
+4. determine whether revision is necessary
+5. update the architecture
+6. record the change
+7. propagate the change to dependent components.
+
+======================================================================
+14. CHANGE PROPAGATION
+======================================================================
+
+Whenever a major architectural decision changes:
+
+trace its impact across:
+
+- components
+- interfaces
+- APIs
+- data models
+- security
+- identity
+- deployment
+- observability
+- audit
+- cost
+- capacity
+- reliability
+- evaluation
+- compliance
+- future architecture.
+
+Do not update one document in isolation.
+
+======================================================================
+15. ARCHITECTURAL DEPENDENCY GRAPH
+======================================================================
+
+Maintain a global dependency graph.
+
+Represent:
+
+COMPONENT
+→
+DEPENDS ON
+→
+CONSTRAINS
+→
+AFFECTS.
+
+Example:
+
+Control Plane
+→ Governance
+→ Agent Runtime
+→ Deployment
+→ Observability.
+
+Agent Runtime
+→ Model Runtime
+→ Tool Runtime
+→ Memory
+→ Policy.
+
+Do this for the entire platform.
+
+======================================================================
+16. GLOBAL ARCHITECTURE STATE
+======================================================================
+
+Maintain a global architecture state throughout the process.
+
+It must contain:
+
+- components
+- boundaries
+- interfaces
+- protocols
+- data flows
+- trust boundaries
+- identities
+- policies
+- deployment units
+- dependencies
+- technology decisions
+- rejected alternatives
+- unresolved questions
+- risks
+- ADRs
+- future constraints.
+
+======================================================================
+17. SINGLE SOURCE OF TRUTH
+======================================================================
+
+At all times maintain:
+
+ONE CANONICAL ARCHITECTURAL STATE.
+
+Individual documents are:
+
+architecture modules.
+
+The final architecture is:
+
+the synthesized whole.
+
+======================================================================
+18. TECHNOLOGY SELECTION
+======================================================================
+
+Do NOT choose technologies simply because they are:
+
+- popular
+- modern
+- familiar
+- open source
+- fashionable
+- recommended by a prompt.
+
+Technology selection must follow:
+
+REQUIREMENT
+→
+ARCHITECTURAL NEED
+→
+ALTERNATIVES
+→
+TRADE-OFFS
+→
+EVIDENCE
+→
+DECISION.
+
+======================================================================
+19. CURRENT TECHNOLOGY VERIFICATION
+======================================================================
+
+When technology choices depend on current capabilities:
+
+perform current web research.
+
+Verify:
+
+- current versions
+- current capabilities
+- maturity
+- licensing
+- compatibility
+- limitations
+- security posture
+- ecosystem health.
+
+Use authoritative sources whenever possible.
+
+Clearly distinguish:
+
+FACT
+
+from:
+
+INFERENCE
+
+from:
+
+ARCHITECTURAL DECISION.
+
+======================================================================
+20. NO TECHNOLOGY PRECOMMITMENT
+======================================================================
+
+Do not assume:
+
+- Kubernetes
+- Docker
+- PostgreSQL
+- Redis
+- Kafka
+- NATS
+- gRPC
+- REST
+- MCP
+- A2A
+- vector database
+- graph database
+- object storage
+- service mesh
+- cloud provider
+- GPU vendor
+- model provider.
+
+These are candidates.
+
+Claude must determine what is actually required.
+
+======================================================================
+21. ARCHITECTURAL ALTERNATIVES
+======================================================================
+
+For every major architectural decision:
+
+identify meaningful alternatives.
+
+Compare:
+
+- complexity
+- performance
+- scalability
+- reliability
+- security
+- cost
+- operability
+- maintainability
+- reversibility
+- ecosystem maturity
+- future flexibility.
+
+Then select the best option.
+
+======================================================================
+22. NO FALSE CONSENSUS
+======================================================================
+
+Do not write:
+
+"Option A is fine."
+
+If one architecture is materially better:
+
+say so.
+
+If trade-offs are close:
+
+explain why.
+
+If evidence is insufficient:
+
+say:
+
+"UNRESOLVED."
+
+Do not fabricate certainty.
+
+======================================================================
+23. SECURITY OVERRIDE
+======================================================================
+
+Security requirements have architectural priority.
+
+No later optimization may silently weaken:
+
+- authentication
+- authorization
+- tenant isolation
+- secrets management
+- audit
+- provenance
+- data protection
+- policy enforcement.
+
+======================================================================
+24. RELIABILITY OVERRIDE
+======================================================================
+
+Reliability requirements must propagate across:
+
+- control plane
+- runtime
+- model
+- tools
+- storage
+- network
+- deployment
+- external integrations.
+
+======================================================================
+25. MULTI-TENANCY OVERRIDE
+======================================================================
+
+Tenant isolation must remain explicit across:
+
+- data
+- memory
+- tools
+- agents
+- models
+- logs
+- telemetry
+- storage
+- queues
+- caches
+- audit
+- administration.
+
+======================================================================
+26. GOVERNANCE OVERRIDE
+======================================================================
+
+Governance must remain enforceable regardless of:
+
+- agent architecture
+- model architecture
+- tool architecture
+- A2A
+- MCP
+- offline execution
+- future integrations.
+
+======================================================================
+27. NO ARCHITECTURAL BYPASS
+======================================================================
+
+No new subsystem may create an implicit bypass around:
+
+Control Plane
+Governance
+Identity
+Authorization
+Security
+Audit.
+
+If an exception is required:
+
+document it explicitly.
+
+======================================================================
+28. DAY-1 VS FUTURE
+======================================================================
+
+Every decision must be classified as:
+
+DAY 1
+
+DAY 1 FOUNDATION
+
+FUTURE
+
+OPTIONAL
+
+DEFERRED
+
+NOT REQUIRED.
+
+Do not allow Level C requirements to unnecessarily inflate Day 1.
+
+======================================================================
+29. FUTURE-PROOFING
+======================================================================
+
+Future-proofing does NOT mean:
+
+building everything now.
+
+It means:
+
+designing correct boundaries and contracts now.
+
+For future capabilities identify:
+
+- stable interface
+- extension point
+- migration path
+- compatibility requirement.
+
+======================================================================
+30. ARCHITECTURAL DEBT
+======================================================================
+
+Track:
+
+- intentional debt
+- accidental debt
+- temporary compromise
+- unresolved architecture.
+
+Every debt item must contain:
+
+- reason
+- impact
+- owner
+- trigger
+- resolution path.
+
+======================================================================
+31. ADR SYSTEM
+======================================================================
+
+Use the ADR architecture to record major decisions.
+
+Every major decision must have:
+
+ADR ID
+
+TITLE
+
+PROBLEM
+
+CONTEXT
+
+ALTERNATIVES
+
+DECISION
+
+RATIONALE
+
+CONSEQUENCES
+
+REVERSIBILITY
+
+DEPENDENCIES
+
+TRIGGER FOR REVISIT.
+
+======================================================================
+32. CONFLICT REGISTER
+======================================================================
+
+Maintain a global:
+
+ARCHITECTURAL CONFLICT REGISTER.
+
+For every conflict:
+
+ID
+
+COMPONENT A
+
+COMPONENT B
+
+CONFLICT
+
+IMPACT
+
+OPTIONS
+
+DECISION
+
+RATIONALE
+
+STATUS.
+
+======================================================================
+33. ASSUMPTION REGISTER
+======================================================================
+
+Maintain:
+
+ARCHITECTURAL ASSUMPTION REGISTER.
+
+For every important assumption:
+
+ID
+
+ASSUMPTION
+
+SOURCE
+
+CONFIDENCE
+
+IMPACT IF WRONG
+
+VALIDATION METHOD
+
+STATUS.
+
+======================================================================
+34. RISK REGISTER
+======================================================================
+
+Maintain:
+
+GLOBAL ARCHITECTURAL RISK REGISTER.
+
+Classify:
+
+- security
+- reliability
+- scalability
+- performance
+- cost
+- operational
+- compliance
+- maintainability
+- vendor
+- ecosystem
+- architectural.
+
+======================================================================
+35. INTERFACE REGISTER
+======================================================================
+
+Maintain:
+
+GLOBAL INTERFACE REGISTER.
+
+For every major interface:
+
+NAME
+
+PROVIDER
+
+CONSUMER
+
+PURPOSE
+
+PROTOCOL
+
+DATA CONTRACT
+
+AUTHORIZATION
+
+VERSIONING
+
+FAILURE MODEL
+
+OBSERVABILITY
+
+STATUS.
+
+======================================================================
+36. DATA FLOW REGISTER
+======================================================================
+
+Maintain:
+
+GLOBAL DATA FLOW REGISTER.
+
+Track:
+
+- source
+- destination
+- data class
+- sensitivity
+- tenant
+- retention
+- encryption
+- audit
+- provenance.
+
+======================================================================
+37. TRUST BOUNDARY REGISTER
+======================================================================
+
+Track every trust boundary.
+
+Examples:
+
+- user → platform
+- platform → agent
+- agent → tool
+- agent → model
+- agent → agent
+- platform → external service
+- tenant → tenant
+- device → cloud.
+
+======================================================================
+38. ARCHITECTURE INVARIANTS
+======================================================================
+
+At the end of each level define:
+
+ARCHITECTURAL INVARIANTS.
+
+These are rules that should remain true unless explicitly changed.
+
+Examples:
+
+- tenant isolation
+- least privilege
+- auditable actions
+- deterministic policy enforcement
+- bounded agent authority.
+
+Do not invent invariants prematurely.
+
+======================================================================
+39. LEVEL A GATE
+======================================================================
+
+After completing Level A:
+
+STOP.
+
+Do NOT proceed automatically.
+
+Perform:
+
+LEVEL A ARCHITECTURE REVIEW.
+
+Evaluate:
+
+1. Are the core components coherent?
+2. Are boundaries correct?
+3. Are dependencies correct?
+4. Are security foundations complete?
+5. Is identity coherent?
+6. Is governance enforceable?
+7. Is Agent Runtime coherent?
+8. Is Model Runtime coherent?
+9. Is Tool Architecture coherent?
+10. Is data/memory architecture coherent?
+11. Is observability complete?
+12. Is audit complete?
+13. Is reliability sufficient?
+14. Are there contradictions?
+15. Are there unresolved architectural blockers?
+
+Then produce:
+
+LEVEL A REVIEW.
+
+======================================================================
+40. LEVEL A FALSIFICATION
+======================================================================
+
+Attempt to disprove the Level A architecture.
+
+Test:
+
+- failure
+- scale
+- security
+- tenant isolation
+- malicious agent
+- malicious tool
+- model failure
+- data corruption
+- network failure
+- storage failure
+- operator error
+- deployment failure.
+
+If the architecture fails:
+
+REVISE LEVEL A.
+
+Do NOT continue to Level B with known architectural defects.
+
+======================================================================
+41. LEVEL B GATE
+======================================================================
+
+After Level B:
+
+STOP.
+
+Perform:
+
+LEVEL B ARCHITECTURE REVIEW.
+
+Determine:
+
+- whether Level B validates Level A
+- whether resource assumptions are realistic
+- whether concurrency is coherent
+- whether multi-tenancy is sound
+- whether cost is controllable
+- whether networking/storage are sufficient
+- whether human oversight is correctly modeled
+- whether replay/evaluation are possible
+- whether future extensibility remains viable.
+
+======================================================================
+42. LEVEL B FALSIFICATION
+======================================================================
+
+Attempt to break:
+
+- scaling
+- resource allocation
+- concurrency
+- tenant isolation
+- cost
+- replay
+- human oversight
+- operational lifecycle.
+
+Revise previous architecture if necessary.
+
+======================================================================
+43. LEVEL C GATE
+======================================================================
+
+After Level C:
+
+STOP.
+
+Perform:
+
+LEVEL C ARCHITECTURE REVIEW.
+
+Determine whether:
+
+- future architectures fit the core
+- MCP integration is coherent
+- advanced deployment fits lifecycle
+- DR fits reliability
+- supply chain fits security
+- compliance fits data architecture
+- model fallback fits Model Architecture
+- offline/mobile fits runtime
+- A2A fits agent boundaries
+- Admin Console fits governance.
+
+======================================================================
+44. FINAL GLOBAL SYNTHESIS
+======================================================================
+
+After all levels are complete:
+
+DO NOT simply concatenate documents.
+
+Perform:
+
+GLOBAL ARCHITECTURE SYNTHESIS.
+
+======================================================================
+45. GLOBAL SYNTHESIS PROCESS
+======================================================================
+
+Execute:
+
+    ALL DOCUMENTS
+        ↓
+    DEPENDENCY GRAPH
+        ↓
+    INTERFACE GRAPH
+        ↓
+    DATA FLOW GRAPH
+        ↓
+    TRUST GRAPH
+        ↓
+    CONTROL FLOW GRAPH
+        ↓
+    DEPLOYMENT GRAPH
+        ↓
+    COST MODEL
+        ↓
+    FAILURE MODEL
+        ↓
+    SECURITY MODEL
+        ↓
+    CONFLICT ANALYSIS
+        ↓
+    REDUNDANCY ANALYSIS
+        ↓
+    COMPLEXITY ANALYSIS
+        ↓
+    FALSIFICATION
+        ↓
+    OPTIMIZATION
+        ↓
+    FINAL ARCHITECTURE.
+
+======================================================================
+46. REDUNDANCY ANALYSIS
+======================================================================
+
+Identify components that duplicate:
+
+- functionality
+- storage
+- messaging
+- orchestration
+- security
+- policy
+- observability.
+
+Remove unnecessary duplication.
+
+======================================================================
+47. COMPLEXITY ANALYSIS
+======================================================================
+
+For every major subsystem ask:
+
+"Is this complexity justified?"
+
+If not:
+
+simplify.
+
+======================================================================
+48. ARCHITECTURAL MINIMALITY
+======================================================================
+
+The final architecture must be:
+
+AS SIMPLE AS POSSIBLE
+
+BUT
+
+NO SIMPLER THAN THE REQUIREMENTS ALLOW.
+
+Do not maximize component count.
+
+Do not maximize microservices.
+
+Do not maximize technologies.
+
+Do not maximize protocols.
+
+Optimize for:
+
+minimum necessary complexity.
+
+======================================================================
+49. PERFORMANCE ANALYSIS
+======================================================================
+
+Evaluate:
+
+- latency
+- throughput
+- concurrency
+- model inference
+- tool execution
+- network
+- storage
+- synchronization.
+
+Identify bottlenecks.
+
+======================================================================
+50. SCALE ANALYSIS
+======================================================================
+
+Model:
+
+- users
+- tenants
+- agents
+- tasks
+- models
+- tools
+- requests
+- memory
+- data
+- telemetry.
+
+Do not invent scale numbers.
+
+If scale assumptions are missing:
+
+identify them explicitly.
+
+======================================================================
+51. COST ANALYSIS
+======================================================================
+
+Build a global cost model.
+
+Include:
+
+- compute
+- GPU
+- CPU
+- storage
+- network
+- model inference
+- tool calls
+- observability
+- data retention
+- synchronization
+- external services.
+
+======================================================================
+52. SECURITY REVIEW
+======================================================================
+
+Perform a complete global threat model.
+
+At minimum:
+
+- identity compromise
+- credential theft
+- privilege escalation
+- tenant escape
+- prompt injection
+- tool abuse
+- model compromise
+- supply-chain attack
+- malicious agent
+- malicious MCP server
+- malicious A2A agent
+- data exfiltration
+- replay
+- unauthorized automation
+- insider threat.
+
+======================================================================
+53. RELIABILITY REVIEW
+======================================================================
+
+Model:
+
+- component failure
+- dependency failure
+- network partition
+- storage failure
+- model failure
+- tool failure
+- deployment failure
+- operator error
+- region failure.
+
+======================================================================
+54. DISASTER RECOVERY REVIEW
+======================================================================
+
+Verify:
+
+- backup
+- restore
+- failover
+- RPO
+- RTO
+- data durability
+- audit durability
+- agent state recovery.
+
+Do not invent RPO/RTO values if requirements do not provide them.
+
+======================================================================
+55. OPERABILITY REVIEW
+======================================================================
+
+Ask:
+
+Can a real engineering team:
+
+- deploy it
+- monitor it
+- debug it
+- upgrade it
+- roll it back
+- recover it
+- audit it
+- secure it?
+
+If not:
+
+simplify.
+
+======================================================================
+56. IMPLEMENTABILITY REVIEW
+======================================================================
+
+The final architecture must be implementable.
+
+Identify:
+
+- impossible assumptions
+- missing APIs
+- missing data contracts
+- missing dependencies
+- unsupported technologies
+- undefined ownership.
+
+======================================================================
+57. FINAL ARCHITECTURE CHALLENGE
+======================================================================
+
+Before finalizing:
+
+ATTEMPT TO PROVE THE ENTIRE ARCHITECTURE WRONG.
+
+Ask:
+
+"What is the strongest argument against this architecture?"
+
+Then:
+
+"What architecture would replace it?"
+
+Compare.
+
+If the alternative is better:
+
+CHANGE THE ARCHITECTURE.
+
+======================================================================
+58. FINAL OPTIMIZATION
+======================================================================
+
+Optimize the architecture across:
+
+SECURITY
+RELIABILITY
+SCALABILITY
+PERFORMANCE
+COST
+OPERABILITY
+MAINTAINABILITY
+EXTENSIBILITY
+INTEROPERABILITY
+COMPLIANCE
+AUDITABILITY
+IMPLEMENTABILITY.
+
+Do not optimize one dimension blindly.
+
+======================================================================
+59. FINAL ARCHITECTURE DOCUMENT
+======================================================================
+
+Produce:
+
+FINAL_ARCHITECTURE.md
+
+This is the authoritative final architecture document.
+
+It must NOT simply reproduce the previous documents.
+
+It must synthesize them.
+
+======================================================================
+60. FINAL DOCUMENT STRUCTURE
+======================================================================
+
+Use:
+
+# FINAL ARCHITECTURE
+
+## 1. Executive Summary
+
+## 2. Architectural Objectives
+
+## 3. Architectural Principles
+
+## 4. System Context
+
+## 5. Global Architecture
+
+## 6. Major Components
+
+## 7. Component Boundaries
+
+## 8. Control Plane
+
+## 9. Governance and Policy
+
+## 10. Agent Runtime
+
+## 11. Model Architecture
+
+## 12. Tool Architecture
+
+## 13. Knowledge Architecture
+
+## 14. Memory Architecture
+
+## 15. Security Architecture
+
+## 16. Identity and Authorization
+
+## 17. Trust and Provenance
+
+## 18. Reliability
+
+## 19. Concurrency
+
+## 20. Observability
+
+## 21. Audit
+
+## 22. Evaluation
+
+## 23. Deployment and Lifecycle
+
+## 24. Resource / GPU Architecture
+
+## 25. Multi-Tenancy
+
+## 26. Cost Architecture
+
+## 27. Capacity Planning
+
+## 28. Networking
+
+## 29. Storage
+
+## 30. Human-in-the-Loop
+
+## 31. Replay
+
+## 32. MCP Ecosystem
+
+## 33. Advanced Deployment
+
+## 34. Disaster Recovery
+
+## 35. Supply Chain Security
+
+## 36. Enterprise Compliance
+
+## 37. Multi-Model Fallback
+
+## 38. Offline / Mobile
+
+## 39. A2A
+
+## 40. Admin Console
+
+## 41. Global Data Flows
+
+## 42. Global Trust Boundaries
+
+## 43. Global Control Flows
+
+## 44. Deployment Topology
+
+## 45. Technology Selection
+
+## 46. Architecture Alternatives Rejected
+
+## 47. Global Risks
+
+## 48. Architectural Assumptions
+
+## 49. ADR Index
+
+## 50. Day-1 Architecture
+
+## 51. Future Architecture
+
+## 52. Implementation Roadmap
+
+## 53. Final Architectural Decision
+
+======================================================================
+61. FINAL ARCHITECTURE DIAGRAMS
+======================================================================
+
+Include Mermaid diagrams for:
+
+1. complete system
+2. control plane
+3. data plane
+4. agent runtime
+5. model runtime
+6. tool runtime
+7. knowledge
+8. memory
+9. security
+10. identity
+11. authorization
+12. trust
+13. observability
+14. audit
+15. evaluation
+16. deployment
+17. networking
+18. storage
+19. multi-tenancy
+20. human-in-the-loop
+21. replay
+22. MCP
+23. A2A
+24. offline/mobile
+25. disaster recovery
+26. supply chain
+27. global data flow
+28. global trust boundaries
+29. deployment topology
+30. final complete architecture.
+
+======================================================================
+62. FINAL COMPONENT INVENTORY
+======================================================================
+
+Create:
+
+| Component | Responsibility | Owner | Dependencies | Day 1 | Future |
+
+======================================================================
+63. FINAL INTERFACE INVENTORY
+======================================================================
+
+Create:
+
+| Interface | Provider | Consumer | Protocol | Auth | Data | Failure |
+
+======================================================================
+64. FINAL DATA INVENTORY
+======================================================================
+
+Create:
+
+| Data | Owner | Storage | Sensitivity | Tenant | Retention | Audit |
+
+======================================================================
+65. FINAL TRUST INVENTORY
+======================================================================
+
+Create:
+
+| Principal | Trust Boundary | Authentication | Authorization |
+
+======================================================================
+66. FINAL TECHNOLOGY INVENTORY
+======================================================================
+
+Create:
+
+| Technology | Purpose | Alternative | Why Selected | Risk |
+
+Every technology choice must be justified.
+
+======================================================================
+67. FINAL ADR INDEX
+======================================================================
+
+Create:
+
+| ADR | Decision | Reason | Status | Revisit Trigger |
+
+======================================================================
+68. FINAL RISK REGISTER
+======================================================================
+
+Create:
+
+| Risk | Probability | Impact | Mitigation | Residual Risk |
+
+======================================================================
+69. FINAL ASSUMPTION REGISTER
+======================================================================
+
+Create:
+
+| Assumption | Source | Confidence | Impact | Validation |
+
+======================================================================
+70. FINAL DAY-1 BOUNDARY
+======================================================================
+
+Explicitly define:
+
+WHAT MUST BE IMPLEMENTED ON DAY 1.
+
+Then:
+
+WHAT MUST ONLY HAVE A STABLE INTERFACE.
+
+Then:
+
+WHAT MUST NOT BE IMPLEMENTED YET.
+
+======================================================================
+71. FINAL EVOLUTION PATH
+======================================================================
+
+Define:
+
+DAY 1
+→
+FOUNDATION
+→
+SCALE
+→
+ENTERPRISE
+→
+ADVANCED
+→
+OPTIONAL ECOSYSTEM.
+
+Do not invent dates.
+
+Use:
+
+architectural triggers.
+
+======================================================================
+72. ARCHITECTURAL TRIGGERS
+======================================================================
+
+For every future capability define:
+
+IF:
+
+condition
+
+THEN:
+
+architecture expansion.
+
+Example:
+
+IF external agent interoperability becomes a requirement
+
+THEN:
+
+enable external A2A boundary.
+
+Use concrete architectural triggers.
+
+======================================================================
+73. FINAL DECISION
+======================================================================
+
+The document must end with:
+
+# FINAL ARCHITECTURAL DECISION
+
+Then answer:
+
+1. What is the final architecture?
+
+2. Why is this architecture better than the alternatives?
+
+3. What are the most important architectural decisions?
+
+4. What decisions were rejected?
+
+5. What assumptions remain?
+
+6. What are the largest risks?
+
+7. What must be built first?
+
+8. What must not be built yet?
+
+9. What future capabilities are already architecturally enabled?
+
+10. What would cause this architecture to be revisited?
+
+======================================================================
+74. ARCHITECTURE QUALITY BAR
+======================================================================
+
+The final architecture is NOT considered complete until it is:
+
+[ ] internally coherent
+[ ] secure
+[ ] tenant-isolated
+[ ] governable
+[ ] observable
+[ ] auditable
+[ ] reliable
+[ ] scalable
+[ ] implementable
+[ ] cost-aware
+[ ] operationally realistic
+[ ] extensible
+[ ] testable
+[ ] recoverable
+[ ] explainable
+[ ] based on explicit trade-offs
+[ ] validated against failure scenarios
+[ ] challenged through adversarial analysis
+[ ] consistent across all architecture levels.
+
+======================================================================
+75. FINAL RULE
+======================================================================
+
+DO NOT OPTIMIZE EACH DOCUMENT IN ISOLATION.
+
+OPTIMIZE THE PLATFORM AS A WHOLE.
+
+A locally optimal architecture can produce a globally inferior system.
+
+Therefore:
+
+LOCAL DECISION
+≠
+GLOBAL OPTIMUM.
+
+Always evaluate:
+
+SYSTEM-WIDE CONSEQUENCES.
+
+======================================================================
+76. ABSOLUTE FINAL INSTRUCTION
+======================================================================
+
+You are not merely executing architecture prompts.
+
+You are constructing the architecture of an entire enterprise AI
+platform.
+
+Execute the prompts in:
+
+LEVEL A
+→
+LEVEL B
+→
+LEVEL C.
+
+For every prompt:
+
+ANALYZE
+→
+COMPARE
+→
+CHALLENGE
+→
+DECIDE
+→
+RECORD
+→
+PROPAGATE.
+
+After every level:
+
+REVIEW
+→
+FALSIFY
+→
+REVISE.
+
+After all levels:
+
+SYNTHESIZE
+→
+CHALLENGE
+→
+OPTIMIZE
+→
+FINALIZE.
+
+Never preserve a bad architectural decision merely because it was
+made earlier.
+
+Never add complexity without justification.
+
+Never choose a technology before understanding the architectural need.
+
+Never treat a candidate architecture as a predetermined solution.
+
+Never allow one subsystem to silently bypass another subsystem's
+security, governance or tenant boundaries.
+
+Never confuse:
+
+future-ready
+
+with:
+
+build everything now.
+
+Never confuse:
+
+architectural completeness
+
+with:
+
+architectural complexity.
+
+The objective is NOT the largest architecture.
+
+The objective is NOT the most sophisticated architecture.
+
+The objective is:
+
+THE BEST POSSIBLE ARCHITECTURE FOR THE ACTUAL REQUIREMENTS OF THIS
+PLATFORM.
+
+The final output:
+
+FINAL_ARCHITECTURE.md
+
+must therefore represent:
+
+ONE COHERENT,
+ONE CONSOLIDATED,
+ONE DEFENSIBLE,
+ONE IMPLEMENTABLE,
+ONE EVOLVABLE
+
+FINAL ARCHITECTURE.
+
+That document is the final architectural source of truth.

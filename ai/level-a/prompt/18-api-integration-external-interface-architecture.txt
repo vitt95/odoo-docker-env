@@ -1,0 +1,1978 @@
+# 18 — API, INTEGRATION & EXTERNAL INTERFACE ARCHITECTURE
+## Enterprise AI Agent Platform
+
+======================================================================
+ROLE
+======================================================================
+
+Act as the Principal API Architect, Integration Architect, Distributed
+Systems Architect and Platform Interface Architect responsible for
+designing the complete API, Integration and External Interface
+Architecture of an enterprise-grade AI agent platform.
+
+You have deep expertise in:
+
+- REST
+- HTTP
+- gRPC
+- GraphQL
+- WebSockets
+- Server-Sent Events
+- asynchronous APIs
+- event-driven architectures
+- webhooks
+- message brokers
+- API gateways
+- service-to-service communication
+- API versioning
+- schema evolution
+- contract design
+- idempotency
+- retries
+- rate limiting
+- pagination
+- streaming
+- authentication
+- authorization
+- OAuth 2.0
+- OpenID Connect
+- service identities
+- MCP
+- tool interfaces
+- agent-to-agent protocols
+- workflow APIs
+- event schemas
+- integration patterns
+- enterprise SaaS integrations.
+
+You are working within:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_PLANE.md
+04_AGENT_RUNTIME.md
+05_MODEL_INFERENCE_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+07_KNOWLEDGE_DATA_ARCHITECTURE.md
+08_MEMORY_ARCHITECTURE.md
+09_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+10_AGENT_COMMUNICATION_MULTI_AGENT_ARCHITECTURE.md
+11_EVENTING_WORKFLOW_DURABLE_EXECUTION_ARCHITECTURE.md
+12_OBSERVABILITY_EVALUATION_RELIABILITY_ARCHITECTURE.md
+13_SECURITY_ARCHITECTURE.md
+14_DATA_GOVERNANCE_PRIVACY_COMPLIANCE_ARCHITECTURE.md
+15_DEPLOYMENT_INFRASTRUCTURE_RUNTIME_PLATFORM_ARCHITECTURE.md
+16_CICD_RELEASE_SUPPLY_CHAIN_ARCHITECTURE.md
+17_TESTING_QUALITY_VALIDATION_ARCHITECTURE.md
+
+These documents provide the current architectural context.
+
+However:
+
+THEY ARE NOT IMMUNE FROM CHALLENGE.
+
+If research demonstrates that an assumption is technically incorrect,
+incomplete, obsolete or operationally suboptimal, explicitly identify
+the conflict and recommend the superior architecture.
+
+======================================================================
+1. PRIMARY OBJECTIVE
+======================================================================
+
+Design the complete API, Integration and External Interface Architecture.
+
+The architecture must answer:
+
+HOW DO CLIENTS COMMUNICATE WITH THE PLATFORM?
+
+HOW DO AGENTS COMMUNICATE WITH EACH OTHER?
+
+HOW DOES THE CONTROL PLANE COMMUNICATE WITH RUNTIME COMPONENTS?
+
+HOW DO SERVICES COMMUNICATE INTERNALLY?
+
+HOW DO TOOLS EXPOSE THEIR INTERFACES?
+
+HOW DO EXTERNAL SYSTEMS INTEGRATE?
+
+HOW ARE LONG-RUNNING OPERATIONS REPRESENTED?
+
+HOW DOES STREAMING WORK?
+
+HOW ARE EVENTS EXPOSED?
+
+HOW ARE WEBHOOKS HANDLED?
+
+HOW ARE API CONTRACTS VERSIONED?
+
+HOW ARE BREAKING CHANGES MANAGED?
+
+HOW ARE RETRIES MADE SAFE?
+
+HOW IS IDEMPOTENCY ENFORCED?
+
+HOW ARE RATE LIMITS APPLIED?
+
+HOW ARE ERRORS REPRESENTED?
+
+HOW ARE ASYNCHRONOUS OPERATIONS TRACKED?
+
+HOW ARE EXTERNAL SIDE EFFECTS CONTROLLED?
+
+======================================================================
+2. MOST IMPORTANT INSTRUCTION
+## RESEARCH FIRST — SELECT ARCHITECTURE SECOND
+======================================================================
+
+DO NOT begin by selecting:
+
+- REST
+- gRPC
+- GraphQL
+- WebSockets
+- SSE
+- MCP
+- Kafka
+- NATS
+- RabbitMQ
+- API Gateway
+- Kong
+- Envoy
+- Traefik
+
+as the architecture.
+
+Research first.
+
+Research current authoritative practices for:
+
+- API design
+- HTTP APIs
+- streaming
+- asynchronous APIs
+- event-driven systems
+- webhook design
+- API versioning
+- schema evolution
+- idempotency
+- retries
+- rate limiting
+- OAuth/OIDC
+- service-to-service authentication
+- MCP
+- agent-to-agent communication
+- enterprise integrations.
+
+Then identify meaningful alternatives.
+
+Then compare them.
+
+Then select the architecture best suited to THIS project.
+
+Then attempt to falsify the decision.
+
+Required process:
+
+    RESEARCH
+       ↓
+    INTERACTION REQUIREMENTS
+       ↓
+    INTERFACE INVENTORY
+       ↓
+    SYNCHRONOUS / ASYNCHRONOUS ANALYSIS
+       ↓
+    PROTOCOL ALTERNATIVES
+       ↓
+    SECURITY ANALYSIS
+       ↓
+    COMPATIBILITY ANALYSIS
+       ↓
+    OPERATIONAL ANALYSIS
+       ↓
+    ADVERSARIAL CHALLENGE
+       ↓
+    FINAL DECISION
+       ↓
+    DAY-1 IMPLEMENTATION
+       ↓
+    FUTURE EVOLUTION
+
+CLAUDE MUST DETERMINE THE BEST API AND INTEGRATION ARCHITECTURE
+AVAILABLE FOR THIS PROJECT.
+
+======================================================================
+3. CENTRAL PRINCIPLE
+======================================================================
+
+An interface is a CONTRACT.
+
+A contract must define:
+
+- semantics
+- schema
+- authentication
+- authorization
+- lifecycle
+- failure behavior
+- retry behavior
+- compatibility
+- versioning
+- observability.
+
+Do not design APIs merely as routes.
+
+======================================================================
+4. INTERFACE INVENTORY
+======================================================================
+
+Create a complete inventory.
+
+At minimum include:
+
+PUBLIC API
+
+ADMIN API
+
+CONTROL PLANE API
+
+AGENT RUNTIME API
+
+MODEL RUNTIME API
+
+TOOL API
+
+MEMORY API
+
+KNOWLEDGE API
+
+WORKFLOW API
+
+EVENT API
+
+WEBHOOK API
+
+AGENT-TO-AGENT API
+
+INTERNAL SERVICE API
+
+HEALTH API
+
+OBSERVABILITY API
+
+EXPORT API.
+
+For each identify:
+
+- producer
+- consumer
+- protocol
+- synchronous/asynchronous
+- authentication
+- authorization
+- data classification
+- latency expectations
+- failure semantics
+- versioning.
+
+======================================================================
+5. DAY-1 CONSTRAINTS
+======================================================================
+
+Day 1:
+
+- one machine
+- one GPU if available
+- Qwen3.5 9B
+- PostgreSQL
+- local/containerized deployment
+- small engineering team.
+
+Prefer a small number of protocols.
+
+Do NOT introduce:
+
+- service mesh
+- API federation
+- multiple message brokers
+- GraphQL
+- complex gateway infrastructure
+- elaborate event infrastructure
+
+unless justified.
+
+======================================================================
+6. FUTURE REQUIREMENTS
+======================================================================
+
+Future may include:
+
+- external customers
+- enterprise integrations
+- third-party developers
+- SDKs
+- mobile clients
+- web clients
+- external agents
+- MCP servers
+- A2A communication
+- webhooks
+- event subscriptions
+- high-volume integrations.
+
+Determine:
+
+DAY 1
+PREPARE
+SCALE
+ENTERPRISE
+
+======================================================================
+7. PUBLIC API
+======================================================================
+
+Define the public API surface.
+
+Potential domains:
+
+- authentication
+- users
+- tenants
+- agents
+- conversations
+- runs
+- workflows
+- tools
+- knowledge
+- memory
+- artifacts
+- evaluations
+- administration.
+
+Do not expose internal implementation details unnecessarily.
+
+======================================================================
+8. API BOUNDARIES
+======================================================================
+
+Determine what belongs in:
+
+PUBLIC API
+
+vs
+
+INTERNAL API.
+
+Internal data models should not automatically become public API schemas.
+
+======================================================================
+9. REST VS OTHER PROTOCOLS
+======================================================================
+
+Compare:
+
+REST
+
+gRPC
+
+GraphQL
+
+RPC
+
+event-based APIs.
+
+Determine the correct protocol per interface.
+
+Do not force one protocol everywhere.
+
+======================================================================
+10. HTTP API DESIGN
+======================================================================
+
+If HTTP APIs are recommended, define:
+
+- resource model
+- methods
+- status codes
+- error model
+- pagination
+- filtering
+- sorting
+- idempotency
+- versioning.
+
+======================================================================
+11. RESOURCE MODEL
+======================================================================
+
+Define conceptual resources.
+
+Potential:
+
+Tenant
+User
+Agent
+Conversation
+Run
+Workflow
+Task
+Tool
+Document
+Memory
+Artifact
+Evaluation
+Event.
+
+Determine which are first-class API resources.
+
+======================================================================
+12. OPERATION MODEL
+======================================================================
+
+Distinguish:
+
+RESOURCE CRUD
+
+from:
+
+COMMAND
+
+from:
+
+LONG-RUNNING OPERATION.
+
+Do not force every operation into CRUD.
+
+======================================================================
+13. LONG-RUNNING OPERATIONS
+======================================================================
+
+Agent runs and workflows may last seconds, minutes or longer.
+
+Define:
+
+POST
+ ↓
+Operation / Run
+ ↓
+Status
+ ↓
+Events
+ ↓
+Result.
+
+Determine:
+
+- polling
+- streaming
+- webhook
+- event subscription.
+
+======================================================================
+14. STREAMING
+======================================================================
+
+Compare:
+
+- SSE
+- WebSockets
+- HTTP streaming
+- gRPC streaming.
+
+Evaluate:
+
+- browser compatibility
+- proxies
+- reconnect
+- backpressure
+- authentication
+- observability.
+
+======================================================================
+15. TOKEN STREAMING
+======================================================================
+
+If model tokens are streamed, define:
+
+- framing
+- ordering
+- cancellation
+- reconnect
+- final message
+- error semantics.
+
+Do not expose raw model internals unnecessarily.
+
+======================================================================
+16. EVENT MODEL
+======================================================================
+
+Using 11 define:
+
+- event naming
+- event ID
+- aggregate/resource ID
+- timestamp
+- producer
+- schema version
+- tenant
+- correlation ID
+- causation ID.
+
+======================================================================
+17. EVENT SCHEMA
+======================================================================
+
+Define a canonical event envelope.
+
+Potential:
+
+event_id
+event_type
+schema_version
+tenant_id
+subject_id
+producer
+timestamp
+correlation_id
+causation_id
+payload.
+
+Determine the actual required fields.
+
+======================================================================
+18. EVENT VERSIONING
+======================================================================
+
+Determine:
+
+- additive changes
+- breaking changes
+- schema versions
+- compatibility window
+- migration.
+
+======================================================================
+19. WEBHOOKS
+======================================================================
+
+Evaluate webhook support.
+
+Potential events:
+
+- run.completed
+- workflow.completed
+- artifact.created
+- evaluation.completed
+- security.alert.
+
+Define:
+
+- signing
+- retries
+- idempotency
+- replay
+- delivery status
+- timeout.
+
+======================================================================
+20. WEBHOOK SECURITY
+======================================================================
+
+Webhooks should support:
+
+- authentication
+- signatures
+- timestamp
+- replay protection
+- endpoint validation.
+
+Do not send sensitive data unnecessarily.
+
+======================================================================
+21. WEBHOOK DELIVERY
+======================================================================
+
+Define:
+
+Event
+ ↓
+Delivery
+ ↓
+Retry
+ ↓
+Backoff
+ ↓
+Dead Letter / Failed
+ ↓
+Replay.
+
+======================================================================
+22. API IDEMPOTENCY
+======================================================================
+
+This is CRITICAL.
+
+Define idempotency requirements for operations such as:
+
+- create run
+- create workflow
+- send message
+- execute tool
+- create artifact
+- trigger deployment.
+
+Do not assume retries are safe.
+
+======================================================================
+23. IDEMPOTENCY KEYS
+======================================================================
+
+Determine:
+
+- format
+- scope
+- lifetime
+- storage
+- conflict behavior.
+
+======================================================================
+24. RETRIES
+======================================================================
+
+Define:
+
+- retryable errors
+- non-retryable errors
+- exponential backoff
+- jitter
+- maximum attempts
+- deadline.
+
+Retries must respect side effects.
+
+======================================================================
+25. TIMEOUTS
+======================================================================
+
+Define timeout layers:
+
+- client
+- API
+- agent
+- model
+- tool
+- database
+- workflow.
+
+Avoid incompatible timeout hierarchies.
+
+======================================================================
+26. DEADLINES
+======================================================================
+
+Determine whether requests should carry deadlines through internal calls.
+
+Avoid work continuing after the client no longer cares when unnecessary.
+
+======================================================================
+27. CANCELLATION
+======================================================================
+
+Define cancellation for:
+
+- API request
+- model generation
+- agent run
+- tool call
+- workflow
+- multi-agent task.
+
+Cancellation must propagate.
+
+======================================================================
+28. BACKPRESSURE
+======================================================================
+
+Determine behavior when:
+
+- model is saturated
+- workers are saturated
+- database is saturated
+- external API is rate-limited.
+
+Define:
+
+- queue
+- reject
+- throttle
+- degrade.
+
+======================================================================
+29. RATE LIMITING
+======================================================================
+
+Using 09 and 13 determine rate limits for:
+
+- tenant
+- user
+- API key
+- agent
+- tool
+- workflow.
+
+======================================================================
+30. QUOTAS
+======================================================================
+
+Distinguish:
+
+RATE LIMIT
+
+from:
+
+QUOTA.
+
+Potential quotas:
+
+- tokens
+- runs
+- storage
+- tool calls
+- workflows
+- concurrent executions.
+
+======================================================================
+31. API ERROR MODEL
+======================================================================
+
+Define a consistent error model.
+
+At minimum:
+
+- machine-readable code
+- human-readable message
+- request ID
+- retryability
+- details where safe.
+
+Do not leak internal information.
+
+======================================================================
+32. ERROR TAXONOMY
+======================================================================
+
+Distinguish:
+
+AUTHENTICATION
+
+AUTHORIZATION
+
+VALIDATION
+
+NOT_FOUND
+
+CONFLICT
+
+RATE_LIMIT
+
+TIMEOUT
+
+DEPENDENCY_FAILURE
+
+INTERNAL_FAILURE
+
+POLICY_DENIAL.
+
+======================================================================
+33. PARTIAL FAILURE
+======================================================================
+
+Determine how APIs represent:
+
+- partial tool execution
+- partial workflow completion
+- multi-agent partial failure
+- batch partial failure.
+
+======================================================================
+34. BATCH APIs
+======================================================================
+
+Evaluate whether batch APIs are useful.
+
+Do not introduce them unless they solve a real problem.
+
+======================================================================
+35. PAGINATION
+======================================================================
+
+Compare:
+
+- offset
+- cursor
+- keyset.
+
+Determine appropriate strategy.
+
+======================================================================
+36. FILTERING
+======================================================================
+
+Define safe filtering semantics.
+
+Avoid exposing arbitrary database query languages.
+
+======================================================================
+37. SORTING
+======================================================================
+
+Define deterministic sorting and pagination interaction.
+
+======================================================================
+38. API VERSIONING
+======================================================================
+
+Compare:
+
+- URL versioning
+- header versioning
+- content negotiation
+- semantic evolution without explicit versions.
+
+Determine the correct model.
+
+======================================================================
+39. BREAKING CHANGES
+======================================================================
+
+Define what constitutes a breaking change.
+
+Examples:
+
+- removing fields
+- changing semantics
+- changing error behavior
+- changing authorization
+- changing idempotency.
+
+======================================================================
+40. COMPATIBILITY POLICY
+======================================================================
+
+Define:
+
+- supported versions
+- deprecation
+- migration
+- sunset
+- compatibility window.
+
+Do not promise indefinite backward compatibility.
+
+======================================================================
+41. SDK ARCHITECTURE
+======================================================================
+
+Determine whether the platform should provide SDKs.
+
+Potential:
+
+- Python
+- TypeScript
+- Go.
+
+Do not create all SDKs Day 1 unless justified.
+
+======================================================================
+42. SDK GENERATION
+======================================================================
+
+Evaluate whether SDKs should be:
+
+- generated from OpenAPI
+- manually written
+- hybrid.
+
+======================================================================
+43. API SPECIFICATION
+======================================================================
+
+Evaluate:
+
+- OpenAPI
+- AsyncAPI
+- Protocol Buffers.
+
+Determine which specification should be authoritative for each interface.
+
+======================================================================
+44. CONTRACT-FIRST VS CODE-FIRST
+======================================================================
+
+Compare:
+
+CONTRACT-FIRST
+
+vs:
+
+CODE-FIRST.
+
+Determine where contract-first is important.
+
+======================================================================
+45. API DOCUMENTATION
+======================================================================
+
+Define:
+
+- machine-readable schema
+- human documentation
+- examples
+- authentication
+- errors
+- rate limits
+- version.
+
+======================================================================
+46. INTERNAL APIs
+======================================================================
+
+Do not expose internal APIs merely because they exist.
+
+Define internal interfaces separately.
+
+======================================================================
+47. SERVICE-TO-SERVICE COMMUNICATION
+======================================================================
+
+Using 15 determine:
+
+- HTTP
+- gRPC
+- direct library calls.
+
+Use the simplest correct mechanism.
+
+======================================================================
+48. LOCAL PROCESS COMMUNICATION
+======================================================================
+
+If components run on the same machine, evaluate whether they need network
+communication at all.
+
+Avoid network boundaries that add complexity without value.
+
+======================================================================
+49. AGENT-TO-AGENT COMMUNICATION
+======================================================================
+
+Using 10 determine:
+
+- synchronous requests
+- asynchronous tasks
+- event-based communication
+- A2A protocol.
+
+Do not duplicate protocols unnecessarily.
+
+======================================================================
+50. MCP
+======================================================================
+
+Research current MCP specifications and ecosystem.
+
+Determine:
+
+- where MCP belongs
+- server/client roles
+- tool exposure
+- resource exposure
+- authorization
+- trust boundaries.
+
+Do NOT assume MCP should replace all internal APIs.
+
+======================================================================
+51. A2A
+======================================================================
+
+Research current agent-to-agent protocols where relevant.
+
+Determine whether A2A belongs in:
+
+- internal communication
+- external agent interoperability
+- enterprise integration.
+
+Do not introduce an external agent protocol without a real use case.
+
+======================================================================
+52. TOOL INTERFACE
+======================================================================
+
+Using 06 define:
+
+- tool discovery
+- schema
+- invocation
+- result
+- error
+- timeout
+- authorization.
+
+======================================================================
+53. TOOL RESULT SIZE
+======================================================================
+
+Determine maximum result sizes and strategies for:
+
+- pagination
+- references
+- artifacts
+- streaming.
+
+Avoid injecting massive tool results into model context.
+
+======================================================================
+54. ARTIFACT REFERENCES
+======================================================================
+
+Large results should potentially become:
+
+Artifact
+
+rather than:
+
+inline payload.
+
+Define this boundary.
+
+======================================================================
+55. FILE UPLOADS
+======================================================================
+
+Determine:
+
+- upload API
+- multipart
+- pre-signed URLs
+- streaming
+- object storage.
+
+======================================================================
+56. FILE DOWNLOADS
+======================================================================
+
+Define:
+
+- authorization
+- expiration
+- range requests
+- content type
+- audit.
+
+======================================================================
+57. EVENT SUBSCRIPTIONS
+======================================================================
+
+Evaluate:
+
+- polling
+- webhooks
+- SSE
+- message subscriptions.
+
+Determine what external consumers need.
+
+======================================================================
+58. API GATEWAY
+======================================================================
+
+Evaluate whether Day 1 requires an API gateway.
+
+Potential responsibilities:
+
+- TLS
+- authentication
+- rate limiting
+- routing
+- request IDs.
+
+Do not introduce a gateway as a platform unto itself without need.
+
+======================================================================
+59. EDGE PROXY
+======================================================================
+
+Using 15 determine:
+
+- reverse proxy
+- TLS termination
+- request limits
+- compression
+- routing.
+
+======================================================================
+60. AUTHENTICATION
+======================================================================
+
+Using 09 define authentication for:
+
+- browser
+- API clients
+- service accounts
+- agents
+- tools
+- webhooks.
+
+======================================================================
+61. AUTHORIZATION
+======================================================================
+
+Using 09 and 13 define authorization at the API boundary.
+
+Do not rely exclusively on gateway-level authorization.
+
+======================================================================
+62. SERVICE IDENTITY
+======================================================================
+
+Define service identity for:
+
+- Agent Runtime
+- Tool Runtime
+- Workflow Workers
+- Model Runtime
+- Control Plane.
+
+======================================================================
+63. TENANT CONTEXT
+======================================================================
+
+Every request must have an unambiguous tenant context where applicable.
+
+Do not trust tenant identifiers supplied solely by clients.
+
+======================================================================
+64. REQUEST CONTEXT
+======================================================================
+
+Define:
+
+- request ID
+- correlation ID
+- causation ID
+- tenant ID
+- actor
+- deadline
+- trace context.
+
+======================================================================
+65. OBSERVABILITY
+======================================================================
+
+Using 12 determine what API metadata must be emitted.
+
+Do not log sensitive payloads unnecessarily.
+
+======================================================================
+66. DATA GOVERNANCE
+======================================================================
+
+Using 14 determine:
+
+- payload classification
+- logging
+- retention
+- export
+- external transfer.
+
+======================================================================
+67. API SECURITY
+======================================================================
+
+Using 13 test:
+
+- injection
+- auth bypass
+- IDOR
+- SSRF
+- request smuggling
+- replay
+- abuse
+- oversized payloads.
+
+======================================================================
+68. API ABUSE
+======================================================================
+
+Define protection against:
+
+- brute force
+- enumeration
+- flooding
+- expensive agent runs
+- expensive tool calls
+- token abuse.
+
+======================================================================
+69. COST CONTROL
+======================================================================
+
+API requests can trigger expensive model operations.
+
+Determine how to expose:
+
+- budgets
+- quotas
+- concurrency
+- maximum execution cost.
+
+======================================================================
+70. ASYNCHRONOUS API MODEL
+======================================================================
+
+Define canonical pattern:
+
+POST /runs
+→ run_id
+
+GET /runs/{id}
+→ status
+
+GET /runs/{id}/events
+→ stream
+
+or equivalent.
+
+Determine the actual best design.
+
+======================================================================
+71. CALLBACK MODEL
+======================================================================
+
+Evaluate whether clients should provide:
+
+callback URLs
+
+or use:
+
+webhook subscriptions.
+
+Security implications must be explicit.
+
+======================================================================
+72. POLLING
+======================================================================
+
+Polling may be simple and reliable.
+
+Determine when it is appropriate.
+
+======================================================================
+73. STREAM RECONNECTION
+======================================================================
+
+Define:
+
+- cursor
+- event ID
+- Last-Event-ID
+- replay.
+
+A disconnected client should not necessarily lose events.
+
+======================================================================
+74. EVENT REPLAY
+======================================================================
+
+Determine whether clients can replay events.
+
+Define:
+
+- retention
+- authorization
+- cursor.
+
+======================================================================
+75. WEBHOOK REPLAY
+======================================================================
+
+Determine how failed webhook events can be replayed safely.
+
+Idempotency is mandatory.
+
+======================================================================
+76. API AUDIT
+======================================================================
+
+Using 13 and 14 determine audit records for:
+
+- authentication
+- authorization
+- data access
+- tool invocation
+- export
+- administrative actions.
+
+======================================================================
+77. ADMIN APIs
+======================================================================
+
+Separate administrative APIs from customer APIs.
+
+Determine stronger controls for:
+
+- tenant management
+- policy changes
+- user management
+- data export
+- deletion
+- configuration.
+
+======================================================================
+78. INTERNAL ADMIN API
+======================================================================
+
+Do not expose internal administrative operations publicly.
+
+======================================================================
+79. INTEGRATION CATALOG
+======================================================================
+
+Define integration classes:
+
+- synchronous API
+- asynchronous API
+- webhook
+- event subscription
+- file exchange
+- MCP
+- A2A.
+
+======================================================================
+80. EXTERNAL SYSTEM INTEGRATION
+======================================================================
+
+Potential:
+
+- CRM
+- email
+- calendar
+- ticketing
+- storage
+- ERP
+- databases
+- enterprise APIs.
+
+Define generic integration contracts rather than hard-coding every vendor.
+
+======================================================================
+81. CONNECTOR ARCHITECTURE
+======================================================================
+
+Determine:
+
+- connector process
+- connector credentials
+- connector permissions
+- connector version
+- connector lifecycle.
+
+======================================================================
+82. CONNECTOR ISOLATION
+======================================================================
+
+Using 06 and 13 determine whether connectors require separate execution
+boundaries.
+
+======================================================================
+83. EXTERNAL API FAILURE
+======================================================================
+
+Test:
+
+- timeout
+- rate limit
+- invalid response
+- outage
+- schema change
+- authentication expiration.
+
+======================================================================
+84. EXTERNAL API CONTRACT DRIFT
+======================================================================
+
+Determine how the platform detects external API changes.
+
+======================================================================
+85. CONTRACT TESTING
+======================================================================
+
+Using 17 define contract testing for:
+
+- public APIs
+- internal APIs
+- tools
+- webhooks
+- events
+- external connectors.
+
+======================================================================
+86. ARCHITECTURE OPTIONS
+======================================================================
+
+Identify real candidates.
+
+Potential:
+
+OPTION A
+--------
+REST-first API architecture.
+
+OPTION B
+--------
+REST + SSE.
+
+OPTION C
+--------
+REST + gRPC internally + SSE externally.
+
+OPTION D
+--------
+Event-driven hybrid.
+
+OPTION E
+--------
+Protocol-rich architecture including MCP/A2A.
+
+These are examples only.
+
+Research and determine the real candidates.
+
+======================================================================
+87. ARCHITECTURE SELECTION MATRIX
+======================================================================
+
+Compare:
+
+| Criterion |
+| Day-1 simplicity |
+| Browser compatibility |
+| Streaming |
+| Async workflows |
+| Internal communication |
+| External integrations |
+| Tool interoperability |
+| Agent interoperability |
+| Security |
+| Versioning |
+| Observability |
+| Operational complexity |
+| Scalability |
+| Recommendation |
+
+======================================================================
+88. "WHY NOT?" ANALYSIS
+======================================================================
+
+For the final architecture explicitly answer:
+
+WHY THIS?
+
+WHY NOT GRAPHQL?
+
+WHY NOT gRPC EVERYWHERE?
+
+WHY NOT REST EVERYWHERE?
+
+WHY NOT WEBSOCKETS?
+
+WHY NOT KAFKA?
+
+WHY NOT A MESSAGE BROKER DAY 1?
+
+WHY NOT MCP FOR EVERYTHING?
+
+WHY NOT A2A FOR EVERYTHING?
+
+WHY NOT WEBHOOKS FOR EVERYTHING?
+
+WHY NOT POLLING FOR EVERYTHING?
+
+WHY NOT AN API GATEWAY DAY 1?
+
+Only retain comparisons supported by research.
+
+======================================================================
+89. REVERSIBILITY ANALYSIS
+======================================================================
+
+Classify:
+
+- API protocol
+- API specification
+- event schema
+- versioning strategy
+- gateway
+- message broker
+- MCP
+- A2A
+- SDK generation
+- webhook architecture
+
+as:
+
+- easily reversible
+- moderately reversible
+- expensive to reverse
+- effectively irreversible.
+
+======================================================================
+90. CONTRACT VS IMPLEMENTATION
+======================================================================
+
+Determine stable interface contracts.
+
+Potential:
+
+ApiRequest
+ApiResponse
+Error
+Run
+Task
+Event
+Webhook
+ToolInvocation
+ArtifactReference
+Subscription
+
+Determine the minimum required set.
+
+======================================================================
+91. REQUIRED DIAGRAMS
+======================================================================
+
+Include Mermaid diagrams for:
+
+1. Complete API architecture
+2. Public API
+3. Internal API
+4. Agent Runtime interfaces
+5. Model Runtime interface
+6. Tool interface
+7. MCP boundary
+8. Agent-to-agent communication
+9. Async run lifecycle
+10. Streaming
+11. Event architecture
+12. Webhooks
+13. Retry/idempotency
+14. Authentication
+15. Authorization
+16. Tenant context
+17. External connectors
+18. API gateway/edge
+19. Day-1 architecture
+20. Future enterprise integration architecture
+
+======================================================================
+92. ADR CANDIDATES
+======================================================================
+
+Identify ADRs for:
+
+- API protocol
+- API specification
+- REST/gRPC split
+- streaming
+- async operation model
+- event model
+- webhook architecture
+- idempotency
+- retry strategy
+- API versioning
+- SDK generation
+- API gateway
+- MCP
+- A2A
+- connector architecture
+- event broker.
+
+For each:
+
+- problem
+- alternatives
+- recommendation
+- consequences
+- reversibility
+- decision deadline
+
+======================================================================
+93. DAY-1 / PREPARE / SCALE / ENTERPRISE
+======================================================================
+
+Create:
+
+| Capability | Day 1 | Prepare | Scale | Enterprise |
+
+Cover:
+
+- public API
+- internal API
+- REST
+- gRPC
+- streaming
+- events
+- webhooks
+- polling
+- idempotency
+- retries
+- rate limiting
+- quotas
+- API versioning
+- SDK
+- MCP
+- A2A
+- connectors
+- API gateway
+- service discovery
+- contract testing.
+
+======================================================================
+94. API TEST MATRIX
+======================================================================
+
+Create a matrix:
+
+| Interface | Auth | AuthZ | Contract | Negative | Retry | Idempotency | Load | Security |
+
+Include:
+
+- public API
+- admin API
+- internal API
+- tool API
+- model API
+- workflow API
+- event API
+- webhook
+- MCP
+- A2A
+- connectors.
+
+======================================================================
+95. ATTEMPT TO FALSIFY THE RECOMMENDATION
+======================================================================
+
+Try to prove the selected architecture wrong.
+
+Ask:
+
+- What client count breaks it?
+- What concurrent-run count breaks it?
+- What event volume breaks it?
+- What streaming duration breaks it?
+- What webhook volume breaks it?
+- What external integration count breaks it?
+- What API version count breaks it?
+- What tenant count breaks it?
+- What tool count breaks it?
+- What multi-agent workload breaks it?
+
+Determine the first architectural trigger.
+
+======================================================================
+96. ARCHITECTURAL SELF-CRITIQUE
+======================================================================
+
+Before finalizing, ask:
+
+1. Are public and internal APIs separated?
+2. Are contracts explicit?
+3. Are long-running operations modeled correctly?
+4. Is streaming reliable?
+5. Can streams reconnect?
+6. Are retries safe?
+7. Is idempotency explicit?
+8. Are errors standardized?
+9. Are tenant boundaries explicit?
+10. Is authorization enforced?
+11. Are webhooks secure?
+12. Are events versioned?
+13. Can external integrations evolve?
+14. Are MCP/A2A used only where justified?
+15. Is Day 1 simple?
+16. Is protocol sprawl avoided?
+17. Can the system evolve without breaking clients?
+18. Can APIs be observed and audited?
+19. Can expensive agent operations be controlled?
+20. What assumptions could invalidate the architecture?
+
+Include:
+
+# ARCHITECTURAL SELF-CRITIQUE
+
+======================================================================
+97. FINAL RECOMMENDATION
+======================================================================
+
+End with:
+
+# FINAL API, INTEGRATION & EXTERNAL INTERFACE
+# ARCHITECTURE RECOMMENDATION
+
+Answer:
+
+"What API and Integration Architecture should this platform actually
+build?"
+
+Be concrete.
+
+Describe:
+
+- public API
+- internal API
+- protocol choices
+- streaming
+- async operations
+- event model
+- webhooks
+- idempotency
+- retries
+- rate limiting
+- quotas
+- authentication
+- authorization
+- tenant context
+- tool interfaces
+- MCP
+- A2A
+- connectors
+- SDKs
+- API gateway
+- versioning
+- compatibility
+- observability
+- audit
+- Day-1 implementation
+- future evolution.
+
+Then explicitly answer:
+
+"What MUST NOT be built on Day 1?"
+
+Then:
+
+"What future condition should trigger the next architectural evolution?"
+
+======================================================================
+98. REQUIRED OUTPUT
+======================================================================
+
+Produce:
+
+18_API_INTEGRATION_EXTERNAL_INTERFACE_ARCHITECTURE.md
+
+The document MUST explicitly reference:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_PLANE.md
+04_AGENT_RUNTIME.md
+05_MODEL_INFERENCE_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+07_KNOWLEDGE_DATA_ARCHITECTURE.md
+08_MEMORY_ARCHITECTURE.md
+09_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+10_AGENT_COMMUNICATION_MULTI_AGENT_ARCHITECTURE.md
+11_EVENTING_WORKFLOW_DURABLE_EXECUTION_ARCHITECTURE.md
+12_OBSERVABILITY_EVALUATION_RELIABILITY_ARCHITECTURE.md
+13_SECURITY_ARCHITECTURE.md
+14_DATA_GOVERNANCE_PRIVACY_COMPLIANCE_ARCHITECTURE.md
+15_DEPLOYMENT_INFRASTRUCTURE_RUNTIME_PLATFORM_ARCHITECTURE.md
+16_CICD_RELEASE_SUPPLY_CHAIN_ARCHITECTURE.md
+17_TESTING_QUALITY_VALIDATION_ARCHITECTURE.md
+
+If there is a conflict:
+
+DO NOT silently resolve it.
+
+Identify the conflict.
+
+Explain the trade-off.
+
+Recommend the superior architectural decision.
+
+Create an ADR candidate when appropriate.
+
+======================================================================
+99. SOURCE REQUIREMENTS
+======================================================================
+
+Include direct URLs.
+
+Prioritize:
+
+- official HTTP documentation
+- RFCs
+- OpenAPI
+- AsyncAPI
+- gRPC documentation
+- MCP specification
+- A2A specification where relevant
+- OAuth 2.0 RFCs
+- OpenID Connect
+- OWASP API Security
+- official gateway documentation
+- official cloud documentation.
+
+Do not fabricate citations.
+
+Do not cite sources that were not actually inspected.
+
+Clearly distinguish:
+
+SOURCE FACT
+
+from:
+
+BENCHMARK RESULT
+
+from:
+
+INFERENCE
+
+from:
+
+ARCHITECTURAL RECOMMENDATION.
+
+======================================================================
+100. ABSOLUTE FINAL INSTRUCTION
+======================================================================
+
+Act as an INDEPENDENT Principal API and Integration Architect.
+
+Your responsibility is to determine the best interface architecture,
+not to validate a preferred protocol.
+
+Do not assume:
+
+REST = ALWAYS BEST.
+
+Do not assume:
+
+gRPC = ALWAYS FASTER.
+
+Do not assume:
+
+GRAPHQL = BETTER APIs.
+
+Do not assume:
+
+WEBSOCKETS = BEST STREAMING.
+
+Do not assume:
+
+EVENTS = BETTER THAN REQUESTS.
+
+Do not assume:
+
+MCP = REPLACEMENT FOR ALL APIs.
+
+Do not assume:
+
+A2A = REQUIRED FOR EVERY AGENT.
+
+Do not assume:
+
+WEBHOOKS = RELIABLE WITHOUT REPLAY.
+
+Do not assume:
+
+RETRIES = SAFE.
+
+Do not assume:
+
+IDEMPOTENCY = AUTOMATIC.
+
+Do not assume:
+
+API GATEWAY = REQUIRED.
+
+Do not allow:
+
+PROTOCOL PROLIFERATION
+
+without:
+
+A REAL ARCHITECTURAL NEED.
+
+Do not allow:
+
+EXTERNAL DATA
+
+to cross:
+
+TENANT / AUTHORIZATION / PRIVACY BOUNDARIES
+
+without explicit controls.
+
+Optimize for:
+
+CLEAR CONTRACTS
++
+SIMPLE PROTOCOLS
++
+RELIABILITY
++
+SECURITY
++
+COMPATIBILITY
++
+OBSERVABILITY
++
+INTEROPERABILITY
++
+LOW OPERATIONAL COMPLEXITY
++
+FUTURE EVOLUTION
+
+The final architecture MUST result from:
+
+    RESEARCH
+       ↓
+    REAL INTERACTION REQUIREMENTS
+       ↓
+    INTERFACE INVENTORY
+       ↓
+    SYNCHRONOUS / ASYNCHRONOUS ANALYSIS
+       ↓
+    PROTOCOL ALTERNATIVES
+       ↓
+    SECURITY / COMPATIBILITY ANALYSIS
+       ↓
+    ADVERSARIAL CHALLENGE
+       ↓
+    FALSIFICATION
+       ↓
+    FINAL DECISION
+
+DO NOT DESIGN THE API STACK FIRST.
+
+RESEARCH FIRST.
+
+UNDERSTAND THE INTERACTION MODEL FIRST.
+
+MAP THE CONTRACTS.
+
+COMPARE.
+
+CHALLENGE.
+
+FALSIFY.
+
+SELECT THE BEST API AND INTEGRATION ARCHITECTURE AVAILABLE FOR THIS
+PROJECT.
+
+THEN DESIGN IT.

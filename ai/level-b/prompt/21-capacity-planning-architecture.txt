@@ -1,0 +1,3199 @@
+# 21 — CAPACITY PLANNING ARCHITECTURE
+## Enterprise AI Agent Platform
+
+======================================================================
+ROLE
+======================================================================
+
+Act as the Principal Capacity Planning Architect, Distributed Systems
+Architect, Performance Architect, AI Infrastructure Architect, GPU
+Capacity Architect and SRE responsible for designing the complete
+Capacity Planning Architecture of an enterprise-grade AI agent
+platform.
+
+You have deep expertise in:
+
+- capacity planning
+- performance engineering
+- distributed systems
+- queueing theory
+- Little's Law
+- throughput modeling
+- latency modeling
+- saturation analysis
+- autoscaling
+- horizontal scaling
+- vertical scaling
+- GPU capacity planning
+- VRAM capacity
+- CPU capacity
+- RAM capacity
+- storage capacity
+- database capacity
+- network capacity
+- inference capacity
+- model serving
+- batching
+- concurrency
+- backpressure
+- workload forecasting
+- load testing
+- stress testing
+- soak testing
+- capacity modeling
+- reliability engineering
+- SLOs
+- error budgets
+- FinOps
+- multi-tenancy
+- resource utilization
+- burst management
+- capacity reservations
+- headroom planning
+- disaster recovery capacity.
+
+You are working within:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_ARCHITECTURE.md
+04_AGENT_RUNTIME.md
+05_MODEL_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+08_KNOWLEDGE_DATA_ARCHITECTURE.md
+09_MEMORY_ARCHITECTURE.md
+10_SECURITY_ARCHITECTURE.md
+11_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+12_TRUST_PROVENANCE_ARCHITECTURE.md
+13_RELIABILITY_ARCHITECTURE.md
+14_CONCURRENCY_ARCHITECTURE.md
+15_OBSERVABILITY_ARCHITECTURE.md
+16_AUDIT_ARCHITECTURE.md
+17_EVALUATION_ARCHITECTURE.md
+18_DEPLOYMENT_LIFECYCLE_ARCHITECTURE.md
+19_MULTI_TENANCY_ARCHITECTURE.md
+20_COST_ARCHITECTURE.md
+
+Future architecture documents include:
+
+22_NETWORKING_ARCHITECTURE.md
+23_STORAGE_ARCHITECTURE.md
+24_DR_ENTERPRISE_ARCHITECTURE.md
+25_ADVANCED_SUPPLY_CHAIN_ARCHITECTURE.md
+26_ENTERPRISE_COMPLIANCE_ARCHITECTURE.md
+27_MULTI_MODEL_FALLBACK_ARCHITECTURE.md
+28_HUMAN_IN_THE_LOOP_ARCHITECTURE.md
+29_REPLAY_ARCHITECTURE.md
+30_OFFLINE_MOBILE_ARCHITECTURE.md
+31_A2A_ARCHITECTURE.md
+32_ADMIN_CONSOLE_ARCHITECTURE.md
+33_ADR_ARCHITECTURE.md
+34_QUALITY_MODEL_ARCHITECTURE.md
+
+If future documents do not exist:
+
+DO NOT invent their content.
+
+Instead identify the future dependency and define the stable contract
+that must remain compatible.
+
+Existing architecture documents are not immune from challenge.
+
+If research demonstrates that an assumption in another architecture
+document is incorrect, incomplete, obsolete or suboptimal, explicitly
+identify the conflict and recommend the superior architecture.
+
+======================================================================
+1. PRIMARY OBJECTIVE
+======================================================================
+
+Design the complete Capacity Planning Architecture.
+
+The architecture must answer:
+
+HOW MUCH CAPACITY DOES THE PLATFORM NEED?
+
+FOR WHICH WORKLOAD?
+
+AT WHICH CONCURRENCY?
+
+AT WHICH LATENCY TARGET?
+
+AT WHICH AVAILABILITY TARGET?
+
+AT WHICH RESOURCE UTILIZATION?
+
+WHAT IS THE SATURATION POINT?
+
+WHAT IS THE SAFE OPERATING REGION?
+
+WHAT IS THE MINIMUM CAPACITY?
+
+WHAT IS THE NORMAL CAPACITY?
+
+WHAT IS THE PEAK CAPACITY?
+
+WHAT IS THE BURST CAPACITY?
+
+HOW MUCH HEADROOM IS REQUIRED?
+
+WHEN SHOULD THE SYSTEM SCALE?
+
+HOW FAST CAN IT SCALE?
+
+HOW MUCH CAPACITY MUST EXIST BEFORE SCALE-UP COMPLETES?
+
+WHAT HAPPENS DURING A BURST THAT EXCEEDS SCALING SPEED?
+
+WHICH RESOURCE BECOMES THE BOTTLENECK FIRST?
+
+CPU?
+
+RAM?
+
+GPU COMPUTE?
+
+GPU VRAM?
+
+MODEL SERVER?
+
+DATABASE?
+
+VECTOR DATABASE?
+
+NETWORK?
+
+EXTERNAL API?
+
+QUEUE?
+
+STORAGE?
+
+WHAT HAPPENS WHEN ONE RESOURCE HAS CAPACITY BUT ANOTHER DOES NOT?
+
+HOW DOES CAPACITY INTERACT WITH CONCURRENCY?
+
+HOW DOES CAPACITY INTERACT WITH COST?
+
+HOW DOES CAPACITY INTERACT WITH MULTI-TENANCY?
+
+HOW DOES CAPACITY INTERACT WITH RELIABILITY?
+
+HOW DOES CAPACITY EVOLVE AS THE PLATFORM GROWS?
+
+======================================================================
+2. MOST IMPORTANT INSTRUCTION
+## RESEARCH FIRST — SELECT ARCHITECTURE SECOND
+======================================================================
+
+DO NOT begin by choosing:
+
+- Kubernetes autoscaling
+- HPA
+- VPA
+- KEDA
+- cluster autoscaler
+- GPU autoscaling
+- a cloud provider
+- a queue
+- Prometheus
+- a specific GPU
+- a fixed number of servers
+- a fixed utilization threshold.
+
+Research first.
+
+Claude must independently determine what capacity architecture is
+actually appropriate for THIS platform.
+
+Research:
+
+- queueing theory
+- autoscaling behavior
+- AI inference scaling
+- GPU capacity planning
+- model serving
+- database scaling
+- workload forecasting
+- cloud scaling behavior
+- batch inference
+- burst capacity
+- capacity headroom
+- SLO-driven capacity planning.
+
+Prioritize:
+
+- authoritative distributed-systems research
+- official Kubernetes documentation
+- official autoscaling documentation
+- official model-serving documentation
+- official cloud infrastructure documentation
+- authoritative SRE literature
+- benchmark evidence.
+
+Do not choose a technology because it is popular.
+
+Required process:
+
+    WORKLOAD MODEL
+       ↓
+    RESOURCE MODEL
+       ↓
+    PERFORMANCE MODEL
+       ↓
+    BOTTLENECK MODEL
+       ↓
+    CONCURRENCY MODEL
+       ↓
+    CAPACITY MODEL
+       ↓
+    HEADROOM MODEL
+       ↓
+    SCALE MODEL
+       ↓
+    BURST MODEL
+       ↓
+    FORECAST MODEL
+       ↓
+    COST MODEL
+       ↓
+    FAILURE MODEL
+       ↓
+    ARCHITECTURE OPTIONS
+       ↓
+    BENCHMARKING
+       ↓
+    ADVERSARIAL CHALLENGE
+       ↓
+    FALSIFICATION
+       ↓
+    FINAL DECISION
+       ↓
+    DAY-1 IMPLEMENTATION
+       ↓
+    FUTURE EVOLUTION
+
+CLAUDE MUST DETERMINE THE BEST CAPACITY PLANNING ARCHITECTURE AVAILABLE
+FOR THIS PROJECT.
+
+======================================================================
+3. CENTRAL PRINCIPLE
+======================================================================
+
+CAPACITY IS NOT:
+
+NUMBER OF MACHINES.
+
+Capacity is:
+
+WORKLOAD
++
+RESOURCE
++
+THROUGHPUT
++
+LATENCY
++
+CONCURRENCY
++
+SATURATION
++
+SLO
++
+HEADROOM
++
+FAILURE TOLERANCE.
+
+A system may have:
+
+10 servers
+
+and still have insufficient capacity if:
+
+the database saturates.
+
+======================================================================
+4. LEVEL B CONSTRAINT
+======================================================================
+
+This is:
+
+LEVEL B — PREPARED DAY 1.
+
+Day 1 does NOT require:
+
+- predictive autoscaling
+- sophisticated forecasting
+- multi-region capacity optimization
+- automated capacity procurement
+- complex economic optimization
+- enterprise-wide capacity orchestration.
+
+But Day 1 MUST establish:
+
+- measurable resource capacity
+- bottleneck identification
+- concurrency/capacity relationships
+- workload metrics
+- saturation metrics
+- basic headroom
+- load-test methodology.
+
+Do not build the system without the telemetry required to discover
+capacity limits later.
+
+======================================================================
+5. DAY-1 PRINCIPLE
+======================================================================
+
+Day 1 should establish:
+
+RESOURCE
+
+→
+
+MEASURE
+
+→
+
+MODEL
+
+→
+
+TEST
+
+→
+
+CAPACITY LIMIT
+
+→
+
+HEADROOM.
+
+Do not guess capacity.
+
+Do not copy capacity numbers from another system.
+
+======================================================================
+6. CAPACITY TAXONOMY
+======================================================================
+
+Define capacity for:
+
+- Agent Runtime
+- Model Runtime
+- GPU
+- CPU
+- RAM
+- VRAM
+- database
+- vector database
+- storage
+- network
+- tool execution
+- external APIs
+- queues
+- workflow execution
+- observability
+- evaluation.
+
+Determine which are primary bottlenecks.
+
+======================================================================
+7. WORKLOAD MODEL
+======================================================================
+
+Define workload dimensions:
+
+- requests per second
+- requests per minute
+- concurrent runs
+- model requests per run
+- tool calls per run
+- tokens per request
+- input token distribution
+- output token distribution
+- workflow duration
+- tool latency
+- model latency
+- burst factor
+- request arrival distribution.
+
+Do not assume Poisson arrivals without evidence.
+
+======================================================================
+8. WORKLOAD CLASSES
+======================================================================
+
+Distinguish:
+
+INTERACTIVE
+
+BACKGROUND
+
+BATCH
+
+EVALUATION
+
+ADMINISTRATIVE
+
+RECOVERY.
+
+Determine whether each requires separate capacity pools.
+
+======================================================================
+9. STEADY STATE
+======================================================================
+
+Define steady-state capacity.
+
+Measure:
+
+- average load
+- peak normal load
+- sustained concurrency
+- resource utilization.
+
+Do not use average load alone.
+
+======================================================================
+10. PEAK LOAD
+======================================================================
+
+Define:
+
+normal peak
+
+vs:
+
+absolute peak.
+
+======================================================================
+11. BURST LOAD
+======================================================================
+
+Model sudden workload increases.
+
+Example:
+
+10x traffic within a short interval.
+
+Determine:
+
+- existing headroom
+- queue absorption
+- scale-out latency
+- rejection behavior.
+
+======================================================================
+12. ARRIVAL RATE
+======================================================================
+
+Measure:
+
+λ = arrival rate.
+
+Do not assume:
+
+average arrival rate = safe capacity.
+
+======================================================================
+13. SERVICE RATE
+======================================================================
+
+Measure:
+
+μ = service rate.
+
+Determine service rate per:
+
+- worker
+- GPU
+- model server
+- database connection
+- tool worker.
+
+======================================================================
+14. CONCURRENCY
+======================================================================
+
+Using 14 define:
+
+L = concurrent work.
+
+Use queueing relationships where applicable.
+
+Explicitly evaluate:
+
+Little's Law:
+
+L = λW
+
+where appropriate.
+
+Do not treat queueing equations as universally accurate without
+validating their assumptions.
+
+======================================================================
+15. THROUGHPUT
+======================================================================
+
+Define throughput for:
+
+- agent runs
+- model requests
+- tool calls
+- tokens
+- documents
+- retrievals.
+
+======================================================================
+16. LATENCY
+======================================================================
+
+Measure:
+
+- p50
+- p90
+- p95
+- p99
+- p99.9 where justified.
+
+Do not use averages alone.
+
+======================================================================
+17. TAIL LATENCY
+======================================================================
+
+Tail latency often increases before obvious failure.
+
+Use tail latency as an early saturation signal.
+
+======================================================================
+18. SATURATION
+======================================================================
+
+Define saturation for each resource.
+
+CPU saturation
+
+≠
+
+GPU saturation
+
+≠
+
+database saturation.
+
+======================================================================
+19. BOTTLENECK IDENTIFICATION
+======================================================================
+
+Determine the first bottleneck.
+
+Potential chain:
+
+Agent Runtime
+→
+Model Runtime
+→
+GPU
+→
+Database.
+
+The architecture must identify the actual bottleneck through measurement.
+
+======================================================================
+20. BOTTLENECK MIGRATION
+======================================================================
+
+When GPU capacity increases:
+
+database may become the new bottleneck.
+
+Capacity planning must be iterative.
+
+======================================================================
+21. CPU CAPACITY
+======================================================================
+
+Measure:
+
+- cores
+- utilization
+- runnable tasks
+- CPU throttling
+- CPU saturation.
+
+Do not equate CPU percentage with capacity.
+
+======================================================================
+22. MEMORY CAPACITY
+======================================================================
+
+Measure:
+
+- RAM usage
+- working set
+- allocation rate
+- GC behavior where applicable
+- OOM risk.
+
+======================================================================
+23. GPU CAPACITY
+======================================================================
+
+Using 05 define:
+
+- GPU compute
+- GPU memory
+- GPU utilization
+- inference throughput
+- batch size
+- model size
+- context length.
+
+======================================================================
+24. GPU THROUGHPUT
+======================================================================
+
+Determine:
+
+requests/sec
+
+tokens/sec
+
+or another workload-specific unit.
+
+Do not use GPU utilization as the only capacity metric.
+
+======================================================================
+25. VRAM CAPACITY
+======================================================================
+
+A GPU may have:
+
+compute capacity
+
+but insufficient:
+
+VRAM.
+
+Model placement must consider both.
+
+======================================================================
+26. GPU MODEL LOADING
+======================================================================
+
+Capacity planning must account for:
+
+model load time.
+
+A GPU that takes several minutes to initialize cannot respond instantly
+to bursts.
+
+======================================================================
+27. GPU SCALE-OUT
+======================================================================
+
+Determine:
+
+- scale trigger
+- provisioning latency
+- model load latency
+- warm-up
+- readiness.
+
+======================================================================
+28. GPU WARM POOL
+======================================================================
+
+Evaluate whether maintaining warm GPUs is economically and
+operationally justified.
+
+Coordinate with 20.
+
+======================================================================
+29. GPU BATCHING
+======================================================================
+
+Evaluate:
+
+batch size
+
+vs:
+
+throughput
+
+vs:
+
+latency
+
+vs:
+
+GPU utilization
+
+vs:
+
+cost.
+
+======================================================================
+30. CONTEXT LENGTH
+======================================================================
+
+Longer contexts can significantly alter:
+
+- memory
+- latency
+- throughput.
+
+Capacity model must include context distribution.
+
+======================================================================
+31. TOKEN DISTRIBUTION
+======================================================================
+
+Average tokens are insufficient.
+
+Model:
+
+p50
+
+p95
+
+p99
+
+token sizes.
+
+======================================================================
+32. MODEL MIX
+======================================================================
+
+Capacity depends on:
+
+Model A
+
+vs:
+
+Model B
+
+vs:
+
+Model C.
+
+Determine whether capacity planning needs model-specific profiles.
+
+======================================================================
+33. MULTI-MODEL CAPACITY
+======================================================================
+
+Future 27 may route workloads across models.
+
+Define capacity contracts that support multiple models.
+
+======================================================================
+34. TOOL CAPACITY
+======================================================================
+
+Using 06 define:
+
+- tool calls/sec
+- concurrent tool calls
+- tool latency
+- external API quotas.
+
+======================================================================
+35. EXTERNAL API CAPACITY
+======================================================================
+
+The platform may have unlimited internal workers but the external API
+may allow only:
+
+N requests.
+
+External service quotas become capacity constraints.
+
+======================================================================
+36. DATABASE CAPACITY
+======================================================================
+
+Measure:
+
+- queries/sec
+- connections
+- transaction rate
+- CPU
+- I/O
+- lock contention
+- storage.
+
+======================================================================
+37. VECTOR DATABASE CAPACITY
+======================================================================
+
+Measure:
+
+- query/sec
+- indexing throughput
+- latency
+- memory
+- storage.
+
+======================================================================
+38. STORAGE CAPACITY
+======================================================================
+
+Future 23 will provide detailed storage architecture.
+
+Day 1 should still measure:
+
+- bytes
+- objects
+- read/write rate
+- IOPS where relevant.
+
+======================================================================
+39. NETWORK CAPACITY
+======================================================================
+
+Future 22 will provide detailed networking.
+
+Measure where relevant:
+
+- bandwidth
+- packets
+- connections
+- latency
+- egress.
+
+======================================================================
+40. QUEUE CAPACITY
+======================================================================
+
+Using 14:
+
+Queue depth is not infinite capacity.
+
+Define:
+
+- queue arrival rate
+- service rate
+- maximum depth
+- queue age.
+
+======================================================================
+41. QUEUE AGE
+======================================================================
+
+Queue age can be a better saturation signal than queue length.
+
+======================================================================
+42. BACKPRESSURE
+======================================================================
+
+When capacity is exhausted:
+
+- queue
+- reject
+- shed
+- degrade.
+
+Determine the correct behavior.
+
+======================================================================
+43. CAPACITY HEADROOM
+======================================================================
+
+Define:
+
+SAFE CAPACITY
+
+vs:
+
+THEORETICAL CAPACITY.
+
+Never operate permanently at theoretical maximum.
+
+======================================================================
+44. HEADROOM DETERMINATION
+======================================================================
+
+Do not invent:
+
+20%
+
+30%
+
+50%.
+
+Determine headroom through:
+
+- workload variability
+- scale latency
+- failure tolerance
+- SLO
+- burst requirements.
+
+======================================================================
+45. FAILURE HEADROOM
+======================================================================
+
+Capacity must account for failure.
+
+Example:
+
+N nodes
+
+one node fails.
+
+Can the remaining capacity satisfy the SLO?
+
+======================================================================
+46. N+1
+======================================================================
+
+Evaluate N+1 capacity.
+
+Do not assume N+1 is sufficient for every architecture.
+
+======================================================================
+47. N+2
+======================================================================
+
+Evaluate where multiple failures are realistic.
+
+======================================================================
+48. ZONE FAILURE
+======================================================================
+
+Future enterprise architecture may require zone-level failure tolerance.
+
+Determine how much capacity remains after losing one zone.
+
+======================================================================
+49. REGION FAILURE
+======================================================================
+
+Future 24:
+
+determine whether regional failover requires:
+
+- standby capacity
+- active-active
+- active-passive.
+
+======================================================================
+50. AUTOSCALING
+======================================================================
+
+Evaluate:
+
+- reactive scaling
+- predictive scaling
+- scheduled scaling
+- queue-based scaling
+- hybrid.
+
+Do not assume CPU-based scaling is sufficient.
+
+======================================================================
+51. REACTIVE SCALING
+======================================================================
+
+Evaluate triggers:
+
+- CPU
+- GPU
+- queue depth
+- queue age
+- latency
+- throughput
+- custom metrics.
+
+======================================================================
+52. QUEUE-BASED SCALING
+======================================================================
+
+Determine whether queue backlog is a better scaling signal for
+asynchronous workloads.
+
+======================================================================
+53. LATENCY-BASED SCALING
+======================================================================
+
+Evaluate latency as a scaling signal.
+
+Avoid scaling on noisy individual requests.
+
+======================================================================
+54. PREDICTIVE SCALING
+======================================================================
+
+Evaluate whether historical workload patterns justify predictive
+scaling.
+
+Do not build ML forecasting merely because it is possible.
+
+======================================================================
+55. SCHEDULED SCALING
+======================================================================
+
+Some workloads may have predictable peaks.
+
+Evaluate scheduled capacity.
+
+======================================================================
+56. SCALE-UP
+======================================================================
+
+Determine when vertical scaling is preferable.
+
+Examples:
+
+- larger GPU
+- more VRAM
+- larger database
+- more CPU.
+
+======================================================================
+57. SCALE-OUT
+======================================================================
+
+Determine when horizontal scaling is preferable.
+
+======================================================================
+58. SCALE-DOWN
+======================================================================
+
+Define safe scale-down.
+
+Avoid:
+
+scale up
+→
+immediate scale down
+→
+oscillation.
+
+======================================================================
+59. HYSTERESIS
+======================================================================
+
+Evaluate separate scale-up and scale-down thresholds.
+
+Do not use arbitrary values.
+
+======================================================================
+60. COOL-DOWN
+======================================================================
+
+Determine whether scale-down needs stabilization periods.
+
+======================================================================
+61. AUTOSCALING FAILURE
+======================================================================
+
+What happens if the autoscaler fails?
+
+Capacity architecture must degrade safely.
+
+======================================================================
+62. PROVISIONING FAILURE
+======================================================================
+
+What happens if new capacity cannot be created?
+
+Define:
+
+- queue
+- degrade
+- reject.
+
+======================================================================
+63. CLOUD CAPACITY FAILURE
+======================================================================
+
+A provider may have no available GPU capacity.
+
+Do not assume capacity can always be purchased instantly.
+
+======================================================================
+64. CAPACITY RESERVATION
+======================================================================
+
+Evaluate:
+
+- reserved capacity
+- dedicated capacity
+- capacity reservations.
+
+Coordinate with 20.
+
+======================================================================
+65. MULTI-REGION CAPACITY
+======================================================================
+
+Evaluate:
+
+- active-active
+- active-passive
+- overflow region
+- regional burst.
+
+Do not build multi-region Day 1 unless justified.
+
+======================================================================
+66. CAPACITY PLACEMENT
+======================================================================
+
+If multiple resource pools exist:
+
+determine where workload should run.
+
+Factors:
+
+- model
+- GPU
+- region
+- tenant
+- latency
+- cost
+- availability.
+
+======================================================================
+67. CAPACITY-AWARE SCHEDULING
+======================================================================
+
+Using 14 determine whether scheduler decisions require:
+
+resource availability.
+
+======================================================================
+68. TENANT CAPACITY
+======================================================================
+
+Using 19:
+
+determine:
+
+Tenant capacity
+
+vs:
+
+platform capacity.
+
+A tenant may have quota lower than platform capacity.
+
+======================================================================
+69. RESERVED TENANT CAPACITY
+======================================================================
+
+Evaluate premium/dedicated tenants.
+
+Do not implement without business justification.
+
+======================================================================
+70. NOISY NEIGHBOR
+======================================================================
+
+Capacity planning must account for:
+
+Tenant A
+
+consuming disproportionate resources.
+
+======================================================================
+71. COST INTERACTION
+======================================================================
+
+Using 20:
+
+more capacity
+
+can mean:
+
+more cost.
+
+But insufficient capacity can also create:
+
+- retries
+- latency
+- failures
+- wasted GPU
+- poor utilization.
+
+Optimize total economics, not resource count.
+
+======================================================================
+72. COST PER CAPACITY
+======================================================================
+
+Measure:
+
+cost per unit of useful capacity.
+
+Examples:
+
+$/successful agent run
+
+$/million generated tokens
+
+$/GPU-hour
+
+These are examples only.
+
+======================================================================
+73. CAPACITY UTILIZATION
+======================================================================
+
+Define:
+
+utilization
+
+for each resource.
+
+Do not use a single global utilization number.
+
+======================================================================
+74. UTILIZATION VS PERFORMANCE
+======================================================================
+
+A GPU at 95% utilization may be excellent.
+
+A database at 95% utilization may be dangerous.
+
+Context matters.
+
+======================================================================
+75. CAPACITY EFFICIENCY
+======================================================================
+
+Evaluate:
+
+throughput / resource
+
+and:
+
+throughput / cost.
+
+======================================================================
+76. PERFORMANCE CURVES
+======================================================================
+
+For each major resource determine:
+
+load
+→
+throughput
+→
+latency.
+
+Identify the knee of the curve.
+
+======================================================================
+77. SATURATION CURVE
+======================================================================
+
+Determine where:
+
+additional load
+
+causes:
+
+disproportionate latency growth.
+
+======================================================================
+78. CAPACITY LIMIT
+======================================================================
+
+The useful capacity limit should be derived from:
+
+SLO
+
+rather than:
+
+100% utilization.
+
+======================================================================
+79. SLO-DRIVEN CAPACITY
+======================================================================
+
+Using 13 define:
+
+capacity required to satisfy:
+
+availability
++
+latency
++
+throughput.
+
+======================================================================
+80. ERROR BUDGET
+======================================================================
+
+Evaluate how error budget affects capacity.
+
+If error budget is exhausted:
+
+capacity may need to increase.
+
+======================================================================
+81. CAPACITY + RELIABILITY
+======================================================================
+
+Under-capacity can manifest as:
+
+timeouts
+
+retries
+
+failures.
+
+Therefore capacity is a reliability mechanism.
+
+======================================================================
+82. CAPACITY + RETRIES
+======================================================================
+
+Retries increase workload.
+
+This can create:
+
+failure
+→
+retry
+→
+load
+→
+more failure.
+
+Model this explicitly.
+
+======================================================================
+83. CAPACITY + CIRCUIT BREAKERS
+======================================================================
+
+Using 13/14 determine how circuit breakers affect capacity.
+
+======================================================================
+84. CAPACITY + CACHING
+======================================================================
+
+Caching can reduce resource demand.
+
+Model:
+
+cache hit rate
+
+as a capacity variable.
+
+======================================================================
+85. CACHE MISS STORM
+======================================================================
+
+A cache outage can suddenly increase backend load.
+
+Capacity plan must account for it.
+
+======================================================================
+86. DATABASE CONNECTION POOLS
+======================================================================
+
+Increasing application workers may increase DB connections.
+
+Capacity planning must model:
+
+worker count
+→
+connection count
+→
+database saturation.
+
+======================================================================
+87. MODEL SERVER FAN-OUT
+======================================================================
+
+Increasing agent concurrency may multiply model requests.
+
+Do not assume:
+
+agent concurrency = model concurrency.
+
+======================================================================
+88. TOOL FAN-OUT
+======================================================================
+
+Similarly:
+
+agent concurrency
+×
+tool fan-out
+
+can determine tool capacity.
+
+======================================================================
+89. WORKLOAD MULTIPLIERS
+======================================================================
+
+Define:
+
+Model calls per run
+
+Tool calls per run
+
+Retrievals per run.
+
+Use distributions, not only averages.
+
+======================================================================
+90. CAPACITY FORMULAS
+======================================================================
+
+Where useful define formulas.
+
+Examples:
+
+required_capacity
+
+≈
+
+arrival_rate × service_time
+
+or:
+
+concurrency
+
+≈
+
+throughput × latency.
+
+But explicitly state assumptions.
+
+Do not present simplified equations as exact system behavior.
+
+======================================================================
+91. LITTLE'S LAW
+======================================================================
+
+Use:
+
+L = λW
+
+where applicable.
+
+Explain:
+
+- L
+- λ
+- W.
+
+Validate assumptions before applying.
+
+======================================================================
+92. QUEUEING THEORY
+======================================================================
+
+Evaluate:
+
+M/M/1
+
+M/M/c
+
+or more appropriate models.
+
+Do not force a textbook model onto a workload that violates its
+assumptions.
+
+======================================================================
+93. BENCHMARK-BASED CAPACITY
+======================================================================
+
+When analytical models are insufficient:
+
+benchmark actual systems.
+
+======================================================================
+94. BENCHMARK MATRIX
+======================================================================
+
+For each major resource test:
+
+Concurrency:
+
+1
+2
+4
+8
+16
+32
+64
+
+or higher where justified.
+
+Measure:
+
+- throughput
+- p50
+- p95
+- p99
+- resource utilization
+- errors
+- queue time.
+
+Do not invent safe limits.
+
+======================================================================
+95. LOAD TEST
+======================================================================
+
+Define:
+
+- ramp
+- steady
+- burst
+- saturation
+- recovery.
+
+======================================================================
+96. STRESS TEST
+======================================================================
+
+Continue beyond expected operating capacity.
+
+Determine:
+
+- failure point
+- degradation mode
+- recovery behavior.
+
+======================================================================
+97. SOAK TEST
+======================================================================
+
+Run long enough to detect:
+
+- memory leaks
+- resource leaks
+- GPU fragmentation
+- queue accumulation
+- connection leaks.
+
+======================================================================
+98. FAILURE TEST
+======================================================================
+
+Remove:
+
+- one worker
+- one GPU
+- one database replica
+- one availability zone where relevant.
+
+Measure remaining capacity.
+
+======================================================================
+99. CAPACITY RECOVERY
+======================================================================
+
+After overload:
+
+how long until:
+
+normal latency
++
+normal queue
++
+normal utilization?
+
+======================================================================
+100. BURST ABSORPTION
+======================================================================
+
+Determine how much burst can be absorbed without new capacity.
+
+======================================================================
+101. BURST DURATION
+======================================================================
+
+A 2x burst for:
+
+5 seconds
+
+is different from:
+
+2x for:
+
+30 minutes.
+
+Model duration.
+
+======================================================================
+102. SCALE LATENCY
+======================================================================
+
+Measure:
+
+trigger
+→
+capacity available.
+
+This includes:
+
+- provisioning
+- startup
+- model loading
+- readiness.
+
+======================================================================
+103. PRE-SCALING
+======================================================================
+
+If scale latency is long:
+
+evaluate maintaining headroom.
+
+======================================================================
+104. WARM CAPACITY
+======================================================================
+
+Determine whether to keep:
+
+warm model servers
+warm GPUs
+warm workers.
+
+======================================================================
+105. COLD START
+======================================================================
+
+Measure cold-start latency.
+
+======================================================================
+106. CAPACITY FORECASTING
+======================================================================
+
+Future growth model:
+
+Current workload
+→
+growth
+→
+future capacity.
+
+Do not use linear extrapolation blindly.
+
+======================================================================
+107. FORECAST INPUTS
+======================================================================
+
+Use:
+
+- historical traffic
+- tenant growth
+- model adoption
+- workload mix
+- token growth
+- tool usage.
+
+======================================================================
+108. FORECAST UNCERTAINTY
+======================================================================
+
+Provide:
+
+base
+
+high
+
+low
+
+scenarios.
+
+======================================================================
+109. CAPACITY SCENARIOS
+======================================================================
+
+At minimum evaluate:
+
+BASE
+
+GROWTH
+
+HIGH GROWTH
+
+BURST
+
+FAILURE.
+
+======================================================================
+110. CAPACITY RESERVE
+======================================================================
+
+Define how much capacity must be reserved for:
+
+- failure
+- burst
+- deployment
+- maintenance.
+
+Do not invent percentages.
+
+Derive from tests and SLOs.
+
+======================================================================
+111. DEPLOYMENT CAPACITY
+======================================================================
+
+Using 18:
+
+during rollout:
+
+old version
++
+new version
+
+may temporarily require additional capacity.
+
+Model this.
+
+======================================================================
+112. BLUE/GREEN
+======================================================================
+
+If used:
+
+capacity temporarily doubles.
+
+Evaluate whether infrastructure supports it.
+
+======================================================================
+113. CANARY
+======================================================================
+
+Canary deployments may have lower capacity impact.
+
+======================================================================
+114. DRAINING
+======================================================================
+
+During node removal:
+
+existing work must drain.
+
+Capacity planning must include:
+
+draining capacity.
+
+======================================================================
+115. MAINTENANCE
+======================================================================
+
+Capacity must remain within SLO during planned maintenance where
+required.
+
+======================================================================
+116. EVALUATION CAPACITY
+======================================================================
+
+Using 17:
+
+evaluation workloads must not consume production capacity
+unintentionally.
+
+======================================================================
+117. BACKGROUND CAPACITY
+======================================================================
+
+Separate background capacity where useful.
+
+======================================================================
+118. CAPACITY POOLS
+======================================================================
+
+Evaluate pools:
+
+INTERACTIVE
+
+BACKGROUND
+
+EVALUATION
+
+ADMIN.
+
+Determine whether separate pools are actually necessary.
+
+======================================================================
+119. BULKHEAD CAPACITY
+======================================================================
+
+Using 14:
+
+bulkheads can protect critical capacity.
+
+======================================================================
+120. CAPACITY FAIRNESS
+======================================================================
+
+Using 19:
+
+tenant fairness may require per-tenant capacity allocation.
+
+======================================================================
+121. CAPACITY QUOTAS
+======================================================================
+
+Distinguish:
+
+QUOTA
+
+from:
+
+PHYSICAL CAPACITY.
+
+A quota may intentionally be below physical capacity.
+
+======================================================================
+122. CAPACITY VS RESERVATION
+======================================================================
+
+A tenant may have:
+
+reserved capacity
+
+but not necessarily consume it.
+
+Model reservation economics.
+
+======================================================================
+123. CAPACITY OVERSUBSCRIPTION
+======================================================================
+
+Evaluate whether oversubscription is safe for:
+
+- CPU
+- memory
+- GPU
+- storage.
+
+Do not oversubscribe resources without evidence.
+
+======================================================================
+124. CAPACITY ISOLATION
+======================================================================
+
+Determine whether certain workloads require dedicated capacity.
+
+======================================================================
+125. CAPACITY PLACEMENT
+======================================================================
+
+For heterogeneous resources:
+
+determine placement strategy.
+
+======================================================================
+126. HETEROGENEOUS GPU
+======================================================================
+
+Different GPUs have different:
+
+- VRAM
+- throughput
+- cost
+- availability.
+
+Capacity planning must model them separately.
+
+======================================================================
+127. MODEL-TO-GPU FIT
+======================================================================
+
+Determine whether a model can run on each GPU class.
+
+======================================================================
+128. CAPACITY FRAGMENTATION
+======================================================================
+
+Capacity can exist but be unusable.
+
+Example:
+
+8 GB free
+
+but:
+
+model requires 12 GB contiguous/usable memory.
+
+Identify fragmentation.
+
+======================================================================
+129. RESOURCE FRAGMENTATION
+======================================================================
+
+A cluster can have:
+
+CPU free on Node A
+
+GPU free on Node B
+
+but no node satisfying the combined requirement.
+
+Model this.
+
+======================================================================
+130. SCHEDULING INTERACTION
+======================================================================
+
+Capacity planning and scheduling must share a resource model.
+
+Do not create separate incompatible models.
+
+======================================================================
+131. CONTROL PLANE
+======================================================================
+
+Using 02:
+
+Control Plane should define policy/configuration.
+
+Data Plane should enforce actual capacity constraints.
+
+======================================================================
+132. GOVERNANCE
+======================================================================
+
+Using 03:
+
+Capacity policy may define:
+
+- maximum workload
+- protected capacity
+- emergency limits.
+
+======================================================================
+133. SECURITY CAPACITY
+======================================================================
+
+Security controls can consume capacity:
+
+- encryption
+- scanning
+- policy checks
+- audit.
+
+Include material overhead where relevant.
+
+======================================================================
+134. AUDIT CAPACITY
+======================================================================
+
+Using 16:
+
+audit volume may grow with workload.
+
+Ensure audit systems can handle peak event volume.
+
+======================================================================
+135. OBSERVABILITY CAPACITY
+======================================================================
+
+Using 15:
+
+observability systems must scale with:
+
+- traces
+- logs
+- metrics.
+
+======================================================================
+136. COST CAPACITY
+======================================================================
+
+Using 20:
+
+capacity decisions must consider:
+
+cost.
+
+But cost should not override required SLOs.
+
+======================================================================
+137. MULTI-TENANT CAPACITY
+======================================================================
+
+Using 19:
+
+define:
+
+platform capacity
+
+tenant quota
+
+tenant reservation
+
+tenant usage.
+
+======================================================================
+138. MODEL FALLBACK
+======================================================================
+
+Future 27:
+
+if Model A is saturated:
+
+route to Model B.
+
+Capacity planning must understand fallback capacity.
+
+======================================================================
+139. HUMAN-IN-THE-LOOP
+======================================================================
+
+Future 28:
+
+paused workflows may consume or release resources.
+
+Define behavior.
+
+======================================================================
+140. REPLAY
+======================================================================
+
+Future 29:
+
+replay workloads should have separate capacity controls.
+
+======================================================================
+141. A2A
+======================================================================
+
+Future 31:
+
+agent-to-agent calls may multiply workload.
+
+Model:
+
+Agent A
+→
+Agent B
+→
+Agent C.
+
+Prevent uncontrolled capacity amplification.
+
+======================================================================
+142. ADMIN CONSOLE
+======================================================================
+
+Future 32 should expose:
+
+- capacity
+- utilization
+- saturation
+- forecast
+- queue
+- scaling.
+
+Define stable observability contracts.
+
+======================================================================
+143. CAPACITY API
+======================================================================
+
+Determine whether internal services require a common capacity abstraction.
+
+Potential:
+
+CapacitySnapshot
+CapacityReservation
+CapacityRequest
+CapacityDecision
+ResourceProfile.
+
+These are examples only.
+
+======================================================================
+144. RESOURCE PROFILE
+======================================================================
+
+Define resource requirements for operations.
+
+Potential:
+
+CPU
+RAM
+GPU
+VRAM
+network
+storage.
+
+======================================================================
+145. CAPACITY REQUEST
+======================================================================
+
+A workload may declare:
+
+"I need X resource profile."
+
+Determine whether this abstraction is useful.
+
+======================================================================
+146. CAPACITY RESERVATION
+======================================================================
+
+Define:
+
+request
+
+→
+
+reservation
+
+→
+
+execution
+
+→
+
+release.
+
+======================================================================
+147. RESERVATION LEAK
+======================================================================
+
+Prevent:
+
+task fails
+
+but:
+
+capacity reservation remains.
+
+======================================================================
+148. CAPACITY STATE
+======================================================================
+
+Define states:
+
+AVAILABLE
+
+RESERVED
+
+ALLOCATED
+
+RUNNING
+
+DRAINING
+
+RELEASED.
+
+Determine exact model.
+
+======================================================================
+149. CAPACITY OBSERVABILITY
+======================================================================
+
+Define metrics:
+
+- available capacity
+- reserved capacity
+- allocated capacity
+- utilization
+- saturation
+- queue depth
+- queue age
+- scale events
+- provisioning latency
+- capacity failures.
+
+======================================================================
+150. CAPACITY ALERTING
+======================================================================
+
+Alert on:
+
+- approaching saturation
+- insufficient headroom
+- provisioning failure
+- queue growth
+- capacity fragmentation
+- forecast exhaustion.
+
+======================================================================
+151. CAPACITY ANOMALIES
+======================================================================
+
+Detect:
+
+- sudden resource consumption
+- sudden throughput drop
+- increased service time
+- unusual GPU utilization.
+
+======================================================================
+152. CAPACITY SLO
+======================================================================
+
+Define capacity-specific SLOs.
+
+Examples:
+
+"Scale-out completes within X"
+
+only if benchmarked and justified.
+
+Do not invent values.
+
+======================================================================
+153. CAPACITY ERROR BUDGET
+======================================================================
+
+Evaluate whether capacity provisioning failures consume reliability
+error budget.
+
+======================================================================
+154. ARCHITECTURE OPTIONS
+======================================================================
+
+Identify real alternatives.
+
+Potential:
+
+OPTION A
+--------
+Static capacity.
+
+OPTION B
+--------
+Reactive autoscaling.
+
+OPTION C
+--------
+Queue-driven autoscaling.
+
+OPTION D
+--------
+Predictive scaling.
+
+OPTION E
+--------
+Scheduled scaling.
+
+OPTION F
+--------
+Hybrid.
+
+These are examples only.
+
+Research and determine the actual candidates.
+
+======================================================================
+155. ARCHITECTURE SELECTION MATRIX
+======================================================================
+
+Compare:
+
+| Criterion |
+| Day-1 simplicity |
+| Latency |
+| Burst handling |
+| Resource efficiency |
+| GPU support |
+| Database support |
+| Predictability |
+| Failure tolerance |
+| Cost |
+| Operational complexity |
+| Multi-tenancy |
+| Forecasting |
+| Recommendation |
+
+======================================================================
+156. "WHY NOT?" ANALYSIS
+======================================================================
+
+For the final architecture explicitly answer:
+
+WHY THIS?
+
+WHY NOT STATIC CAPACITY?
+
+WHY NOT CPU-BASED AUTOSCALING?
+
+WHY NOT GPU UTILIZATION ONLY?
+
+WHY NOT QUEUE DEPTH ONLY?
+
+WHY NOT LATENCY ONLY?
+
+WHY NOT PREDICTIVE AUTOSCALING?
+
+WHY NOT SCALE-TO-ZERO?
+
+WHY NOT KEEP EVERYTHING WARM?
+
+WHY NOT MAXIMIZE UTILIZATION?
+
+WHY NOT RUN AT 100%?
+
+WHY NOT OVERPROVISION HEAVILY?
+
+WHY NOT USE ONE CAPACITY METRIC?
+
+WHY NOT USE ONE GLOBAL RESOURCE POOL?
+
+Only retain alternatives that are relevant after research.
+
+======================================================================
+157. REVERSIBILITY ANALYSIS
+======================================================================
+
+Classify:
+
+- resource model
+- capacity abstraction
+- scaling trigger
+- autoscaler
+- queue-driven scaling
+- predictive scaling
+- capacity pools
+- reservation model
+- GPU strategy
+- warm-pool strategy
+- forecasting model
+
+as:
+
+- easily reversible
+- moderately reversible
+- expensive to reverse
+- effectively irreversible.
+
+======================================================================
+158. CONTRACT VS IMPLEMENTATION
+======================================================================
+
+Define stable internal contracts.
+
+Potential:
+
+ResourceProfile
+CapacityRequest
+CapacitySnapshot
+CapacityReservation
+CapacityDecision
+ScalingDecision
+WorkloadProfile
+CapacityForecast
+CapacityBudget.
+
+These are examples only.
+
+Determine the minimum required set.
+
+The contracts must remain independent from:
+
+- Kubernetes
+- AWS
+- Azure
+- GCP
+- KEDA
+- HPA
+- VPA
+- any specific autoscaler.
+
+======================================================================
+159. REQUIRED DIAGRAMS
+======================================================================
+
+Include Mermaid diagrams for:
+
+1. Capacity architecture
+2. Workload model
+3. Resource model
+4. Bottleneck chain
+5. Concurrency → capacity
+6. Queue → capacity
+7. Capacity reservation
+8. Capacity lifecycle
+9. Autoscaling
+10. GPU capacity
+11. Model capacity
+12. Database capacity
+13. Tool capacity
+14. Multi-tenant capacity
+15. Cost → capacity
+16. Failure headroom
+17. Deployment capacity
+18. Capacity forecasting
+19. Capacity-aware scheduling
+20. Day-1 → enterprise evolution
+
+======================================================================
+160. ADR CANDIDATES
+======================================================================
+
+Identify ADRs for:
+
+- workload model
+- resource model
+- capacity abstraction
+- capacity measurement
+- headroom model
+- autoscaling
+- scaling triggers
+- queue-driven scaling
+- GPU scaling
+- warm pools
+- capacity reservations
+- multi-tenant capacity
+- failure headroom
+- forecasting
+- capacity pools.
+
+For each:
+
+- problem
+- alternatives
+- recommendation
+- consequences
+- reversibility
+- decision deadline
+
+======================================================================
+161. DAY-1 / PREPARE / SCALE / ENTERPRISE
+======================================================================
+
+Create:
+
+| Capability | Day 1 | Prepare | Scale | Enterprise |
+
+Cover:
+
+- resource measurement
+- workload profiles
+- bottleneck detection
+- GPU capacity
+- CPU capacity
+- RAM capacity
+- DB capacity
+- vector capacity
+- tool capacity
+- network capacity
+- queue capacity
+- headroom
+- load testing
+- stress testing
+- autoscaling
+- queue-based scaling
+- predictive scaling
+- capacity forecasting
+- reservations
+- multi-region capacity
+- DR capacity
+- tenant capacity.
+
+======================================================================
+162. CAPACITY TEST MATRIX
+======================================================================
+
+Create:
+
+| Scenario | Expected Behavior | Measurement | Failure Threshold | Recovery |
+
+At minimum:
+
+- normal load
+- peak load
+- burst load
+- sustained saturation
+- GPU saturation
+- VRAM saturation
+- CPU saturation
+- RAM pressure
+- DB saturation
+- vector saturation
+- tool saturation
+- external API limit
+- queue saturation
+- worker failure
+- GPU failure
+- database failure
+- scale-out
+- scale-in
+- deployment
+- cache failure
+- retry storm.
+
+======================================================================
+163. CAPACITY BENCHMARK PLAN
+======================================================================
+
+Define exact methodology.
+
+For each workload:
+
+1. Establish baseline.
+2. Increase concurrency.
+3. Increase arrival rate.
+4. Measure throughput.
+5. Measure p50/p95/p99.
+6. Measure resource utilization.
+7. Identify saturation.
+8. Continue beyond saturation.
+9. Measure failure mode.
+10. Measure recovery.
+
+Do not fabricate benchmark values.
+
+======================================================================
+164. BOTTLENECK TEST
+======================================================================
+
+Determine the first bottleneck by controlled experiments.
+
+Example:
+
+Increase Agent concurrency while keeping:
+
+GPU fixed.
+
+Then:
+
+Increase GPU while keeping:
+
+database fixed.
+
+Then:
+
+increase database capacity.
+
+Document bottleneck migration.
+
+======================================================================
+165. BURST TEST
+======================================================================
+
+Test multiple burst durations:
+
+short burst
+
+medium burst
+
+long burst.
+
+Measure whether:
+
+headroom
+
+or:
+
+autoscaling
+
+absorbs the burst.
+
+======================================================================
+166. SCALE-LATENCY TEST
+======================================================================
+
+Measure:
+
+scale trigger
+
+→
+
+resource provisioned
+
+→
+
+resource ready
+
+→
+
+model ready
+
+→
+
+first successful request.
+
+======================================================================
+167. FAILURE CAPACITY TEST
+======================================================================
+
+Remove one capacity unit.
+
+Verify SLO.
+
+Repeat for:
+
+- worker
+- GPU
+- database replica
+- zone where applicable.
+
+======================================================================
+168. FORECAST VALIDATION
+======================================================================
+
+Compare forecast:
+
+vs:
+
+actual workload.
+
+Track forecast error.
+
+Do not deploy predictive scaling until forecast quality justifies it.
+
+======================================================================
+169. CAPACITY RECOVERY TEST
+======================================================================
+
+After overload:
+
+measure time to return to:
+
+- normal queue
+- normal latency
+- normal utilization.
+
+======================================================================
+170. INCIDENT RESPONSE
+======================================================================
+
+Walk through:
+
+SCENARIO A
+----------
+Platform reaches capacity unexpectedly.
+
+SCENARIO B
+----------
+Autoscaler cannot provision new GPU.
+
+SCENARIO C
+----------
+Database becomes bottleneck.
+
+SCENARIO D
+----------
+Burst exceeds scale-out speed.
+
+SCENARIO E
+----------
+One GPU/node fails.
+
+SCENARIO F
+----------
+Retry storm amplifies workload.
+
+SCENARIO G
+----------
+Deployment temporarily doubles capacity requirement.
+
+For each:
+
+DETECTION
+→
+IMPACT
+→
+CONTAINMENT
+→
+DEGRADATION
+→
+RECOVERY
+→
+ROOT CAUSE
+→
+PREVENTION.
+
+======================================================================
+171. ATTEMPT TO FALSIFY THE RECOMMENDATION
+======================================================================
+
+Try to prove the selected architecture wrong.
+
+Ask:
+
+- What workload breaks it?
+- What burst breaks it?
+- What concurrency breaks it?
+- What GPU model breaks it?
+- What context length breaks it?
+- What database workload breaks it?
+- What tenant distribution breaks it?
+- What failure breaks the headroom assumption?
+- What provisioning latency breaks autoscaling?
+- What forecast error breaks predictive scaling?
+- What retry storm breaks capacity?
+- What deployment strategy breaks capacity?
+- What cache failure breaks capacity?
+- What external API limit breaks the model?
+
+Determine the first architectural trigger.
+
+======================================================================
+172. ARCHITECTURAL SELF-CRITIQUE
+======================================================================
+
+Before finalizing, ask:
+
+1. Did I model workload rather than machines?
+2. Did I identify actual bottlenecks?
+3. Did I model concurrency correctly?
+4. Did I account for tail latency?
+5. Did I define saturation?
+6. Did I define headroom from evidence?
+7. Did I account for scale latency?
+8. Did I account for model loading?
+9. Did I account for GPU and VRAM separately?
+10. Did I account for database capacity?
+11. Did I account for external API limits?
+12. Did I account for retry amplification?
+13. Did I account for failure capacity?
+14. Did I account for deployment capacity?
+15. Did I account for multi-tenancy?
+16. Did I connect capacity to cost?
+17. Did I define benchmark methodology?
+18. Can the model evolve to multi-region?
+19. Did I avoid premature predictive autoscaling?
+20. What assumptions could invalidate the architecture?
+
+Include:
+
+# ARCHITECTURAL SELF-CRITIQUE
+
+======================================================================
+173. FINAL RECOMMENDATION
+======================================================================
+
+End with:
+
+# FINAL CAPACITY PLANNING ARCHITECTURE RECOMMENDATION
+
+Answer:
+
+"What Capacity Planning Architecture should this platform actually
+build?"
+
+Be concrete.
+
+Describe:
+
+- workload model
+- resource model
+- capacity abstraction
+- bottleneck model
+- concurrency relationship
+- queue relationship
+- GPU capacity
+- CPU capacity
+- RAM capacity
+- database capacity
+- vector capacity
+- tool capacity
+- external API capacity
+- headroom
+- failure capacity
+- autoscaling
+- scaling triggers
+- burst handling
+- capacity reservations
+- forecasting
+- tenant capacity
+- cost interaction
+- observability
+- Day-1 implementation
+- future evolution.
+
+Then explicitly answer:
+
+"What MUST NOT be built on Day 1?"
+
+Then:
+
+"What future condition should trigger the next capacity architecture
+evolution?"
+
+======================================================================
+174. REQUIRED OUTPUT
+======================================================================
+
+Produce:
+
+21_CAPACITY_PLANNING_ARCHITECTURE.md
+
+The document MUST explicitly reference:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_ARCHITECTURE.md
+04_AGENT_RUNTIME.md
+05_MODEL_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+08_KNOWLEDGE_DATA_ARCHITECTURE.md
+09_MEMORY_ARCHITECTURE.md
+10_SECURITY_ARCHITECTURE.md
+11_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+12_TRUST_PROVENANCE_ARCHITECTURE.md
+13_RELIABILITY_ARCHITECTURE.md
+14_CONCURRENCY_ARCHITECTURE.md
+15_OBSERVABILITY_ARCHITECTURE.md
+16_AUDIT_ARCHITECTURE.md
+17_EVALUATION_ARCHITECTURE.md
+18_DEPLOYMENT_LIFECYCLE_ARCHITECTURE.md
+19_MULTI_TENANCY_ARCHITECTURE.md
+20_COST_ARCHITECTURE.md
+
+Also identify future interactions with:
+
+22_NETWORKING_ARCHITECTURE.md
+23_STORAGE_ARCHITECTURE.md
+24_DR_ENTERPRISE_ARCHITECTURE.md
+25_ADVANCED_SUPPLY_CHAIN_ARCHITECTURE.md
+26_ENTERPRISE_COMPLIANCE_ARCHITECTURE.md
+27_MULTI_MODEL_FALLBACK_ARCHITECTURE.md
+28_HUMAN_IN_THE_LOOP_ARCHITECTURE.md
+29_REPLAY_ARCHITECTURE.md
+30_OFFLINE_MOBILE_ARCHITECTURE.md
+31_A2A_ARCHITECTURE.md
+32_ADMIN_CONSOLE_ARCHITECTURE.md
+34_QUALITY_MODEL_ARCHITECTURE.md
+
+If these documents do not exist:
+
+DO NOT invent their content.
+
+Define only stable contracts and future dependencies.
+
+If there is a conflict:
+
+DO NOT silently resolve it.
+
+Identify the conflict.
+
+Explain the trade-off.
+
+Recommend the superior architectural decision.
+
+Create an ADR candidate where appropriate.
+
+======================================================================
+175. SOURCE REQUIREMENTS
+======================================================================
+
+THIS SECTION IS MANDATORY.
+
+Use current web research whenever external technology behavior affects
+the capacity architecture.
+
+Prioritize:
+
+- authoritative distributed-systems research
+- queueing theory literature
+- Google SRE materials
+- official Kubernetes documentation
+- official autoscaling documentation
+- official GPU/model-serving documentation
+- official cloud infrastructure documentation
+- authoritative database capacity documentation.
+
+Do not fabricate benchmarks.
+
+Do not fabricate citations.
+
+Do not cite sources that were not actually inspected.
+
+Clearly distinguish:
+
+SOURCE FACT
+
+from:
+
+BENCHMARK RESULT
+
+from:
+
+MEASUREMENT
+
+from:
+
+CALCULATION
+
+from:
+
+INFERENCE
+
+from:
+
+ARCHITECTURAL RECOMMENDATION.
+
+======================================================================
+176. VERSION AND DATE DISCIPLINE
+======================================================================
+
+At the beginning of the document state:
+
+RESEARCH DATE
+
+BENCHMARK DATE
+
+and relevant:
+
+RUNTIME / GPU / DATABASE / PLATFORM VERSIONS
+
+for technologies actually selected.
+
+Capacity assumptions must identify the environment on which they were
+measured.
+
+======================================================================
+177. ABSOLUTE FINAL INSTRUCTION
+======================================================================
+
+Act as an INDEPENDENT Principal Capacity Planning Architect.
+
+Your responsibility is to determine the best capacity architecture for
+THIS platform.
+
+Do not assume:
+
+MORE SERVERS = MORE CAPACITY.
+
+Do not assume:
+
+CPU UTILIZATION = CAPACITY.
+
+Do not assume:
+
+GPU UTILIZATION = CAPACITY.
+
+Do not assume:
+
+100% UTILIZATION = GOOD CAPACITY PLANNING.
+
+Do not assume:
+
+AVERAGE LOAD = REQUIRED CAPACITY.
+
+Do not assume:
+
+PEAK LOAD = BURST LOAD.
+
+Do not assume:
+
+AUTOSCALING = INSTANT CAPACITY.
+
+Do not assume:
+
+CLOUD CAPACITY = ALWAYS AVAILABLE.
+
+Do not assume:
+
+QUEUE DEPTH = COMPLETE CAPACITY SIGNAL.
+
+Do not assume:
+
+ONE BOTTLENECK = PERMANENT BOTTLENECK.
+
+Do not assume:
+
+LINEAR SCALING.
+
+Do not assume:
+
+MORE CONCURRENCY = MORE THROUGHPUT.
+
+Do not assume:
+
+MORE CAPACITY = LOWER COST.
+
+Do not assume:
+
+LOWER UTILIZATION = BAD.
+
+Do not assume:
+
+PREDICTIVE AUTOSCALING = REQUIRED.
+
+Do not assume:
+
+KUBERNETES = REQUIRED.
+
+Do not assume:
+
+HPA = REQUIRED.
+
+Do not assume:
+
+KEDA = REQUIRED.
+
+Do not assume:
+
+ONE CAPACITY METRIC = SUFFICIENT.
+
+Do not allow:
+
+AGENT CONCURRENCY
+
+to be interpreted as:
+
+MODEL CAPACITY.
+
+Do not allow:
+
+MODEL CAPACITY
+
+to ignore:
+
+GPU VRAM.
+
+Do not allow:
+
+GPU CAPACITY
+
+to ignore:
+
+MODEL LOADING TIME.
+
+Do not allow:
+
+APPLICATION SCALE
+
+to ignore:
+
+DATABASE CAPACITY.
+
+Do not allow:
+
+INTERNAL SCALE
+
+to ignore:
+
+EXTERNAL API LIMITS.
+
+Do not allow:
+
+RETRY BEHAVIOR
+
+to create:
+
+UNMODELED CAPACITY AMPLIFICATION.
+
+Do not allow:
+
+DEPLOYMENT STRATEGY
+
+to temporarily exceed:
+
+AVAILABLE CAPACITY
+
+without explicitly modeling it.
+
+Do not allow:
+
+TENANT A
+
+to consume:
+
+ALL CAPACITY
+
+needed by:
+
+TENANT B.
+
+Optimize for:
+
+PREDICTABLE PERFORMANCE
++
+SLO COMPLIANCE
++
+FAILURE TOLERANCE
++
+RESOURCE EFFICIENCY
++
+BURST RESILIENCE
++
+MEASURABLE HEADROOM
++
+CONTROLLED SCALING
++
+COST EFFICIENCY
++
+MULTI-TENANT FAIRNESS
++
+OPERATIONAL SIMPLICITY
++
+FUTURE EVOLUTION.
+
+The final architecture MUST result from:
+
+    WORKLOAD MODEL
+       ↓
+    RESOURCE MODEL
+       ↓
+    PERFORMANCE MODEL
+       ↓
+    BOTTLENECK MODEL
+       ↓
+    CONCURRENCY MODEL
+       ↓
+    CAPACITY MODEL
+       ↓
+    HEADROOM MODEL
+       ↓
+    SCALE MODEL
+       ↓
+    FAILURE MODEL
+       ↓
+    COST MODEL
+       ↓
+    BENCHMARKING
+       ↓
+    ALTERNATIVE COMPARISON
+       ↓
+    ADVERSARIAL CHALLENGE
+       ↓
+    FALSIFICATION
+       ↓
+    FINAL DECISION
+
+DO NOT CHOOSE THE AUTOSCALER FIRST.
+
+DO NOT CHOOSE THE CLOUD FIRST.
+
+DO NOT CHOOSE THE GPU FIRST.
+
+DO NOT CHOOSE THE NUMBER OF SERVERS FIRST.
+
+RESEARCH THE WORKLOAD FIRST.
+
+MODEL THE RESOURCE REQUIREMENTS.
+
+MEASURE THE PERFORMANCE CURVES.
+
+IDENTIFY THE BOTTLENECK.
+
+MODEL CONCURRENCY.
+
+MODEL QUEUES.
+
+MODEL BURSTS.
+
+MODEL FAILURE.
+
+MEASURE SCALE LATENCY.
+
+CALCULATE THE REQUIRED HEADROOM.
+
+CONNECT CAPACITY TO COST.
+
+CHALLENGE THE MODEL.
+
+FALSIFY THE ARCHITECTURE.
+
+THEN SELECT THE BEST CAPACITY PLANNING ARCHITECTURE AVAILABLE FOR THIS
+PROJECT.
+
+THEN DESIGN IT.

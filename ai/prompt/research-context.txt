@@ -1,0 +1,467 @@
+# RESEARCH CONTEXT — ARCHITECTURAL ORIENTATION
+
+## 1. RESEARCH DIRECTORY
+
+Before executing the first architecture prompt, inspect and read the entire:
+
+```text
+/research
+```
+
+directory and its relevant contents.
+
+The `research` directory contains authoritative research, standards, specifications, technical references and architectural material relevant to the state of the technology and standards around **2026**.
+
+The purpose of reading this material is to give you a strong understanding of:
+
+* how this type of platform is commonly architected;
+* which standards and protocols are relevant;
+* which architectural patterns are established;
+* which responsibilities are normally separated;
+* which interoperability models exist;
+* which security models are relevant;
+* which deployment patterns are commonly used;
+* which constraints and trade-offs are known;
+* which terminology and concepts are important;
+* which architectural approaches have proven useful;
+* which approaches should be treated with caution.
+
+---
+
+# 2. RESEARCH IS CONTEXT, NOT THE ARCHITECTURE
+
+The content of `/research` is **reference material only**.
+
+You MUST NOT treat the research material as the architecture of this project.
+
+In particular:
+
+> RESEARCH ≠ REQUIREMENT
+
+> RESEARCH ≠ ARCHITECTURAL DECISION
+
+> RESEARCH ≠ IMPLEMENTATION PLAN
+
+> RESEARCH ≠ TECHNOLOGY MANDATE
+
+The research exists to help you understand the problem space before making architectural decisions.
+
+---
+
+# 3. DO NOT COPY THE RESEARCH ARCHITECTURE
+
+Do not blindly reproduce architectures, diagrams, components or technology choices found in the research.
+
+A research document may describe:
+
+* another organization's architecture;
+* another scale;
+* another security model;
+* another deployment environment;
+* another business requirement;
+* another technology stack;
+* another operational model;
+* another set of constraints.
+
+Therefore, every research-derived idea must be evaluated against the actual requirements of this platform.
+
+The fact that a pattern appears in an authoritative source does NOT automatically mean that we should use it.
+
+---
+
+# 4. PURPOSE OF THE RESEARCH PHASE
+
+The research phase has one primary purpose:
+
+> **UNDERSTAND BEFORE DESIGNING.**
+
+Before executing the architecture prompts, build a mental model of the current architectural landscape.
+
+You should understand:
+
+```text
+STANDARDS
+    ↓
+PROTOCOLS
+    ↓
+ARCHITECTURAL PATTERNS
+    ↓
+RESPONSIBILITY BOUNDARIES
+    ↓
+SECURITY MODELS
+    ↓
+INTEROPERABILITY MODELS
+    ↓
+DEPLOYMENT PATTERNS
+    ↓
+KNOWN TRADE-OFFS
+```
+
+Then use that understanding while executing the actual architecture prompts.
+
+---
+
+# 5. DO NOT PRE-DESIGN THE PLATFORM
+
+Do not use the research phase to prematurely design the final platform.
+
+Do not decide before executing the prompts:
+
+* the final component boundaries;
+* the final technology stack;
+* the final deployment topology;
+* the final communication protocols;
+* the final database architecture;
+* the final agent architecture;
+* the final model architecture;
+* the final security architecture.
+
+Those decisions must emerge progressively from:
+
+```text
+REQUIREMENTS
+    ↓
+RESEARCH CONTEXT
+    ↓
+ARCHITECTURE PROMPT
+    ↓
+ANALYSIS
+    ↓
+ALTERNATIVES
+    ↓
+TRADE-OFFS
+    ↓
+ARCHITECTURAL DECISION
+```
+
+---
+
+# 6. RESEARCH SHOULD INFORM, NOT CONTROL
+
+While executing each architecture prompt, use the research knowledge when it is relevant.
+
+For example, research may reveal:
+
+* an established standard;
+* an interoperability protocol;
+* a security pattern;
+* a known architectural boundary;
+* a known failure mode;
+* a proven deployment model;
+* a known scalability constraint;
+* an established governance approach.
+
+Use this knowledge to improve the analysis.
+
+However, always ask:
+
+> "Does this actually fit our requirements?"
+
+If the answer is no, do not use it simply because it is an established pattern.
+
+---
+
+# 7. AUTHORITATIVE SOURCES
+
+Give greater weight to authoritative sources such as:
+
+* official standards;
+* standards organizations;
+* official specifications;
+* official protocol documentation;
+* official technical documentation;
+* recognized industry specifications;
+* primary technical sources;
+* authoritative security publications.
+
+Avoid treating:
+
+* blog posts;
+* marketing material;
+* vendor claims;
+* opinion pieces;
+* unsourced diagrams;
+* generic tutorials
+
+as equivalent to authoritative standards.
+
+They may still provide useful context, but their authority must be evaluated appropriately.
+
+---
+
+# 8. RESEARCH VS CURRENT VERIFICATION
+
+The `/research` directory represents the research baseline available for this project.
+
+However, it does not replace current verification when a decision depends on information that may have changed.
+
+If a technology or standard is relevant to a decision and its current status matters, verify it separately when necessary.
+
+Examples:
+
+* current specification version;
+* current implementation support;
+* current API capabilities;
+* current security status;
+* current compatibility;
+* current licensing;
+* current maturity;
+* current vendor support.
+
+Distinguish clearly between:
+
+### RESEARCH CONTEXT
+
+What we learned from `/research`.
+
+### CURRENT FACT
+
+What has been independently verified as current.
+
+### INFERENCE
+
+What we conclude from those facts.
+
+### ARCHITECTURAL DECISION
+
+What we decide to use in this platform.
+
+---
+
+# 9. RESEARCH TRACEABILITY
+
+When research materially influences an architectural decision, record that influence.
+
+The decision should be understandable as:
+
+```text
+Research / Standard
+        ↓
+Relevant architectural insight
+        ↓
+Impact on our requirements
+        ↓
+Alternatives considered
+        ↓
+Decision
+```
+
+Do not simply write:
+
+> "The standard recommends X, therefore we use X."
+
+Instead explain:
+
+> "The research identifies X as the established approach for Y. In our architecture this is relevant because Z. We evaluated X against A and B and selected it because..."
+
+---
+
+# 10. RESEARCH MUST NOT CREATE ARTIFICIAL COMPLEXITY
+
+Do not introduce components merely because the research describes them.
+
+Do not introduce:
+
+* additional services;
+* additional brokers;
+* additional databases;
+* additional protocols;
+* additional abstraction layers;
+* additional security components;
+* additional orchestration layers
+
+unless they solve an actual requirement or architectural problem.
+
+The principle remains:
+
+> **AS SIMPLE AS POSSIBLE, BUT NO SIMPLER THAN THE REQUIREMENTS ALLOW.**
+
+---
+
+# 11. RESEARCH MUST NOT OVERRIDE THE ARCHITECTURE PROCESS
+
+After the research orientation phase is complete, proceed normally with the architecture prompts.
+
+The execution remains:
+
+```text
+READ /research
+      ↓
+UNDERSTAND THE ARCHITECTURAL LANDSCAPE
+      ↓
+LEVEL A
+      ↓
+LEVEL B
+      ↓
+LEVEL C
+      ↓
+CROSS-DOCUMENT VALIDATION
+      ↓
+CONFLICT DETECTION
+      ↓
+ARCHITECTURAL RE-EVALUATION
+      ↓
+FALSIFICATION
+      ↓
+OPTIMIZATION
+      ↓
+FINAL ARCHITECTURE
+```
+
+The research phase does NOT introduce a new architectural level.
+
+It is a **preparatory context phase**.
+
+---
+
+# 12. DO NOT LET RESEARCH BIAS THE PROMPTS
+
+Once the research phase is complete, execute the architecture prompts according to the existing Master Entrypoint rules.
+
+Do not modify the execution order because of the research.
+
+Do not skip a prompt because the research appears to answer it.
+
+Do not assume a decision has already been made.
+
+Each prompt must still be independently analyzed.
+
+The research provides context.
+
+The prompt provides the architectural question.
+
+The requirements provide the constraints.
+
+Claude makes the decision.
+
+---
+
+# 13. RESEARCH CONFLICTS
+
+If two authoritative research sources disagree:
+
+Do not silently choose one.
+
+Record the conflict and evaluate:
+
+* scope;
+* version;
+* maturity;
+* applicability;
+* assumptions;
+* security implications;
+* operational implications;
+* implementation support.
+
+Then determine which information is relevant to this platform.
+
+If the conflict cannot be resolved:
+
+> `UNRESOLVED`
+
+Do not fabricate consensus.
+
+---
+
+# 14. RESEARCH DOES NOT FREEZE TECHNOLOGY
+
+The research directory may mention specific technologies.
+
+Those technologies are candidates, not mandatory choices.
+
+Never assume:
+
+* a specific cloud;
+* a specific database;
+* a specific message broker;
+* a specific container platform;
+* a specific model provider;
+* a specific GPU vendor;
+* a specific orchestration system;
+* a specific protocol implementation
+
+simply because they appear in the research.
+
+The architectural requirement must come first.
+
+---
+
+# 15. RESEARCH KNOWLEDGE MUST BE USED SELECTIVELY
+
+Do not dump research content into the architecture documents.
+
+Do not reproduce large portions of research.
+
+Do not turn the final architecture into a literature review.
+
+Use the research only where it helps answer an architectural question.
+
+The final documentation must describe:
+
+> **OUR ARCHITECTURE**
+
+not:
+
+> "what the research says about architectures."
+
+---
+
+# 16. FINAL PRINCIPLE
+
+The research phase exists to prevent uninformed architectural decisions.
+
+It does NOT exist to predetermine the architecture.
+
+Therefore:
+
+> **READ THE RESEARCH.**
+
+> **UNDERSTAND THE STANDARDS.**
+
+> **LEARN FROM ESTABLISHED ARCHITECTURAL PATTERNS.**
+
+> **VERIFY CURRENT FACTS WHEN NECESSARY.**
+
+> **THEN THINK FOR YOURSELF.**
+
+The final architecture must be derived from the combination of:
+
+```text
+ACTUAL REQUIREMENTS
++
+RESEARCH KNOWLEDGE
++
+CURRENT VERIFIED FACTS
++
+ARCHITECTURAL ANALYSIS
++
+TRADE-OFFS
++
+SECURITY
++
+RELIABILITY
++
+SCALABILITY
++
+OPERABILITY
++
+IMPLEMENTABILITY
+```
+
+The research is a **compass**, not a blueprint.
+
+After reading `/research`, proceed normally with the existing Master Entrypoint and execute the architecture prompts sequentially:
+
+```text
+LEVEL A
+→
+LEVEL B
+→
+LEVEL C
+```
+
+Do not stop after the research phase.
+
+Do not produce the final architecture during the research phase.
+
+The research phase exists only to make the subsequent architectural reasoning **better informed, more rigorous and more aware of the 2026 technical landscape**.

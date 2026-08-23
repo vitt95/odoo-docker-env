@@ -1,0 +1,1899 @@
+# 11 — EVENTING, WORKFLOW & DURABLE EXECUTION ARCHITECTURE
+## Enterprise AI Agent Platform
+
+======================================================================
+ROLE
+======================================================================
+
+Act as the Principal Distributed Systems Architect, Workflow Architect,
+Reliability Architect and AI Agent Infrastructure Architect responsible
+for designing the Eventing, Workflow and Durable Execution Architecture
+of an enterprise-grade AI agent platform.
+
+You have deep expertise in:
+
+- distributed systems
+- workflow engines
+- durable execution
+- state machines
+- job queues
+- event-driven architectures
+- asynchronous processing
+- scheduling
+- retries
+- idempotency
+- transactional systems
+- outbox patterns
+- sagas
+- compensation
+- exactly-once / at-least-once semantics
+- failure recovery
+- distributed tracing
+- AI agent runtimes
+- long-running agent execution
+- human approval workflows
+- event sourcing
+- temporal data
+- enterprise integration
+
+You are working within:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_PLANE.md
+04_AGENT_RUNTIME.md
+05_MODEL_INFERENCE_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+07_KNOWLEDGE_DATA_ARCHITECTURE.md
+08_MEMORY_ARCHITECTURE.md
+09_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+10_AGENT_COMMUNICATION_MULTI_AGENT_ARCHITECTURE.md
+
+These documents provide the current architectural context.
+
+However:
+
+THEY ARE NOT IMMUNE FROM CHALLENGE.
+
+If research demonstrates that an assumption is technically incorrect,
+incomplete or suboptimal, explicitly identify the conflict and recommend
+the superior architecture.
+
+======================================================================
+1. PRIMARY OBJECTIVE
+======================================================================
+
+Design the Eventing, Workflow and Durable Execution Architecture.
+
+The architecture must determine how the platform handles:
+
+- short-running operations
+- long-running tasks
+- scheduled jobs
+- asynchronous work
+- retries
+- failures
+- human approvals
+- external callbacks
+- waiting states
+- agent pauses
+- resumptions
+- multi-step processes
+- recurring workflows
+- event-triggered execution
+- durable state
+
+The architecture must answer:
+
+WHAT SHOULD BE A WORKFLOW?
+
+WHAT SHOULD BE AN AGENT RUN?
+
+WHAT SHOULD BE A JOB?
+
+WHAT SHOULD BE AN EVENT?
+
+WHAT SHOULD BE A COMMAND?
+
+WHAT SHOULD BE A SCHEDULE?
+
+WHAT STATE MUST SURVIVE A PROCESS RESTART?
+
+WHAT CAN BE RECONSTRUCTED?
+
+WHAT MUST BE DURABLE?
+
+======================================================================
+2. MOST IMPORTANT INSTRUCTION
+## RESEARCH FIRST — SELECT ARCHITECTURE SECOND
+======================================================================
+
+DO NOT begin by selecting:
+
+- Temporal
+- Kafka
+- RabbitMQ
+- Redis
+- Celery
+- a workflow engine
+- an event bus
+- event sourcing
+
+as the architecture.
+
+Research first.
+
+Research current approaches to:
+
+- durable execution
+- workflow orchestration
+- event-driven architecture
+- job queues
+- transactional messaging
+- workflow state machines
+- long-running AI agents
+- human-in-the-loop workflows
+- distributed retries
+- idempotency
+- sagas
+- compensation
+- scheduling
+
+Then identify meaningful alternatives.
+
+Then compare them.
+
+Then select the architecture best suited to THIS project.
+
+Then attempt to falsify the decision.
+
+Required process:
+
+    RESEARCH
+       ↓
+    EXECUTION REQUIREMENTS
+       ↓
+    WORKFLOW / EVENT MODEL
+       ↓
+    ARCHITECTURAL ALTERNATIVES
+       ↓
+    DURABILITY ANALYSIS
+       ↓
+    FAILURE ANALYSIS
+       ↓
+    SECURITY / AUTHORIZATION ANALYSIS
+       ↓
+    OPERATIONAL COMPLEXITY ANALYSIS
+       ↓
+    ADVERSARIAL CHALLENGE
+       ↓
+    FINAL DECISION
+       ↓
+    DAY-1 IMPLEMENTATION
+       ↓
+    FUTURE EVOLUTION
+
+Claude MUST determine the best architecture available for THIS project.
+
+======================================================================
+3. FUNDAMENTAL DISTINCTIONS
+======================================================================
+
+Explicitly distinguish:
+
+COMMAND
+
+EVENT
+
+JOB
+
+TASK
+
+WORKFLOW
+
+AGENT RUN
+
+STEP
+
+SCHEDULE
+
+STATE
+
+ARTIFACT
+
+RESULT
+
+Do not collapse these into a generic "task".
+
+In particular:
+
+EVENT ≠ COMMAND
+
+WORKFLOW ≠ AGENT
+
+JOB ≠ EVENT
+
+AGENT RUN ≠ WORKFLOW
+
+STATE ≠ MEMORY
+
+======================================================================
+4. DAY-1 CONSTRAINTS
+======================================================================
+
+Day 1:
+
+- one machine
+- one GPU if available
+- Qwen3.5 9B
+- PostgreSQL
+- local/containerized deployment
+- small engineering team
+
+There is NO requirement for:
+
+- Kafka
+- distributed event streaming
+- Temporal cluster
+- Kubernetes
+- distributed scheduler
+- service mesh
+- multi-region workflow execution
+
+unless research demonstrates a concrete requirement.
+
+Strongly evaluate whether Day 1 can use:
+
+PostgreSQL + application workers
+
+for:
+
+- job persistence
+- scheduling
+- retries
+- workflow state
+- asynchronous execution.
+
+======================================================================
+5. FUTURE REQUIREMENTS
+======================================================================
+
+Future requirements may include:
+
+- long-running agents
+- scheduled workflows
+- event-driven workflows
+- external callbacks
+- human approvals
+- recurring jobs
+- large job volumes
+- multiple workers
+- distributed execution
+- multi-region execution
+- durable timers
+- workflow versioning
+- compensation
+- event streams
+- external event integrations
+
+Determine:
+
+DAY 1
+PREPARE
+SCALE
+ENTERPRISE
+
+======================================================================
+6. WORKFLOW VS AGENT
+======================================================================
+
+This is one of the most important architectural decisions.
+
+Compare:
+
+Workflow:
+
+A → B → C
+
+with:
+
+Agent:
+
+Reason → decide → adapt → act.
+
+Determine when a process should be:
+
+- deterministic workflow
+- agent-driven execution
+- hybrid
+
+Do NOT use an agent for deterministic orchestration merely because an LLM
+can technically perform the orchestration.
+
+======================================================================
+7. WORKFLOW VS TOOL
+======================================================================
+
+Determine when a capability should be:
+
+Tool
+
+versus:
+
+Workflow.
+
+Example:
+
+"Send email"
+
+may be a Tool.
+
+"Prepare monthly customer report → obtain approval → generate PDF →
+send email → record completion"
+
+may be a Workflow.
+
+These are hypotheses.
+
+Research and define objective boundaries.
+
+======================================================================
+8. COMMANDS
+======================================================================
+
+Define commands.
+
+A command expresses:
+
+"Please perform this action."
+
+Examples:
+
+StartWorkflow
+CancelWorkflow
+ApproveStep
+RetryStep
+PauseWorkflow
+
+Determine:
+
+- command identity
+- authorization
+- idempotency
+- correlation
+- result semantics.
+
+======================================================================
+9. EVENTS
+======================================================================
+
+Define events.
+
+An event expresses:
+
+"This happened."
+
+Examples:
+
+WorkflowStarted
+StepCompleted
+ApprovalGranted
+DocumentProcessed
+CustomerUpdated
+
+Events should not be confused with commands.
+
+Determine:
+
+- event schema
+- event version
+- timestamp
+- source
+- correlation
+- causation.
+
+======================================================================
+10. EVENT SOURCING
+======================================================================
+
+Research whether full event sourcing is justified.
+
+Compare:
+
+A.
+Current-state database.
+
+B.
+Append-only event log + materialized state.
+
+C.
+Hybrid.
+
+Evaluate:
+
+- auditability
+- complexity
+- replay
+- debugging
+- storage
+- migration
+- Day-1 suitability.
+
+Do NOT adopt event sourcing merely because events exist.
+
+======================================================================
+11. EVENT BUS
+======================================================================
+
+Research whether the platform needs:
+
+- no event bus
+- PostgreSQL-backed events
+- lightweight message broker
+- Kafka
+- NATS
+- RabbitMQ
+- cloud event bus
+
+Determine actual requirements.
+
+Do not introduce Kafka for architectural prestige.
+
+======================================================================
+12. JOB QUEUE
+======================================================================
+
+Determine whether asynchronous work requires a job queue.
+
+Potential:
+
+PostgreSQL job table
+Redis queue
+RabbitMQ
+NATS
+cloud queue
+workflow engine
+
+Evaluate:
+
+- persistence
+- retries
+- visibility timeout
+- worker concurrency
+- ordering
+- durability
+- operational complexity.
+
+======================================================================
+13. DURABLE EXECUTION
+======================================================================
+
+Define durable execution.
+
+A process should survive:
+
+- application restart
+- worker failure
+- machine restart
+- network failure
+- external service failure.
+
+Determine which state must be persisted.
+
+======================================================================
+14. DURABLE STATE
+======================================================================
+
+For every workflow step determine:
+
+- input
+- state
+- output
+- timestamp
+- attempt
+- status
+- error
+- retry policy
+- authorization context
+- provenance
+
+Determine the minimum durable state.
+
+======================================================================
+15. PROCESS RESTART
+======================================================================
+
+Scenario:
+
+Workflow is executing.
+
+Machine crashes.
+
+After restart:
+
+WHAT HAPPENS?
+
+The system should know:
+
+- which workflow was running
+- which step was active
+- whether the step completed
+- whether retry is safe
+- what authorization existed
+- what outputs were produced.
+
+Define recovery.
+
+======================================================================
+16. IDEMPOTENCY
+======================================================================
+
+This is CRITICAL.
+
+Example:
+
+Agent calls:
+
+"Create invoice."
+
+Request succeeds.
+
+Response is lost.
+
+System retries.
+
+A duplicate invoice must not be created.
+
+Determine idempotency strategy.
+
+Potential:
+
+- idempotency key
+- operation ID
+- deduplication table
+- external idempotency key
+- transactional state.
+
+======================================================================
+17. EXACTLY-ONCE
+======================================================================
+
+Do NOT casually claim:
+
+"exactly once".
+
+Research the semantics.
+
+Determine whether the architecture actually provides:
+
+- at-most-once
+- at-least-once
+- effectively-once through idempotency
+- exactly-once under constrained conditions.
+
+Use precise terminology.
+
+======================================================================
+18. RETRIES
+======================================================================
+
+Determine:
+
+- retryable errors
+- non-retryable errors
+- exponential backoff
+- jitter
+- maximum attempts
+- deadline
+- compensation.
+
+Retries must be policy-driven.
+
+Do not allow the LLM to decide indefinitely whether to retry.
+
+======================================================================
+19. DEADLINES
+======================================================================
+
+Every long-running execution should have bounded lifetime where
+appropriate.
+
+Determine:
+
+- workflow deadline
+- step deadline
+- external request deadline
+- approval deadline
+
+Use propagated deadlines.
+
+======================================================================
+20. CANCELLATION
+======================================================================
+
+Define:
+
+- user cancellation
+- parent workflow cancellation
+- agent cancellation
+- step cancellation
+- worker cancellation.
+
+Cancellation must be durable.
+
+Determine what happens to already-started external side effects.
+
+======================================================================
+21. PAUSE / RESUME
+======================================================================
+
+Human approval may pause a workflow.
+
+Example:
+
+Workflow
+ ↓
+Generate refund
+ ↓
+WAITING_FOR_APPROVAL
+ ↓
+Human approves
+ ↓
+Continue
+
+Define durable pause/resume semantics.
+
+======================================================================
+22. HUMAN APPROVAL
+======================================================================
+
+Using 09_IDENTITY_AUTHORIZATION_ARCHITECTURE.md determine:
+
+- approver identity
+- approval scope
+- approval expiration
+- approval binding
+- approval audit
+- cancellation
+- replay protection.
+
+An approval must be tied to a specific action.
+
+======================================================================
+23. SCHEDULED WORKFLOWS
+======================================================================
+
+Evaluate scheduling requirements:
+
+- one-time
+- recurring
+- cron
+- calendar-based
+- event-triggered
+- dependency-triggered.
+
+Determine whether scheduling belongs in:
+
+Control Plane
+
+or:
+
+Execution Plane.
+
+======================================================================
+24. SCHEDULER
+======================================================================
+
+Compare:
+
+- application scheduler
+- PostgreSQL scheduler
+- cron
+- dedicated scheduler
+- workflow engine timers.
+
+Determine Day-1 and future architecture.
+
+======================================================================
+25. DURABLE TIMERS
+======================================================================
+
+A workflow may say:
+
+"Wait 3 days."
+
+A process restart must not lose the timer.
+
+Determine implementation.
+
+======================================================================
+26. EXTERNAL CALLBACKS
+======================================================================
+
+External systems may respond later.
+
+Example:
+
+Agent
+ ↓
+Payment API
+ ↓
+WAIT
+ ↓
+Webhook
+ ↓
+Resume Workflow
+
+Determine:
+
+- callback identity
+- correlation
+- authenticity
+- replay protection
+- timeout
+- cancellation.
+
+======================================================================
+27. WEBHOOK SECURITY
+======================================================================
+
+Analyze:
+
+- signature verification
+- replay
+- duplicate callbacks
+- ordering
+- spoofing
+- expiration.
+
+Never trust webhook payloads without verification.
+
+======================================================================
+28. SAGA / COMPENSATION
+======================================================================
+
+Long workflows may perform irreversible side effects.
+
+Example:
+
+1. Create CRM record.
+2. Send email.
+3. Create invoice.
+4. Update ERP.
+
+If step 4 fails, earlier actions may already exist.
+
+Research:
+
+- saga
+- compensation
+- rollback
+- manual recovery.
+
+Do not pretend external side effects can always be rolled back.
+
+======================================================================
+29. COMPENSATING ACTIONS
+======================================================================
+
+Determine whether each workflow step should define:
+
+Forward action
+
+and optionally:
+
+Compensation action.
+
+Example:
+
+Create reservation
+→ cancel reservation
+
+But not every operation has a valid compensation.
+
+======================================================================
+30. WORKFLOW STATE MACHINE
+======================================================================
+
+Define a formal workflow lifecycle.
+
+Potential:
+
+CREATED
+ ↓
+RUNNING
+ ↓
+WAITING
+ ↓
+RUNNING
+ ↓
+COMPLETED
+
+Failure:
+
+FAILED
+
+Terminal:
+
+CANCELLED
+EXPIRED
+REJECTED
+
+Determine exact semantics.
+
+======================================================================
+31. STEP STATE MACHINE
+======================================================================
+
+Define:
+
+PENDING
+RUNNING
+SUCCEEDED
+FAILED
+RETRYING
+CANCELLED
+SKIPPED
+
+Determine whether these states are sufficient.
+
+======================================================================
+32. WORKFLOW VERSIONING
+======================================================================
+
+A workflow may change while old executions are still running.
+
+Determine:
+
+Workflow Definition
+Workflow Version
+Workflow Execution
+
+and compatibility rules.
+
+Never silently change the meaning of an existing execution.
+
+======================================================================
+33. AGENT WORKFLOW VERSIONING
+======================================================================
+
+If a workflow invokes an agent:
+
+Agent version may change.
+
+Determine whether an existing workflow should:
+
+- pin agent version
+- use latest
+- use compatible version
+- snapshot configuration.
+
+======================================================================
+34. MODEL VERSIONING
+======================================================================
+
+Similarly:
+
+Qwen version may change.
+
+Determine whether long-running workflows need:
+
+- model version pinning
+- prompt version
+- policy version
+- tool version
+- agent version.
+
+======================================================================
+35. REPRODUCIBILITY
+======================================================================
+
+Determine which execution details must be preserved to reproduce or
+audit a workflow.
+
+Potential:
+
+- workflow version
+- agent version
+- model version
+- prompt version
+- tool version
+- policy version
+- input references
+- retrieved knowledge references
+- memory references.
+
+Do not claim LLM execution is fully deterministic.
+
+Define auditability instead.
+
+======================================================================
+36. WORKFLOW INPUTS
+======================================================================
+
+Determine how workflow inputs are represented.
+
+Potential:
+
+- immutable input
+- references
+- snapshots
+- live data queries.
+
+Avoid storing huge data blobs inside workflow state.
+
+======================================================================
+37. ARTIFACTS
+======================================================================
+
+Workflows may generate:
+
+- PDFs
+- reports
+- files
+- structured records.
+
+Determine whether workflow state stores:
+
+artifact references
+
+instead of:
+
+artifact contents.
+
+Use 07_KNOWLEDGE_DATA_ARCHITECTURE.md where appropriate.
+
+======================================================================
+38. MEMORY INTERACTION
+======================================================================
+
+Using 08_MEMORY_ARCHITECTURE.md determine:
+
+What workflow state belongs in:
+
+WORKFLOW STATE
+
+versus:
+
+MEMORY.
+
+Do not store workflow execution state as long-term memory.
+
+======================================================================
+39. KNOWLEDGE INTERACTION
+======================================================================
+
+Using 07_KNOWLEDGE_DATA_ARCHITECTURE.md determine:
+
+Which workflow inputs should be:
+
+- snapshot
+- live retrieval
+- referenced document
+- structured query.
+
+Determine consistency requirements.
+
+======================================================================
+40. IDENTITY INTERACTION
+======================================================================
+
+Using 09_IDENTITY_AUTHORIZATION_ARCHITECTURE.md determine:
+
+Every workflow execution should have:
+
+- tenant
+- initiating user
+- agent
+- run
+- service identity.
+
+Determine which should remain fixed throughout execution.
+
+======================================================================
+41. AUTHORIZATION DURING LONG WORKFLOWS
+======================================================================
+
+A workflow starts Monday.
+
+User permissions change Tuesday.
+
+Workflow executes a sensitive action Wednesday.
+
+Should the original authorization remain valid?
+
+Research and determine policy.
+
+Consider:
+
+- authorization at start
+- authorization at each side effect
+- approval refresh
+- credential refresh.
+
+Do not assume authorization is permanently inherited.
+
+======================================================================
+42. CREDENTIAL EXPIRATION
+======================================================================
+
+Long workflows may outlive OAuth tokens.
+
+Determine:
+
+- token refresh
+- credential re-resolution
+- reauthorization
+- failure behavior.
+
+Do not persist long-lived credentials inside workflow state.
+
+======================================================================
+43. EVENT CORRELATION
+======================================================================
+
+Every event should be traceable to:
+
+- workflow
+- execution
+- task
+- step
+- causation
+- correlation.
+
+Define IDs.
+
+======================================================================
+44. CAUSATION VS CORRELATION
+======================================================================
+
+Explicitly distinguish:
+
+Correlation:
+"belongs to this workflow."
+
+Causation:
+"this event caused this event."
+
+Determine whether both are required.
+
+======================================================================
+45. OUTBOX PATTERN
+======================================================================
+
+Evaluate transactional event publication.
+
+Example:
+
+Database transaction:
+update state
++
+publish event.
+
+Determine whether an outbox is required.
+
+Do not publish an event before durable state is committed if this creates
+inconsistent behavior.
+
+======================================================================
+46. INBOX / DEDUPLICATION
+======================================================================
+
+For incoming events determine whether the platform needs:
+
+- event ID
+- deduplication
+- inbox table
+- processed-event tracking.
+
+======================================================================
+47. ORDERING
+======================================================================
+
+Determine whether events require:
+
+- global ordering
+- tenant ordering
+- workflow ordering
+- partition ordering
+- no ordering guarantee.
+
+Avoid expensive global ordering unless required.
+
+======================================================================
+48. EVENT SCHEMA
+======================================================================
+
+Define event envelope.
+
+Potential:
+
+event_id
+event_type
+event_version
+occurred_at
+producer
+tenant_id
+correlation_id
+causation_id
+payload
+
+Determine minimum fields.
+
+======================================================================
+49. EVENT VERSIONING
+======================================================================
+
+Events persist.
+
+Determine how schemas evolve.
+
+Avoid silently changing event meaning.
+
+======================================================================
+50. EVENT RETENTION
+======================================================================
+
+Determine:
+
+- operational event retention
+- audit retention
+- replay requirements
+- deletion
+- archival.
+
+Do not treat every event as permanent.
+
+======================================================================
+51. EVENT REPLAY
+======================================================================
+
+Evaluate whether events should be replayable.
+
+If yes:
+
+- which events
+- authorization
+- versioning
+- side effects
+- idempotency.
+
+Replaying an event must not accidentally repeat irreversible actions.
+
+======================================================================
+52. WORKER ARCHITECTURE
+======================================================================
+
+Determine worker model.
+
+Potential:
+
+- single process
+- thread pool
+- process pool
+- containers
+- distributed workers.
+
+Day 1 should be minimal.
+
+======================================================================
+53. WORKER LEASES
+======================================================================
+
+If jobs can be claimed by workers, determine:
+
+- lease
+- heartbeat
+- visibility timeout
+- lock
+- stale worker recovery.
+
+Avoid permanently stuck jobs.
+
+======================================================================
+54. HEARTBEATS
+======================================================================
+
+Long-running work may need heartbeats.
+
+Determine whether workers report:
+
+- started
+- progress
+- heartbeat
+- completed.
+
+======================================================================
+55. PRIORITY
+======================================================================
+
+Determine whether jobs require priority:
+
+- interactive
+- user-facing
+- scheduled
+- background
+- maintenance.
+
+Prevent background work from starving interactive work.
+
+======================================================================
+56. BACKPRESSURE
+======================================================================
+
+Determine how the system behaves when:
+
+Jobs arrive faster than workers process them.
+
+Potential:
+
+- queue
+- admission control
+- rate limit
+- tenant quotas
+- priority.
+
+======================================================================
+57. TENANT FAIRNESS
+======================================================================
+
+One tenant must not consume all workers.
+
+Evaluate:
+
+- per-tenant concurrency
+- quotas
+- rate limits
+- fairness.
+
+======================================================================
+58. RESOURCE BUDGETS
+======================================================================
+
+Using previous architecture documents determine propagation of:
+
+- token budget
+- time budget
+- tool budget
+- workflow budget
+- GPU budget
+- external API budget.
+
+Do not allow nested workflows to bypass parent limits.
+
+======================================================================
+59. OBSERVABILITY
+======================================================================
+
+Measure:
+
+- workflow latency
+- queue latency
+- step latency
+- retries
+- failures
+- stuck executions
+- worker utilization
+- event lag
+- approval wait time
+- external dependency latency.
+
+======================================================================
+60. DISTRIBUTED TRACING
+======================================================================
+
+Propagate:
+
+root_run_id
+workflow_id
+execution_id
+step_id
+task_id
+event_id
+
+Determine how these map to tracing standards.
+
+======================================================================
+61. AUDIT
+======================================================================
+
+Audit:
+
+- workflow started
+- workflow cancelled
+- approval requested
+- approval granted
+- side effect executed
+- retry
+- failure
+- completion.
+
+Do not confuse operational logs with security audit.
+
+======================================================================
+62. FAILURE MODES
+======================================================================
+
+Analyze:
+
+- worker crash
+- database crash
+- event loss
+- duplicate event
+- network partition
+- external API timeout
+- webhook loss
+- webhook duplication
+- scheduler crash
+- corrupted workflow state
+- deployment during execution.
+
+Determine recovery behavior.
+
+======================================================================
+63. DEPLOYMENT SAFETY
+======================================================================
+
+A deployment may occur while workflows are running.
+
+Determine:
+
+- version compatibility
+- workflow pinning
+- graceful shutdown
+- worker draining
+- migration
+- rollback.
+
+======================================================================
+64. DATABASE MIGRATIONS
+======================================================================
+
+Workflow state persists across versions.
+
+Determine how schema migrations preserve running executions.
+
+======================================================================
+65. DAY-1 ARCHITECTURE
+======================================================================
+
+Strongly evaluate:
+
+PostgreSQL
++
+persistent job table
++
+worker
++
+transactional state
++
+optional outbox
+
+as the Day-1 architecture.
+
+Compare this honestly against dedicated workflow systems.
+
+Do NOT choose PostgreSQL merely because it is already present.
+
+======================================================================
+66. FUTURE EVOLUTION
+======================================================================
+
+Define triggers for introducing:
+
+- Redis
+- RabbitMQ
+- NATS
+- Kafka
+- Temporal
+- another durable workflow engine
+- distributed scheduler
+- event streaming infrastructure.
+
+For every future technology specify the architectural trigger.
+
+Examples:
+
+- workflow count
+- execution duration
+- worker count
+- throughput
+- durability requirement
+- operational burden.
+
+Do not use arbitrary thresholds unless benchmarked.
+
+======================================================================
+67. MIGRATION STRATEGY
+======================================================================
+
+Explain how Day-1 execution can evolve without rewriting:
+
+- Agent Runtime
+- Tool Runtime
+- Identity
+- Governance
+- Memory
+- Knowledge
+- Multi-Agent layer.
+
+Define stable execution contracts.
+
+======================================================================
+68. ARCHITECTURE SELECTION MATRIX
+======================================================================
+
+Compare:
+
+OPTION A
+PostgreSQL-backed jobs/workflows
+
+OPTION B
+Redis-backed queue + application state
+
+OPTION C
+Message broker + application workflow engine
+
+OPTION D
+Dedicated durable workflow engine
+
+OPTION E
+Event-driven distributed architecture
+
+Evaluate:
+
+| Criterion |
+| Day-1 simplicity |
+| Durability |
+| Long-running workflows |
+| Scheduling |
+| Retries |
+| Human approval |
+| External callbacks |
+| Idempotency |
+| Observability |
+| Scalability |
+| Operational complexity |
+| Recovery |
+| Migration complexity |
+| Recommendation |
+
+======================================================================
+69. "WHY NOT?" ANALYSIS
+======================================================================
+
+For the final architecture explicitly answer:
+
+WHY THIS?
+
+WHY NOT CRON + DATABASE?
+
+WHY NOT REDIS?
+
+WHY NOT RABBITMQ?
+
+WHY NOT KAFKA?
+
+WHY NOT TEMPORAL?
+
+WHY NOT EVENT SOURCING?
+
+WHY NOT A FULL WORKFLOW ENGINE FROM DAY 1?
+
+WHY NOT LET THE AGENT MANAGE ITS OWN STATE?
+
+Only retain comparisons supported by research.
+
+======================================================================
+70. REVERSIBILITY ANALYSIS
+======================================================================
+
+Classify:
+
+- job store
+- queue
+- workflow engine
+- event bus
+- event schema
+- state model
+- scheduler
+- execution protocol
+- workflow definition format
+
+as:
+
+- easily reversible
+- moderately reversible
+- expensive to reverse
+- effectively irreversible
+
+======================================================================
+71. CONTRACT VS IMPLEMENTATION
+======================================================================
+
+Determine stable contracts.
+
+Potential:
+
+WorkflowDefinition
+WorkflowExecution
+WorkflowStep
+Job
+Event
+Command
+Schedule
+ArtifactReference
+ExecutionContext
+
+Determine the minimum required set.
+
+======================================================================
+72. REQUIRED DIAGRAMS
+======================================================================
+
+Include Mermaid diagrams for:
+
+1. Command vs Event
+2. Agent vs Workflow
+3. Workflow lifecycle
+4. Step lifecycle
+5. Durable execution
+6. Job queue
+7. Worker lease
+8. Retry
+9. Idempotency
+10. Human approval
+11. External callback
+12. Outbox
+13. Event correlation / causation
+14. Saga / compensation
+15. Scheduler
+16. Deployment during running workflow
+17. Day-1 architecture
+18. Future distributed architecture
+
+======================================================================
+73. ADR CANDIDATES
+======================================================================
+
+Identify ADRs for:
+
+- workflow model
+- job queue
+- durable state
+- event model
+- event sourcing
+- event bus
+- scheduler
+- retries
+- idempotency
+- outbox
+- inbox
+- workflow versioning
+- human approval
+- cancellation
+- compensation
+- durable timers
+- worker architecture
+- execution engine
+
+For each:
+
+- problem
+- alternatives
+- recommendation
+- consequences
+- reversibility
+- decision deadline
+
+======================================================================
+74. DAY-1 / PREPARE / SCALE / ENTERPRISE
+======================================================================
+
+Create:
+
+| Capability | Day 1 | Prepare | Scale | Enterprise |
+
+Cover:
+
+- jobs
+- workflows
+- scheduling
+- retries
+- idempotency
+- durable execution
+- human approval
+- callbacks
+- events
+- outbox
+- inbox
+- event bus
+- workflow engine
+- worker pool
+- distributed workers
+- tenant fairness
+- event replay
+- compensation
+- workflow versioning
+- multi-region execution
+
+======================================================================
+75. SECURITY THREAT MODEL
+======================================================================
+
+Analyze:
+
+- unauthorized workflow execution
+- forged commands
+- forged events
+- replay
+- webhook spoofing
+- workflow privilege escalation
+- stale authorization
+- credential leakage
+- cross-tenant execution
+- malicious workflow definition
+- malicious event payload
+- worker compromise
+- event injection
+- task hijacking.
+
+Determine mitigations.
+
+======================================================================
+76. ATTEMPT TO FALSIFY THE RECOMMENDATION
+======================================================================
+
+Try to prove the selected architecture wrong.
+
+Ask:
+
+- What workflow duration breaks it?
+- What job volume breaks it?
+- What worker count breaks it?
+- What event volume breaks it?
+- What reliability requirement breaks it?
+- What scheduling requirement breaks it?
+- What human-approval requirement breaks it?
+- What external callback requirement breaks it?
+- What multi-region requirement breaks it?
+
+Determine the first architectural trigger.
+
+======================================================================
+77. ARCHITECTURAL SELF-CRITIQUE
+======================================================================
+
+Before finalizing, ask:
+
+1. Did I distinguish event from command?
+2. Did I distinguish workflow from agent?
+3. Did I distinguish workflow state from memory?
+4. Did I research durable execution alternatives?
+5. Did I avoid adopting Kafka without a real requirement?
+6. Did I avoid adopting Temporal without a real requirement?
+7. Are retries idempotent?
+8. Is authorization re-evaluated appropriately?
+9. Can workflows survive process restart?
+10. Can workflows survive worker failure?
+11. Are external callbacks authenticated?
+12. Are duplicate events safe?
+13. Is workflow versioning defined?
+14. Can irreversible side effects be compensated or recovered?
+15. Is Day 1 genuinely simple?
+16. Can the architecture scale incrementally?
+17. Can running workflows survive deployment?
+18. Are budgets and deadlines propagated?
+19. Are tenant resources isolated?
+20. What assumptions could invalidate the architecture?
+
+Include:
+
+# ARCHITECTURAL SELF-CRITIQUE
+
+======================================================================
+78. FINAL RECOMMENDATION
+======================================================================
+
+End with:
+
+# FINAL EVENTING, WORKFLOW & DURABLE EXECUTION ARCHITECTURE RECOMMENDATION
+
+Answer:
+
+"What Eventing, Workflow and Durable Execution Architecture should this
+platform actually build?"
+
+Be concrete.
+
+Describe:
+
+- command model
+- event model
+- job model
+- workflow model
+- execution state
+- scheduler
+- workers
+- retries
+- idempotency
+- durable execution
+- human approval
+- callbacks
+- compensation
+- eventing
+- observability
+- authorization
+- Day-1 implementation
+- future evolution
+
+Then explicitly answer:
+
+"What MUST NOT be built on Day 1?"
+
+Then:
+
+"What future condition should trigger the next architectural evolution?"
+
+======================================================================
+79. REQUIRED OUTPUT
+======================================================================
+
+Produce:
+
+11_EVENTING_WORKFLOW_DURABLE_EXECUTION_ARCHITECTURE.md
+
+The document MUST explicitly reference:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_PLANE.md
+04_AGENT_RUNTIME.md
+05_MODEL_INFERENCE_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+07_KNOWLEDGE_DATA_ARCHITECTURE.md
+08_MEMORY_ARCHITECTURE.md
+09_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+10_AGENT_COMMUNICATION_MULTI_AGENT_ARCHITECTURE.md
+
+If there is a conflict:
+
+DO NOT silently resolve it.
+
+Identify the conflict.
+
+Explain the trade-off.
+
+Recommend the superior architectural decision.
+
+Create an ADR candidate when appropriate.
+
+======================================================================
+80. SOURCE REQUIREMENTS
+======================================================================
+
+Include direct URLs.
+
+Prioritize:
+
+- official workflow-engine documentation
+- official PostgreSQL documentation
+- official messaging-system documentation
+- IETF RFCs
+- CNCF documentation
+- NIST
+- OWASP
+- credible distributed-systems research
+- academic workflow research
+
+Do not fabricate citations.
+
+Do not cite sources that were not actually inspected.
+
+Clearly distinguish:
+
+SOURCE FACT
+
+from:
+
+INFERENCE
+
+from:
+
+ARCHITECTURAL RECOMMENDATION.
+
+======================================================================
+81. ABSOLUTE FINAL INSTRUCTION
+======================================================================
+
+Act as an INDEPENDENT Principal Distributed Systems Architect.
+
+Your responsibility is to determine the best execution architecture,
+not to validate a preferred technology.
+
+Do not assume:
+
+EVENT BUS = WORKFLOW ENGINE.
+
+Do not assume:
+
+WORKFLOW = AGENT.
+
+Do not assume:
+
+AGENT = ORCHESTRATOR.
+
+Do not assume:
+
+RETRY = SAFE.
+
+Do not assume:
+
+EXACTLY-ONCE = AVAILABLE.
+
+Do not assume:
+
+DISTRIBUTED = BETTER.
+
+Do not allow:
+
+MODEL OUTPUT
+
+to directly control durable execution without deterministic policy and
+validation.
+
+Do not allow:
+
+AGENT REASONING
+
+to replace deterministic workflow state when determinism is required.
+
+Optimize for:
+
+DURABILITY
++
+CORRECTNESS
++
+RECOVERABILITY
++
+IDEMPOTENCY
++
+SECURITY
++
+OBSERVABILITY
++
+SIMPLICITY
++
+FUTURE EVOLUTION
+
+The final architecture MUST result from:
+
+    RESEARCH
+       ↓
+    REAL EXECUTION REQUIREMENTS
+       ↓
+    REAL ARCHITECTURAL ALTERNATIVES
+       ↓
+    DURABILITY ANALYSIS
+       ↓
+    FAILURE ANALYSIS
+       ↓
+    SECURITY ANALYSIS
+       ↓
+    OPERATIONAL COMPLEXITY ANALYSIS
+       ↓
+    ADVERSARIAL CHALLENGE
+       ↓
+    FINAL DECISION
+
+DO NOT DESIGN THE WORKFLOW ENGINE FIRST.
+
+RESEARCH FIRST.
+
+COMPARE.
+
+CHALLENGE.
+
+SELECT THE BEST ARCHITECTURE AVAILABLE FOR THIS PROJECT.
+
+THEN DESIGN IT.

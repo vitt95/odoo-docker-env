@@ -1,0 +1,3704 @@
+# 28 — HUMAN-IN-THE-LOOP ARCHITECTURE
+## Enterprise AI Agent Platform
+
+======================================================================
+ROLE
+======================================================================
+
+Act as the Principal AI Systems Architect, Human-AI Interaction
+Architect, AI Safety Architect, Enterprise Governance Architect,
+Decision Systems Architect, Security Architect, Reliability Architect,
+Compliance Architect and Agent Runtime Architect responsible for
+designing the complete Human-in-the-Loop Architecture of this platform.
+
+You have deep expertise in:
+
+- autonomous agent systems
+- human-AI collaboration
+- AI safety
+- enterprise governance
+- authorization
+- approval workflows
+- risk management
+- decision systems
+- distributed systems
+- workflow orchestration
+- identity
+- security
+- privacy
+- auditability
+- compliance
+- reliability
+- incident response
+- human factors
+- cognitive bias
+- automation bias
+- alert fatigue
+- operational design
+- high-risk decision workflows
+- human oversight
+- escalation systems
+- emergency controls
+- enterprise authorization.
+
+======================================================================
+1. MOST IMPORTANT INSTRUCTION
+## CLAUDE MUST CHOOSE THE HUMAN-OVERSIGHT ARCHITECTURE
+======================================================================
+
+This is NOT a prompt asking you to automatically add:
+
+"human approval"
+
+to every important agent action.
+
+Claude MUST independently determine:
+
+WHEN HUMAN INVOLVEMENT IS ACTUALLY NECESSARY.
+
+WHEN HUMAN INVOLVEMENT IS NOT NECESSARY.
+
+WHEN HUMAN INVOLVEMENT WOULD REDUCE RISK.
+
+WHEN HUMAN INVOLVEMENT WOULD ACTUALLY INCREASE RISK.
+
+WHEN HUMAN REVIEW SHOULD BE:
+
+- preventive
+- concurrent
+- supervisory
+- retrospective
+- exception-based
+- escalation-based.
+
+Do NOT assume:
+
+human = safer.
+
+A poorly designed human approval system can create:
+
+- approval fatigue
+- automation bias
+- rubber-stamping
+- alert fatigue
+- latency
+- bottlenecks
+- unclear accountability
+- unauthorized delegation
+- decision ambiguity.
+
+Claude MUST analyze the complete platform and choose the best
+human-oversight architecture available.
+
+======================================================================
+2. CORE PRINCIPLE
+======================================================================
+
+The architecture MUST distinguish between:
+
+HUMAN-IN-THE-LOOP
+
+HUMAN-ON-THE-LOOP
+
+HUMAN-OUT-OF-THE-LOOP
+
+HUMAN-IN-COMMAND.
+
+These are not interchangeable.
+
+For each agent workflow determine which model is appropriate.
+
+======================================================================
+3. REQUIRED ARCHITECTURAL PROCESS
+======================================================================
+
+The final architecture MUST result from:
+
+    DECISION INVENTORY
+       ↓
+    ACTION INVENTORY
+       ↓
+    RISK CLASSIFICATION
+       ↓
+    AUTONOMY ANALYSIS
+       ↓
+    HUMAN NECESSITY ANALYSIS
+       ↓
+    AUTHORITY MODEL
+       ↓
+    APPROVAL MODEL
+       ↓
+    ESCALATION
+       ↓
+    TIMEOUT
+       ↓
+    OVERRIDE
+       ↓
+    EXECUTION CONTROL
+       ↓
+    AUDIT
+       ↓
+    EVIDENCE
+       ↓
+    FAILURE ANALYSIS
+       ↓
+    HUMAN FACTORS ANALYSIS
+       ↓
+    COST / LATENCY
+       ↓
+    ALTERNATIVE ARCHITECTURES
+       ↓
+    ADVERSARIAL ANALYSIS
+       ↓
+    FALSIFICATION
+       ↓
+    FINAL HUMAN-OVERSIGHT ARCHITECTURE.
+
+======================================================================
+4. NO GENERIC "HUMAN APPROVAL"
+======================================================================
+
+Never write:
+
+"critical actions require human approval"
+
+without defining:
+
+- what makes an action critical
+- who is authorized
+- what information the human sees
+- what evidence is available
+- what decision the human must make
+- what happens if the human rejects
+- what happens if the human does nothing
+- what happens if the human is unavailable
+- how the decision is recorded
+- whether the human can modify the action
+- whether the human can delegate authority.
+
+======================================================================
+5. ARCHITECTURAL CONTEXT
+======================================================================
+
+Existing architecture documents:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_ARCHITECTURE.md
+04_AGENT_RUNTIME.md
+05_MODEL_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+08_KNOWLEDGE_DATA_ARCHITECTURE.md
+09_MEMORY_ARCHITECTURE.md
+10_SECURITY_ARCHITECTURE.md
+11_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+12_TRUST_PROVENANCE_ARCHITECTURE.md
+13_RELIABILITY_ARCHITECTURE.md
+14_CONCURRENCY_ARCHITECTURE.md
+15_OBSERVABILITY_ARCHITECTURE.md
+16_AUDIT_ARCHITECTURE.md
+17_EVALUATION_ARCHITECTURE.md
+18_DEPLOYMENT_LIFECYCLE_ARCHITECTURE.md
+19_MULTI_TENANCY_ARCHITECTURE.md
+20_COST_ARCHITECTURE.md
+21_CAPACITY_PLANNING_ARCHITECTURE.md
+22_NETWORKING_ARCHITECTURE.md
+23_STORAGE_ARCHITECTURE.md
+24_DR_ENTERPRISE_ARCHITECTURE.md
+25_ADVANCED_SUPPLY_CHAIN_ARCHITECTURE.md
+26_ENTERPRISE_COMPLIANCE_ARCHITECTURE.md
+27_MULTI_MODEL_FALLBACK_ARCHITECTURE.md
+
+Future architecture documents:
+
+29_REPLAY_ARCHITECTURE.md
+30_OFFLINE_MOBILE_ARCHITECTURE.md
+31_A2A_ARCHITECTURE.md
+32_ADMIN_CONSOLE_ARCHITECTURE.md
+33_ADR_ARCHITECTURE.md
+34_QUALITY_MODEL_ARCHITECTURE.md
+
+If a future document does not exist:
+
+DO NOT invent its contents.
+
+Identify only:
+
+- dependency
+- stable interface
+- unresolved assumption.
+
+If an existing architecture conflicts with the HITL design:
+
+DO NOT silently compensate.
+
+Document:
+
+- source architecture
+- conflict
+- consequence
+- recommended resolution
+- ADR candidate.
+
+======================================================================
+6. LEVEL
+======================================================================
+
+This document belongs to:
+
+LEVEL C — SUCCESSIVE ARCHITECTURE.
+
+The platform does NOT need sophisticated enterprise human-approval
+workflows on Day 1 unless actual use cases require them.
+
+However:
+
+DAY 1 MUST NOT MAKE FUTURE HUMAN OVERSIGHT IMPOSSIBLE.
+
+The Agent Runtime must therefore preserve stable concepts for:
+
+- action identity
+- decision identity
+- authorization
+- policy evaluation
+- execution state
+- approval state
+- actor identity
+- auditability.
+
+Do not build a complete enterprise approval platform prematurely.
+
+======================================================================
+7. FUNDAMENTAL QUESTION
+======================================================================
+
+For every potentially consequential agent action ask:
+
+CAN THIS ACTION BE SAFELY AUTOMATED?
+
+If yes:
+
+WHY?
+
+If no:
+
+WHY NOT?
+
+If uncertain:
+
+WHAT INFORMATION WOULD REDUCE THE UNCERTAINTY?
+
+If human involvement is required:
+
+WHAT EXACT HUMAN DECISION IS REQUIRED?
+
+======================================================================
+8. DECISION INVENTORY
+======================================================================
+
+Build a complete inventory of decisions made by:
+
+- models
+- agents
+- policies
+- tools
+- humans
+- external systems.
+
+Do not limit the analysis to final user-visible decisions.
+
+======================================================================
+9. ACTION INVENTORY
+======================================================================
+
+Identify actions such as:
+
+- reading data
+- writing data
+- modifying records
+- deleting data
+- sending messages
+- sending email
+- creating tickets
+- changing configuration
+- invoking APIs
+- executing code
+- making financial transactions
+- changing permissions
+- deploying software
+- changing models
+- changing policies
+- accessing sensitive data
+- exporting data
+- sharing data externally.
+
+These are examples.
+
+Determine the actual action inventory.
+
+======================================================================
+10. READ VS WRITE
+======================================================================
+
+Do not treat:
+
+READ
+
+and:
+
+WRITE
+
+as equivalent risk.
+
+Evaluate separately.
+
+======================================================================
+11. REVERSIBLE VS IRREVERSIBLE
+======================================================================
+
+Classify actions by reversibility.
+
+Potential:
+
+REVERSIBLE
+
+PARTIALLY REVERSIBLE
+
+DIFFICULT TO REVERSE
+
+IRREVERSIBLE.
+
+Do not assume "delete" is always irreversible or "write" is always
+reversible.
+
+Analyze actual system semantics.
+
+======================================================================
+12. SIDE EFFECTS
+======================================================================
+
+Using 06:
+
+identify actions with external side effects.
+
+Examples:
+
+- sending email
+- creating financial transaction
+- changing infrastructure
+- modifying customer records.
+
+Human oversight requirements must be based on actual risk.
+
+======================================================================
+13. RISK CLASSIFICATION
+======================================================================
+
+Create a risk model.
+
+Potential dimensions:
+
+- financial impact
+- legal impact
+- security impact
+- privacy impact
+- operational impact
+- reputational impact
+- safety impact
+- irreversibility
+- blast radius
+- affected users
+- uncertainty.
+
+These are candidates.
+
+Claude MUST determine the appropriate risk model.
+
+======================================================================
+14. RISK ≠ VALUE
+======================================================================
+
+A high-value action is not automatically high-risk.
+
+A low-value action can have enormous blast radius.
+
+======================================================================
+15. BLAST RADIUS
+======================================================================
+
+Determine:
+
+HOW MANY ENTITIES CAN THIS ACTION AFFECT?
+
+Examples:
+
+- one record
+- one user
+- one tenant
+- multiple tenants
+- entire platform.
+
+======================================================================
+16. ACTION SCOPE
+======================================================================
+
+Define scope:
+
+- resource
+- tenant
+- environment
+- region
+- organization
+- platform.
+
+======================================================================
+17. AUTONOMY LEVEL
+======================================================================
+
+Define autonomy levels.
+
+Potential:
+
+L0
+No autonomy.
+
+L1
+Recommendation.
+
+L2
+Execution with supervision.
+
+L3
+Bounded autonomous execution.
+
+L4
+High autonomy within policy.
+
+L5
+Unbounded autonomy.
+
+Do NOT assume this exact taxonomy is correct.
+
+Analyze and choose the best model.
+
+======================================================================
+18. AUTONOMY MUST BE POLICY-BOUNDED
+======================================================================
+
+Autonomous execution must remain inside:
+
+- authorization
+- policy
+- tool permissions
+- resource limits
+- tenant boundaries
+- safety constraints.
+
+======================================================================
+19. HUMAN AUTHORITY
+======================================================================
+
+A human approval must have actual authority.
+
+Do not create:
+
+"approve"
+
+buttons
+
+for people who cannot legitimately authorize the action.
+
+======================================================================
+20. APPROVER IDENTITY
+======================================================================
+
+Every approval must be attributable to:
+
+- human identity
+- role
+- tenant
+- authorization
+- timestamp.
+
+======================================================================
+21. AUTHORIZATION
+======================================================================
+
+Using 11:
+
+approval authority must be evaluated through the same identity and
+authorization architecture.
+
+Do not create a separate unofficial permission system.
+
+======================================================================
+22. DELEGATION
+======================================================================
+
+Determine whether approval authority can be delegated.
+
+If yes:
+
+define:
+
+- who can delegate
+- to whom
+- scope
+- expiration
+- audit.
+
+======================================================================
+23. SEGREGATION OF DUTIES
+======================================================================
+
+Using 10/11/26:
+
+determine when:
+
+requester
+
+must be different from:
+
+approver.
+
+Do not impose four-eyes approval everywhere.
+
+Use it where risk justifies it.
+
+======================================================================
+24. FOUR-EYES PRINCIPLE
+======================================================================
+
+Evaluate two-person approval for:
+
+- high-risk actions
+- irreversible actions
+- privileged actions
+- sensitive financial actions
+- security-critical actions.
+
+Do not assume all require it.
+
+======================================================================
+25. APPROVAL TYPES
+======================================================================
+
+Evaluate:
+
+- single approval
+- multiple approval
+- quorum
+- role-based approval
+- named-person approval
+- sequential approval
+- parallel approval.
+
+Determine which is appropriate.
+
+======================================================================
+26. APPROVAL CONTEXT
+======================================================================
+
+A human cannot safely approve an action without sufficient context.
+
+Define what the approval UI/workflow must provide.
+
+Potential:
+
+- requested action
+- actor
+- target
+- reason
+- policy
+- risk
+- affected resources
+- evidence
+- proposed parameters
+- model identity
+- confidence/uncertainty
+- previous actions.
+
+Do not expose unnecessary sensitive data.
+
+======================================================================
+27. EXPLAINABILITY FOR APPROVAL
+======================================================================
+
+The system should provide enough information for an informed decision.
+
+Do not equate:
+
+model chain-of-thought
+
+with:
+
+approval evidence.
+
+Never require exposing hidden reasoning traces simply because a human
+needs decision context.
+
+======================================================================
+28. DECISION EVIDENCE
+======================================================================
+
+Determine what evidence supports the approval.
+
+Examples:
+
+- source documents
+- retrieved information
+- policy evaluation
+- validation results
+- affected resources
+- model output
+- tool preview.
+
+======================================================================
+29. HUMAN DECISION QUALITY
+======================================================================
+
+Analyze whether the human can realistically understand:
+
+- what will happen
+- what could go wrong
+- what alternatives exist.
+
+======================================================================
+30. AUTOMATION BIAS
+======================================================================
+
+Threat-model:
+
+human simply clicks:
+
+APPROVE.
+
+Design against:
+
+rubber stamping.
+
+======================================================================
+31. APPROVAL FATIGUE
+======================================================================
+
+If agents generate thousands of approvals:
+
+humans stop paying attention.
+
+Determine:
+
+- thresholding
+- batching
+- prioritization
+- aggregation
+- risk-based escalation.
+
+======================================================================
+32. ALERT FATIGUE
+======================================================================
+
+Do not convert every anomaly into:
+
+human approval.
+
+======================================================================
+33. HUMAN ATTENTION IS A LIMITED RESOURCE
+======================================================================
+
+Using 21:
+
+model human review capacity.
+
+A design requiring:
+
+100,000 approvals/day
+
+is not a realistic human-in-the-loop architecture.
+
+======================================================================
+34. APPROVAL RATE
+======================================================================
+
+Estimate:
+
+- requests requiring review
+- average review time
+- peak review load
+- backlog.
+
+Use actual workload assumptions.
+
+Do not invent precise values.
+
+======================================================================
+35. APPROVAL LATENCY
+======================================================================
+
+Human approval adds latency.
+
+Model:
+
+request
+
+→
+
+agent
+
+→
+
+approval
+
+→
+
+execution.
+
+======================================================================
+36. SLA
+======================================================================
+
+Define approval SLA where relevant.
+
+Examples:
+
+- immediate
+- minutes
+- hours
+- business days.
+
+Do not invent universal targets.
+
+======================================================================
+37. TIMEOUT
+======================================================================
+
+What happens when the human does nothing?
+
+Possible:
+
+- fail closed
+- fail open
+- escalate
+- expire
+- retry
+- queue.
+
+Determine based on action risk.
+
+======================================================================
+38. FAIL-CLOSED
+======================================================================
+
+High-risk actions may require:
+
+no approval
+
+→
+
+no execution.
+
+But do not apply universally.
+
+======================================================================
+39. FAIL-OPEN
+======================================================================
+
+Some low-risk actions may continue without human response.
+
+Determine when appropriate.
+
+======================================================================
+40. EMERGENCY OVERRIDE
+======================================================================
+
+Define:
+
+- emergency stop
+- emergency approval
+- emergency delegation.
+
+Emergency paths must be more auditable, not less.
+
+======================================================================
+41. HUMAN OVERRIDE
+======================================================================
+
+A human should be able to override autonomous behavior where justified.
+
+Define:
+
+- authority
+- scope
+- audit
+- effect.
+
+======================================================================
+42. OVERRIDE ≠ DELETE HISTORY
+======================================================================
+
+Human override must not erase the original agent action.
+
+======================================================================
+43. STOP CONTROL
+======================================================================
+
+Evaluate a kill switch for:
+
+- agent
+- workflow
+- tenant
+- tool
+- model
+- deployment.
+
+Determine the correct granularity.
+
+======================================================================
+44. STOP PROPAGATION
+======================================================================
+
+If an agent is stopped:
+
+what happens to:
+
+- queued actions
+- running actions
+- tool calls
+- external requests
+- retries.
+
+======================================================================
+45. RUNNING ACTION
+======================================================================
+
+Stopping an agent does not necessarily cancel an already-executing
+external operation.
+
+Model this explicitly.
+
+======================================================================
+46. HUMAN ESCALATION
+======================================================================
+
+Define escalation levels.
+
+Potential:
+
+agent
+
+→
+
+supervisor
+
+→
+
+specialist
+
+→
+
+security
+
+→
+
+administrator.
+
+Determine actual hierarchy.
+
+======================================================================
+47. ESCALATION TRIGGERS
+======================================================================
+
+Potential triggers:
+
+- high risk
+- uncertainty
+- policy conflict
+- missing authority
+- repeated failure
+- suspicious behavior
+- sensitive data
+- financial impact.
+
+Determine actual triggers.
+
+======================================================================
+48. ESCALATION LOOP
+======================================================================
+
+Prevent:
+
+agent
+
+→
+
+human
+
+→
+
+agent
+
+→
+
+human
+
+→
+
+infinite escalation.
+
+======================================================================
+49. ESCALATION TERMINATION
+======================================================================
+
+Define terminal outcomes:
+
+- approve
+- reject
+- modify
+- cancel
+- defer
+- escalate
+- fail.
+
+======================================================================
+50. HUMAN MODIFICATION
+======================================================================
+
+Can the human:
+
+ONLY APPROVE / REJECT
+
+or:
+
+MODIFY THE ACTION?
+
+If modification is allowed:
+
+define validation.
+
+======================================================================
+51. HUMAN EDITS
+======================================================================
+
+A human-modified action must be:
+
+revalidated against policy.
+
+Do not execute arbitrary human modifications without validation.
+
+======================================================================
+52. HUMAN + TOOL EXECUTION
+======================================================================
+
+Determine whether:
+
+human approves the plan
+
+or:
+
+human approves the exact tool call.
+
+These are not equivalent.
+
+======================================================================
+53. PLAN APPROVAL
+======================================================================
+
+If human approves:
+
+"send this message"
+
+but agent later changes:
+
+recipient
+
+or:
+
+content,
+
+does approval remain valid?
+
+Define semantics.
+
+======================================================================
+54. APPROVAL BINDING
+======================================================================
+
+An approval must bind to the exact action or clearly defined action
+class.
+
+======================================================================
+55. APPROVAL EXPIRATION
+======================================================================
+
+An approval may become invalid after:
+
+- time
+- state change
+- policy change
+- target change
+- model change
+- context change.
+
+Define invalidation conditions.
+
+======================================================================
+56. STALE APPROVAL
+======================================================================
+
+Prevent:
+
+human approves action at 10:00
+
+agent executes different action at 10:30.
+
+======================================================================
+57. APPROVAL TOKEN
+======================================================================
+
+Evaluate a cryptographically or logically bound approval artifact.
+
+Potential concept:
+
+ApprovalGrant.
+
+Determine actual design.
+
+======================================================================
+58. APPROVAL NON-REPUDIATION
+======================================================================
+
+Where appropriate, preserve:
+
+- identity
+- authorization
+- exact approved action
+- timestamp
+- policy version.
+
+======================================================================
+59. APPROVAL PROVENANCE
+======================================================================
+
+Using 12:
+
+track:
+
+request
+
+→
+
+risk assessment
+
+→
+
+human decision
+
+→
+
+execution.
+
+======================================================================
+60. AUDIT
+======================================================================
+
+Using 16:
+
+record:
+
+- who requested
+- who approved
+- what was approved
+- when
+- why
+- policy
+- execution result.
+
+======================================================================
+61. AUDIT PRIVACY
+======================================================================
+
+Approval logs may contain sensitive information.
+
+Apply:
+
+- minimization
+- access controls
+- retention.
+
+======================================================================
+62. COMPLIANCE
+======================================================================
+
+Using 26:
+
+human oversight may be a legal or contractual requirement in some
+contexts.
+
+Do not assume every use case has the same requirement.
+
+======================================================================
+63. REGULATORY APPLICABILITY
+======================================================================
+
+Determine:
+
+which requirements may necessitate:
+
+- human oversight
+- human intervention
+- human review
+- human authority.
+
+Use current authoritative sources.
+
+======================================================================
+64. LEGAL ≠ TECHNICAL
+======================================================================
+
+Do not translate:
+
+"human oversight"
+
+into:
+
+"human clicks approve."
+
+Analyze the actual requirement.
+
+======================================================================
+65. AI GOVERNANCE
+======================================================================
+
+Evaluate:
+
+- human oversight
+- monitoring
+- documentation
+- accountability
+- intervention
+- override.
+
+======================================================================
+66. HIGH-RISK AI
+======================================================================
+
+Where applicable, determine what human oversight controls may be
+required.
+
+Do not assume the platform itself is always a high-risk AI system.
+
+Determine applicability based on use case and role.
+
+======================================================================
+67. FINANCIAL ACTIONS
+======================================================================
+
+Evaluate stronger controls for:
+
+- payments
+- transfers
+- refunds
+- purchases
+- financial commitments.
+
+Do not assume all financial actions require identical approval.
+
+======================================================================
+68. SECURITY ACTIONS
+======================================================================
+
+Evaluate:
+
+- firewall changes
+- credential changes
+- permission changes
+- security policy changes
+- incident containment.
+
+======================================================================
+69. PRIVILEGED ACTIONS
+======================================================================
+
+Using 11:
+
+evaluate human approval for:
+
+- privilege escalation
+- admin creation
+- access policy modification.
+
+======================================================================
+70. DATA ACTIONS
+======================================================================
+
+Evaluate:
+
+- export
+- deletion
+- sharing
+- retention changes
+- residency changes.
+
+======================================================================
+71. PRODUCTION ACTIONS
+======================================================================
+
+Using 18:
+
+evaluate:
+
+- deployments
+- rollback
+- configuration changes
+- model promotion.
+
+======================================================================
+72. MODEL ACTIONS
+======================================================================
+
+Using 05/27:
+
+evaluate:
+
+- model selection
+- model approval
+- model deployment
+- model retirement
+- emergency revocation.
+
+======================================================================
+73. POLICY ACTIONS
+======================================================================
+
+Using 03:
+
+policy changes may affect thousands of agents.
+
+Evaluate approval requirements based on blast radius.
+
+======================================================================
+74. TENANT ACTIONS
+======================================================================
+
+Using 19:
+
+tenant admins may require delegated authority.
+
+======================================================================
+75. CROSS-TENANT ACTIONS
+======================================================================
+
+Cross-tenant actions should be treated as high-risk unless clearly
+bounded and authorized.
+
+======================================================================
+76. EXTERNAL COMMUNICATION
+======================================================================
+
+Sending:
+
+email
+
+messages
+
+public posts
+
+customer notifications
+
+may require different levels of approval.
+
+======================================================================
+77. REPUTATIONAL ACTIONS
+======================================================================
+
+Evaluate actions that could:
+
+- make public statements
+- contact customers
+- change public information.
+
+======================================================================
+78. CODE EXECUTION
+======================================================================
+
+Evaluate human oversight for:
+
+- arbitrary code execution
+- infrastructure changes
+- production access.
+
+======================================================================
+79. SELF-MODIFICATION
+======================================================================
+
+Agents must not modify their own:
+
+- policies
+- permissions
+- security boundaries
+- approval rules
+
+without appropriate authorization.
+
+======================================================================
+80. POLICY ESCAPE
+======================================================================
+
+Human approval must not become a way for an agent to escape policy.
+
+======================================================================
+81. MODEL MANIPULATION
+======================================================================
+
+Threat-model:
+
+model attempts to persuade the human to approve an unsafe action.
+
+======================================================================
+82. SOCIAL ENGINEERING
+======================================================================
+
+The approval system must assume that:
+
+agent-generated explanations
+
+can be persuasive but incorrect.
+
+======================================================================
+83. HUMAN TRUST MODEL
+======================================================================
+
+Do not treat:
+
+"human approved"
+
+as proof that:
+
+action is safe.
+
+The system must still enforce technical controls.
+
+======================================================================
+84. HUMAN APPROVAL ≠ POLICY BYPASS
+======================================================================
+
+A human approval can authorize only what the underlying authorization
+system permits.
+
+======================================================================
+85. DUAL CONTROL
+======================================================================
+
+For highly sensitive actions evaluate:
+
+two independent humans.
+
+Do not use it everywhere.
+
+======================================================================
+86. INDEPENDENCE
+======================================================================
+
+Two approvers should actually be independent where dual control is
+required.
+
+======================================================================
+87. APPROVER COLLUSION
+======================================================================
+
+Threat-model:
+
+two authorized approvers collude.
+
+======================================================================
+88. APPROVER COMPROMISE
+======================================================================
+
+Threat-model:
+
+approver account compromised.
+
+======================================================================
+89. APPROVER AUTHENTICATION
+======================================================================
+
+High-risk approval may require stronger authentication.
+
+Determine actual requirements.
+
+======================================================================
+90. SESSION SECURITY
+======================================================================
+
+Approval UI/session must be protected against:
+
+- session hijacking
+- CSRF
+- replay
+- stale approvals.
+
+======================================================================
+91. APPROVAL REPLAY
+======================================================================
+
+An approval must not be reusable for:
+
+multiple actions
+
+unless explicitly defined.
+
+======================================================================
+92. NONCE / ACTION BINDING
+======================================================================
+
+Evaluate binding approval to:
+
+specific action identity.
+
+======================================================================
+93. HUMAN AVAILABILITY
+======================================================================
+
+Humans are not infinitely available.
+
+Model:
+
+- vacations
+- shifts
+- off-hours
+- incidents
+- organizational dependency.
+
+======================================================================
+94. APPROVER ROTATION
+======================================================================
+
+Evaluate role-based on-call approval.
+
+======================================================================
+95. BUSINESS HOURS
+======================================================================
+
+Some workflows may require different behavior outside business hours.
+
+======================================================================
+96. EMERGENCY HOURS
+======================================================================
+
+Emergency workflows may require:
+
+on-call authority.
+
+======================================================================
+97. APPROVAL ROUTING
+======================================================================
+
+Determine how requests reach:
+
+the correct human.
+
+Potential:
+
+- role
+- skill
+- tenant
+- resource
+- risk
+- geography.
+
+======================================================================
+98. WRONG APPROVER
+======================================================================
+
+Prevent approval by:
+
+someone technically available
+
+but not authorized.
+
+======================================================================
+99. APPROVAL ESCALATION
+======================================================================
+
+If no response:
+
+escalate according to policy.
+
+======================================================================
+100. APPROVAL PRIORITIZATION
+======================================================================
+
+Rank approval requests by:
+
+- risk
+- urgency
+- blast radius
+- SLA.
+
+======================================================================
+101. APPROVAL QUEUE
+======================================================================
+
+Model:
+
+- queue size
+- priority
+- starvation
+- fairness.
+
+======================================================================
+102. STARVATION
+======================================================================
+
+High-volume medium-risk requests must not prevent:
+
+critical approvals.
+
+======================================================================
+103. FAIRNESS
+======================================================================
+
+Define fairness where appropriate.
+
+======================================================================
+104. BATCH APPROVAL
+======================================================================
+
+Evaluate batching similar low-risk actions.
+
+Batching can increase:
+
+approval efficiency.
+
+But can also increase:
+
+blast radius.
+
+Determine when safe.
+
+======================================================================
+105. APPROVAL GROUPING
+======================================================================
+
+Group only actions with:
+
+equivalent risk
+
+and:
+
+equivalent authorization semantics.
+
+======================================================================
+106. BULK ACTIONS
+======================================================================
+
+A single approval for 10,000 actions may be unacceptable even if each
+individual action is low risk.
+
+Determine thresholds based on risk and blast radius.
+
+======================================================================
+107. HUMAN REVIEW QUALITY
+======================================================================
+
+Measure:
+
+- approval duration
+- rejection rate
+- modification rate
+- post-approval incident rate
+- escalation rate.
+
+Do not treat approval rate alone as success.
+
+======================================================================
+108. HUMAN ERROR
+======================================================================
+
+Human approval introduces:
+
+human error.
+
+Model it explicitly.
+
+======================================================================
+109. AUTOMATION BIAS METRICS
+======================================================================
+
+Look for:
+
+- extremely high approval rates
+- very low review times
+- repeated identical decisions
+- approval without context inspection.
+
+These are signals, not proof.
+
+======================================================================
+110. APPROVAL FATIGUE DETECTION
+======================================================================
+
+Detect:
+
+- increasing approval volume
+- decreasing review time
+- declining rejection rate
+- increased post-approval incidents.
+
+======================================================================
+111. HUMAN OVERSIGHT EFFECTIVENESS
+======================================================================
+
+Measure whether human review actually reduces:
+
+- unsafe actions
+- incidents
+- policy violations.
+
+======================================================================
+112. HUMAN-IN-THE-LOOP FAILURE
+======================================================================
+
+If the approval service is unavailable:
+
+determine behavior by risk class.
+
+======================================================================
+113. APPROVAL SERVICE OUTAGE
+======================================================================
+
+Do not assume:
+
+all agents must stop.
+
+Do not assume:
+
+all agents can continue.
+
+Classify actions.
+
+======================================================================
+114. IDENTITY OUTAGE
+======================================================================
+
+If identity cannot validate approver:
+
+high-risk approvals should not proceed.
+
+======================================================================
+115. POLICY ENGINE OUTAGE
+======================================================================
+
+If policy cannot be evaluated:
+
+determine fail-safe behavior.
+
+======================================================================
+116. AUDIT OUTAGE
+======================================================================
+
+If approval cannot be recorded:
+
+determine whether action may proceed.
+
+Do not choose automatically.
+
+======================================================================
+117. NETWORK PARTITION
+======================================================================
+
+Approval may exist locally while control plane is unavailable.
+
+Determine consistency requirements.
+
+======================================================================
+118. DUPLICATE APPROVAL
+======================================================================
+
+Distributed systems may deliver duplicate approval events.
+
+Design idempotently.
+
+======================================================================
+119. OUT-OF-ORDER EVENTS
+======================================================================
+
+Approval event may arrive after:
+
+action cancellation.
+
+Prevent stale execution.
+
+======================================================================
+120. APPROVAL STATE MACHINE
+======================================================================
+
+Define:
+
+REQUESTED
+
+PENDING
+
+APPROVED
+
+REJECTED
+
+EXPIRED
+
+CANCELLED
+
+ESCALATED
+
+EXECUTING
+
+EXECUTED
+
+FAILED.
+
+Determine actual states.
+
+======================================================================
+121. STATE TRANSITIONS
+======================================================================
+
+Define allowed transitions.
+
+Prevent:
+
+REJECTED → EXECUTING.
+
+======================================================================
+122. APPROVAL RACE
+======================================================================
+
+Two humans may approve/reject simultaneously.
+
+Define deterministic semantics.
+
+======================================================================
+123. APPROVAL CONCURRENCY
+======================================================================
+
+Using 14:
+
+protect against concurrent execution after approval.
+
+======================================================================
+124. APPROVAL + RETRY
+======================================================================
+
+If execution fails after approval:
+
+should the action retry automatically?
+
+Determine by risk.
+
+======================================================================
+125. APPROVAL + MODEL FALLBACK
+======================================================================
+
+Using 27:
+
+If the model changes after approval:
+
+does the approval remain valid?
+
+Usually:
+
+not automatically.
+
+Determine exact semantics.
+
+======================================================================
+126. APPROVAL + CONTEXT CHANGE
+======================================================================
+
+If retrieved data changes after approval:
+
+determine whether approval expires.
+
+======================================================================
+127. APPROVAL + TOOL CHANGE
+======================================================================
+
+If tool parameters change:
+
+approval may need invalidation.
+
+======================================================================
+128. APPROVAL + POLICY CHANGE
+======================================================================
+
+If policy changes after approval:
+
+determine whether old approval remains valid.
+
+======================================================================
+129. APPROVAL + TENANT POLICY
+======================================================================
+
+Tenant policy changes must be able to invalidate pending approvals where
+required.
+
+======================================================================
+130. APPROVAL + SECURITY INCIDENT
+======================================================================
+
+A security incident may invalidate existing approvals.
+
+======================================================================
+131. APPROVAL + EMERGENCY STOP
+======================================================================
+
+Emergency stop must override pending execution.
+
+======================================================================
+132. APPROVAL + DATA DELETION
+======================================================================
+
+If deletion is approved:
+
+ensure:
+
+- authorization
+- scope
+- retention/legal hold
+- propagation.
+
+======================================================================
+133. APPROVAL + DATA EXPORT
+======================================================================
+
+Evaluate:
+
+- destination
+- recipient
+- data classification
+- jurisdiction.
+
+======================================================================
+134. APPROVAL + EXTERNAL TOOL
+======================================================================
+
+Approval must account for:
+
+external destination.
+
+======================================================================
+135. APPROVAL + MCP
+======================================================================
+
+Future/26:
+
+MCP tool execution may involve external processors.
+
+Approval must not hide the destination.
+
+======================================================================
+136. APPROVAL + A2A
+======================================================================
+
+Future 31:
+
+an agent may request another agent to perform action.
+
+Human approval must remain attributable across agent boundaries.
+
+======================================================================
+137. APPROVAL + REPLAY
+======================================================================
+
+Future 29:
+
+approval history should allow investigation of:
+
+what human saw
+
+and:
+
+what human approved.
+
+Do not assume full deterministic replay.
+
+======================================================================
+138. APPROVAL + OFFLINE
+======================================================================
+
+Future 30:
+
+offline workflows may have delayed approval.
+
+Define dependency only.
+
+======================================================================
+139. APPROVAL + ADMIN CONSOLE
+======================================================================
+
+Future 32:
+
+Admin Console may present approvals.
+
+Define:
+
+- required capabilities
+- security boundary
+- authorization
+- audit.
+
+Do not invent UI.
+
+======================================================================
+140. APPROVAL + COST
+======================================================================
+
+Using 20:
+
+human review has operational cost.
+
+Estimate:
+
+- human time
+- escalation
+- queueing.
+
+======================================================================
+141. APPROVAL + CAPACITY
+======================================================================
+
+Using 21:
+
+model human capacity.
+
+======================================================================
+142. APPROVAL + RELIABILITY
+======================================================================
+
+Using 13:
+
+human availability becomes a dependency.
+
+Design:
+
+graceful degradation.
+
+======================================================================
+143. APPROVAL + MULTI-TENANCY
+======================================================================
+
+Using 19:
+
+ensure approval data is isolated by tenant.
+
+======================================================================
+144. APPROVAL + SECURITY
+======================================================================
+
+Using 10:
+
+approval interface is a privileged security surface.
+
+======================================================================
+145. APPROVAL + IDENTITY
+======================================================================
+
+Using 11:
+
+approval authority must be derived from centralized identity and
+authorization.
+
+======================================================================
+146. APPROVAL + PROVENANCE
+======================================================================
+
+Using 12:
+
+preserve:
+
+agent
+
+→
+
+human
+
+→
+
+action
+
+provenance.
+
+======================================================================
+147. APPROVAL + OBSERVABILITY
+======================================================================
+
+Using 15:
+
+monitor:
+
+- approval queue
+- latency
+- rejection
+- escalation
+- timeout.
+
+======================================================================
+148. APPROVAL + AUDIT
+======================================================================
+
+Using 16:
+
+record:
+
+decision provenance.
+
+======================================================================
+149. APPROVAL + EVALUATION
+======================================================================
+
+Using 17:
+
+evaluate whether:
+
+human oversight is effective.
+
+======================================================================
+150. APPROVAL + DEPLOYMENT
+======================================================================
+
+Using 18:
+
+changes to approval policy require controlled deployment.
+
+======================================================================
+151. APPROVAL + DR
+======================================================================
+
+Using 24:
+
+approval state must survive or safely fail during DR.
+
+======================================================================
+152. APPROVAL + COMPLIANCE
+======================================================================
+
+Using 26:
+
+support applicable requirements without assuming all workflows are
+regulated.
+
+======================================================================
+153. ACTION RISK MATRIX
+======================================================================
+
+Create:
+
+| Action | Risk | Reversibility | Blast Radius | Human Requirement | Authority |
+
+======================================================================
+154. AUTONOMY MATRIX
+======================================================================
+
+Create:
+
+| Workflow | Autonomy Level | Human Role | Trigger | Override |
+
+======================================================================
+155. APPROVAL MATRIX
+======================================================================
+
+Create:
+
+| Action | Approval Type | Approver | Timeout | Failure Behavior |
+
+======================================================================
+156. ESCALATION MATRIX
+======================================================================
+
+Create:
+
+| Condition | Escalation | Owner | SLA | Terminal Outcome |
+
+======================================================================
+157. HUMAN CAPACITY MATRIX
+======================================================================
+
+Create:
+
+| Workflow | Expected Volume | Review Time | Human Load | Peak Load |
+
+Do not invent precise values.
+
+Use assumptions and clearly label them.
+
+======================================================================
+158. APPROVAL STATE MACHINE
+======================================================================
+
+Create a Mermaid state diagram covering:
+
+request
+
+→
+
+risk evaluation
+
+→
+
+approval
+
+→
+
+execution
+
+→
+
+result.
+
+Include:
+
+- rejection
+- expiration
+- cancellation
+- escalation
+- emergency stop.
+
+======================================================================
+159. ARCHITECTURE OPTIONS
+======================================================================
+
+Evaluate at minimum:
+
+OPTION A
+--------
+No human approval; policy-bounded autonomous execution.
+
+OPTION B
+--------
+Human approval for all consequential actions.
+
+OPTION C
+--------
+Risk-based approval.
+
+OPTION D
+--------
+Exception-based human escalation.
+
+OPTION E
+--------
+Hybrid architecture:
+policy-bounded autonomy + risk-based approval + exception escalation
++ emergency human override.
+
+These are candidate architectures.
+
+Claude MUST determine which architecture is actually best.
+
+======================================================================
+160. ARCHITECTURE SELECTION
+======================================================================
+
+Compare:
+
+| Criterion |
+| Safety |
+| Security |
+| Compliance |
+| Human workload |
+| Latency |
+| Reliability |
+| Automation |
+| Auditability |
+| Error resistance |
+| Scalability |
+| Tenant configurability |
+| Cost |
+| User experience |
+| Day-1 practicality |
+| Enterprise readiness |
+| Recommendation |
+
+======================================================================
+161. WHY NOT ANALYSIS
+======================================================================
+
+Explicitly answer:
+
+WHY NOT HUMAN APPROVAL FOR EVERYTHING?
+
+WHY NOT NO HUMAN INVOLVEMENT?
+
+WHY NOT HUMAN APPROVAL ONLY FOR HIGH-RISK ACTIONS?
+
+WHY NOT HUMAN REVIEW AFTER EXECUTION?
+
+WHY NOT TWO HUMANS FOR EVERYTHING?
+
+WHY NOT LET CUSTOMERS DEFINE ALL APPROVAL RULES?
+
+WHY NOT LET THE MODEL REQUEST APPROVAL ITSELF?
+
+WHY NOT LET HUMANS OVERRIDE ANYTHING?
+
+WHY NOT AUTOMATE ALL LOW-RISK ACTIONS?
+
+WHY NOT REQUIRE HUMAN REVIEW WHEN MODEL CONFIDENCE IS LOW?
+
+WHY NOT USE CONFIDENCE AS THE PRIMARY RISK SIGNAL?
+
+WHY NOT BATCH APPROVALS?
+
+WHY NOT AUTOMATICALLY ESCALATE EVERY FAILURE?
+
+WHY NOT FAIL CLOSED EVERYWHERE?
+
+WHY NOT FAIL OPEN EVERYWHERE?
+
+Only retain alternatives that survive architectural analysis.
+
+======================================================================
+162. CONFIDENCE ≠ RISK
+======================================================================
+
+Do not assume:
+
+high model confidence
+
+means:
+
+low real-world risk.
+
+A model can be highly confident and wrong.
+
+======================================================================
+163. MODEL UNCERTAINTY
+======================================================================
+
+Evaluate uncertainty as one possible signal.
+
+Do not make it the sole decision criterion.
+
+======================================================================
+164. HUMAN TRUST
+======================================================================
+
+Do not assume:
+
+human judgment is always superior to model judgment.
+
+Compare:
+
+- human error
+- model error
+- combined system error.
+
+======================================================================
+165. HUMAN + AI COMBINED RISK
+======================================================================
+
+Analyze:
+
+AI recommends
+
+→
+
+human approves
+
+but human is influenced by:
+
+AI recommendation.
+
+======================================================================
+166. AUTOMATION BIAS MITIGATION
+======================================================================
+
+Potential techniques:
+
+- independent evidence
+- reason-for-approval
+- risk highlighting
+- mandatory justification for unusual approvals
+- randomized audits
+- approval quality monitoring.
+
+These are candidates.
+
+Determine which are appropriate.
+
+======================================================================
+167. RUBBER-STAMPING
+======================================================================
+
+Detect and mitigate.
+
+======================================================================
+168. ADVERSARIAL AGENT
+======================================================================
+
+Threat-model an agent deliberately trying to obtain approval.
+
+For example:
+
+- misleading summary
+- hiding important information
+- urgency manipulation
+- false confidence
+- selective evidence
+- repeated requests.
+
+======================================================================
+169. ADVERSARIAL HUMAN
+======================================================================
+
+Threat-model:
+
+human abusing approval authority.
+
+======================================================================
+170. COMPROMISED APPROVER
+======================================================================
+
+Threat-model:
+
+account takeover.
+
+======================================================================
+171. APPROVAL PHISHING
+======================================================================
+
+Approval requests themselves may become:
+
+social engineering vectors.
+
+======================================================================
+172. APPROVAL CONTENT SECURITY
+======================================================================
+
+Ensure approval content cannot contain malicious UI/instructions that
+mislead the approver.
+
+======================================================================
+173. UNTRUSTED MODEL CONTENT
+======================================================================
+
+Treat model-generated explanations as:
+
+untrusted input.
+
+======================================================================
+174. APPROVAL UI SECURITY
+======================================================================
+
+Evaluate:
+
+- XSS
+- injection
+- malicious links
+- hidden parameters
+- display manipulation.
+
+======================================================================
+175. EXACT ACTION VISIBILITY
+======================================================================
+
+The human must be able to see the exact action that will be executed.
+
+======================================================================
+176. PARAMETER INTEGRITY
+======================================================================
+
+Approval must bind to:
+
+approved parameters.
+
+======================================================================
+177. DESTINATION VISIBILITY
+======================================================================
+
+For external communication:
+
+human should see:
+
+destination.
+
+======================================================================
+178. DATA VISIBILITY
+======================================================================
+
+Human should see enough information to decide.
+
+But:
+
+do not expose unnecessary sensitive data.
+
+======================================================================
+179. DATA MINIMIZATION
+======================================================================
+
+Approval context should contain:
+
+minimum information necessary.
+
+======================================================================
+180. APPROVAL RETENTION
+======================================================================
+
+Using 26:
+
+define retention for approval evidence.
+
+======================================================================
+181. LEGAL HOLD
+======================================================================
+
+Approval records may become subject to:
+
+legal hold.
+
+======================================================================
+182. EXPORT
+======================================================================
+
+Enterprise customers may require:
+
+approval evidence export.
+
+======================================================================
+183. AUDITOR ACCESS
+======================================================================
+
+Auditors should receive:
+
+scoped read-only evidence.
+
+======================================================================
+184. APPROVAL ANALYTICS
+======================================================================
+
+Analyze:
+
+- volume
+- latency
+- rejection
+- modification
+- escalation
+- incidents.
+
+======================================================================
+185. APPROVAL QUALITY
+======================================================================
+
+Evaluate whether human decisions correlate with:
+
+better outcomes.
+
+======================================================================
+186. FEEDBACK LOOP
+======================================================================
+
+Post-execution outcomes can improve:
+
+approval policy.
+
+But do not automatically change policy from feedback.
+
+======================================================================
+187. POLICY LEARNING
+======================================================================
+
+If approval patterns suggest:
+
+many actions are always approved,
+
+do not automatically remove human review.
+
+Require controlled policy change.
+
+======================================================================
+188. APPROVAL POLICY VERSIONING
+======================================================================
+
+Using 03/18:
+
+track:
+
+policy version
+
+→
+
+approval request
+
+→
+
+decision.
+
+======================================================================
+189. APPROVAL POLICY CHANGE
+======================================================================
+
+A policy change can affect:
+
+pending approvals.
+
+Define invalidation semantics.
+
+======================================================================
+190. APPROVAL CONFIGURATION
+======================================================================
+
+Configuration is security-sensitive.
+
+Use:
+
+- access control
+- review
+- audit
+- versioning
+- rollback.
+
+======================================================================
+191. CUSTOMER CONFIGURATION
+======================================================================
+
+Customers may configure:
+
+- risk thresholds
+- approvers
+- escalation.
+
+But must not bypass:
+
+platform safety/security constraints.
+
+======================================================================
+192. PLATFORM MINIMUM CONTROLS
+======================================================================
+
+Define controls that:
+
+no tenant can disable.
+
+======================================================================
+193. TENANT-SPECIFIC POLICIES
+======================================================================
+
+Allow tenant-specific requirements where architecturally justified.
+
+======================================================================
+194. WORKSPACE / AGENT POLICIES
+======================================================================
+
+Evaluate whether policies can exist at:
+
+platform
+
+→
+
+tenant
+
+→
+
+workspace
+
+→
+
+agent.
+
+Do not assume this exact hierarchy.
+
+======================================================================
+195. POLICY PRECEDENCE
+======================================================================
+
+Define:
+
+which policy wins when they conflict.
+
+======================================================================
+196. APPROVAL POLICY ESCAPE
+======================================================================
+
+Prevent an agent from moving itself into a context with weaker approval
+requirements.
+
+======================================================================
+197. SELF-DELEGATION
+======================================================================
+
+Agents must not be able to:
+
+grant themselves approval authority.
+
+======================================================================
+198. HUMAN AUTHORITY ESCALATION
+======================================================================
+
+An agent must not escalate to:
+
+a more permissive approver
+
+simply because the first approver rejected.
+
+======================================================================
+199. APPROVAL SHOPPING
+======================================================================
+
+Prevent:
+
+agent
+
+→
+
+approver A rejects
+
+→
+
+approver B approves
+
+without legitimate escalation.
+
+======================================================================
+200. DECISION CONSISTENCY
+======================================================================
+
+Where multiple approvers exist:
+
+define conflict resolution.
+
+======================================================================
+201. QUORUM
+======================================================================
+
+If quorum is used:
+
+define:
+
+- required count
+- eligible roles
+- independence.
+
+======================================================================
+202. APPROVAL WITH CONDITIONS
+======================================================================
+
+Can a human approve with:
+
+constraints?
+
+Example:
+
+"approve only for these recipients."
+
+If yes:
+
+define machine-enforceable conditions.
+
+======================================================================
+203. CONDITIONAL APPROVAL
+======================================================================
+
+Conditional approvals must be enforced technically.
+
+Do not rely on:
+
+human interpretation after approval.
+
+======================================================================
+204. APPROVAL SCOPE
+======================================================================
+
+Define:
+
+- one action
+- action class
+- workflow
+- time window
+- resource set.
+
+======================================================================
+205. PRE-AUTHORIZATION
+======================================================================
+
+Evaluate pre-approved action classes.
+
+This can reduce approval burden.
+
+======================================================================
+206. PRE-AUTHORIZATION RISK
+======================================================================
+
+Pre-authorization can increase blast radius.
+
+Define limits.
+
+======================================================================
+207. HUMAN-IN-THE-LOOP FOR AGENT PLANS
+======================================================================
+
+Evaluate:
+
+approval of complete plan
+
+vs:
+
+approval of each action.
+
+Determine the correct granularity.
+
+======================================================================
+208. PLAN DRIFT
+======================================================================
+
+If agent plan changes after approval:
+
+determine whether approval expires.
+
+======================================================================
+209. EXECUTION DRIFT
+======================================================================
+
+If actual tool execution differs from approved plan:
+
+block or re-approve.
+
+======================================================================
+210. PLAN HASH / VERSION
+======================================================================
+
+Evaluate binding approval to:
+
+plan identity/version.
+
+======================================================================
+211. TOOL OUTPUT CHANGE
+======================================================================
+
+If tool data changes between:
+
+approval
+
+and:
+
+execution,
+
+determine whether approval remains valid.
+
+======================================================================
+212. TEMPORAL VALIDITY
+======================================================================
+
+Approval validity may depend on:
+
+time.
+
+======================================================================
+213. STATE VALIDITY
+======================================================================
+
+Approval validity may depend on:
+
+system state.
+
+======================================================================
+214. POLICY VALIDITY
+======================================================================
+
+Approval validity may depend on:
+
+policy version.
+
+======================================================================
+215. AUTHORITY VALIDITY
+======================================================================
+
+Approval validity may depend on:
+
+approver's current authority.
+
+======================================================================
+216. APPROVAL CANCELLATION
+======================================================================
+
+Define who can cancel:
+
+- requester
+- approver
+- administrator
+- emergency control.
+
+======================================================================
+217. APPROVAL REVOCATION
+======================================================================
+
+Determine whether an approval can be revoked before execution.
+
+======================================================================
+218. POST-APPROVAL MONITORING
+======================================================================
+
+Some actions may need:
+
+human review after execution.
+
+======================================================================
+219. HUMAN-ON-THE-LOOP
+======================================================================
+
+Evaluate supervisory monitoring for:
+
+large volumes of autonomous actions.
+
+======================================================================
+220. HUMAN-OUT-OF-THE-LOOP
+======================================================================
+
+Identify workflows where:
+
+human intervention is unnecessary.
+
+Do not force HITL where automation is safer and more reliable.
+
+======================================================================
+221. HUMAN-IN-COMMAND
+======================================================================
+
+Identify workflows where:
+
+humans retain ultimate control.
+
+======================================================================
+222. APPROVAL DECISION TABLE
+======================================================================
+
+Create:
+
+| Risk | Reversibility | Blast Radius | Autonomy | Human Role |
+
+======================================================================
+223. HUMAN OVERSIGHT MODEL
+======================================================================
+
+Create:
+
+| Workflow | Human-in-Loop | On-the-Loop | Out-of-Loop | In-Command |
+
+======================================================================
+224. FAILURE MATRIX
+======================================================================
+
+Create:
+
+| Failure | Human Available | Human Unavailable | Action |
+
+======================================================================
+225. APPROVAL SECURITY MATRIX
+======================================================================
+
+Create:
+
+| Action | Approver | MFA | Dual Control | Evidence |
+
+======================================================================
+226. ARCHITECTURE DIAGRAMS
+======================================================================
+
+Include Mermaid diagrams for:
+
+1. Complete HITL architecture
+2. Agent → Policy → Human → Tool
+3. Risk classification
+4. Autonomy levels
+5. Approval workflow
+6. Approval state machine
+7. Escalation
+8. Emergency stop
+9. Dual control
+10. Conditional approval
+11. Approval + tool execution
+12. Approval + model fallback
+13. Approval + policy change
+14. Approval + tenant isolation
+15. Approval audit trail
+16. Approval failure
+17. Human capacity
+18. Day-1 → Enterprise evolution.
+
+======================================================================
+227. ARCHITECTURE OPTIONS
+======================================================================
+
+At minimum evaluate:
+
+OPTION A
+--------
+Fully autonomous policy-bounded agents.
+
+OPTION B
+--------
+Human approval for all consequential actions.
+
+OPTION C
+--------
+Risk-based approval.
+
+OPTION D
+--------
+Exception-driven escalation.
+
+OPTION E
+--------
+Hybrid:
+policy-bounded autonomy
++
+risk-based approval
++
+exception escalation
++
+human override
++
+emergency stop.
+
+Claude MUST independently determine which architecture is best.
+
+======================================================================
+228. SELECTION MATRIX
+======================================================================
+
+Compare:
+
+| Criterion |
+| Safety |
+| Human workload |
+| Latency |
+| Reliability |
+| Security |
+| Compliance |
+| Scalability |
+| Auditability |
+| Automation |
+| User experience |
+| Cost |
+| Tenant configurability |
+| Operational complexity |
+| Day-1 practicality |
+| Enterprise readiness |
+| Recommendation |
+
+======================================================================
+229. WHY NOT ANALYSIS
+======================================================================
+
+Explicitly challenge:
+
+- approve everything
+- approve nothing
+- approve only high-risk
+- approve based only on model confidence
+- approve based only on tool type
+- approve based only on reversibility
+- approve based only on financial value
+- always require two humans
+- always fail closed
+- always fail open
+- allow customer override
+- allow model-requested approval
+- allow human arbitrary override
+- batch everything
+- automate everything.
+
+======================================================================
+230. REVERSIBILITY
+======================================================================
+
+Classify:
+
+- risk engine
+- approval workflow
+- policy model
+- approval state machine
+- authorization integration
+- emergency stop
+- human routing
+
+as:
+
+- easily reversible
+- moderately reversible
+- expensive
+- effectively irreversible.
+
+======================================================================
+231. DAY-1 REQUIREMENTS
+======================================================================
+
+Define minimum Day-1 foundations.
+
+Potential:
+
+- action identity
+- authorization
+- policy evaluation
+- execution state
+- audit events
+- approval abstraction
+- cancellation
+- safe tool boundaries.
+
+These are candidates only.
+
+Determine actual requirements.
+
+======================================================================
+232. DAY-1 NON-REQUIREMENTS
+======================================================================
+
+Explicitly identify what should NOT be built on Day 1 unless required.
+
+======================================================================
+233. FUTURE TRIGGERS
+======================================================================
+
+Define objective conditions that justify advanced HITL.
+
+Potential:
+
+- regulated workloads
+- enterprise requirements
+- high-risk actions
+- large autonomous workflows
+- financial actions
+- security actions
+- production operations
+- high blast radius
+- contractual obligations.
+
+Determine actual triggers.
+
+======================================================================
+234. STABLE CONTRACTS
+======================================================================
+
+Define stable concepts such as:
+
+ActionIdentity
+ActionRisk
+ActionAuthorization
+ApprovalRequest
+ApprovalDecision
+ApprovalGrant
+ApprovalCondition
+ApprovalState
+EscalationRequest
+HumanActor
+HumanAuthority
+OverrideCommand
+EmergencyStop
+ApprovalEvidence.
+
+These are examples.
+
+Determine the minimum required contracts.
+
+Contracts must remain independent of:
+
+- specific UI
+- specific workflow vendor
+- specific ticketing system
+- specific identity provider.
+
+======================================================================
+235. ADR CANDIDATES
+======================================================================
+
+Identify ADRs for:
+
+- autonomy model
+- risk classification
+- approval model
+- human authority
+- dual control
+- escalation
+- timeout
+- emergency stop
+- conditional approval
+- customer configuration
+- approval evidence.
+
+For each:
+
+- problem
+- alternatives
+- recommendation
+- consequences
+- reversibility
+- decision deadline.
+
+======================================================================
+236. HITL READINESS MATRIX
+======================================================================
+
+Create:
+
+| Capability | Day 1 | Prepare | Enterprise | Verified |
+
+Cover:
+
+- action identity
+- authorization
+- risk classification
+- approval
+- escalation
+- human override
+- emergency stop
+- audit
+- evidence
+- conditional approval
+- dual control
+- human capacity
+- approval analytics
+- policy versioning
+- tenant-specific approval.
+
+======================================================================
+237. ATTEMPT TO FALSIFY THE RECOMMENDATION
+======================================================================
+
+Try to prove the chosen architecture wrong.
+
+At minimum test:
+
+- human unavailable
+- approver compromised
+- approval service unavailable
+- identity service unavailable
+- policy engine unavailable
+- audit service unavailable
+- network partition
+- duplicate approval
+- stale approval
+- approval replay
+- plan changes after approval
+- tool parameters change
+- model changes after approval
+- policy changes after approval
+- emergency stop
+- agent manipulates approver
+- malicious model explanation
+- automation bias
+- approval fatigue
+- excessive approval volume
+- two approvers collude
+- wrong approver
+- approval shopping
+- tenant attempts to weaken policy
+- agent attempts to weaken policy
+- human modifies action unsafely
+- external tool behaves differently
+- A2A workflow creates hidden side effect
+- action is irreversible
+- action has larger blast radius than expected
+- approval is valid but underlying state has changed.
+
+For each:
+
+- failure
+- containment
+- residual risk
+- architecture impact.
+
+======================================================================
+238. ARCHITECTURAL SELF-CRITIQUE
+======================================================================
+
+Before finalizing ask:
+
+1. Did I avoid treating human approval as automatically safer?
+2. Did I classify actions by real risk?
+3. Did I analyze reversibility?
+4. Did I analyze blast radius?
+5. Did I define authority?
+6. Did I integrate centralized authorization?
+7. Did I protect against automation bias?
+8. Did I model human capacity?
+9. Did I model approval latency?
+10. Did I define timeout behavior?
+11. Did I define emergency stop?
+12. Did I define override semantics?
+13. Did I bind approval to exact actions?
+14. Did I handle stale approvals?
+15. Did I handle plan drift?
+16. Did I handle model fallback?
+17. Did I handle tool side effects?
+18. Did I handle policy changes?
+19. Did I handle tenant policies?
+20. Did I handle compromised approvers?
+21. Did I handle approval shopping?
+22. Did I handle dual control?
+23. Did I preserve auditability?
+24. Did I minimize approval data?
+25. Did I avoid unnecessary Day-1 complexity?
+26. Did I define objective activation triggers?
+27. What assumption could invalidate the architecture?
+
+Include:
+
+# ARCHITECTURAL SELF-CRITIQUE
+
+======================================================================
+239. FINAL RECOMMENDATION
+======================================================================
+
+End with:
+
+# FINAL HUMAN-IN-THE-LOOP ARCHITECTURE RECOMMENDATION
+
+Answer:
+
+"What Human Oversight Architecture should this platform actually
+adopt?"
+
+Be concrete.
+
+Describe:
+
+- autonomy model
+- risk model
+- action classification
+- human roles
+- approval architecture
+- authorization
+- escalation
+- timeout
+- override
+- emergency stop
+- conditional approval
+- dual control where justified
+- approval evidence
+- audit
+- human capacity
+- automation-bias mitigation
+- tenant policy
+- security
+- compliance
+- model interaction
+- tool interaction
+- failure behavior
+- Day-1 foundation
+- enterprise evolution.
+
+Then explicitly answer:
+
+"WHAT MUST EXIST ON DAY 1?"
+
+Then:
+
+"WHAT MUST NOT BE BUILT ON DAY 1?"
+
+Then:
+
+"WHAT OBJECTIVE CONDITIONS SHOULD TRIGGER ADVANCED HUMAN
+OVERSIGHT?"
+
+Then:
+
+"WHICH REQUIREMENTS REQUIRE LEGAL OR GOVERNANCE VALIDATION?"
+
+======================================================================
+240. REQUIRED OUTPUT
+======================================================================
+
+Produce:
+
+28_HUMAN_IN_THE_LOOP_ARCHITECTURE.md
+
+The document MUST explicitly reference:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_ARCHITECTURE.md
+04_AGENT_RUNTIME.md
+05_MODEL_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+08_KNOWLEDGE_DATA_ARCHITECTURE.md
+09_MEMORY_ARCHITECTURE.md
+10_SECURITY_ARCHITECTURE.md
+11_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+12_TRUST_PROVENANCE_ARCHITECTURE.md
+13_RELIABILITY_ARCHITECTURE.md
+14_CONCURRENCY_ARCHITECTURE.md
+15_OBSERVABILITY_ARCHITECTURE.md
+16_AUDIT_ARCHITECTURE.md
+17_EVALUATION_ARCHITECTURE.md
+18_DEPLOYMENT_LIFECYCLE_ARCHITECTURE.md
+19_MULTI_TENANCY_ARCHITECTURE.md
+20_COST_ARCHITECTURE.md
+21_CAPACITY_PLANNING_ARCHITECTURE.md
+22_NETWORKING_ARCHITECTURE.md
+23_STORAGE_ARCHITECTURE.md
+24_DR_ENTERPRISE_ARCHITECTURE.md
+25_ADVANCED_SUPPLY_CHAIN_ARCHITECTURE.md
+26_ENTERPRISE_COMPLIANCE_ARCHITECTURE.md
+27_MULTI_MODEL_FALLBACK_ARCHITECTURE.md
+
+Also identify future interactions with:
+
+29_REPLAY_ARCHITECTURE.md
+30_OFFLINE_MOBILE_ARCHITECTURE.md
+31_A2A_ARCHITECTURE.md
+32_ADMIN_CONSOLE_ARCHITECTURE.md
+33_ADR_ARCHITECTURE.md
+34_QUALITY_MODEL_ARCHITECTURE.md
+
+If documents do not exist:
+
+DO NOT invent their contents.
+
+Define only:
+
+- dependency
+- stable interface
+- unresolved assumption.
+
+======================================================================
+241. SOURCE REQUIREMENTS
+======================================================================
+
+THIS SECTION IS MANDATORY.
+
+Use current web research.
+
+Prioritize authoritative sources:
+
+- European Commission
+- EUR-Lex
+- European Data Protection Board
+- relevant data protection authorities
+- NIST
+- official AI governance frameworks
+- official security standards
+- official model/provider documentation where relevant.
+
+When analyzing legal requirements:
+
+identify:
+
+- source
+- date
+- version
+- applicability
+- requirement.
+
+Do not rely primarily on:
+
+blogs
+
+marketing material
+
+generic AI governance articles.
+
+Clearly distinguish:
+
+LAW / REGULATION
+
+from:
+
+STANDARD
+
+from:
+
+FRAMEWORK
+
+from:
+
+BEST PRACTICE
+
+from:
+
+ARCHITECTURAL RECOMMENDATION.
+
+======================================================================
+242. LEGAL DISCIPLINE
+======================================================================
+
+Do not present architectural analysis as legal advice.
+
+Where applicability depends on:
+
+- jurisdiction
+- customer type
+- use case
+- processing activity
+- legal role
+
+state:
+
+LEGAL / GOVERNANCE VALIDATION REQUIRED.
+
+But still determine the architectural consequence of each possible
+interpretation.
+
+======================================================================
+243. ABSOLUTE FINAL INSTRUCTION
+======================================================================
+
+Act as an INDEPENDENT Principal Human-AI Architecture and Governance
+Architect.
+
+Your responsibility is to determine the best Human Oversight
+Architecture for THIS platform.
+
+Do not assume:
+
+HUMAN = SAFER.
+
+Do not assume:
+
+APPROVAL = OVERSIGHT.
+
+Do not assume:
+
+APPROVER = AUTHORIZED.
+
+Do not assume:
+
+HIGH CONFIDENCE = LOW RISK.
+
+Do not assume:
+
+LOW CONFIDENCE = HIGH RISK.
+
+Do not assume:
+
+HIGH VALUE = HIGH RISK.
+
+Do not assume:
+
+LOW VALUE = LOW RISK.
+
+Do not assume:
+
+REVERSIBLE = SAFE.
+
+Do not assume:
+
+IRREVERSIBLE = ALWAYS REQUIRES TWO HUMANS.
+
+Do not assume:
+
+HUMAN APPROVAL = POLICY BYPASS.
+
+Do not allow:
+
+HUMAN APPROVAL
+
+to override:
+
+PLATFORM SECURITY CONTROLS.
+
+Do not allow:
+
+HUMAN APPROVAL
+
+to override:
+
+AUTHORIZATION.
+
+Do not allow:
+
+HUMAN APPROVAL
+
+to override:
+
+TENANT ISOLATION.
+
+Do not allow:
+
+HUMAN APPROVAL
+
+to silently change:
+
+APPROVED PARAMETERS.
+
+Do not allow:
+
+HUMAN APPROVAL
+
+to be replayed against:
+
+A DIFFERENT ACTION.
+
+Do not allow:
+
+STALE APPROVALS
+
+to execute.
+
+Do not allow:
+
+AGENTS
+
+to choose:
+
+MORE PERMISSIVE APPROVERS.
+
+Do not allow:
+
+AGENTS
+
+to grant themselves:
+
+APPROVAL AUTHORITY.
+
+Do not allow:
+
+APPROVAL WORKFLOWS
+
+to become:
+
+APPROVAL FATIGUE MACHINES.
+
+Do not allow:
+
+HUMANS
+
+to become:
+
+RUBBER-STAMPING SYSTEM COMPONENTS.
+
+Do not allow:
+
+MODEL-GENERATED EXPLANATIONS
+
+to become:
+
+UNQUESTIONED EVIDENCE.
+
+Do not allow:
+
+HUMAN REVIEW
+
+to become:
+
+A SUBSTITUTE FOR TECHNICAL ENFORCEMENT.
+
+Do not allow:
+
+AUTOMATION
+
+to remove:
+
+HUMAN AUTHORITY
+
+where it is genuinely required.
+
+Do not allow:
+
+HUMAN AUTHORITY
+
+to become:
+
+UNSCOPED PRODUCTION POWER.
+
+Optimize for:
+
+SAFETY
++
+SECURITY
++
+CORRECT AUTHORITY
++
+RISK-BASED AUTONOMY
++
+HUMAN EFFECTIVENESS
++
+LOW APPROVAL FATIGUE
++
+LOW LATENCY
++
+RELIABILITY
++
+AUDITABILITY
++
+COMPLIANCE
++
+SCALABILITY
++
+CLEAR ACCOUNTABILITY
++
+FUTURE EVOLUTION.
+
+The final architecture MUST result from:
+
+    DECISION INVENTORY
+       ↓
+    ACTION INVENTORY
+       ↓
+    RISK CLASSIFICATION
+       ↓
+    AUTONOMY ANALYSIS
+       ↓
+    HUMAN NECESSITY
+       ↓
+    AUTHORITY MODEL
+       ↓
+    APPROVAL MODEL
+       ↓
+    ESCALATION
+       ↓
+    TIMEOUT
+       ↓
+    OVERRIDE
+       ↓
+    TECHNICAL ENFORCEMENT
+       ↓
+    AUDIT
+       ↓
+    EVIDENCE
+       ↓
+    HUMAN FACTORS
+       ↓
+    CAPACITY
+       ↓
+    FAILURE ANALYSIS
+       ↓
+    ADVERSARIAL ANALYSIS
+       ↓
+    FALSIFICATION
+       ↓
+    FINAL DECISION.
+
+DO NOT CHOOSE THE APPROVAL WORKFLOW FIRST.
+
+DO NOT CHOOSE THE UI FIRST.
+
+DO NOT CHOOSE A TICKETING SYSTEM FIRST.
+
+DO NOT CHOOSE AN APPROVAL VENDOR FIRST.
+
+DO NOT CHOOSE "HUMAN APPROVAL" AS THE DEFAULT ANSWER.
+
+UNDERSTAND THE ACTIONS FIRST.
+
+UNDERSTAND THEIR REAL-WORLD CONSEQUENCES FIRST.
+
+UNDERSTAND THEIR RISK FIRST.
+
+UNDERSTAND THEIR AUTHORITY MODEL FIRST.
+
+UNDERSTAND THE HUMAN CAPACITY FIRST.
+
+UNDERSTAND THE FAILURE MODES FIRST.
+
+THEN DETERMINE WHERE HUMANS ACTUALLY ADD VALUE.
+
+THEN DETERMINE WHERE HUMANS WOULD ONLY ADD LATENCY AND FATIGUE.
+
+THEN COMPARE THE POSSIBLE OVERSIGHT ARCHITECTURES.
+
+THEN ATTEMPT TO DISPROVE THE PREFERRED ARCHITECTURE.
+
+THEN SELECT THE BEST HUMAN OVERSIGHT ARCHITECTURE AVAILABLE FOR THIS
+PROJECT.
+
+THEN DEFINE WHAT MUST EXIST ON DAY 1 TO MAKE THAT ARCHITECTURE
+POSSIBLE.
+
+THEN DESIGN IT.

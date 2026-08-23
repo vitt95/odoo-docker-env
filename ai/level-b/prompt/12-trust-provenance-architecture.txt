@@ -1,0 +1,2312 @@
+# 12 — TRUST / PROVENANCE ARCHITECTURE
+## Enterprise AI Agent Platform
+
+======================================================================
+ROLE
+======================================================================
+
+Act as the Principal Security Architect, Software Supply-Chain
+Architect, AI Provenance Architect, Artifact Integrity Architect and
+Trust Architecture Architect responsible for designing the complete
+Trust and Provenance Architecture of an enterprise-grade AI agent
+platform.
+
+You have deep expertise in:
+
+- software supply-chain security
+- artifact provenance
+- cryptographic signatures
+- attestation
+- SBOM
+- SLSA
+- Sigstore
+- Cosign
+- PKI
+- certificates
+- key management
+- workload identity
+- software artifacts
+- container images
+- model artifacts
+- datasets
+- prompts
+- agent configurations
+- tools
+- policies
+- workflows
+- infrastructure artifacts
+- provenance graphs
+- integrity verification
+- trust chains
+- admission control
+- artifact registries
+- reproducible builds
+- secure build systems
+- identity
+- authorization
+- audit
+- incident response.
+
+You are working within:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_ARCHITECTURE.md
+04_AGENT_RUNTIME.md
+05_MODEL_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+08_KNOWLEDGE_DATA_ARCHITECTURE.md
+09_MEMORY_ARCHITECTURE.md
+10_SECURITY_ARCHITECTURE.md
+11_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+13_RELIABILITY_ARCHITECTURE.md
+15_OBSERVABILITY_ARCHITECTURE.md
+16_AUDIT_ARCHITECTURE.md
+17_EVALUATION_ARCHITECTURE.md
+18_DEPLOYMENT_LIFECYCLE_ARCHITECTURE.md
+
+Future architecture documents include:
+
+14_CONCURRENCY_ARCHITECTURE.md
+19_MULTI_TENANCY_ARCHITECTURE.md
+20_COST_ARCHITECTURE.md
+21_CAPACITY_PLANNING_ARCHITECTURE.md
+22_NETWORKING_ARCHITECTURE.md
+23_STORAGE_ARCHITECTURE.md
+24_DR_ENTERPRISE_ARCHITECTURE.md
+25_ADVANCED_SUPPLY_CHAIN_ARCHITECTURE.md
+26_ENTERPRISE_COMPLIANCE_ARCHITECTURE.md
+27_MULTI_MODEL_FALLBACK_ARCHITECTURE.md
+28_HUMAN_IN_THE_LOOP_ARCHITECTURE.md
+29_REPLAY_ARCHITECTURE.md
+30_OFFLINE_MOBILE_ARCHITECTURE.md
+31_A2A_ARCHITECTURE.md
+32_ADMIN_CONSOLE_ARCHITECTURE.md
+33_ADR_ARCHITECTURE.md
+34_QUALITY_MODEL_ARCHITECTURE.md
+
+If these future documents do not yet exist:
+
+DO NOT invent their content.
+
+Instead identify the future dependency and define the stable contract
+that must be preserved.
+
+Existing architecture documents are not immune from challenge.
+
+If research demonstrates that a previous architectural decision is
+incorrect, incomplete, obsolete or suboptimal, explicitly identify the
+conflict and recommend the superior architecture.
+
+======================================================================
+1. PRIMARY OBJECTIVE
+======================================================================
+
+Design the complete Trust and Provenance Architecture.
+
+The architecture must answer:
+
+WHAT DOES "TRUSTED" MEAN IN THIS PLATFORM?
+
+WHAT EXACTLY ARE WE TRUSTING?
+
+WHO OR WHAT PRODUCED AN ARTIFACT?
+
+WHERE DID IT COME FROM?
+
+WHICH SOURCE COMMIT PRODUCED IT?
+
+WHICH BUILD SYSTEM PRODUCED IT?
+
+WHICH DEPENDENCIES WERE USED?
+
+WHICH MODEL PRODUCED THIS MODEL ARTIFACT?
+
+WHICH DATASET PRODUCED THIS EVALUATION?
+
+WHICH PROMPT VERSION PRODUCED THIS BEHAVIOR?
+
+WHICH TOOL VERSION WAS USED?
+
+WHICH POLICY VERSION WAS ACTIVE?
+
+WHICH WORKFLOW VERSION WAS EXECUTED?
+
+WAS THE ARTIFACT MODIFIED AFTER CREATION?
+
+CAN WE VERIFY ITS INTEGRITY?
+
+CAN WE VERIFY ITS ORIGIN?
+
+CAN WE VERIFY ITS BUILDER?
+
+CAN WE VERIFY ITS RELEASE?
+
+CAN RUNTIME VERIFY THE ARTIFACT BEFORE EXECUTING IT?
+
+CAN WE RECONSTRUCT THE TRUST CHAIN AFTER AN INCIDENT?
+
+======================================================================
+2. MOST IMPORTANT INSTRUCTION
+## RESEARCH FIRST — SELECT ARCHITECTURE SECOND
+======================================================================
+
+DO NOT begin by selecting:
+
+- Sigstore
+- Cosign
+- SLSA
+- PKI
+- in-toto
+- SPDX
+- CycloneDX
+- a cloud KMS
+- a registry
+- a certificate authority
+- a signing system.
+
+Research first.
+
+Research current authoritative approaches to:
+
+- software provenance
+- artifact attestations
+- SBOM
+- SLSA
+- in-toto
+- Sigstore
+- Cosign
+- PKI
+- workload identity
+- artifact signing
+- verification
+- admission control
+- model provenance
+- AI supply-chain security
+- dataset provenance
+- reproducible builds.
+
+Prioritize:
+
+- official SLSA documentation
+- official Sigstore documentation
+- official in-toto documentation
+- NIST
+- CISA
+- OWASP
+- SPDX
+- CycloneDX
+- official container ecosystem documentation
+- official model documentation
+- authoritative AI security research.
+
+Then identify meaningful alternatives.
+
+Then compare them.
+
+Then select the architecture best suited to THIS project.
+
+Then attempt to falsify the decision.
+
+Required process:
+
+    RESEARCH
+       ↓
+    TRUST REQUIREMENTS
+       ↓
+    ASSET INVENTORY
+       ↓
+    THREAT MODEL
+       ↓
+    PROVENANCE MODEL
+       ↓
+    IDENTITY MODEL
+       ↓
+    SIGNING / ATTESTATION OPTIONS
+       ↓
+    VERIFICATION MODEL
+       ↓
+    RUNTIME ENFORCEMENT
+       ↓
+    OPERATIONAL ANALYSIS
+       ↓
+    ADVERSARIAL CHALLENGE
+       ↓
+    FALSIFICATION
+       ↓
+    FINAL DECISION
+       ↓
+    DAY-1 IMPLEMENTATION
+       ↓
+    FUTURE EVOLUTION
+
+CLAUDE MUST DETERMINE THE BEST TRUST AND PROVENANCE ARCHITECTURE
+AVAILABLE FOR THIS PROJECT.
+
+======================================================================
+3. CENTRAL PRINCIPLE
+======================================================================
+
+INTEGRITY ≠ PROVENANCE.
+
+A cryptographic hash can tell us:
+
+"this artifact has not changed."
+
+It does NOT necessarily tell us:
+
+"this artifact came from a trusted source."
+
+Similarly:
+
+SIGNATURE ≠ TRUST.
+
+A valid signature only means:
+
+"the holder of this signing identity signed this artifact."
+
+The architecture must distinguish:
+
+IDENTITY
+
+INTEGRITY
+
+AUTHENTICITY
+
+PROVENANCE
+
+AUTHORIZATION
+
+TRUST.
+
+======================================================================
+4. LEVEL B CONSTRAINT
+======================================================================
+
+This is:
+
+LEVEL B — PREPARED DAY 1.
+
+The Day-1 system does NOT need a giant enterprise provenance platform.
+
+However:
+
+THE CORE ARTIFACT MODEL MUST BE PROVENANCE-AWARE FROM THE BEGINNING.
+
+Do not create a system where adding provenance later requires redesigning:
+
+- artifacts
+- releases
+- models
+- tools
+- prompts
+- policies
+- workflows
+- deployments.
+
+======================================================================
+5. DAY-1 PRINCIPLE
+======================================================================
+
+Day 1 should ideally establish:
+
+- immutable artifact identity
+- content digest
+- source version
+- build identity
+- release identity
+- model identity
+- configuration identity
+- basic verification.
+
+Do not automatically require:
+
+- full SLSA Level 3/4
+- enterprise PKI
+- complex key infrastructure
+- federated trust
+- multi-region attestation infrastructure
+
+unless research demonstrates a concrete Day-1 requirement.
+
+======================================================================
+6. WHAT IS AN ARTIFACT?
+======================================================================
+
+Define the platform's artifact taxonomy.
+
+At minimum evaluate:
+
+SOURCE CODE
+
+CONTAINER IMAGE
+
+BINARY
+
+MODEL
+
+MODEL CONFIGURATION
+
+PROMPT
+
+AGENT CONFIGURATION
+
+TOOL
+
+TOOL CONFIGURATION
+
+POLICY
+
+WORKFLOW
+
+WORKFLOW DEFINITION
+
+DATABASE MIGRATION
+
+EVALUATION DATASET
+
+EVALUATION RESULT
+
+INFRASTRUCTURE ARTIFACT
+
+RELEASE MANIFEST.
+
+Determine which are:
+
+- executable
+- deployable
+- configurable
+- informational
+- derived.
+
+======================================================================
+7. ARTIFACT IDENTITY
+======================================================================
+
+Define canonical artifact identity.
+
+Potential:
+
+artifact_id
+artifact_type
+version
+digest
+source
+producer
+created_at.
+
+These are examples only.
+
+Determine the minimum stable identity model.
+
+======================================================================
+8. DIGEST
+======================================================================
+
+Determine where cryptographic digests are required.
+
+Potential:
+
+- SHA-256
+- another modern cryptographic hash.
+
+Do not select an algorithm without checking current standards and
+ecosystem compatibility.
+
+======================================================================
+9. VERSION VS DIGEST
+======================================================================
+
+Clearly distinguish:
+
+VERSION
+
+from:
+
+CONTENT DIGEST.
+
+A version may point to different content if mutable systems are used.
+
+A digest identifies exact content.
+
+Determine which should be authoritative for execution.
+
+======================================================================
+10. IMMUTABILITY
+======================================================================
+
+Determine which artifacts must be immutable.
+
+At minimum evaluate:
+
+- production container images
+- model artifacts
+- release manifests
+- signed artifacts.
+
+Do not assume every development artifact needs immutability.
+
+======================================================================
+11. SOURCE PROVENANCE
+======================================================================
+
+For source-derived artifacts determine whether provenance records:
+
+- repository
+- branch/tag
+- commit
+- source digest
+- author
+- build trigger.
+
+Do not confuse source author identity with trustworthiness.
+
+======================================================================
+12. BUILD PROVENANCE
+======================================================================
+
+Using 16 define:
+
+SOURCE
+ ↓
+BUILD
+ ↓
+ARTIFACT
+
+Determine how to record:
+
+- builder
+- build environment
+- build definition
+- dependencies
+- timestamp
+- source commit
+- output digest.
+
+======================================================================
+13. BUILDER IDENTITY
+======================================================================
+
+Determine how the build system identifies itself.
+
+Potential:
+
+- CI workload identity
+- signing identity
+- certificate
+- service identity.
+
+Do not rely solely on a string such as:
+
+"GitHub Actions."
+
+======================================================================
+14. WORKLOAD IDENTITY
+======================================================================
+
+Using 11 determine whether CI workloads can obtain short-lived identities.
+
+Prefer avoiding long-lived static credentials where practical.
+
+======================================================================
+15. PROVENANCE ATTESTATION
+======================================================================
+
+Research current provenance/attestation formats.
+
+Evaluate:
+
+- in-toto
+- SLSA provenance
+- OCI attestations
+- other standards.
+
+Determine the appropriate format.
+
+======================================================================
+16. SBOM
+======================================================================
+
+Determine the role of:
+
+SPDX
+
+and:
+
+CycloneDX.
+
+SBOM answers:
+
+"what components are present?"
+
+Provenance answers:
+
+"how was this artifact produced?"
+
+Do not conflate them.
+
+======================================================================
+17. SBOM + PROVENANCE
+======================================================================
+
+Define relationship:
+
+Artifact
+ ├── SBOM
+ └── Provenance Attestation.
+
+======================================================================
+18. MODEL PROVENANCE
+======================================================================
+
+This is CRITICAL.
+
+Models are production artifacts.
+
+For each model record, where applicable:
+
+- model name
+- upstream source
+- repository
+- revision
+- digest
+- license
+- quantization
+- conversion process
+- runtime compatibility
+- evaluator
+- evaluation dataset
+- evaluation result.
+
+======================================================================
+19. MODEL DERIVATION
+======================================================================
+
+If:
+
+Base Model
+ ↓
+Quantization
+ ↓
+Conversion
+ ↓
+Optimization
+ ↓
+Deployment Artifact
+
+define the provenance chain.
+
+======================================================================
+20. MODEL TRANSFORMATION
+======================================================================
+
+Every transformation should preserve lineage.
+
+Example:
+
+Qwen source
+→ quantized artifact
+→ optimized artifact
+→ runtime artifact.
+
+Determine what evidence should exist at each stage.
+
+======================================================================
+21. MODEL TRUST
+======================================================================
+
+Do not assume:
+
+official model repository = automatically trusted.
+
+Define trust signals:
+
+- source
+- identity
+- digest
+- signature
+- provenance
+- evaluation
+- license.
+
+======================================================================
+22. PROMPT PROVENANCE
+======================================================================
+
+Prompts are production behavior.
+
+Define provenance for:
+
+- prompt source
+- version
+- author
+- reviewer
+- evaluation
+- release
+- deployment.
+
+======================================================================
+23. AGENT PROVENANCE
+======================================================================
+
+An agent may consist of:
+
+- code
+- instructions
+- tools
+- policies
+- model
+- memory configuration
+- retrieval configuration.
+
+Define how to construct an:
+
+AGENT RELEASE IDENTITY.
+
+======================================================================
+24. TOOL PROVENANCE
+======================================================================
+
+Using 06 define:
+
+- source
+- version
+- artifact
+- dependencies
+- owner
+- approval
+- security evaluation.
+
+======================================================================
+25. EXTERNAL TOOL PROVENANCE
+======================================================================
+
+For external tools/MCP servers determine:
+
+- source
+- publisher
+- version
+- artifact digest
+- signature
+- trust status.
+
+======================================================================
+26. POLICY PROVENANCE
+======================================================================
+
+Using 03 define:
+
+Policy
+ ↓
+Version
+ ↓
+Approval
+ ↓
+Deployment.
+
+A production authorization decision should be attributable to a policy
+version.
+
+======================================================================
+27. WORKFLOW PROVENANCE
+======================================================================
+
+Using 11 define:
+
+- workflow version
+- schema
+- code
+- deployment
+- execution.
+
+======================================================================
+28. CONFIGURATION PROVENANCE
+======================================================================
+
+Configuration can materially change system behavior.
+
+Determine provenance for:
+
+- model parameters
+- runtime settings
+- feature flags
+- policy configuration
+- tool configuration.
+
+======================================================================
+29. RELEASE MANIFEST
+======================================================================
+
+Using 16 define the canonical release manifest.
+
+It should be able to identify:
+
+- application
+- source
+- image
+- model
+- prompt
+- agent
+- tools
+- policies
+- workflows
+- configuration
+- infrastructure.
+
+======================================================================
+30. TRUST GRAPH
+======================================================================
+
+Design a provenance graph.
+
+Example:
+
+Source
+ ↓
+Build
+ ↓
+Artifact
+ ↓
+Signature
+ ↓
+Release
+ ↓
+Deployment
+ ↓
+Runtime.
+
+Additional relationships:
+
+Model Source
+ ↓
+Model Artifact
+ ↓
+Evaluation
+ ↓
+Release.
+
+Determine the actual graph.
+
+======================================================================
+31. PROVENANCE GRAPH STORAGE
+======================================================================
+
+Evaluate whether provenance requires:
+
+- relational database
+- document store
+- graph database
+- artifact metadata
+- external provenance system.
+
+Do not introduce a graph database simply because the word "graph"
+appears in the architecture.
+
+======================================================================
+32. PROVENANCE QUERY
+======================================================================
+
+The architecture should support questions such as:
+
+"Which production releases contain this vulnerable dependency?"
+
+"Which deployments use this model?"
+
+"Which model was used by this agent run?"
+
+"Which prompt version caused this behavior?"
+
+"Which artifacts were built by this CI identity?"
+
+"Which production systems depend on this artifact?"
+
+======================================================================
+33. INCIDENT RESPONSE
+======================================================================
+
+Using 10, 15 and 16 define provenance queries during incidents.
+
+Example:
+
+Vulnerable dependency discovered.
+
+Determine:
+
+- affected artifacts
+- affected releases
+- affected deployments
+- affected tenants
+- affected workflows.
+
+======================================================================
+34. REVOKED ARTIFACTS
+======================================================================
+
+Define lifecycle:
+
+TRUSTED
+
+SUSPENDED
+
+REVOKED
+
+DEPRECATED
+
+UNKNOWN.
+
+Determine semantics.
+
+======================================================================
+35. REVOCATION
+======================================================================
+
+If an artifact or signer becomes compromised:
+
+How does the platform prevent future execution?
+
+Determine:
+
+- registry revocation
+- trust policy
+- denylist
+- key revocation
+- deployment block.
+
+======================================================================
+36. SIGNING
+======================================================================
+
+Research current signing mechanisms.
+
+Compare:
+
+- key-based signatures
+- keyless signatures
+- certificate-based signing
+- registry-native signing.
+
+Do not select technology before understanding the threat model.
+
+======================================================================
+37. KEYLESS SIGNING
+======================================================================
+
+Evaluate keyless signing and workload identity.
+
+Determine:
+
+- benefits
+- limitations
+- operational implications
+- trust dependencies.
+
+======================================================================
+38. LONG-LIVED KEYS
+======================================================================
+
+If keys are required:
+
+Determine:
+
+- storage
+- access
+- rotation
+- revocation
+- backup
+- recovery.
+
+Avoid casually placing private signing keys in CI secrets.
+
+======================================================================
+39. SIGNER IDENTITY
+======================================================================
+
+Determine what signing identity means.
+
+Potential:
+
+- CI workload
+- organization
+- release service
+- developer.
+
+Different artifact classes may require different signers.
+
+======================================================================
+40. SEPARATION OF DUTIES
+======================================================================
+
+Evaluate separation between:
+
+Developer
+
+Builder
+
+Signer
+
+Release Approver
+
+Deployer.
+
+Do not make the system unnecessarily bureaucratic Day 1.
+
+======================================================================
+41. VERIFICATION
+======================================================================
+
+Define verification:
+
+Artifact
+ ↓
+Digest
+ ↓
+Signature
+ ↓
+Identity
+ ↓
+Provenance
+ ↓
+Policy
+ ↓
+ALLOW / DENY.
+
+======================================================================
+42. VERIFICATION VS AUTHORIZATION
+======================================================================
+
+A valid signature does not mean:
+
+"this artifact is allowed to run."
+
+Separate:
+
+VERIFY
+
+from:
+
+AUTHORIZE.
+
+======================================================================
+43. TRUST POLICY
+======================================================================
+
+Define policies such as:
+
+Only artifacts from approved builders
+
+Only artifacts with valid provenance
+
+Only signed production artifacts
+
+Only approved model sources.
+
+Determine which belong Day 1.
+
+======================================================================
+44. POLICY ENGINE
+======================================================================
+
+Using 03 determine whether trust decisions are enforced through the
+existing policy architecture.
+
+Do not create a second independent authorization system unnecessarily.
+
+======================================================================
+45. RUNTIME VERIFICATION
+======================================================================
+
+Using 18 determine whether runtime should verify artifacts before:
+
+- deployment
+- startup
+- execution.
+
+Determine the correct enforcement point.
+
+======================================================================
+46. ADMISSION CONTROL
+======================================================================
+
+Evaluate:
+
+Deployment
+ ↓
+Verify Artifact
+ ↓
+Verify Provenance
+ ↓
+Policy
+ ↓
+Run.
+
+Determine whether this is required Day 1.
+
+======================================================================
+47. CONTAINER IMAGE TRUST
+======================================================================
+
+Define trust for:
+
+- base image
+- built image
+- image digest
+- SBOM
+- provenance
+- signature.
+
+======================================================================
+48. BASE IMAGE PROVENANCE
+======================================================================
+
+A trusted application image may contain an untrusted base image.
+
+Define how base-image lineage is tracked.
+
+======================================================================
+49. DEPENDENCY PROVENANCE
+======================================================================
+
+Track:
+
+Application
+ ↓
+Dependency
+ ↓
+Version
+ ↓
+Source
+ ↓
+Artifact.
+
+Determine what is realistically enforceable Day 1.
+
+======================================================================
+50. COMPROMISED DEPENDENCY
+======================================================================
+
+Threat-model:
+
+Dependency trusted yesterday
+ ↓
+compromised today.
+
+Determine detection and response.
+
+======================================================================
+51. MODEL SUPPLY CHAIN
+======================================================================
+
+Threat-model:
+
+Model Repository
+ ↓
+Download
+ ↓
+Transformation
+ ↓
+Quantization
+ ↓
+Deployment.
+
+At each stage ask:
+
+WHAT DO WE TRUST?
+
+======================================================================
+52. DATASET PROVENANCE
+======================================================================
+
+Evaluation and future training datasets should have:
+
+- source
+- version
+- checksum
+- owner
+- license
+- transformation history.
+
+======================================================================
+53. DATA DERIVATION
+======================================================================
+
+If:
+
+Raw Dataset
+ ↓
+Filtered Dataset
+ ↓
+Evaluation Dataset
+
+define lineage.
+
+======================================================================
+54. KNOWLEDGE PROVENANCE
+======================================================================
+
+Using 08 define provenance for:
+
+Document
+ ↓
+Chunk
+ ↓
+Embedding
+ ↓
+Index.
+
+Determine what should remain queryable.
+
+======================================================================
+55. MEMORY PROVENANCE
+======================================================================
+
+Using 09 define provenance for memory entries.
+
+Potential:
+
+- source
+- actor
+- timestamp
+- originating run
+- confidence
+- transformation.
+
+Determine the minimum required.
+
+======================================================================
+56. AGENT RUN PROVENANCE
+======================================================================
+
+An agent execution should ideally identify:
+
+- agent version
+- model version
+- prompt version
+- tool versions
+- policy version
+- workflow version.
+
+This enables post-incident reconstruction.
+
+======================================================================
+57. PROVENANCE CORRELATION
+======================================================================
+
+Using 15 define correlation:
+
+Release
+ ↓
+Deployment
+ ↓
+Run
+ ↓
+Model
+ ↓
+Prompt
+ ↓
+Tool
+ ↓
+Policy.
+
+======================================================================
+58. PROVENANCE COMPLETENESS
+======================================================================
+
+Define how to detect incomplete provenance.
+
+An artifact should not silently become:
+
+"unknown origin."
+
+======================================================================
+59. UNKNOWN ARTIFACT
+======================================================================
+
+Define handling for artifacts with:
+
+- missing signature
+- missing provenance
+- unknown source
+- unknown builder.
+
+Determine:
+
+ALLOW
+
+WARN
+
+BLOCK.
+
+======================================================================
+60. DEVELOPMENT VS PRODUCTION
+======================================================================
+
+Not every development artifact requires the same trust level.
+
+Define trust policies for:
+
+DEVELOPMENT
+
+TEST
+
+STAGING
+
+PRODUCTION.
+
+======================================================================
+61. ENVIRONMENT-SPECIFIC TRUST
+======================================================================
+
+An unsigned local build may be acceptable in development.
+
+It may be unacceptable in production.
+
+Make this explicit.
+
+======================================================================
+62. TRUST TRANSITIONS
+======================================================================
+
+Define:
+
+Development Artifact
+ ↓
+Test
+ ↓
+Staging
+ ↓
+Production.
+
+Determine what evidence is added at each transition.
+
+======================================================================
+63. ARTIFACT PROMOTION
+======================================================================
+
+Prefer:
+
+same immutable artifact
+
+promoted across environments.
+
+Do not rebuild artifacts unnecessarily.
+
+======================================================================
+64. TRUST AT PROMOTION
+======================================================================
+
+Each promotion should verify:
+
+- artifact identity
+- provenance
+- evaluation
+- security status
+- policy.
+
+======================================================================
+65. RELEASE TRUST
+======================================================================
+
+A release is trusted only if:
+
+its constituent artifacts satisfy policy.
+
+Do not trust a release merely because a release tag exists.
+
+======================================================================
+66. TRUST BOUNDARY
+======================================================================
+
+Map trust zones:
+
+UNTRUSTED
+
+DEVELOPMENT
+
+BUILD
+
+REGISTRY
+
+STAGING
+
+PRODUCTION
+
+EXTERNAL.
+
+Determine trust transitions.
+
+======================================================================
+67. EXTERNAL ARTIFACTS
+======================================================================
+
+Third-party artifacts must be classified.
+
+Examples:
+
+- models
+- packages
+- container images
+- MCP servers
+- tools.
+
+Define intake process.
+
+======================================================================
+68. ARTIFACT INTAKE
+======================================================================
+
+Potential:
+
+External Artifact
+ ↓
+Download
+ ↓
+Digest
+ ↓
+Scan
+ ↓
+Verify
+ ↓
+Evaluate
+ ↓
+Approve
+ ↓
+Registry.
+
+Determine appropriate process.
+
+======================================================================
+69. ARTIFACT QUARANTINE
+======================================================================
+
+Evaluate quarantine for:
+
+- unknown artifacts
+- untrusted models
+- external tools
+- suspicious dependencies.
+
+======================================================================
+70. MALWARE / CONTENT SCANNING
+======================================================================
+
+Determine when artifacts require:
+
+- malware scanning
+- archive inspection
+- file type validation.
+
+Do not assume every artifact requires identical scanning.
+
+======================================================================
+71. LICENSE PROVENANCE
+======================================================================
+
+Track:
+
+- software license
+- model license
+- dataset license.
+
+Do not turn this into legal advice.
+
+Flag legal review where necessary.
+
+======================================================================
+72. ATTESTATION STORAGE
+======================================================================
+
+Determine where attestations live:
+
+- registry
+- object storage
+- database
+- transparency service.
+
+Compare trade-offs.
+
+======================================================================
+73. TRANSPARENCY LOGS
+======================================================================
+
+Research current transparency-log approaches.
+
+Evaluate whether they provide value.
+
+Do not introduce them merely because they are technically interesting.
+
+======================================================================
+74. OFFLINE VERIFICATION
+======================================================================
+
+Determine whether artifacts can be verified when external trust services
+are unavailable.
+
+Important for future:
+
+- enterprise
+- offline
+- regulated
+- disaster recovery.
+
+======================================================================
+75. TRUST ROOTS
+======================================================================
+
+Define:
+
+What is the root of trust?
+
+Potential:
+
+- organizational identity
+- CA
+- signing service
+- cloud workload identity
+- transparency log.
+
+Determine the correct architecture.
+
+======================================================================
+76. TRUST ROOT ROTATION
+======================================================================
+
+Define how trust roots change.
+
+A root compromise must not require rewriting every artifact manually.
+
+======================================================================
+77. KEY COMPROMISE
+======================================================================
+
+Threat-model:
+
+Signing key compromised.
+
+Determine:
+
+- detection
+- revocation
+- replacement
+- artifact invalidation
+- incident response.
+
+======================================================================
+78. BUILDER COMPROMISE
+======================================================================
+
+Threat-model:
+
+CI builder compromised.
+
+What prevents malicious artifacts from becoming trusted?
+
+======================================================================
+79. REGISTRY COMPROMISE
+======================================================================
+
+Threat-model:
+
+Artifact registry compromised.
+
+Can attackers replace artifacts?
+
+How does digest/signature verification help?
+
+======================================================================
+80. SOURCE CONTROL COMPROMISE
+======================================================================
+
+Threat-model:
+
+Repository compromised.
+
+Can malicious commits become trusted releases?
+
+Determine required gates.
+
+======================================================================
+81. PROVENANCE ATTACKS
+======================================================================
+
+Threat-model:
+
+- forged provenance
+- stolen identity
+- compromised builder
+- replayed attestation
+- mismatched artifact digest
+- stale attestation.
+
+======================================================================
+82. REPLAY
+======================================================================
+
+Determine whether old valid attestations can be replayed for new
+artifacts.
+
+======================================================================
+83. ATTESTATION BINDING
+======================================================================
+
+Attestations must bind to the exact artifact digest.
+
+Do not trust metadata that is not cryptographically bound to the artifact.
+
+======================================================================
+84. TIME
+======================================================================
+
+Determine the importance of:
+
+- timestamps
+- expiration
+- freshness
+- revocation status.
+
+Do not treat timestamps as proof of trust.
+
+======================================================================
+85. PROVENANCE GRAPH QUERY EXAMPLES
+======================================================================
+
+The final document must answer at least:
+
+1. Which release contains artifact X?
+2. Which source commit produced artifact X?
+3. Which builder produced X?
+4. Which dependencies were present?
+5. Which model version is deployed?
+6. Which prompt version is deployed?
+7. Which tools are part of the release?
+8. Which policy version was active?
+9. Which production runs used model X?
+10. Which deployments are affected by dependency Y?
+11. Which artifacts were signed by identity Z?
+12. Which artifacts lack complete provenance?
+
+======================================================================
+86. ARCHITECTURE OPTIONS
+======================================================================
+
+Identify real alternatives.
+
+Potential:
+
+OPTION A
+--------
+Digest-only integrity.
+
+OPTION B
+--------
+Digest + signatures.
+
+OPTION C
+--------
+Signatures + SBOM.
+
+OPTION D
+--------
+Signatures + SBOM + provenance.
+
+OPTION E
+--------
+Full attestation + policy verification + runtime enforcement.
+
+These are examples only.
+
+Research and determine the real candidates.
+
+======================================================================
+87. ARCHITECTURE SELECTION MATRIX
+======================================================================
+
+Compare:
+
+| Criterion |
+| Day-1 simplicity |
+| Artifact integrity |
+| Provenance |
+| Supply-chain security |
+| Model provenance |
+| Runtime verification |
+| Operational burden |
+| Key management |
+| Incident response |
+| Auditability |
+| Enterprise evolution |
+| Cost |
+| Recommendation |
+
+======================================================================
+88. "WHY NOT?" ANALYSIS
+======================================================================
+
+For the final architecture explicitly answer:
+
+WHY THIS?
+
+WHY NOT HASHES ONLY?
+
+WHY NOT SIGN EVERYTHING WITH ONE KEY?
+
+WHY NOT USE LONG-LIVED CI SIGNING KEYS?
+
+WHY NOT FULL SLSA DAY 1?
+
+WHY NOT SBOM ONLY?
+
+WHY NOT TRUST THE CONTAINER REGISTRY?
+
+WHY NOT TRUST THE MODEL REPOSITORY?
+
+WHY NOT TRUST GIT TAGS?
+
+WHY NOT VERIFY ONLY AT CI?
+
+WHY NOT VERIFY ONLY AT DEPLOYMENT?
+
+WHY NOT VERIFY ONLY AT RUNTIME?
+
+WHY NOT BUILD A CUSTOM PROVENANCE DATABASE?
+
+WHY NOT USE A BLOCKCHAIN?
+
+WHY NOT BUILD A FULL ENTERPRISE PKI DAY 1?
+
+Only retain comparisons supported by research.
+
+======================================================================
+89. REVERSIBILITY ANALYSIS
+======================================================================
+
+Classify:
+
+- artifact identity model
+- digest strategy
+- signing mechanism
+- provenance format
+- SBOM format
+- trust roots
+- key management
+- attestation storage
+- verification layer
+- policy model
+
+as:
+
+- easily reversible
+- moderately reversible
+- expensive to reverse
+- effectively irreversible.
+
+======================================================================
+90. CONTRACT VS IMPLEMENTATION
+======================================================================
+
+Determine stable trust contracts.
+
+Potential:
+
+ArtifactIdentity
+ArtifactDigest
+ArtifactProvenance
+ArtifactSignature
+SBOM
+Attestation
+TrustPolicy
+VerificationResult
+TrustDecision
+ReleaseManifest
+ProvenanceLink.
+
+These are examples only.
+
+Determine the minimum required set.
+
+The internal contract must remain usable even if:
+
+- Sigstore changes
+- signing technology changes
+- registry changes
+- CI platform changes
+- cloud provider changes.
+
+======================================================================
+91. REQUIRED DIAGRAMS
+======================================================================
+
+Include Mermaid diagrams for:
+
+1. Trust architecture
+2. Artifact identity
+3. Source → build → artifact provenance
+4. SBOM + provenance
+5. Signature flow
+6. Trust chain
+7. Artifact verification
+8. Runtime admission
+9. Model provenance
+10. Prompt/agent provenance
+11. Tool provenance
+12. Knowledge provenance
+13. Memory provenance
+14. Release manifest
+15. Provenance graph
+16. Trust zones
+17. External artifact intake
+18. Key compromise
+19. Builder compromise
+20. Day-1 → enterprise evolution
+
+======================================================================
+92. ADR CANDIDATES
+======================================================================
+
+Identify ADRs for:
+
+- artifact identity
+- digest algorithm
+- SBOM
+- provenance format
+- attestation format
+- signing
+- keyless vs key-based
+- trust root
+- key management
+- verification
+- runtime admission
+- artifact registry
+- provenance storage
+- trust policy
+- external artifact intake
+- model provenance
+- agent provenance.
+
+For each:
+
+- problem
+- alternatives
+- recommendation
+- consequences
+- reversibility
+- decision deadline
+
+======================================================================
+93. DAY-1 / PREPARE / SCALE / ENTERPRISE
+======================================================================
+
+Create:
+
+| Capability | Day 1 | Prepare | Scale | Enterprise |
+
+Cover:
+
+- artifact digest
+- immutable artifacts
+- source provenance
+- build provenance
+- SBOM
+- signing
+- verification
+- trust policy
+- runtime admission
+- model provenance
+- prompt provenance
+- agent provenance
+- tool provenance
+- dataset provenance
+- knowledge provenance
+- memory provenance
+- release manifest
+- provenance graph
+- revocation
+- transparency logs
+- offline verification.
+
+======================================================================
+94. TRUST TEST MATRIX
+======================================================================
+
+Create:
+
+| Threat | Attack | Control | Verification | Detection | Recovery |
+
+At minimum:
+
+- modified artifact
+- unsigned artifact
+- forged signature
+- stolen signing key
+- compromised builder
+- compromised registry
+- compromised source repository
+- malicious dependency
+- malicious model
+- malicious tool
+- forged provenance
+- stale attestation
+- replayed attestation
+- mismatched digest
+- revoked signer
+- unknown artifact.
+
+======================================================================
+95. PROVENANCE COMPLETENESS MATRIX
+======================================================================
+
+Create:
+
+| Artifact | Source | Digest | Builder | SBOM | Signature | Provenance | Evaluation |
+
+Include:
+
+- application
+- container
+- model
+- prompt
+- agent
+- tool
+- policy
+- workflow
+- dataset
+- knowledge artifact
+- memory artifact
+- release.
+
+======================================================================
+96. INCIDENT RESPONSE SCENARIOS
+======================================================================
+
+Walk through at least:
+
+SCENARIO A
+----------
+Critical dependency vulnerability.
+
+SCENARIO B
+----------
+Model artifact compromised.
+
+SCENARIO C
+----------
+Signing identity compromised.
+
+SCENARIO D
+----------
+CI builder compromised.
+
+SCENARIO E
+----------
+Container registry compromised.
+
+SCENARIO F
+----------
+Malicious third-party tool.
+
+For each:
+
+DETECTION
+→
+IMPACT ANALYSIS
+→
+REVOCATION
+→
+CONTAINMENT
+→
+REBUILD
+→
+RELEASE
+→
+VERIFICATION.
+
+======================================================================
+97. ATTEMPT TO FALSIFY THE RECOMMENDATION
+======================================================================
+
+Try to prove the selected architecture wrong.
+
+Ask:
+
+- What artifact volume breaks it?
+- What release frequency breaks it?
+- What number of builders breaks it?
+- What number of models breaks it?
+- What number of tenants breaks it?
+- What signing identity scale breaks it?
+- What key compromise breaks it?
+- What offline requirement breaks it?
+- What enterprise requirement breaks it?
+- What cloud/provider migration breaks it?
+
+Determine the first architectural trigger.
+
+======================================================================
+98. ARCHITECTURAL SELF-CRITIQUE
+======================================================================
+
+Before finalizing, ask:
+
+1. Did I separate integrity from provenance?
+2. Did I separate provenance from authorization?
+3. Is artifact identity immutable?
+4. Can source be traced to artifact?
+5. Can artifact be traced to deployment?
+6. Can models be traced to source?
+7. Can prompts be traced to release?
+8. Can tools be traced to release?
+9. Can policies be traced to runtime decisions?
+10. Is the trust root explicit?
+11. Can signatures be revoked?
+12. Can compromised builders be contained?
+13. Can compromised registries be detected?
+14. Are attestations bound to exact artifacts?
+15. Is Day 1 genuinely manageable?
+16. Can the system evolve toward stronger assurance?
+17. Is the architecture vendor-neutral?
+18. Can incidents be investigated quickly?
+19. Is the provenance query model useful?
+20. What assumptions could invalidate the architecture?
+
+Include:
+
+# ARCHITECTURAL SELF-CRITIQUE
+
+======================================================================
+99. FINAL RECOMMENDATION
+======================================================================
+
+End with:
+
+# FINAL TRUST / PROVENANCE ARCHITECTURE RECOMMENDATION
+
+Answer:
+
+"What Trust and Provenance Architecture should this platform actually
+build?"
+
+Be concrete.
+
+Describe:
+
+- artifact identity
+- digests
+- SBOM
+- provenance
+- attestations
+- signing
+- trust roots
+- identity
+- verification
+- trust policies
+- runtime admission
+- model provenance
+- prompt provenance
+- agent provenance
+- tool provenance
+- dataset provenance
+- knowledge provenance
+- memory provenance
+- release manifest
+- provenance graph
+- revocation
+- incident response
+- Day-1 implementation
+- future evolution.
+
+Then explicitly answer:
+
+"What MUST NOT be built on Day 1?"
+
+Then:
+
+"What future condition should trigger the next architectural evolution?"
+
+======================================================================
+100. REQUIRED OUTPUT
+======================================================================
+
+Produce:
+
+12_TRUST_PROVENANCE_ARCHITECTURE.md
+
+The document MUST explicitly reference:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_ARCHITECTURE.md
+04_AGENT_RUNTIME.md
+05_MODEL_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+08_KNOWLEDGE_DATA_ARCHITECTURE.md
+09_MEMORY_ARCHITECTURE.md
+10_SECURITY_ARCHITECTURE.md
+11_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+13_RELIABILITY_ARCHITECTURE.md
+15_OBSERVABILITY_ARCHITECTURE.md
+16_AUDIT_ARCHITECTURE.md
+17_EVALUATION_ARCHITECTURE.md
+18_DEPLOYMENT_LIFECYCLE_ARCHITECTURE.md
+
+Also identify future interactions with:
+
+14_CONCURRENCY_ARCHITECTURE.md
+19_MULTI_TENANCY_ARCHITECTURE.md
+20_COST_ARCHITECTURE.md
+21_CAPACITY_PLANNING_ARCHITECTURE.md
+22_NETWORKING_ARCHITECTURE.md
+23_STORAGE_ARCHITECTURE.md
+25_ADVANCED_SUPPLY_CHAIN_ARCHITECTURE.md
+26_ENTERPRISE_COMPLIANCE_ARCHITECTURE.md
+27_MULTI_MODEL_FALLBACK_ARCHITECTURE.md
+28_HUMAN_IN_THE_LOOP_ARCHITECTURE.md
+29_REPLAY_ARCHITECTURE.md
+31_A2A_ARCHITECTURE.md
+
+If these documents do not exist:
+
+DO NOT invent their content.
+
+Define only the stable contracts and future dependencies.
+
+If there is a conflict:
+
+DO NOT silently resolve it.
+
+Identify the conflict.
+
+Explain the trade-off.
+
+Recommend the superior architectural decision.
+
+Create an ADR candidate where appropriate.
+
+======================================================================
+101. SOURCE REQUIREMENTS
+======================================================================
+
+THIS SECTION IS MANDATORY.
+
+Use current web research.
+
+Prioritize:
+
+- official SLSA documentation
+- official Sigstore documentation
+- official Cosign documentation
+- official in-toto documentation
+- NIST
+- CISA
+- OWASP
+- SPDX
+- CycloneDX
+- OCI specifications
+- official container registry documentation
+- official CI/CD documentation
+- official model repositories/documentation
+- authoritative AI supply-chain security research.
+
+For every important technical claim:
+
+VERIFY THE CURRENT SOURCE.
+
+Do not rely on outdated blog posts when an official current specification
+exists.
+
+Do not fabricate citations.
+
+Do not cite sources that were not actually inspected.
+
+Clearly distinguish:
+
+SOURCE FACT
+
+from:
+
+SECURITY RESEARCH
+
+from:
+
+BENCHMARK / EXPERIMENT
+
+from:
+
+INFERENCE
+
+from:
+
+ARCHITECTURAL RECOMMENDATION.
+
+======================================================================
+102. VERSION AND DATE DISCIPLINE
+======================================================================
+
+At the beginning of the document state:
+
+RESEARCH DATE
+
+and the relevant:
+
+SPECIFICATION / STANDARD VERSIONS
+
+for the technologies selected.
+
+If standards or ecosystem components are evolving rapidly:
+
+identify where revalidation may be required.
+
+======================================================================
+103. ABSOLUTE FINAL INSTRUCTION
+======================================================================
+
+Act as an INDEPENDENT Principal Trust, Security and Supply-Chain
+Architect.
+
+Your responsibility is to determine the best trust architecture for
+THIS platform.
+
+Do not assume:
+
+HASH = TRUST.
+
+Do not assume:
+
+SIGNATURE = TRUST.
+
+Do not assume:
+
+SBOM = PROVENANCE.
+
+Do not assume:
+
+PROVENANCE = AUTHORIZATION.
+
+Do not assume:
+
+SIGNED ARTIFACT = SAFE ARTIFACT.
+
+Do not assume:
+
+OFFICIAL REPOSITORY = TRUSTED ARTIFACT.
+
+Do not assume:
+
+CI = TRUSTED BUILDER.
+
+Do not assume:
+
+REGISTRY = TRUSTED STORAGE.
+
+Do not assume:
+
+MODEL = TRUSTED BECAUSE IT IS POPULAR.
+
+Do not assume:
+
+PROMPT = HARMLESS CONFIGURATION.
+
+Do not assume:
+
+TOOL = TRUSTED SOFTWARE.
+
+Do not assume:
+
+ATTESTATION = TRUTH IF THE BUILDER IS COMPROMISED.
+
+Do not assume:
+
+FULL SLSA = NECESSARY DAY 1.
+
+Do not assume:
+
+CUSTOM CRYPTOGRAPHY = BETTER SECURITY.
+
+Do not allow:
+
+ARTIFACTS OF UNKNOWN ORIGIN
+
+to silently become:
+
+PRODUCTION ARTIFACTS.
+
+Do not allow:
+
+PROVENANCE
+
+to become:
+
+A DECORATIVE METADATA FIELD.
+
+It must support real operational questions.
+
+Optimize for:
+
+INTEGRITY
++
+AUTHENTICITY
++
+PROVENANCE
++
+VERIFIABILITY
++
+LEAST TRUST
++
+INCIDENT RESPONSE
++
+AUDITABILITY
++
+VENDOR INDEPENDENCE
++
+DAY-1 SIMPLICITY
++
+FUTURE ASSURANCE
+
+The final architecture MUST result from:
+
+    CURRENT RESEARCH
+       ↓
+    TRUST MODEL
+       ↓
+    ASSET INVENTORY
+       ↓
+    THREAT MODEL
+       ↓
+    PROVENANCE MODEL
+       ↓
+    IDENTITY MODEL
+       ↓
+    SIGNING / ATTESTATION OPTIONS
+       ↓
+    VERIFICATION MODEL
+       ↓
+    RUNTIME ENFORCEMENT
+       ↓
+    INCIDENT RESPONSE ANALYSIS
+       ↓
+    ADVERSARIAL CHALLENGE
+       ↓
+    FALSIFICATION
+       ↓
+    FINAL DECISION
+
+DO NOT DESIGN THE SIGNING STACK FIRST.
+
+RESEARCH FIRST.
+
+DEFINE WHAT MUST BE TRUSTED FIRST.
+
+MAP THE ASSETS.
+
+MAP THE TRUST BOUNDARIES.
+
+DEFINE THE THREAT MODEL.
+
+COMPARE PROVENANCE AND SIGNING APPROACHES.
+
+CHALLENGE THE TRUST MODEL.
+
+FALSIFY IT.
+
+THEN SELECT THE BEST TRUST / PROVENANCE ARCHITECTURE AVAILABLE FOR
+THIS PROJECT.
+
+THEN DESIGN IT.

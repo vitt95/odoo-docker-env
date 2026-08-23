@@ -1,0 +1,3150 @@
+# 25 — ADVANCED SUPPLY CHAIN ARCHITECTURE
+## Enterprise AI Agent Platform
+
+======================================================================
+ROLE
+======================================================================
+
+Act as the Principal Software Supply Chain Architect, AI Supply Chain
+Security Architect, DevSecOps Architect, Platform Security Architect,
+Artifact Integrity Architect, Build Systems Architect and Enterprise
+Security Architect responsible for designing the complete Software,
+Infrastructure, Model and AI Tool Supply Chain Architecture of this
+platform.
+
+You have deep expertise in:
+
+- software supply-chain security
+- secure software development
+- artifact provenance
+- software attestations
+- SBOM
+- dependency management
+- package security
+- container security
+- image signing
+- artifact registries
+- build security
+- CI/CD security
+- reproducible builds
+- hermetic builds
+- dependency pinning
+- vulnerability management
+- secret protection
+- code-signing
+- provenance verification
+- admission control
+- runtime integrity
+- infrastructure supply chain
+- Kubernetes supply chain security
+- OS/runtime supply chain
+- GPU software stack
+- AI/ML supply chains
+- model provenance
+- model artifact integrity
+- tokenizer integrity
+- embedding-model integrity
+- dataset provenance
+- data poisoning
+- model poisoning
+- dependency confusion
+- typosquatting
+- malicious packages
+- compromised maintainers
+- compromised registries
+- compromised CI/CD
+- build-system compromise
+- artifact substitution
+- insider threats
+- third-party tools
+- MCP ecosystems
+- external APIs
+- artifact promotion
+- release engineering
+- vulnerability response
+- rollback
+- quarantine
+- incident response.
+
+======================================================================
+1. ARCHITECTURAL CONTEXT
+======================================================================
+
+You are designing the Advanced Supply Chain Architecture for an
+enterprise AI agent platform.
+
+Existing architecture documents:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_ARCHITECTURE.md
+04_AGENT_RUNTIME.md
+05_MODEL_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+08_KNOWLEDGE_DATA_ARCHITECTURE.md
+09_MEMORY_ARCHITECTURE.md
+10_SECURITY_ARCHITECTURE.md
+11_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+12_TRUST_PROVENANCE_ARCHITECTURE.md
+13_RELIABILITY_ARCHITECTURE.md
+14_CONCURRENCY_ARCHITECTURE.md
+15_OBSERVABILITY_ARCHITECTURE.md
+16_AUDIT_ARCHITECTURE.md
+17_EVALUATION_ARCHITECTURE.md
+18_DEPLOYMENT_LIFECYCLE_ARCHITECTURE.md
+19_MULTI_TENANCY_ARCHITECTURE.md
+20_COST_ARCHITECTURE.md
+21_CAPACITY_PLANNING_ARCHITECTURE.md
+22_NETWORKING_ARCHITECTURE.md
+23_STORAGE_ARCHITECTURE.md
+24_DR_ENTERPRISE_ARCHITECTURE.md
+
+Future architecture documents include:
+
+26_ENTERPRISE_COMPLIANCE_ARCHITECTURE.md
+27_MULTI_MODEL_FALLBACK_ARCHITECTURE.md
+28_HUMAN_IN_THE_LOOP_ARCHITECTURE.md
+29_REPLAY_ARCHITECTURE.md
+30_OFFLINE_MOBILE_ARCHITECTURE.md
+31_A2A_ARCHITECTURE.md
+32_ADMIN_CONSOLE_ARCHITECTURE.md
+33_ADR_ARCHITECTURE.md
+34_QUALITY_MODEL_ARCHITECTURE.md
+
+If a future document does not exist:
+
+DO NOT invent its contents.
+
+Identify:
+
+- dependency
+- stable interface
+- unresolved assumption.
+
+Existing documents are not automatically correct.
+
+If supply-chain analysis exposes a weakness in another architecture
+document:
+
+DO NOT silently compensate for it.
+
+Identify:
+
+- conflict
+- consequence
+- recommended change
+- ADR candidate where appropriate.
+
+======================================================================
+2. MOST IMPORTANT INSTRUCTION
+## CLAUDE MUST CHOOSE THE SUPPLY CHAIN ARCHITECTURE
+======================================================================
+
+This is NOT a prompt asking for implementation of a predetermined
+security stack.
+
+Claude MUST independently determine the best Supply Chain Architecture
+for THIS platform.
+
+DO NOT begin by choosing:
+
+- SBOM
+- SLSA
+- Sigstore
+- Cosign
+- in-toto
+- Trivy
+- Grype
+- Dependabot
+- Renovate
+- GitHub Actions
+- GitLab CI
+- Jenkins
+- a specific registry
+- a specific cloud provider
+- a specific artifact repository.
+
+These are candidate technologies.
+
+They are NOT architectural conclusions.
+
+Research first.
+
+Understand the complete supply chain first.
+
+Then identify threats.
+
+Then identify trust boundaries.
+
+Then compare architecture options.
+
+Then attempt to falsify the preferred architecture.
+
+Then select the best architecture.
+
+Required process:
+
+    ASSET INVENTORY
+       ↓
+    SUPPLY CHAIN GRAPH
+       ↓
+    TRUST BOUNDARIES
+       ↓
+    PROVENANCE MODEL
+       ↓
+    BUILD MODEL
+       ↓
+    ARTIFACT MODEL
+       ↓
+    DEPENDENCY MODEL
+       ↓
+    AI/MODEL SUPPLY CHAIN
+       ↓
+    TOOL/MCP SUPPLY CHAIN
+       ↓
+    VERIFICATION
+       ↓
+    PROMOTION
+       ↓
+    DEPLOYMENT
+       ↓
+    RUNTIME TRUST
+       ↓
+    VULNERABILITY MANAGEMENT
+       ↓
+    INCIDENT RESPONSE
+       ↓
+    RECOVERY
+       ↓
+    ALTERNATIVE ARCHITECTURES
+       ↓
+    COST / COMPLEXITY
+       ↓
+    ADVERSARIAL ANALYSIS
+       ↓
+    FALSIFICATION
+       ↓
+    FINAL DECISION
+
+CLAUDE MUST DETERMINE THE BEST SUPPLY CHAIN ARCHITECTURE AVAILABLE FOR
+THIS PROJECT.
+
+======================================================================
+3. LEVEL
+======================================================================
+
+This document belongs to:
+
+LEVEL C — SUCCESSIVE ARCHITECTURE.
+
+It is NOT a requirement to implement the full advanced supply-chain
+architecture on Day 1.
+
+However:
+
+DAY 1 MUST NOT MAKE A TRUSTWORTHY SUPPLY CHAIN IMPOSSIBLE.
+
+The architecture must therefore define:
+
+- stable artifact identity
+- versioning
+- immutable references where required
+- provenance boundaries
+- deployment traceability
+- dependency ownership
+- artifact promotion boundaries.
+
+Do not over-engineer Day 1.
+
+======================================================================
+4. CENTRAL PRINCIPLE
+======================================================================
+
+EVERY ARTIFACT THAT CAN CHANGE THE BEHAVIOR OF THE PLATFORM IS PART OF
+THE SUPPLY CHAIN.
+
+This includes more than source code.
+
+Potentially:
+
+SOURCE CODE
+DEPENDENCIES
+PACKAGES
+OS IMAGES
+BASE IMAGES
+CONTAINER IMAGES
+BUILD TOOLS
+COMPILERS
+RUNTIMES
+GPU DRIVERS
+CUDA / ACCELERATION STACK
+MODEL RUNTIMES
+MODEL WEIGHTS
+TOKENIZERS
+EMBEDDING MODELS
+PROMPTS
+POLICY FILES
+CONFIGURATION
+INFRASTRUCTURE CODE
+HELM CHARTS
+KUBERNETES MANIFESTS
+MCP SERVERS
+TOOLS
+PLUGINS
+DATASETS
+KNOWLEDGE INGESTION COMPONENTS
+THIRD-PARTY APIs
+EXTERNAL ARTIFACTS
+CERTIFICATES
+DEPLOYMENT ARTIFACTS.
+
+Determine the actual supply-chain scope.
+
+======================================================================
+5. SUPPLY CHAIN GRAPH
+======================================================================
+
+Construct the complete chain:
+
+SOURCE
+  ↓
+DEPENDENCIES
+  ↓
+BUILD
+  ↓
+ARTIFACT
+  ↓
+SIGNING
+  ↓
+PROVENANCE
+  ↓
+REGISTRY
+  ↓
+PROMOTION
+  ↓
+DEPLOYMENT
+  ↓
+RUNTIME
+  ↓
+UPDATE
+  ↓
+RETIREMENT.
+
+For AI:
+
+DATA
+  ↓
+TRAINING / PROCESSING
+  ↓
+MODEL
+  ↓
+MODEL ARTIFACT
+  ↓
+VALIDATION
+  ↓
+REGISTRY
+  ↓
+PROMOTION
+  ↓
+DEPLOYMENT
+  ↓
+RUNTIME.
+
+For tools:
+
+SOURCE
+  ↓
+BUILD
+  ↓
+TOOL ARTIFACT
+  ↓
+SECURITY VALIDATION
+  ↓
+REGISTRY
+  ↓
+PROMOTION
+  ↓
+DEPLOYMENT
+  ↓
+RUNTIME.
+
+For MCP:
+
+MCP SOURCE
+  ↓
+BUILD
+  ↓
+MCP SERVER
+  ↓
+VALIDATION
+  ↓
+TRUST
+  ↓
+REGISTRY / DISTRIBUTION
+  ↓
+DEPLOYMENT
+  ↓
+RUNTIME.
+
+These are conceptual flows.
+
+Determine the actual architecture.
+
+======================================================================
+6. ASSET INVENTORY
+======================================================================
+
+Create a complete inventory of supply-chain artifacts.
+
+At minimum evaluate:
+
+- source repositories
+- source dependencies
+- package dependencies
+- operating system packages
+- base images
+- runtime images
+- build tools
+- compilers
+- language runtimes
+- container runtime
+- Kubernetes components
+- infrastructure modules
+- deployment manifests
+- Helm charts
+- plugins
+- agents
+- models
+- model weights
+- tokenizer
+- embedding model
+- datasets
+- evaluation datasets
+- prompts
+- policy artifacts
+- tool implementations
+- MCP servers
+- MCP dependencies
+- external binaries
+- GPU drivers
+- GPU runtime libraries
+- observability agents
+- security agents.
+
+======================================================================
+7. ARTIFACT IDENTITY
+======================================================================
+
+Every important artifact must have an unambiguous identity.
+
+Evaluate:
+
+- semantic version
+- immutable digest
+- content hash
+- artifact coordinate
+- build identifier.
+
+Do not rely solely on:
+
+"latest"
+
+or:
+
+"production".
+
+======================================================================
+8. IMMUTABILITY
+======================================================================
+
+Determine which artifacts must be immutable.
+
+At minimum evaluate:
+
+- container images
+- model artifacts
+- deployment artifacts
+- signed releases
+- SBOMs
+- provenance.
+
+======================================================================
+9. TAG VS DIGEST
+======================================================================
+
+Analyze the difference between:
+
+version tag
+
+and:
+
+immutable digest.
+
+Do not allow production deployment to depend on mutable references
+without explicit justification.
+
+======================================================================
+10. SOURCE CONTROL
+======================================================================
+
+Define:
+
+- source repositories
+- branch protection
+- review requirements
+- release branches
+- tags
+- signed commits where justified.
+
+Do not mandate signed commits without analyzing the actual threat model.
+
+======================================================================
+11. SOURCE CODE INTEGRITY
+======================================================================
+
+Threat-model:
+
+- malicious commit
+- compromised developer account
+- compromised CI token
+- force push
+- unauthorized merge
+- repository compromise.
+
+======================================================================
+12. CODE REVIEW
+======================================================================
+
+Define which changes require:
+
+- peer review
+- security review
+- architecture review
+- automated validation.
+
+Do not require manual review for every generated artifact without
+considering operational cost.
+
+======================================================================
+13. AI-GENERATED CODE
+======================================================================
+
+AI-assisted development is part of the supply chain.
+
+Evaluate:
+
+- generated source
+- generated dependencies
+- generated configuration
+- generated infrastructure code.
+
+Do not assume AI-generated code is trusted because it passed compilation.
+
+======================================================================
+14. DEPENDENCY INVENTORY
+======================================================================
+
+Build a dependency graph.
+
+For each dependency determine:
+
+- direct
+- transitive
+- runtime
+- build-time
+- optional
+- development-only.
+
+======================================================================
+15. DEPENDENCY PINNING
+======================================================================
+
+Determine where versions must be pinned.
+
+Avoid:
+
+uncontrolled floating dependencies.
+
+======================================================================
+16. LOCKFILES
+======================================================================
+
+Evaluate lockfiles for:
+
+- application dependencies
+- build dependencies
+- tooling dependencies.
+
+======================================================================
+17. DEPENDENCY UPDATE
+======================================================================
+
+Define how dependencies are updated.
+
+Evaluate:
+
+- automated updates
+- staged updates
+- security updates
+- compatibility testing.
+
+======================================================================
+18. DEPENDENCY CONFUSION
+======================================================================
+
+Threat-model:
+
+internal package name
+
+being replaced by:
+
+public malicious package.
+
+======================================================================
+19. TYPOSQUATTING
+======================================================================
+
+Threat-model:
+
+lookalike package.
+
+======================================================================
+20. MALICIOUS PACKAGE
+======================================================================
+
+Threat-model:
+
+legitimate dependency
+
+becoming malicious after a maintainer compromise.
+
+======================================================================
+21. COMPROMISED MAINTAINER
+======================================================================
+
+Model:
+
+trusted maintainer account
+
+→
+
+malicious release.
+
+======================================================================
+22. TRANSITIVE DEPENDENCY
+======================================================================
+
+A direct dependency may import hundreds of indirect dependencies.
+
+Determine how these are tracked.
+
+======================================================================
+23. DEPENDENCY GRAPH VISIBILITY
+======================================================================
+
+The platform must be able to answer:
+
+"Which deployed services depend on this vulnerable package?"
+
+======================================================================
+24. VULNERABILITY MANAGEMENT
+======================================================================
+
+Define:
+
+- vulnerability discovery
+- severity
+- exploitability
+- exposure
+- prioritization
+- remediation
+- exception
+- expiration.
+
+======================================================================
+25. CVE ≠ EXPLOITABILITY
+======================================================================
+
+Do not automatically treat:
+
+CVSS score
+
+as:
+
+actual platform risk.
+
+Evaluate:
+
+- exposure
+- exploitability
+- reachability
+- privilege
+- compensating controls.
+
+======================================================================
+26. VULNERABILITY EXCEPTIONS
+======================================================================
+
+Exceptions must be:
+
+- explicit
+- justified
+- owned
+- time-bounded
+- auditable.
+
+======================================================================
+27. VULNERABILITY SLA
+======================================================================
+
+Do not invent remediation deadlines.
+
+Derive them from:
+
+- risk
+- exposure
+- business requirements.
+
+======================================================================
+28. BUILD SYSTEM
+======================================================================
+
+Model:
+
+SOURCE
+→
+BUILD ENVIRONMENT
+→
+DEPENDENCIES
+→
+COMPILER
+→
+ARTIFACT.
+
+======================================================================
+29. BUILD TRUST
+======================================================================
+
+The build environment itself is part of the supply chain.
+
+Threat-model:
+
+- compromised runner
+- malicious build script
+- injected dependency
+- stolen credentials
+- poisoned cache.
+
+======================================================================
+30. EPHEMERAL BUILD ENVIRONMENTS
+======================================================================
+
+Evaluate ephemeral builders.
+
+Do not assume they are automatically secure.
+
+======================================================================
+31. BUILDER ISOLATION
+======================================================================
+
+Builds should not automatically have:
+
+production credentials.
+
+======================================================================
+32. BUILD CREDENTIALS
+======================================================================
+
+Separate:
+
+build credentials
+
+from:
+
+production credentials.
+
+======================================================================
+33. SECRET ISOLATION
+======================================================================
+
+Secrets required to publish artifacts should have minimum privilege.
+
+======================================================================
+34. BUILD NETWORK
+======================================================================
+
+Using 22:
+
+determine build egress.
+
+Can builds access:
+
+arbitrary internet?
+
+internal production?
+
+metadata endpoints?
+
+======================================================================
+35. REPRODUCIBLE BUILDS
+======================================================================
+
+Evaluate whether builds can reproduce the same artifact from the same
+inputs.
+
+Do not claim full reproducibility without testing.
+
+======================================================================
+36. HERMETIC BUILDS
+======================================================================
+
+Evaluate hermeticity.
+
+Determine whether build dependencies should be:
+
+- vendored
+- mirrored
+- pinned
+- isolated.
+
+======================================================================
+37. BUILD CACHE
+======================================================================
+
+Build caches can become a supply-chain attack vector.
+
+Threat-model:
+
+poisoned cache.
+
+======================================================================
+38. ARTIFACT GENERATION
+======================================================================
+
+Determine exactly how artifacts are generated.
+
+Examples:
+
+- binaries
+- containers
+- packages
+- model bundles
+- deployment bundles.
+
+======================================================================
+39. ARTIFACT REGISTRY
+======================================================================
+
+Evaluate:
+
+- registry
+- package repository
+- model registry
+- artifact repository.
+
+Do not automatically use one registry for everything.
+
+======================================================================
+40. REGISTRY TRUST
+======================================================================
+
+A registry is a trust boundary.
+
+Threat-model:
+
+- compromise
+- artifact replacement
+- unauthorized deletion
+- credential theft.
+
+======================================================================
+41. REGISTRY IMMUTABILITY
+======================================================================
+
+Evaluate immutable artifact storage.
+
+======================================================================
+42. REGISTRY ACCESS
+======================================================================
+
+Define:
+
+WHO
+
+can:
+
+PUBLISH
+
+READ
+
+PROMOTE
+
+DELETE
+
+ADMINISTER.
+
+======================================================================
+43. ARTIFACT PROMOTION
+======================================================================
+
+Define:
+
+Development
+→
+Test
+→
+Staging
+→
+Production.
+
+Do not allow arbitrary production publishing.
+
+======================================================================
+44. PROMOTION VS REBUILD
+======================================================================
+
+Prefer promoting the exact validated artifact rather than rebuilding
+different bytes for production unless there is a deliberate reason.
+
+======================================================================
+45. ARTIFACT IDENTITY ACROSS ENVIRONMENTS
+======================================================================
+
+The artifact tested in staging must be identifiable in production.
+
+======================================================================
+46. ENVIRONMENT CONFIGURATION
+======================================================================
+
+Separate:
+
+artifact
+
+from:
+
+environment configuration.
+
+Do not rebuild the application merely to change:
+
+environment URL.
+
+======================================================================
+47. CONFIGURATION SUPPLY CHAIN
+======================================================================
+
+Configuration can be as dangerous as code.
+
+Include:
+
+- policies
+- routing
+- feature flags
+- model selection
+- tool configuration
+- MCP configuration.
+
+======================================================================
+48. POLICY ARTIFACTS
+======================================================================
+
+Using 02/03:
+
+policy changes are supply-chain changes.
+
+Evaluate:
+
+- review
+- versioning
+- provenance
+- rollback.
+
+======================================================================
+49. INFRASTRUCTURE AS CODE
+======================================================================
+
+IaC is part of the supply chain.
+
+Threat-model:
+
+malicious infrastructure change.
+
+======================================================================
+50. DEPLOYMENT MANIFESTS
+======================================================================
+
+Kubernetes manifests / Helm charts / equivalent deployment definitions
+are artifacts.
+
+Apply integrity controls where justified.
+
+======================================================================
+51. CONTAINER IMAGES
+======================================================================
+
+Evaluate:
+
+- base image
+- application layers
+- runtime libraries
+- package dependencies.
+
+======================================================================
+52. BASE IMAGE
+======================================================================
+
+A compromised base image compromises every derived image.
+
+Track:
+
+base image provenance.
+
+======================================================================
+53. BASE IMAGE UPDATES
+======================================================================
+
+Define:
+
+- update
+- testing
+- promotion
+- rollback.
+
+======================================================================
+54. CONTAINER IMAGE SCANNING
+======================================================================
+
+Evaluate:
+
+- vulnerability scanning
+- malware scanning
+- configuration scanning
+- secret scanning.
+
+Do not treat scanners as perfect.
+
+======================================================================
+55. SIGNING
+======================================================================
+
+Evaluate artifact signing.
+
+Potential:
+
+- image signatures
+- package signatures
+- model signatures
+- provenance attestations.
+
+Do not choose a signing technology before evaluating the threat model.
+
+======================================================================
+56. KEY MANAGEMENT FOR SIGNING
+======================================================================
+
+Define:
+
+- signing identity
+- key protection
+- rotation
+- revocation
+- recovery.
+
+======================================================================
+57. KEY COMPROMISE
+======================================================================
+
+What happens if:
+
+artifact signing key
+
+is compromised?
+
+Define:
+
+- revocation
+- quarantine
+- replacement
+- re-signing
+- deployment blocking.
+
+======================================================================
+58. PROVENANCE
+======================================================================
+
+Define:
+
+WHERE DID THIS ARTIFACT COME FROM?
+
+Potential information:
+
+- source commit
+- build system
+- builder identity
+- dependencies
+- build timestamp
+- configuration
+- artifact digest.
+
+======================================================================
+59. PROVENANCE ≠ SIGNATURE
+======================================================================
+
+A signature proves control of a signing identity.
+
+Provenance describes how an artifact was produced.
+
+Do not confuse them.
+
+======================================================================
+60. ATTESTATIONS
+======================================================================
+
+Evaluate attestations for:
+
+- build provenance
+- vulnerability results
+- test results
+- policy compliance
+- model validation.
+
+======================================================================
+61. SBOM
+======================================================================
+
+Evaluate Software Bill of Materials.
+
+Determine:
+
+- format
+- generation point
+- storage
+- association with artifact
+- consumption.
+
+Do not generate SBOMs merely for compliance theater.
+
+======================================================================
+62. SBOM COMPLETENESS
+======================================================================
+
+An SBOM can be incomplete.
+
+Define:
+
+what it covers
+
+and:
+
+what it does not cover.
+
+======================================================================
+63. SBOM FOR CONTAINERS
+======================================================================
+
+Track:
+
+OS packages
+
+and:
+
+application packages.
+
+======================================================================
+64. SBOM FOR AI
+======================================================================
+
+Evaluate whether model bundles require an analogous component inventory:
+
+- model
+- tokenizer
+- runtime
+- framework
+- libraries
+- GPU runtime
+- preprocessing.
+
+======================================================================
+65. MODEL SUPPLY CHAIN
+======================================================================
+
+This is CRITICAL.
+
+Model artifacts are software supply-chain artifacts.
+
+Track:
+
+- model source
+- publisher
+- version
+- digest
+- license
+- architecture
+- training metadata where available
+- conversion process
+- quantization
+- runtime compatibility.
+
+======================================================================
+66. MODEL PROVENANCE
+======================================================================
+
+Determine:
+
+WHO PRODUCED THE MODEL?
+
+FROM WHAT SOURCE?
+
+THROUGH WHICH TRANSFORMATIONS?
+
+======================================================================
+67. MODEL TRANSFORMATION
+======================================================================
+
+A model may undergo:
+
+download
+→
+conversion
+→
+quantization
+→
+optimization
+→
+packaging.
+
+Every transformation can change the artifact.
+
+Track each stage.
+
+======================================================================
+68. MODEL SIGNING
+======================================================================
+
+Evaluate signatures for model artifacts.
+
+======================================================================
+69. MODEL INTEGRITY
+======================================================================
+
+Verify:
+
+digest
+
+before deployment.
+
+======================================================================
+70. MODEL POISONING
+======================================================================
+
+Threat-model:
+
+malicious or compromised model artifact.
+
+Potential impacts:
+
+- hidden behavior
+- unsafe outputs
+- data exfiltration
+- backdoors.
+
+======================================================================
+71. MODEL EVALUATION GATE
+======================================================================
+
+Before production:
+
+model artifact
+
+must pass:
+
+appropriate evaluation.
+
+Coordinate with 17.
+
+======================================================================
+72. MODEL SECURITY ≠ MODEL QUALITY
+======================================================================
+
+A model can be:
+
+securely sourced
+
+but:
+
+poor quality.
+
+Or:
+
+high quality
+
+but:
+
+maliciously modified.
+
+Keep the dimensions separate.
+
+======================================================================
+73. TOKENIZER SUPPLY CHAIN
+======================================================================
+
+Tokenizer files are artifacts.
+
+Track their identity and compatibility with model versions.
+
+======================================================================
+74. EMBEDDING MODEL SUPPLY CHAIN
+======================================================================
+
+Embedding models affect:
+
+vector compatibility.
+
+Track:
+
+- model version
+- dimensions
+- preprocessing
+- output format.
+
+======================================================================
+75. GPU SOFTWARE SUPPLY CHAIN
+======================================================================
+
+Using 05/21:
+
+evaluate:
+
+- GPU drivers
+- CUDA/runtime
+- accelerator libraries
+- inference engines
+- kernel modules.
+
+======================================================================
+76. GPU COMPATIBILITY
+======================================================================
+
+A model may be valid but fail because:
+
+driver
+
+and:
+
+runtime
+
+are incompatible.
+
+Track compatibility.
+
+======================================================================
+77. TOOL SUPPLY CHAIN
+======================================================================
+
+Using 06:
+
+tools are executable supply-chain components.
+
+Track:
+
+- source
+- dependencies
+- version
+- provenance
+- permissions
+- runtime image.
+
+======================================================================
+78. MCP SUPPLY CHAIN
+======================================================================
+
+Using 07 conceptually:
+
+MCP servers are executable external components.
+
+Treat them as untrusted until:
+
+- provenance
+- integrity
+- security
+- authorization
+
+have been evaluated.
+
+======================================================================
+79. MCP REGISTRY
+======================================================================
+
+If an MCP registry/distribution mechanism is introduced:
+
+evaluate:
+
+- trust
+- signatures
+- publisher identity
+- versioning
+- revocation.
+
+Do not assume registry presence means trust.
+
+======================================================================
+80. THIRD-PARTY MCP
+======================================================================
+
+Threat-model:
+
+third-party MCP server.
+
+Potential risks:
+
+- malicious code
+- excessive permissions
+- dependency compromise
+- data exfiltration
+- network abuse.
+
+======================================================================
+81. TOOL PERMISSIONS
+======================================================================
+
+Supply-chain trust does not automatically grant runtime authority.
+
+A verified tool may still have:
+
+minimum permissions.
+
+======================================================================
+82. DATASET SUPPLY CHAIN
+======================================================================
+
+Datasets can be poisoned.
+
+Evaluate:
+
+- source
+- provenance
+- integrity
+- version
+- validation
+- licensing
+- contamination.
+
+======================================================================
+83. KNOWLEDGE DATA SUPPLY CHAIN
+======================================================================
+
+Using 08:
+
+documents entering the knowledge system may affect model behavior.
+
+Track:
+
+source
+
+→
+
+ingestion
+
+→
+
+processing
+
+→
+
+embedding
+
+→
+
+index.
+
+======================================================================
+84. DATA INTEGRITY
+======================================================================
+
+Evaluate:
+
+checksums
+
+content hashes
+
+signatures
+
+metadata.
+
+======================================================================
+85. DATA POISONING
+======================================================================
+
+Threat-model malicious knowledge documents.
+
+======================================================================
+86. PROMPT SUPPLY CHAIN
+======================================================================
+
+Prompts and system instructions can be supply-chain artifacts.
+
+Track:
+
+- version
+- author
+- approval
+- deployment
+- rollback.
+
+======================================================================
+87. POLICY SUPPLY CHAIN
+======================================================================
+
+Policies can change platform behavior.
+
+Apply:
+
+- versioning
+- review
+- provenance
+- deployment control.
+
+======================================================================
+88. DEPLOYMENT SUPPLY CHAIN
+======================================================================
+
+Track:
+
+artifact
+
+→
+
+environment
+
+→
+
+deployment
+
+→
+
+runtime.
+
+======================================================================
+89. RUNTIME VERIFICATION
+======================================================================
+
+At runtime determine:
+
+Is the deployed artifact the artifact that was approved?
+
+======================================================================
+90. ADMISSION CONTROL
+======================================================================
+
+Evaluate whether deployments should be blocked when:
+
+- signature invalid
+- provenance missing
+- vulnerability policy violated
+- artifact not approved
+- image digest unexpected.
+
+======================================================================
+91. RUNTIME DRIFT
+======================================================================
+
+Detect:
+
+runtime artifact
+
+≠
+
+approved artifact.
+
+======================================================================
+92. FILESYSTEM / IMAGE DRIFT
+======================================================================
+
+Determine whether runtime mutation is allowed.
+
+Prefer immutable infrastructure where appropriate.
+
+======================================================================
+93. ROLLBACK
+======================================================================
+
+Define:
+
+artifact version
+
+→
+
+previous trusted version.
+
+======================================================================
+94. ROLLBACK TRUST
+======================================================================
+
+Do not roll back to:
+
+"whatever was running yesterday."
+
+Rollback to:
+
+known trusted artifact.
+
+======================================================================
+95. QUARANTINE
+======================================================================
+
+Compromised artifacts must be:
+
+- quarantined
+- blocked
+- marked
+- investigated.
+
+======================================================================
+96. REVOCATION
+======================================================================
+
+Define how to revoke trust in:
+
+- artifact
+- signing key
+- publisher
+- model
+- package
+- tool
+- MCP server.
+
+======================================================================
+97. TRUST REVOCATION PROPAGATION
+======================================================================
+
+A revoked artifact may already exist in:
+
+- registry
+- cache
+- production
+- DR
+- developer environment.
+
+Define propagation.
+
+======================================================================
+98. VULNERABILITY DISCOVERY AFTER DEPLOYMENT
+======================================================================
+
+Scenario:
+
+Artifact deployed.
+
+One month later:
+
+critical vulnerability discovered.
+
+Define:
+
+- discovery
+- inventory lookup
+- exposure analysis
+- remediation
+- rollout
+- rollback.
+
+======================================================================
+99. VULNERABILITY INVENTORY
+======================================================================
+
+The platform must answer:
+
+WHERE IS THIS COMPONENT RUNNING?
+
+======================================================================
+100. EXPOSURE GRAPH
+======================================================================
+
+Map:
+
+vulnerability
+
+→
+
+dependency
+
+→
+
+artifact
+
+→
+
+service
+
+→
+
+tenant exposure.
+
+======================================================================
+101. EMERGENCY PATCHING
+======================================================================
+
+Evaluate accelerated promotion.
+
+Do not bypass all security controls merely because a vulnerability is
+urgent.
+
+======================================================================
+102. ZERO-DAY
+======================================================================
+
+Model:
+
+unknown vulnerability
+
+before:
+
+vendor patch.
+
+Determine compensating controls.
+
+======================================================================
+103. COMPENSATING CONTROLS
+======================================================================
+
+Potential:
+
+- network isolation
+- feature disablement
+- workload restriction
+- egress block.
+
+These are candidates.
+
+Determine actual response.
+
+======================================================================
+104. END-OF-LIFE DEPENDENCIES
+======================================================================
+
+Track components approaching:
+
+EOL.
+
+======================================================================
+105. LICENSE SUPPLY CHAIN
+======================================================================
+
+Evaluate:
+
+- license inventory
+- license compatibility
+- model licenses
+- dataset licenses
+- tool licenses.
+
+Coordinate with future 26.
+
+======================================================================
+106. ARTIFACT RETENTION
+======================================================================
+
+Do not delete artifacts required for:
+
+- reproducibility
+- audit
+- rollback
+- investigation.
+
+======================================================================
+107. ARTIFACT GARBAGE COLLECTION
+======================================================================
+
+Define safe deletion.
+
+Never delete the only copy of:
+
+trusted production artifacts
+
+without explicit policy.
+
+======================================================================
+108. BUILD LOGS
+======================================================================
+
+Build logs can contain:
+
+- secrets
+- dependency URLs
+- internal paths.
+
+Protect them.
+
+======================================================================
+109. BUILD PROVENANCE STORAGE
+======================================================================
+
+Provenance must remain available long enough to investigate deployed
+artifacts.
+
+======================================================================
+110. SUPPLY CHAIN AUDIT
+======================================================================
+
+Using 16:
+
+audit:
+
+- artifact publication
+- promotion
+- signing
+- verification
+- deployment
+- revocation.
+
+======================================================================
+111. OBSERVABILITY
+======================================================================
+
+Using 15:
+
+monitor:
+
+- unusual dependency changes
+- artifact changes
+- signing failures
+- registry anomalies
+- build anomalies.
+
+======================================================================
+112. SUPPLY CHAIN EVENTS
+======================================================================
+
+Potential events:
+
+ArtifactPublished
+ArtifactPromoted
+ArtifactRejected
+SignatureVerified
+SignatureRejected
+VulnerabilityDetected
+ArtifactRevoked
+DependencyChanged
+ModelApproved
+ModelRejected
+ToolApproved
+ToolRevoked.
+
+Determine actual event model.
+
+======================================================================
+113. SECURITY INCIDENT RESPONSE
+======================================================================
+
+Supply-chain compromise must integrate with 10 and 13.
+
+Define:
+
+DETECT
+→
+CONTAIN
+→
+REVOKE
+→
+QUARANTINE
+→
+IDENTIFY
+→
+REBUILD
+→
+VERIFY
+→
+REDEPLOY.
+
+======================================================================
+114. COMPROMISED BUILD PIPELINE
+======================================================================
+
+If CI/CD is compromised:
+
+assume artifacts may be compromised.
+
+Determine:
+
+- blast radius
+- artifact revocation
+- key rotation
+- rebuild
+- redeployment.
+
+======================================================================
+115. COMPROMISED SIGNING KEY
+======================================================================
+
+Define emergency response.
+
+======================================================================
+116. COMPROMISED REGISTRY
+======================================================================
+
+Define:
+
+- alternate source
+- artifact verification
+- registry isolation
+- recovery.
+
+======================================================================
+117. COMPROMISED PACKAGE
+======================================================================
+
+Identify all deployed consumers.
+
+======================================================================
+118. COMPROMISED MODEL
+======================================================================
+
+Identify all environments using the model.
+
+======================================================================
+119. COMPROMISED MCP SERVER
+======================================================================
+
+Disable trust.
+
+Revoke authorization.
+
+Block network access where appropriate.
+
+======================================================================
+120. COMPROMISED TOOL
+======================================================================
+
+Determine blast radius based on:
+
+tool permissions
+
+and:
+
+tenant exposure.
+
+======================================================================
+121. SUPPLY CHAIN BLAST RADIUS
+======================================================================
+
+For every artifact determine:
+
+WHAT DOES THIS ARTIFACT CONTROL?
+
+======================================================================
+122. TRUST TIERS
+======================================================================
+
+Evaluate trust tiers for:
+
+- first-party artifacts
+- verified third-party artifacts
+- unverified artifacts
+- experimental artifacts.
+
+Do not equate:
+
+third-party
+
+with:
+
+malicious.
+
+======================================================================
+123. THIRD-PARTY ARTIFACT ADMISSION
+======================================================================
+
+Define requirements before accepting third-party components.
+
+======================================================================
+124. EXTERNAL REGISTRIES
+======================================================================
+
+If public registries are used:
+
+evaluate:
+
+- mirroring
+- caching
+- signature verification
+- allowlisting
+- malware scanning.
+
+======================================================================
+125. INTERNAL MIRROR
+======================================================================
+
+Evaluate internal dependency mirrors.
+
+Compare:
+
+security
+
+vs:
+
+operational complexity.
+
+======================================================================
+126. AIR-GAPPED / RESTRICTED BUILD
+======================================================================
+
+Evaluate restricted builds for high-assurance environments.
+
+Do not assume they are required for all deployments.
+
+======================================================================
+127. OFFLINE BUILD
+======================================================================
+
+Future 30 may require offline capabilities.
+
+Ensure artifact provenance can remain valid without continuous internet
+access.
+
+======================================================================
+128. DR SUPPLY CHAIN
+======================================================================
+
+Using 24:
+
+recovery environments need access to:
+
+- trusted artifacts
+- registries
+- signing keys
+- provenance
+- model artifacts.
+
+Do not make production recovery depend on a failed registry.
+
+======================================================================
+129. ARTIFACT REPLICATION
+======================================================================
+
+Evaluate replication of critical artifacts.
+
+======================================================================
+130. ARTIFACT RECOVERY
+======================================================================
+
+Define recovery of:
+
+- container images
+- packages
+- model artifacts
+- infrastructure modules
+- configuration.
+
+======================================================================
+131. ARTIFACT INDEPENDENCE
+======================================================================
+
+A recovery environment must not depend exclusively on:
+
+the primary artifact registry.
+
+======================================================================
+132. SUPPLY CHAIN + MULTI-TENANCY
+======================================================================
+
+Tenant-specific artifacts may exist.
+
+Define:
+
+- ownership
+- isolation
+- authorization
+- lifecycle.
+
+======================================================================
+133. TENANT-PROVIDED TOOLS
+======================================================================
+
+If tenants can provide tools:
+
+treat them as untrusted supply-chain inputs.
+
+======================================================================
+134. TENANT-PROVIDED MCP
+======================================================================
+
+If tenants can register MCP servers:
+
+define:
+
+- validation
+- trust
+- sandboxing
+- network policy
+- permissions
+- revocation.
+
+======================================================================
+135. TENANT-PROVIDED MODELS
+======================================================================
+
+If supported:
+
+define model admission controls.
+
+======================================================================
+136. SUPPLY CHAIN + COST
+======================================================================
+
+Using 20:
+
+measure cost of:
+
+- scanning
+- signing
+- registry storage
+- artifact replication
+- build infrastructure
+- dependency mirrors
+- vulnerability management.
+
+======================================================================
+137. SUPPLY CHAIN + CAPACITY
+======================================================================
+
+Using 21:
+
+build systems may become bottlenecks.
+
+Measure:
+
+- build concurrency
+- registry throughput
+- scanning throughput
+- artifact storage.
+
+======================================================================
+138. SUPPLY CHAIN + NETWORKING
+======================================================================
+
+Using 22:
+
+build and deployment networks require:
+
+- controlled egress
+- registry access
+- artifact access.
+
+======================================================================
+139. SUPPLY CHAIN + STORAGE
+======================================================================
+
+Using 23:
+
+store:
+
+- artifacts
+- provenance
+- SBOMs
+- signatures
+- vulnerability results.
+
+Determine retention.
+
+======================================================================
+140. SUPPLY CHAIN + DEPLOYMENT
+======================================================================
+
+Using 18:
+
+define promotion and release boundaries.
+
+======================================================================
+141. SUPPLY CHAIN + TRUST
+======================================================================
+
+Using 12:
+
+artifact provenance must integrate with the broader platform trust
+model.
+
+======================================================================
+142. SUPPLY CHAIN + IDENTITY
+======================================================================
+
+Using 11:
+
+artifact publishers and deployment identities must be explicit.
+
+======================================================================
+143. SUPPLY CHAIN + SECURITY
+======================================================================
+
+Using 10:
+
+define security controls.
+
+======================================================================
+144. SUPPLY CHAIN + RELIABILITY
+======================================================================
+
+Using 13:
+
+security controls must not create:
+
+single points of failure.
+
+For example:
+
+if the signing service fails,
+
+determine whether deployment should:
+
+- stop
+- degrade
+- use cached trust
+- require emergency override.
+
+======================================================================
+145. EMERGENCY OVERRIDE
+======================================================================
+
+If supply-chain policy blocks production during a critical incident:
+
+define:
+
+- authority
+- scope
+- expiration
+- audit.
+
+======================================================================
+146. POLICY FAIL-CLOSED VS FAIL-OPEN
+======================================================================
+
+Evaluate each control.
+
+Do not use one answer everywhere.
+
+======================================================================
+147. SUPPLY CHAIN ARCHITECTURE OPTIONS
+======================================================================
+
+Construct realistic alternatives.
+
+At minimum evaluate:
+
+OPTION A
+--------
+Basic CI/CD + registry + vulnerability scanning.
+
+OPTION B
+--------
+Signed artifacts + provenance + SBOM + admission control.
+
+OPTION C
+--------
+Hermetic/reproducible builds + signed provenance + policy enforcement.
+
+OPTION D
+--------
+High-assurance isolated build and promotion pipeline.
+
+OPTION E
+--------
+Hybrid model with stronger controls for critical artifacts and lighter
+controls for low-risk components.
+
+These are candidates only.
+
+Research and determine actual candidates.
+
+======================================================================
+148. ARCHITECTURE SELECTION MATRIX
+======================================================================
+
+Compare:
+
+| Criterion |
+| Security |
+| Provenance |
+| Artifact integrity |
+| Build integrity |
+| AI/model coverage |
+| Tool/MCP coverage |
+| Detection |
+| Revocation |
+| Recovery |
+| Operational complexity |
+| Performance |
+| Cost |
+| Day-1 practicality |
+| Enterprise scalability |
+| Recommendation |
+
+======================================================================
+149. WHY NOT ANALYSIS
+======================================================================
+
+For the final architecture explicitly answer:
+
+WHY THIS?
+
+WHY NOT SIMPLE VULNERABILITY SCANNING?
+
+WHY NOT SBOM ONLY?
+
+WHY NOT SIGNATURES ONLY?
+
+WHY NOT PROVENANCE ONLY?
+
+WHY NOT FULL HERMETIC BUILDS EVERYWHERE?
+
+WHY NOT REPRODUCIBLE BUILDS EVERYWHERE?
+
+WHY NOT TRUST THE INTERNAL REGISTRY?
+
+WHY NOT TRUST SIGNED ARTIFACTS AUTOMATICALLY?
+
+WHY NOT TRUST THIRD-PARTY PACKAGES?
+
+WHY NOT TRUST MODEL PUBLISHERS?
+
+WHY NOT TRUST MCP REGISTRIES?
+
+WHY NOT BLOCK EVERY VULNERABILITY?
+
+WHY NOT IGNORE LOW-SEVERITY VULNERABILITIES?
+
+WHY NOT MIRROR EVERY DEPENDENCY?
+
+WHY NOT AIR-GAP THE BUILD?
+
+WHY NOT MULTI-REGISTRY?
+
+WHY NOT ONE ARTIFACT SYSTEM FOR EVERYTHING?
+
+WHY NOT SEPARATE MODEL REGISTRY?
+
+WHY NOT SEPARATE TOOL REGISTRY?
+
+Only retain alternatives that remain technically relevant after
+research.
+
+======================================================================
+150. REVERSIBILITY ANALYSIS
+======================================================================
+
+Classify:
+
+- artifact registry
+- signing system
+- provenance format
+- SBOM format
+- build system
+- dependency mirror
+- policy engine
+- admission controller
+- model registry
+- tool registry
+
+as:
+
+- easily reversible
+- moderately reversible
+- expensive to reverse
+- effectively irreversible.
+
+======================================================================
+151. DAY-1 REQUIREMENTS
+======================================================================
+
+Define the minimum Day-1 foundation.
+
+Potential examples:
+
+- immutable artifact identity
+- version pinning
+- controlled dependency management
+- basic vulnerability scanning
+- artifact registry
+- deployment traceability
+- rollback
+- basic provenance.
+
+These are candidates only.
+
+Determine actual requirements.
+
+======================================================================
+152. DAY-1 NON-REQUIREMENTS
+======================================================================
+
+Explicitly identify advanced controls that should NOT be implemented
+Day 1 unless justified.
+
+======================================================================
+153. FUTURE TRIGGERS
+======================================================================
+
+Define objective triggers for activating advanced supply-chain controls.
+
+Potential triggers:
+
+- enterprise customers
+- regulatory requirements
+- model criticality
+- tenant-provided code
+- MCP ecosystem expansion
+- security incidents
+- compliance requirements
+- scale
+- third-party artifact volume.
+
+Do not invent arbitrary numerical thresholds.
+
+======================================================================
+154. STABLE SUPPLY CHAIN CONTRACTS
+======================================================================
+
+Define stable internal contracts such as:
+
+ArtifactIdentity
+ArtifactDigest
+ArtifactProvenance
+ArtifactSignature
+ArtifactAttestation
+SBOMReference
+VulnerabilityAssessment
+PromotionRecord
+TrustDecision
+ArtifactRevocation
+SupplyChainEvent.
+
+These are examples only.
+
+Determine the minimum necessary contract set.
+
+Contracts must remain independent of:
+
+- GitHub
+- GitLab
+- Jenkins
+- Cosign
+- Sigstore
+- SLSA
+- Trivy
+- a specific registry
+- a specific cloud provider.
+
+======================================================================
+155. REQUIRED DIAGRAMS
+======================================================================
+
+Include Mermaid diagrams for:
+
+1. Complete supply-chain architecture
+2. Source → build → artifact
+3. Dependency graph
+4. CI/CD trust boundaries
+5. Build isolation
+6. Artifact registry
+7. Artifact signing
+8. Provenance
+9. SBOM
+10. Promotion pipeline
+11. Admission control
+12. Runtime verification
+13. Vulnerability response
+14. Model supply chain
+15. Tool supply chain
+16. MCP supply chain
+17. Dataset/knowledge supply chain
+18. GPU software supply chain
+19. Compromised artifact response
+20. Signing-key compromise
+21. Registry compromise
+22. Supply-chain recovery
+23. Day-1 → Enterprise evolution.
+
+======================================================================
+156. ADR CANDIDATES
+======================================================================
+
+Identify ADRs for:
+
+- artifact identity
+- artifact registry
+- signing
+- provenance
+- SBOM
+- build isolation
+- dependency management
+- vulnerability policy
+- promotion
+- admission control
+- model supply chain
+- tool supply chain
+- MCP trust
+- third-party artifact policy
+- emergency override
+- artifact revocation.
+
+For each:
+
+- problem
+- alternatives
+- recommendation
+- consequences
+- reversibility
+- decision deadline.
+
+======================================================================
+157. SUPPLY CHAIN READINESS MATRIX
+======================================================================
+
+Create:
+
+| Capability | Day 1 | Prepare | Enterprise | Verified |
+
+Cover:
+
+- source integrity
+- dependency control
+- build security
+- artifact identity
+- artifact signing
+- provenance
+- SBOM
+- vulnerability management
+- registry security
+- promotion
+- admission control
+- runtime verification
+- model provenance
+- tool provenance
+- MCP trust
+- data provenance
+- revocation
+- recovery.
+
+======================================================================
+158. ARTIFACT TRUST MATRIX
+======================================================================
+
+Create:
+
+| Artifact | Source | Owner | Provenance | Signature | Validation | Runtime Policy |
+
+Cover all major artifact classes.
+
+======================================================================
+159. INCIDENT RESPONSE MATRIX
+======================================================================
+
+Create:
+
+| Attack | Detection | Containment | Recovery | Verification |
+
+At minimum:
+
+- malicious package
+- dependency confusion
+- typosquatting
+- compromised maintainer
+- compromised CI
+- compromised registry
+- signing key compromise
+- malicious model
+- poisoned dataset
+- malicious MCP server
+- compromised tool
+- malicious deployment configuration.
+
+======================================================================
+160. ATTEMPT TO FALSIFY THE RECOMMENDATION
+======================================================================
+
+Try to prove the selected architecture wrong.
+
+Ask:
+
+- What if CI is compromised?
+- What if the registry is compromised?
+- What if signing keys are stolen?
+- What if provenance is forged?
+- What if the SBOM is incomplete?
+- What if a trusted package becomes malicious?
+- What if a model publisher is compromised?
+- What if a model is modified after signing?
+- What if a tenant provides malicious MCP?
+- What if a tool has a transitive vulnerable dependency?
+- What if a build cache is poisoned?
+- What if an attacker compromises the dependency mirror?
+- What if the vulnerability database is unavailable?
+- What if emergency patching is required while policy systems are down?
+- What if the DR environment cannot access the registry?
+- What if an already deployed artifact is revoked?
+- What if the signing key is compromised after deployment?
+- What if the artifact is secure but the configuration is malicious?
+- What if the build is reproducible but the source itself is compromised?
+
+Determine the first condition that breaks the architecture.
+
+Then classify:
+
+- acceptable
+- mitigable
+- architecture-changing.
+
+======================================================================
+161. ARCHITECTURAL SELF-CRITIQUE
+======================================================================
+
+Before finalizing, ask:
+
+1. Did I map the complete supply chain?
+2. Did I include AI/model artifacts?
+3. Did I include tools?
+4. Did I include MCP?
+5. Did I include datasets and knowledge?
+6. Did I include GPU software?
+7. Did I distinguish signature from provenance?
+8. Did I distinguish SBOM from provenance?
+9. Did I protect the build environment?
+10. Did I protect signing keys?
+11. Did I protect registries?
+12. Did I define artifact promotion?
+13. Did I define runtime verification?
+14. Did I define revocation?
+15. Did I define vulnerability response?
+16. Did I define emergency override?
+17. Did I define tenant-provided artifacts?
+18. Did I define recovery?
+19. Did I avoid over-engineering Day 1?
+20. Did I preserve future evolution?
+21. What assumptions could invalidate the architecture?
+
+Include:
+
+# ARCHITECTURAL SELF-CRITIQUE
+
+======================================================================
+162. FINAL RECOMMENDATION
+======================================================================
+
+End with:
+
+# FINAL ADVANCED SUPPLY CHAIN ARCHITECTURE RECOMMENDATION
+
+Answer:
+
+"What Supply Chain Architecture should this platform actually build?"
+
+Be concrete.
+
+Describe:
+
+- source control
+- dependency management
+- build environment
+- artifact identity
+- artifact registry
+- signing
+- provenance
+- SBOM
+- vulnerability management
+- artifact promotion
+- admission control
+- runtime verification
+- revocation
+- model supply chain
+- dataset supply chain
+- tool supply chain
+- MCP supply chain
+- GPU software supply chain
+- configuration supply chain
+- tenant-provided artifacts
+- incident response
+- recovery
+- Day-1 foundation
+- enterprise evolution.
+
+Then explicitly answer:
+
+"WHAT MUST EXIST ON DAY 1?"
+
+Then:
+
+"WHAT MUST NOT BE BUILT ON DAY 1?"
+
+Then:
+
+"WHAT OBJECTIVE CONDITION SHOULD TRIGGER THE ADVANCED SUPPLY CHAIN
+ARCHITECTURE?"
+
+======================================================================
+163. REQUIRED OUTPUT
+======================================================================
+
+Produce:
+
+25_ADVANCED_SUPPLY_CHAIN_ARCHITECTURE.md
+
+The document MUST explicitly reference:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_ARCHITECTURE.md
+04_AGENT_RUNTIME.md
+05_MODEL_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+08_KNOWLEDGE_DATA_ARCHITECTURE.md
+09_MEMORY_ARCHITECTURE.md
+10_SECURITY_ARCHITECTURE.md
+11_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+12_TRUST_PROVENANCE_ARCHITECTURE.md
+13_RELIABILITY_ARCHITECTURE.md
+14_CONCURRENCY_ARCHITECTURE.md
+15_OBSERVABILITY_ARCHITECTURE.md
+16_AUDIT_ARCHITECTURE.md
+17_EVALUATION_ARCHITECTURE.md
+18_DEPLOYMENT_LIFECYCLE_ARCHITECTURE.md
+19_MULTI_TENANCY_ARCHITECTURE.md
+20_COST_ARCHITECTURE.md
+21_CAPACITY_PLANNING_ARCHITECTURE.md
+22_NETWORKING_ARCHITECTURE.md
+23_STORAGE_ARCHITECTURE.md
+24_DR_ENTERPRISE_ARCHITECTURE.md
+
+Also identify future interactions with:
+
+26_ENTERPRISE_COMPLIANCE_ARCHITECTURE.md
+27_MULTI_MODEL_FALLBACK_ARCHITECTURE.md
+28_HUMAN_IN_THE_LOOP_ARCHITECTURE.md
+29_REPLAY_ARCHITECTURE.md
+30_OFFLINE_MOBILE_ARCHITECTURE.md
+31_A2A_ARCHITECTURE.md
+32_ADMIN_CONSOLE_ARCHITECTURE.md
+33_ADR_ARCHITECTURE.md
+34_QUALITY_MODEL_ARCHITECTURE.md
+
+If documents do not exist:
+
+DO NOT invent their contents.
+
+Define only:
+
+- dependency
+- stable interface
+- unresolved assumption.
+
+======================================================================
+164. SOURCE REQUIREMENTS
+======================================================================
+
+THIS SECTION IS MANDATORY.
+
+Use current web research.
+
+Prioritize authoritative sources, including where relevant:
+
+- NIST
+- CISA
+- official SLSA documentation
+- official Sigstore documentation
+- official in-toto documentation
+- official SPDX documentation
+- official CycloneDX documentation
+- official OCI documentation
+- official Kubernetes documentation
+- official package ecosystem documentation
+- official model repository/documentation
+- official cloud provider security documentation.
+
+When evaluating a technology:
+
+inspect its current official documentation.
+
+Do not rely on marketing claims alone.
+
+Do not fabricate:
+
+- security guarantees
+- provenance guarantees
+- signature guarantees
+- scanner coverage
+- SBOM completeness
+- registry capabilities
+- reproducibility guarantees
+- model provenance.
+
+Clearly distinguish:
+
+SOURCE FACT
+
+from:
+
+SECURITY RESEARCH
+
+from:
+
+BENCHMARK
+
+from:
+
+MEASUREMENT
+
+from:
+
+INFERENCE
+
+from:
+
+ARCHITECTURAL RECOMMENDATION.
+
+======================================================================
+165. SECURITY CLAIM DISCIPLINE
+======================================================================
+
+Never write:
+
+"X makes the supply chain secure."
+
+Instead explain:
+
+WHAT THREAT
+
+X mitigates,
+
+WHAT THREAT
+
+X does NOT mitigate,
+
+and:
+
+WHAT OTHER CONTROLS
+
+are required.
+
+======================================================================
+166. VERSION AND DATE DISCIPLINE
+======================================================================
+
+At the beginning of the document state:
+
+RESEARCH DATE
+
+and relevant versions for technologies actually selected.
+
+Supply-chain security properties can change across versions.
+
+======================================================================
+167. ABSOLUTE FINAL INSTRUCTION
+======================================================================
+
+Act as an INDEPENDENT Principal Supply Chain Security Architect.
+
+Your responsibility is to determine the best Supply Chain Architecture
+for THIS platform.
+
+Do not assume:
+
+SBOM = SECURITY.
+
+Do not assume:
+
+SIGNATURE = TRUST.
+
+Do not assume:
+
+PROVENANCE = INTEGRITY.
+
+Do not assume:
+
+PROVENANCE = SECURITY.
+
+Do not assume:
+
+SIGNED ARTIFACT = SAFE ARTIFACT.
+
+Do not assume:
+
+SCANNED ARTIFACT = SAFE ARTIFACT.
+
+Do not assume:
+
+INTERNAL REGISTRY = TRUSTED REGISTRY.
+
+Do not assume:
+
+OPEN SOURCE = SAFE.
+
+Do not assume:
+
+POPULAR PACKAGE = SAFE.
+
+Do not assume:
+
+MODEL PUBLISHER = TRUSTED.
+
+Do not assume:
+
+MCP REGISTRY = TRUST.
+
+Do not assume:
+
+MODEL INTEGRITY = MODEL SAFETY.
+
+Do not assume:
+
+CODE SIGNING = BUILD SECURITY.
+
+Do not assume:
+
+REPRODUCIBLE BUILD = TRUSTED SOURCE.
+
+Do not assume:
+
+HERMETIC BUILD = SAFE DEPENDENCIES.
+
+Do not assume:
+
+VULNERABILITY SCORE = ACTUAL RISK.
+
+Do not assume:
+
+ZERO VULNERABILITIES = ZERO RISK.
+
+Do not assume:
+
+CONTAINER SCAN = COMPLETE SUPPLY CHAIN ANALYSIS.
+
+Do not assume:
+
+AI MODEL = JUST ANOTHER BINARY.
+
+Do not assume:
+
+DATASET = TRUSTED INPUT.
+
+Do not assume:
+
+TOOL = TRUSTED CODE.
+
+Do not assume:
+
+MCP SERVER = TRUSTED SERVICE.
+
+Do not allow:
+
+A SINGLE COMPROMISED DEPENDENCY
+
+to remain:
+
+UNTRACEABLE.
+
+Do not allow:
+
+A PRODUCTION ARTIFACT
+
+to be:
+
+UNIDENTIFIABLE.
+
+Do not allow:
+
+A DEPLOYED ARTIFACT
+
+to be:
+
+UNTRACEABLE TO ITS SOURCE.
+
+Do not allow:
+
+A SIGNING KEY
+
+to become:
+
+AN UNMONITORED MASTER KEY.
+
+Do not allow:
+
+A REGISTRY
+
+to become:
+
+THE ONLY SOURCE OF RECOVERY.
+
+Do not allow:
+
+A VULNERABILITY
+
+to remain:
+
+UNMAPPED TO DEPLOYED SERVICES.
+
+Do not allow:
+
+TENANT-PROVIDED CODE
+
+to inherit:
+
+PLATFORM TRUST AUTOMATICALLY.
+
+Do not allow:
+
+MODEL ARTIFACTS
+
+to bypass:
+
+VALIDATION.
+
+Do not allow:
+
+MCP SERVERS
+
+to bypass:
+
+SUPPLY-CHAIN AND RUNTIME TRUST CONTROLS.
+
+Do not allow:
+
+DAY-1 ARCHITECTURE
+
+to create:
+
+UNNECESSARY SUPPLY-CHAIN LOCK-IN.
+
+Optimize for:
+
+TRACEABILITY
++
+INTEGRITY
++
+PROVENANCE
++
+LEAST PRIVILEGE
++
+REVOCABILITY
++
+REPRODUCIBILITY WHERE JUSTIFIED
++
+DEFENSE IN DEPTH
++
+LOW OPERATIONAL COMPLEXITY
++
+FAST INCIDENT RESPONSE
++
+RECOVERABILITY
++
+COST EFFICIENCY
++
+FUTURE EVOLUTION.
+
+The final architecture MUST result from:
+
+    ASSET INVENTORY
+       ↓
+    SUPPLY CHAIN GRAPH
+       ↓
+    TRUST BOUNDARIES
+       ↓
+    THREAT MODEL
+       ↓
+    BUILD MODEL
+       ↓
+    ARTIFACT MODEL
+       ↓
+    DEPENDENCY MODEL
+       ↓
+    AI/MODEL SUPPLY CHAIN
+       ↓
+    TOOL/MCP SUPPLY CHAIN
+       ↓
+    PROVENANCE
+       ↓
+    INTEGRITY
+       ↓
+    VERIFICATION
+       ↓
+    PROMOTION
+       ↓
+    RUNTIME TRUST
+       ↓
+    REVOCATION
+       ↓
+    INCIDENT RESPONSE
+       ↓
+    RECOVERY
+       ↓
+    COST / COMPLEXITY
+       ↓
+    ALTERNATIVE COMPARISON
+       ↓
+    ADVERSARIAL ANALYSIS
+       ↓
+    FALSIFICATION
+       ↓
+    FINAL DECISION.
+
+DO NOT CHOOSE SBOM FIRST.
+
+DO NOT CHOOSE SIGNING FIRST.
+
+DO NOT CHOOSE SIGSTORE FIRST.
+
+DO NOT CHOOSE SLSA FIRST.
+
+DO NOT CHOOSE A REGISTRY FIRST.
+
+DO NOT CHOOSE A SCANNER FIRST.
+
+DO NOT CHOOSE THE CI/CD PLATFORM FIRST.
+
+DO NOT CHOOSE A MODEL REGISTRY FIRST.
+
+DO NOT CHOOSE AN MCP REGISTRY FIRST.
+
+UNDERSTAND THE COMPLETE SUPPLY CHAIN FIRST.
+
+MAP EVERY ARTIFACT.
+
+MAP EVERY DEPENDENCY.
+
+MAP EVERY TRUST BOUNDARY.
+
+MAP EVERY BUILD.
+
+MAP EVERY PROMOTION.
+
+MAP EVERY DEPLOYMENT.
+
+MAP EVERY EXTERNAL INPUT.
+
+MAP EVERY MODEL.
+
+MAP EVERY TOOL.
+
+MAP EVERY MCP SERVER.
+
+MAP EVERY TENANT-PROVIDED ARTIFACT.
+
+THREAT-MODEL THE BUILD.
+
+THREAT-MODEL THE REGISTRY.
+
+THREAT-MODEL THE SIGNING SYSTEM.
+
+THREAT-MODEL THE DEPENDENCY GRAPH.
+
+THREAT-MODEL THE MODEL SUPPLY CHAIN.
+
+THREAT-MODEL THE TOOL AND MCP SUPPLY CHAIN.
+
+THREAT-MODEL THE DATA SUPPLY CHAIN.
+
+THEN COMPARE THE AVAILABLE ARCHITECTURES.
+
+THEN ATTEMPT TO DISPROVE THE PREFERRED ARCHITECTURE.
+
+THEN SELECT THE BEST SUPPLY CHAIN ARCHITECTURE AVAILABLE FOR THIS
+PROJECT.
+
+THEN DEFINE WHAT MUST EXIST ON DAY 1 TO MAKE THAT ARCHITECTURE POSSIBLE.
+
+THEN DESIGN IT.

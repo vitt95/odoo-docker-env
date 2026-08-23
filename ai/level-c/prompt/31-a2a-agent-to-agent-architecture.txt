@@ -1,0 +1,4135 @@
+# 31 — A2A / AGENT-TO-AGENT ARCHITECTURE
+## Enterprise AI Agent Platform
+
+======================================================================
+ROLE
+======================================================================
+
+Act as the Principal AI Systems Architect, Multi-Agent Systems
+Architect, Distributed Systems Architect, Agent Runtime Architect,
+Agent Interoperability Architect, Protocol Architect, Security
+Architect, Identity Architect, Authorization Architect, Workflow
+Architect, Reliability Architect, Observability Architect,
+Enterprise Integration Architect and AI Platform Architect responsible
+for designing the complete Agent-to-Agent Architecture of this
+platform.
+
+You have deep expertise in:
+
+- multi-agent systems
+- distributed systems
+- agent runtimes
+- agent orchestration
+- workflow engines
+- agent interoperability
+- A2A protocols
+- MCP
+- service-to-service communication
+- asynchronous distributed workflows
+- task delegation
+- agent discovery
+- capability discovery
+- identity
+- authentication
+- authorization
+- zero-trust architectures
+- distributed tracing
+- provenance
+- audit
+- multi-tenancy
+- reliability
+- retries
+- idempotency
+- distributed state
+- concurrency
+- event-driven systems
+- human-in-the-loop systems
+- AI evaluation
+- model routing
+- agent security
+- enterprise integration.
+
+======================================================================
+1. MOST IMPORTANT INSTRUCTION
+## CLAUDE MUST CHOOSE THE A2A ARCHITECTURE
+======================================================================
+
+This is NOT a prompt asking you to automatically implement:
+
+- A2A
+- peer-to-peer agents
+- agent mesh
+- agent registry
+- dynamic discovery
+- decentralized agents
+- agent marketplace
+- message bus
+- direct agent-to-agent communication
+- autonomous agent delegation.
+
+These are candidate mechanisms.
+
+They are NOT architectural conclusions.
+
+Claude MUST independently analyze the entire platform and determine:
+
+1. WHETHER A2A IS ACTUALLY REQUIRED.
+2. WHICH AGENTS NEED TO COMMUNICATE.
+3. WHY THEY NEED TO COMMUNICATE.
+4. WHICH COMMUNICATION PATTERNS ARE REQUIRED.
+5. WHETHER COMMUNICATION SHOULD BE:
+   - in-process
+   - local
+   - service-to-service
+   - cross-domain
+   - cross-organization
+   - external.
+6. WHETHER A STANDARD PROTOCOL IS REQUIRED.
+7. WHETHER A2A IS THE BEST PROTOCOL.
+8. WHICH PARTS SHOULD USE A2A.
+9. WHICH PARTS SHOULD NOT USE A2A.
+10. WHAT MUST EXIST ON DAY 1.
+11. WHAT SHOULD BE DEFERRED.
+
+Do NOT start with:
+
+"we need A2A."
+
+Start with:
+
+"what architectural problem are we solving?"
+
+======================================================================
+2. CORE PRINCIPLE
+======================================================================
+
+A2A MUST NOT become:
+
+"the protocol for every interaction inside the platform."
+
+If two agents:
+
+- live in the same runtime
+- share the same lifecycle
+- are owned by the same subsystem
+- have no independent deployment boundary
+- have no interoperability requirement
+
+then direct function invocation, workflow primitives or internal
+runtime interfaces may be architecturally superior.
+
+A2A becomes valuable when there is a meaningful boundary.
+
+Potential boundaries:
+
+- process
+- service
+- runtime
+- team
+- organization
+- tenant
+- vendor
+- deployment
+- trust domain.
+
+Claude MUST determine where those boundaries actually exist.
+
+======================================================================
+3. IMPORTANT CURRENT PROTOCOL CONTEXT
+======================================================================
+
+The current A2A specification describes an open standard for
+communication and interoperability between independent, potentially
+opaque agent systems.
+
+Current A2A concepts include:
+
+- Agent
+- AgentCard
+- Task
+- Message
+- Part
+- Artifact
+- Context
+- Extension
+- synchronous interaction
+- streaming interaction
+- asynchronous interaction
+- task lifecycle
+- agent capability discovery.
+
+A2A is explicitly designed for agent-to-agent interoperability and is
+not a replacement for MCP.
+
+MCP and A2A must therefore be analyzed as complementary layers:
+
+MCP
+→ agent ↔ tool / resource
+
+A2A
+→ agent ↔ agent.
+
+Do NOT collapse them into one protocol.
+
+Use current official A2A documentation and specification when evaluating
+protocol capabilities.
+
+======================================================================
+4. REQUIRED ARCHITECTURAL PROCESS
+======================================================================
+
+The final architecture MUST result from:
+
+    AGENT INVENTORY
+       ↓
+    COMMUNICATION USE CASES
+       ↓
+    AGENT BOUNDARY ANALYSIS
+       ↓
+    IN-PROCESS VS REMOTE ANALYSIS
+       ↓
+    TRUST DOMAIN ANALYSIS
+       ↓
+    TASK DELEGATION MODEL
+       ↓
+    DISCOVERY MODEL
+       ↓
+    IDENTITY / AUTHORIZATION
+       ↓
+    MESSAGE / TASK MODEL
+       ↓
+    STATE / LIFECYCLE MODEL
+       ↓
+    ASYNC / STREAMING REQUIREMENTS
+       ↓
+    FAILURE / RETRY MODEL
+       ↓
+    IDEMPOTENCY
+       ↓
+    SECURITY / PRIVACY
+       ↓
+    TENANT ISOLATION
+       ↓
+    OBSERVABILITY / AUDIT
+       ↓
+    EVALUATION / REPLAY
+       ↓
+    PROTOCOL OPTIONS
+       ↓
+    ADVERSARIAL ANALYSIS
+       ↓
+    FALSIFICATION
+       ↓
+    FINAL A2A ARCHITECTURE.
+
+======================================================================
+5. FIRST QUESTION
+======================================================================
+
+Before choosing any protocol:
+
+ANSWER:
+
+"Why do agents need to communicate with one another?"
+
+Potential reasons:
+
+- task delegation
+- specialist agents
+- domain separation
+- independent deployment
+- organizational boundaries
+- vendor interoperability
+- cross-tenant collaboration
+- long-running work
+- parallel execution
+- workflow decomposition
+- human delegation
+- external agent integration.
+
+These are examples.
+
+Determine the actual requirements.
+
+======================================================================
+6. AGENT-TO-AGENT VS AGENT-AS-TOOL
+======================================================================
+
+This distinction is mandatory.
+
+Compare:
+
+AGENT AS TOOL
+
+vs:
+
+AGENT AS REMOTE SERVICE
+
+vs:
+
+AGENT AS PEER
+
+vs:
+
+AGENT AS ORCHESTRATED WORKER.
+
+Do not assume every specialized agent should be exposed through A2A.
+
+======================================================================
+7. AGENT-AS-TOOL
+======================================================================
+
+Evaluate whether:
+
+Agent A
+
+calling:
+
+Agent B
+
+inside the same runtime
+
+is better represented as:
+
+function/tool invocation.
+
+======================================================================
+8. REMOTE AGENT
+======================================================================
+
+Evaluate when:
+
+Agent B
+
+is an independently deployed service.
+
+======================================================================
+9. INDEPENDENT AGENT
+======================================================================
+
+Determine whether agents have:
+
+- independent lifecycle
+- independent ownership
+- independent deployment
+- independent security boundary
+- independent data boundary.
+
+These are strong candidates for A2A.
+
+======================================================================
+10. OPAQUE AGENTS
+======================================================================
+
+A2A can allow agents to collaborate without exposing:
+
+- internal reasoning
+- private memory
+- internal tools
+- implementation details.
+
+The architecture must preserve this property where appropriate.
+
+======================================================================
+11. DO NOT SHARE INTERNAL REASONING
+======================================================================
+
+A2A messages should communicate:
+
+- task intent
+- relevant context
+- inputs
+- outputs
+- artifacts
+- status
+- errors
+- structured data.
+
+Do NOT require:
+
+hidden chain-of-thought.
+
+======================================================================
+12. ARCHITECTURAL CONTEXT
+======================================================================
+
+Existing architecture documents:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_ARCHITECTURE.md
+04_AGENT_RUNTIME.md
+05_MODEL_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+08_KNOWLEDGE_DATA_ARCHITECTURE.md
+09_MEMORY_ARCHITECTURE.md
+10_SECURITY_ARCHITECTURE.md
+11_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+12_TRUST_PROVENANCE_ARCHITECTURE.md
+13_RELIABILITY_ARCHITECTURE.md
+14_CONCURRENCY_ARCHITECTURE.md
+15_OBSERVABILITY_ARCHITECTURE.md
+16_AUDIT_ARCHITECTURE.md
+17_EVALUATION_ARCHITECTURE.md
+18_DEPLOYMENT_LIFECYCLE_ARCHITECTURE.md
+19_MULTI_TENANCY_ARCHITECTURE.md
+20_COST_ARCHITECTURE.md
+21_CAPACITY_PLANNING_ARCHITECTURE.md
+22_NETWORKING_ARCHITECTURE.md
+23_STORAGE_ARCHITECTURE.md
+24_DR_ENTERPRISE_ARCHITECTURE.md
+25_ADVANCED_SUPPLY_CHAIN_ARCHITECTURE.md
+26_ENTERPRISE_COMPLIANCE_ARCHITECTURE.md
+27_MULTI_MODEL_FALLBACK_ARCHITECTURE.md
+28_HUMAN_IN_THE_LOOP_ARCHITECTURE.md
+29_REPLAY_ARCHITECTURE.md
+30_OFFLINE_MOBILE_ARCHITECTURE.md
+
+Future architecture documents:
+
+32_ADMIN_CONSOLE_ARCHITECTURE.md
+33_ADR_ARCHITECTURE.md
+34_QUALITY_MODEL_ARCHITECTURE.md
+
+If a future document does not exist:
+
+DO NOT invent its contents.
+
+Identify only:
+
+- dependency
+- stable interface
+- unresolved assumption.
+
+If an existing architecture conflicts with the A2A architecture:
+
+DO NOT silently compensate.
+
+Document:
+
+- source architecture
+- conflict
+- consequence
+- recommended resolution
+- ADR candidate.
+
+======================================================================
+13. LEVEL
+======================================================================
+
+This document belongs to:
+
+LEVEL C — SUCCESSIVE ARCHITECTURE.
+
+Full cross-domain agent interoperability does NOT need to exist on
+Day 1 unless required.
+
+However:
+
+DAY 1 MUST NOT CREATE AN AGENT RUNTIME THAT MAKES FUTURE
+INTEROPERABILITY IMPOSSIBLE.
+
+Define the minimum stable interfaces required for future A2A adoption.
+
+======================================================================
+14. AGENT TAXONOMY
+======================================================================
+
+Create an agent taxonomy.
+
+Potential:
+
+- primary agent
+- specialist agent
+- workflow agent
+- evaluator agent
+- security agent
+- planning agent
+- execution agent
+- external agent.
+
+Determine the correct taxonomy.
+
+======================================================================
+15. AGENT IDENTITY
+======================================================================
+
+Every independently addressable agent must have:
+
+stable identity.
+
+Determine identity hierarchy.
+
+Potential:
+
+- agent ID
+- tenant ID
+- organization ID
+- deployment ID
+- instance ID.
+
+======================================================================
+16. AGENT INSTANCE VS AGENT SERVICE
+======================================================================
+
+Distinguish:
+
+logical agent identity
+
+from:
+
+runtime instance.
+
+======================================================================
+17. AGENT VERSION
+======================================================================
+
+Capture:
+
+- agent version
+- runtime version
+- configuration version
+- policy version.
+
+======================================================================
+18. AGENT CAPABILITIES
+======================================================================
+
+Determine how an agent advertises:
+
+- capabilities
+- input types
+- output types
+- modalities
+- task types
+- authentication requirements
+- supported protocols.
+
+======================================================================
+19. AGENT CARD
+======================================================================
+
+Evaluate the current A2A AgentCard concept.
+
+Determine which metadata the platform actually needs.
+
+Do NOT copy every field blindly.
+
+======================================================================
+20. CAPABILITY DISCOVERY
+======================================================================
+
+Determine whether agents are discovered:
+
+- statically
+- through registry
+- through Control Plane
+- dynamically
+- tenant-scoped
+- organization-scoped.
+
+======================================================================
+21. STATIC DISCOVERY
+======================================================================
+
+Evaluate configuration-based discovery.
+
+Advantages:
+
+- predictable
+- secure
+- simple.
+
+Disadvantages:
+
+- less dynamic.
+
+======================================================================
+22. CENTRAL REGISTRY
+======================================================================
+
+Evaluate an agent registry.
+
+Do NOT assume a global registry.
+
+======================================================================
+23. DYNAMIC DISCOVERY
+======================================================================
+
+Evaluate runtime discovery.
+
+Threat-model:
+
+malicious or compromised agents advertising false capabilities.
+
+======================================================================
+24. CAPABILITY AUTHENTICITY
+======================================================================
+
+Capability metadata must be trustworthy.
+
+Determine:
+
+- signing
+- identity binding
+- registry trust
+- authorization.
+
+======================================================================
+25. AGENT DIRECTORY
+======================================================================
+
+Determine whether the Control Plane should own:
+
+agent discovery.
+
+Do not automatically create a separate registry.
+
+======================================================================
+26. TASK MODEL
+======================================================================
+
+A2A introduces task-oriented interaction.
+
+Define:
+
+Task
+
+as:
+
+a unit of delegated work.
+
+======================================================================
+27. TASK IDENTITY
+======================================================================
+
+Every delegated task needs:
+
+stable ID.
+
+======================================================================
+28. TASK PARENT
+======================================================================
+
+A delegated task should preserve:
+
+parent execution context.
+
+======================================================================
+29. TASK GRAPH
+======================================================================
+
+A2A interactions can form:
+
+A
+→
+B
+→
+C
+
+or:
+
+A
+→
+B
+A
+→
+C.
+
+Represent delegation as a graph where required.
+
+======================================================================
+30. TASK DEPTH
+======================================================================
+
+Unbounded delegation can create:
+
+agent recursion.
+
+Define:
+
+maximum depth.
+
+======================================================================
+31. DELEGATION BUDGET
+======================================================================
+
+Evaluate limits on:
+
+- number of agents
+- task depth
+- total calls
+- token budget
+- cost
+- execution time.
+
+======================================================================
+32. TASK LIFECYCLE
+======================================================================
+
+Define:
+
+- submitted
+- working
+- input-required
+- completed
+- failed
+- canceled
+- rejected.
+
+These are candidate states.
+
+Verify current A2A semantics and determine the platform's actual state
+model.
+
+======================================================================
+33. STATE MACHINE
+======================================================================
+
+Create a formal task state machine.
+
+======================================================================
+34. TASK CANCELLATION
+======================================================================
+
+Cancellation must be:
+
+- authenticated
+- authorized
+- idempotent.
+
+======================================================================
+35. TASK TIMEOUT
+======================================================================
+
+Every remote task should have:
+
+deadline / timeout semantics.
+
+======================================================================
+36. DEAD TASK
+======================================================================
+
+Define behavior when:
+
+remote agent disappears.
+
+======================================================================
+37. TASK RETRY
+======================================================================
+
+Retries can create duplicate work.
+
+Define retry policy.
+
+======================================================================
+38. IDEMPOTENCY
+======================================================================
+
+A2A requests must support:
+
+idempotency where side effects are possible.
+
+======================================================================
+39. EXACTLY-ONCE
+======================================================================
+
+Do NOT claim exactly-once delivery unless the architecture genuinely
+provides it.
+
+Prefer:
+
+at-least-once
+
++
+
+idempotent processing
+
+where appropriate.
+
+======================================================================
+40. MESSAGE MODEL
+======================================================================
+
+Define:
+
+- sender
+- receiver
+- task
+- context
+- content
+- metadata
+- correlation
+- causality.
+
+======================================================================
+41. MESSAGE TYPES
+======================================================================
+
+Evaluate:
+
+- task request
+- task update
+- result
+- error
+- cancellation
+- status
+- artifact reference.
+
+======================================================================
+42. PARTS
+======================================================================
+
+A2A supports different content parts.
+
+Evaluate:
+
+- text
+- structured data
+- files
+- references.
+
+Do not transmit large artifacts unnecessarily inline.
+
+======================================================================
+43. ARTIFACTS
+======================================================================
+
+Define artifact semantics.
+
+Potential:
+
+- document
+- image
+- structured output
+- report
+- code
+- dataset reference.
+
+======================================================================
+44. LARGE ARTIFACTS
+======================================================================
+
+Use references rather than forcing large payloads through the messaging
+channel when appropriate.
+
+======================================================================
+45. ARTIFACT OWNERSHIP
+======================================================================
+
+Determine:
+
+who owns:
+
+- artifact
+- storage
+- access
+- retention.
+
+======================================================================
+46. ARTIFACT AUTHORIZATION
+======================================================================
+
+An agent receiving an artifact must not automatically gain access to:
+
+all underlying tenant data.
+
+======================================================================
+47. CONTEXT
+======================================================================
+
+Determine whether multiple A2A tasks share:
+
+logical context.
+
+======================================================================
+48. CONTEXT ISOLATION
+======================================================================
+
+Do not allow accidental leakage across:
+
+- users
+- tenants
+- workflows.
+
+======================================================================
+49. CONTEXT PROPAGATION
+======================================================================
+
+Propagate:
+
+- execution ID
+- trace ID
+- tenant ID
+- task ID
+- parent task ID.
+
+======================================================================
+50. CORRELATION
+======================================================================
+
+Every A2A request should be traceable to:
+
+originating execution.
+
+======================================================================
+51. CAUSALITY
+======================================================================
+
+Preserve:
+
+who delegated the task
+
+and:
+
+why.
+
+======================================================================
+52. USER INTENT
+======================================================================
+
+Determine whether user intent must propagate across agents.
+
+Do not automatically forward:
+
+entire conversation history.
+
+======================================================================
+53. CONTEXT MINIMIZATION
+======================================================================
+
+Send only:
+
+information required for the delegated task.
+
+======================================================================
+54. DATA MINIMIZATION
+======================================================================
+
+An agent should not receive:
+
+unnecessary tenant/customer data.
+
+======================================================================
+55. SECURITY BOUNDARY
+======================================================================
+
+A2A must cross explicit trust boundaries.
+
+Do not treat:
+
+"agent"
+
+as:
+
+"trusted internal component."
+
+======================================================================
+56. ZERO TRUST
+======================================================================
+
+Every remote agent interaction should verify:
+
+- identity
+- authorization
+- destination
+- policy
+- request integrity.
+
+======================================================================
+57. AGENT AUTHENTICATION
+======================================================================
+
+Evaluate:
+
+- mTLS
+- OAuth
+- workload identity
+- signed requests
+- other enterprise mechanisms.
+
+Do not select a mechanism before analyzing the existing Identity
+Architecture.
+
+======================================================================
+58. AGENT AUTHORIZATION
+======================================================================
+
+Determine:
+
+Agent A
+
+may delegate:
+
+WHAT
+
+to:
+
+Agent B.
+
+Authorization must be capability-specific.
+
+======================================================================
+59. USER-DELEGATED AUTHORITY
+======================================================================
+
+If:
+
+User
+
+authorizes:
+
+Agent A
+
+and Agent A delegates to:
+
+Agent B
+
+define how authority propagates.
+
+======================================================================
+60. CONFUSED DEPUTY
+======================================================================
+
+Threat-model:
+
+Agent B
+
+receives a request that appears to have:
+
+User authority
+
+but actually exceeds it.
+
+======================================================================
+61. PRIVILEGE ESCALATION
+======================================================================
+
+Delegation must not automatically escalate privileges.
+
+======================================================================
+62. CAPABILITY TOKENS
+======================================================================
+
+Evaluate bounded delegated authority.
+
+======================================================================
+63. AUDIENCE RESTRICTION
+======================================================================
+
+A delegated token should be bound to:
+
+intended recipient.
+
+======================================================================
+64. SCOPE
+======================================================================
+
+Define:
+
+- action
+- resource
+- tenant
+- time
+- budget.
+
+======================================================================
+65. EXPIRATION
+======================================================================
+
+Delegated authority must expire.
+
+======================================================================
+66. REVOCATION
+======================================================================
+
+Determine revocation semantics.
+
+======================================================================
+67. AGENT COMPROMISE
+======================================================================
+
+Assume:
+
+Agent B
+
+may become compromised.
+
+A2A architecture must contain blast radius.
+
+======================================================================
+68. BLAST RADIUS
+======================================================================
+
+A compromised agent must not gain:
+
+unbounded access to:
+
+- tools
+- tenants
+- memory
+- secrets
+- other agents.
+
+======================================================================
+69. AGENT TRUST LEVEL
+======================================================================
+
+Define whether agents have:
+
+- untrusted
+- limited trust
+- trusted
+- highly privileged
+
+classification.
+
+======================================================================
+70. TRUST IS NOT TRANSITIVE
+======================================================================
+
+Agent A trusting Agent B
+
+must not automatically mean:
+
+Agent A trusts every agent B trusts.
+
+======================================================================
+71. AGENT DISCOVERY ATTACKS
+======================================================================
+
+Threat-model:
+
+malicious agent advertising:
+
+false capabilities.
+
+======================================================================
+72. AGENT IMPERSONATION
+======================================================================
+
+Prevent:
+
+fake agent identity.
+
+======================================================================
+73. AGENT CARD TAMPERING
+======================================================================
+
+Protect capability metadata.
+
+======================================================================
+74. MESSAGE TAMPERING
+======================================================================
+
+Ensure integrity of:
+
+requests and responses.
+
+======================================================================
+75. REPLAY ATTACK
+======================================================================
+
+Prevent attacker from resubmitting:
+
+old A2A requests.
+
+======================================================================
+76. NONCE / REQUEST ID
+======================================================================
+
+Evaluate:
+
+unique request identifiers.
+
+======================================================================
+77. MESSAGE CONFIDENTIALITY
+======================================================================
+
+Protect:
+
+- task content
+- user data
+- credentials
+- proprietary agent information.
+
+======================================================================
+78. TENANT ISOLATION
+======================================================================
+
+Using 19:
+
+A2A must preserve tenant boundaries.
+
+======================================================================
+79. CROSS-TENANT COMMUNICATION
+======================================================================
+
+Cross-tenant agent collaboration should be:
+
+explicitly authorized.
+
+======================================================================
+80. CROSS-ORGANIZATION COMMUNICATION
+======================================================================
+
+Evaluate additional trust requirements.
+
+======================================================================
+81. EXTERNAL AGENTS
+======================================================================
+
+Treat external agents as:
+
+untrusted by default.
+
+======================================================================
+82. THIRD-PARTY AGENTS
+======================================================================
+
+Determine:
+
+- onboarding
+- verification
+- authorization
+- contract
+- monitoring
+- revocation.
+
+======================================================================
+83. AGENT REGISTRATION
+======================================================================
+
+Determine whether external agents require:
+
+registration.
+
+======================================================================
+84. AGENT LIFECYCLE
+======================================================================
+
+Define:
+
+REGISTER
+
+VERIFY
+
+ACTIVE
+
+SUSPENDED
+
+REVOKED
+
+DEPRECATED
+
+RETIRED.
+
+These are candidate states.
+
+======================================================================
+85. AGENT VERSIONING
+======================================================================
+
+Agents may evolve independently.
+
+Define compatibility.
+
+======================================================================
+86. PROTOCOL VERSIONING
+======================================================================
+
+A2A protocol versions may evolve.
+
+Define supported versions.
+
+======================================================================
+87. CAPABILITY VERSIONING
+======================================================================
+
+Agent capabilities may change independently.
+
+======================================================================
+88. BACKWARD COMPATIBILITY
+======================================================================
+
+Old clients must interact safely with supported agents.
+
+======================================================================
+89. FORWARD COMPATIBILITY
+======================================================================
+
+Do not assume old agents understand future capabilities.
+
+======================================================================
+90. NEGOTIATION
+======================================================================
+
+Evaluate capability negotiation.
+
+======================================================================
+91. PROTOCOL NEGOTIATION
+======================================================================
+
+Determine supported bindings and versions.
+
+======================================================================
+92. TRANSPORT
+======================================================================
+
+Evaluate:
+
+- HTTP
+- JSON-RPC
+- gRPC
+- streaming
+- asynchronous push.
+
+Use current A2A specification.
+
+Do not invent unsupported semantics.
+
+======================================================================
+93. TRANSPORT VS SEMANTICS
+======================================================================
+
+Keep:
+
+agent task semantics
+
+separate from:
+
+transport implementation.
+
+======================================================================
+94. SYNCHRONOUS
+======================================================================
+
+Use synchronous calls only where:
+
+latency and lifecycle justify them.
+
+======================================================================
+95. STREAMING
+======================================================================
+
+Evaluate streaming for:
+
+- progress
+- partial artifacts
+- interactive tasks.
+
+======================================================================
+96. ASYNCHRONOUS
+======================================================================
+
+Long-running agent tasks should support:
+
+asynchronous lifecycle.
+
+======================================================================
+97. PUSH NOTIFICATIONS
+======================================================================
+
+Evaluate push mechanisms for:
+
+long-running tasks.
+
+======================================================================
+98. CALLBACK SECURITY
+======================================================================
+
+If callbacks are used:
+
+authenticate and authorize them.
+
+======================================================================
+99. WEBHOOK SECURITY
+======================================================================
+
+Do not accept arbitrary callbacks without validation.
+
+======================================================================
+100. POLLING
+======================================================================
+
+Evaluate polling as fallback.
+
+======================================================================
+101. MESSAGE BROKER
+======================================================================
+
+Evaluate whether a broker is needed.
+
+Potential benefits:
+
+- buffering
+- retry
+- backpressure
+- decoupling.
+
+Potential costs:
+
+- complexity
+- operational overhead
+- additional state.
+
+======================================================================
+102. DIRECT HTTP
+======================================================================
+
+Evaluate direct agent communication.
+
+======================================================================
+103. BROKERED COMMUNICATION
+======================================================================
+
+Evaluate:
+
+Agent A
+
+→
+
+Broker
+
+→
+
+Agent B.
+
+======================================================================
+104. HYBRID
+======================================================================
+
+Potential:
+
+synchronous direct path
+
++
+
+asynchronous broker path.
+
+Determine best architecture.
+
+======================================================================
+105. SERVICE MESH
+======================================================================
+
+Evaluate whether existing networking infrastructure already provides:
+
+- identity
+- encryption
+- routing
+- retries
+- observability.
+
+Do not duplicate it.
+
+======================================================================
+106. LOAD BALANCING
+======================================================================
+
+A logical agent may have:
+
+multiple instances.
+
+Determine routing semantics.
+
+======================================================================
+107. AGENT INSTANCE SELECTION
+======================================================================
+
+Routing may consider:
+
+- capability
+- health
+- latency
+- region
+- tenant
+- cost
+- policy.
+
+Determine actual routing factors.
+
+======================================================================
+108. AGENT HEALTH
+======================================================================
+
+Determine:
+
+- liveness
+- readiness
+- capability health.
+
+======================================================================
+109. DEGRADED AGENT
+======================================================================
+
+An agent may be:
+
+reachable
+
+but:
+
+unable to perform some capabilities.
+
+Discovery/health must reflect this.
+
+======================================================================
+110. CAPACITY
+======================================================================
+
+Using 21:
+
+agents may have:
+
+- concurrency limits
+- token budgets
+- cost limits.
+
+======================================================================
+111. BACKPRESSURE
+======================================================================
+
+Prevent:
+
+one agent
+
+from overwhelming:
+
+another agent.
+
+======================================================================
+112. RATE LIMITING
+======================================================================
+
+Define:
+
+- per-agent
+- per-tenant
+- per-task
+- per-user.
+
+======================================================================
+113. DEADLINES
+======================================================================
+
+Propagate deadlines across delegated tasks.
+
+======================================================================
+114. BUDGET PROPAGATION
+======================================================================
+
+Evaluate propagation of:
+
+- token budget
+- cost budget
+- time budget
+- delegation budget.
+
+======================================================================
+115. CASCADING FAILURE
+======================================================================
+
+Agent A
+
+calls B
+
+calls C
+
+calls D.
+
+Failure in D can cascade.
+
+Design:
+
+timeouts
+
++
+
+bulkheads
+
++
+
+circuit breakers
+
+where justified.
+
+======================================================================
+116. CIRCULAR DELEGATION
+======================================================================
+
+A → B → A
+
+must be prevented or bounded.
+
+======================================================================
+117. DELEGATION GRAPH
+======================================================================
+
+Track:
+
+parent
+
+child
+
+depth.
+
+======================================================================
+118. FAN-OUT
+======================================================================
+
+One agent may call:
+
+100 agents.
+
+Control fan-out.
+
+======================================================================
+119. FAN-IN
+======================================================================
+
+Many agents may report to:
+
+one agent.
+
+Control aggregation pressure.
+
+======================================================================
+120. PARALLELISM
+======================================================================
+
+Using 14:
+
+determine safe parallel A2A calls.
+
+======================================================================
+121. ORDERING
+======================================================================
+
+Determine whether messages require:
+
+- strict ordering
+- causal ordering
+- no ordering.
+
+======================================================================
+122. DUPLICATES
+======================================================================
+
+A2A processing should tolerate:
+
+duplicate delivery
+
+where required.
+
+======================================================================
+123. PARTIAL FAILURE
+======================================================================
+
+Some delegated tasks may succeed while others fail.
+
+Define aggregation semantics.
+
+======================================================================
+124. PARTIAL RESULTS
+======================================================================
+
+Determine whether partial results are:
+
+acceptable
+
+or:
+
+must fail whole workflow.
+
+======================================================================
+125. COMPENSATION
+======================================================================
+
+If Agent A delegates actions to B and C and C fails:
+
+evaluate compensation.
+
+Do not assume distributed transactions.
+
+======================================================================
+126. SAGA
+======================================================================
+
+Evaluate saga-style compensation where side effects cross agents.
+
+======================================================================
+127. DISTRIBUTED TRANSACTION
+======================================================================
+
+Do NOT assume 2PC is appropriate.
+
+Evaluate alternatives.
+
+======================================================================
+128. SIDE EFFECT OWNERSHIP
+======================================================================
+
+Determine which agent owns:
+
+the authority to perform a side effect.
+
+======================================================================
+129. SIDE EFFECT DELEGATION
+======================================================================
+
+Agent A should not delegate:
+
+"do anything necessary."
+
+Delegation must be bounded.
+
+======================================================================
+130. TOOL AUTHORITY
+======================================================================
+
+An agent receiving an A2A task must not automatically gain all tools
+available to the calling agent.
+
+======================================================================
+131. POLICY EVALUATION
+======================================================================
+
+Using 03:
+
+determine:
+
+- policy at caller
+- policy at receiver
+- delegated policy.
+
+======================================================================
+132. DUAL POLICY CHECK
+======================================================================
+
+Evaluate whether both:
+
+calling agent
+
+and:
+
+receiving agent
+
+must enforce policy.
+
+======================================================================
+133. POLICY CONFLICT
+======================================================================
+
+If:
+
+Agent A policy
+
+allows
+
+but:
+
+Agent B policy
+
+denies:
+
+deny.
+
+======================================================================
+134. GOVERNANCE
+======================================================================
+
+Using 03:
+
+A2A should be governed by:
+
+- allowed agent classes
+- delegation rules
+- trust levels
+- tenant boundaries
+- action policies.
+
+======================================================================
+135. AUDIT
+======================================================================
+
+Using 16:
+
+record:
+
+- caller
+- receiver
+- task
+- purpose
+- authorization
+- result
+- side effects.
+
+======================================================================
+136. AUDIT CORRELATION
+======================================================================
+
+Every A2A task must correlate with:
+
+- originating execution
+- trace
+- audit event.
+
+======================================================================
+137. OBSERVABILITY
+======================================================================
+
+Using 15:
+
+capture:
+
+- latency
+- task status
+- retries
+- failures
+- agent identity
+- dependency graph.
+
+======================================================================
+138. DISTRIBUTED TRACING
+======================================================================
+
+Propagate:
+
+trace context.
+
+======================================================================
+139. TRACE CARDINALITY
+======================================================================
+
+Avoid unbounded cardinality from:
+
+agent IDs / task IDs.
+
+======================================================================
+140. METRICS
+======================================================================
+
+Track:
+
+- success rate
+- latency
+- retries
+- cancellation
+- timeout
+- queue depth
+- fan-out
+- fan-in.
+
+======================================================================
+141. REPLAY
+======================================================================
+
+Using 29:
+
+A2A execution should preserve enough information for:
+
+reconstruction.
+
+======================================================================
+142. A2A REPLAY
+======================================================================
+
+Determine whether replay should:
+
+- simulate remote agent
+- use recorded response
+- reexecute agent
+- replay entire graph.
+
+Do not assume live reexecution.
+
+======================================================================
+143. EVALUATION
+======================================================================
+
+Using 17:
+
+A2A interactions can become:
+
+evaluation scenarios.
+
+======================================================================
+144. AGENT EVALUATION
+======================================================================
+
+Evaluate:
+
+Agent A
+
+delegates to:
+
+Agent B.
+
+Measure:
+
+- delegation quality
+- routing
+- task completion
+- unnecessary delegation
+- cost.
+
+======================================================================
+145. COUNTERFACTUAL AGENT
+======================================================================
+
+Compare:
+
+Agent B1
+
+vs:
+
+Agent B2
+
+on the same delegated task.
+
+======================================================================
+146. MODEL ROUTING
+======================================================================
+
+Using 27:
+
+agent may route to:
+
+different models.
+
+A2A architecture must preserve:
+
+model identity and routing metadata.
+
+======================================================================
+147. KNOWLEDGE
+======================================================================
+
+Using 08:
+
+do not blindly forward:
+
+entire knowledge context.
+
+Share:
+
+minimum required evidence.
+
+======================================================================
+148. MEMORY
+======================================================================
+
+Using 09:
+
+do not share private memory by default.
+
+======================================================================
+149. MEMORY BOUNDARY
+======================================================================
+
+Agent B should receive:
+
+task-relevant context
+
+not:
+
+Agent A's entire memory.
+
+======================================================================
+150. DATA PROVENANCE
+======================================================================
+
+Using 12:
+
+A2A payloads should preserve:
+
+- source
+- origin
+- version
+- transformations.
+
+======================================================================
+151. ARTIFACT PROVENANCE
+======================================================================
+
+An artifact passed between agents must preserve:
+
+originating agent
+
+and:
+
+transformation chain.
+
+======================================================================
+152. SUPPLY CHAIN
+======================================================================
+
+Using 25:
+
+external agents and agent software must have:
+
+verified provenance.
+
+======================================================================
+153. AGENT PACKAGE
+======================================================================
+
+If agents are distributed as artifacts:
+
+verify:
+
+- signature
+- version
+- origin.
+
+======================================================================
+154. DEPLOYMENT
+======================================================================
+
+Using 18:
+
+A2A endpoints must participate in:
+
+- deployment lifecycle
+- rollout
+- rollback
+- compatibility management.
+
+======================================================================
+155. CANARY
+======================================================================
+
+New agent versions should be evaluated before receiving full traffic.
+
+======================================================================
+156. AGENT MIGRATION
+======================================================================
+
+When replacing Agent B:
+
+existing tasks may still target:
+
+old version.
+
+Define migration semantics.
+
+======================================================================
+157. DRAINING
+======================================================================
+
+Agent retirement should support:
+
+drain existing tasks
+
+before:
+
+shutdown.
+
+======================================================================
+158. AGENT RETIREMENT
+======================================================================
+
+Define:
+
+- deprecation
+- migration
+- revocation.
+
+======================================================================
+159. MULTI-TENANCY
+======================================================================
+
+Using 19:
+
+A2A routing must preserve:
+
+tenant isolation.
+
+======================================================================
+160. TENANT-SCOPED AGENTS
+======================================================================
+
+Some agents may be:
+
+tenant-specific.
+
+======================================================================
+161. SHARED AGENTS
+======================================================================
+
+Some agents may serve:
+
+multiple tenants.
+
+Ensure isolation.
+
+======================================================================
+162. CROSS-TENANT AGENT
+======================================================================
+
+If allowed:
+
+require explicit policy.
+
+======================================================================
+163. RESOURCE / COST
+======================================================================
+
+Using 20:
+
+A2A delegation can multiply:
+
+model usage.
+
+Define cost attribution.
+
+======================================================================
+164. COST PROPAGATION
+======================================================================
+
+Track:
+
+originating request
+
+→
+
+delegated task
+
+→
+
+agent cost.
+
+======================================================================
+165. BUDGET ENFORCEMENT
+======================================================================
+
+A delegated agent must not exceed:
+
+parent budget
+
+without explicit policy.
+
+======================================================================
+166. CAPACITY
+======================================================================
+
+Using 21:
+
+model:
+
+- task fan-out
+- concurrent agents
+- long-running tasks.
+
+======================================================================
+167. NETWORK
+======================================================================
+
+Using 22:
+
+A2A is network communication.
+
+Account for:
+
+- latency
+- packet loss
+- DNS
+- TLS
+- routing.
+
+======================================================================
+168. STORAGE
+======================================================================
+
+Using 23:
+
+long-running tasks may require:
+
+persistent state.
+
+======================================================================
+169. DR
+======================================================================
+
+Using 24:
+
+define:
+
+- task recovery
+- agent state recovery
+- orphaned task handling.
+
+======================================================================
+170. COMPLIANCE
+======================================================================
+
+Using 26:
+
+cross-agent data transfer may create:
+
+new compliance boundaries.
+
+======================================================================
+171. OFFLINE
+======================================================================
+
+Using 30:
+
+determine whether A2A can operate:
+
+offline
+
+or:
+
+must queue messages.
+
+Do not assume.
+
+======================================================================
+172. OFFLINE A2A
+======================================================================
+
+If supported:
+
+messages require:
+
+- persistence
+- expiration
+- replay protection
+- revalidation.
+
+======================================================================
+173. HUMAN-IN-THE-LOOP
+======================================================================
+
+Using 28:
+
+A2A tasks may require:
+
+human approval.
+
+Define how approval state propagates.
+
+======================================================================
+174. HUMAN AUTHORITY
+======================================================================
+
+Do not allow:
+
+Agent A
+
+to claim:
+
+human approval
+
+without cryptographically or architecturally verifiable evidence.
+
+======================================================================
+175. APPROVAL SCOPE
+======================================================================
+
+Human approval should bind to:
+
+specific task/action/context.
+
+======================================================================
+176. ADMIN CONSOLE
+======================================================================
+
+Future 32:
+
+Admin Console may need to expose:
+
+- agent inventory
+- agent health
+- capabilities
+- trust
+- policies
+- task graph
+- delegation graph
+- failures.
+
+Do not invent UI.
+
+======================================================================
+177. ADR
+======================================================================
+
+Future 33:
+
+identify decisions requiring ADRs.
+
+======================================================================
+178. QUALITY MODEL
+======================================================================
+
+Future 34:
+
+A2A quality may include:
+
+- task success
+- delegation efficiency
+- latency
+- cost
+- failure rate
+- policy compliance.
+
+Do not invent future framework details.
+
+======================================================================
+179. PROTOCOL OPTIONS
+======================================================================
+
+Evaluate at minimum:
+
+OPTION A
+--------
+In-process agent calls.
+
+OPTION B
+--------
+Internal service-to-service API.
+
+OPTION C
+--------
+A2A for internal remote agents.
+
+OPTION D
+--------
+A2A for internal + external agents.
+
+OPTION E
+--------
+Hybrid:
+internal native orchestration
++
+A2A only at genuine service/trust/organizational boundaries.
+
+OPTION F
+--------
+A2A + broker/event infrastructure.
+
+These are candidate architectures.
+
+Claude MUST choose.
+
+======================================================================
+180. A2A VERSION
+======================================================================
+
+Use the current official A2A specification available at research time.
+
+Verify:
+
+- protocol version
+- data model
+- transports
+- lifecycle
+- discovery
+- security expectations.
+
+Do not rely on obsolete A2A versions.
+
+======================================================================
+181. A2A EXTENSIONS
+======================================================================
+
+Evaluate whether platform-specific needs require:
+
+A2A extensions.
+
+Do not fork the protocol unnecessarily.
+
+======================================================================
+182. PROTOCOL EXTENSION RULE
+======================================================================
+
+Prefer:
+
+standard A2A semantics
+
+before:
+
+custom extensions.
+
+======================================================================
+183. CUSTOM PROTOCOL
+======================================================================
+
+Evaluate whether a custom internal protocol is actually superior for:
+
+- performance
+- internal orchestration
+- tightly coupled agents.
+
+Do not force A2A where it adds unnecessary overhead.
+
+======================================================================
+184. MCP INTERACTION
+======================================================================
+
+Explicitly model:
+
+Agent A
+→ A2A
+→ Agent B
+→ MCP
+→ Tool.
+
+This distinction must be preserved.
+
+======================================================================
+185. MCP ≠ A2A
+======================================================================
+
+Do not use MCP to solve:
+
+agent interoperability
+
+if A2A is the appropriate abstraction.
+
+Do not use A2A to solve:
+
+tool access
+
+if MCP is the appropriate abstraction.
+
+======================================================================
+186. ORCHESTRATION VS A2A
+======================================================================
+
+A workflow engine controls:
+
+execution.
+
+A2A controls:
+
+inter-agent communication.
+
+They are not necessarily substitutes.
+
+======================================================================
+187. CENTRAL ORCHESTRATOR
+======================================================================
+
+Evaluate:
+
+central orchestration
+
+vs:
+
+peer-to-peer delegation.
+
+======================================================================
+188. DECENTRALIZED DELEGATION
+======================================================================
+
+Do not assume decentralized delegation is better.
+
+Potential risks:
+
+- observability
+- security
+- runaway delegation
+- debugging
+- cost
+- governance.
+
+======================================================================
+189. HYBRID ORCHESTRATION
+======================================================================
+
+Evaluate:
+
+central workflow control
+
++
+
+A2A interoperability at boundaries.
+
+======================================================================
+190. AGENT MESH
+======================================================================
+
+Do NOT create an agent mesh merely because A2A exists.
+
+Determine whether mesh topology provides actual value.
+
+======================================================================
+191. FULL MESH RISK
+======================================================================
+
+N agents can create:
+
+O(N²)
+
+potential relationships.
+
+Avoid unnecessary topology explosion.
+
+======================================================================
+192. HUB-AND-SPOKE
+======================================================================
+
+Evaluate centralized routing.
+
+======================================================================
+193. FEDERATED
+======================================================================
+
+Evaluate:
+
+domain-level agent hubs.
+
+======================================================================
+194. EXTERNAL NETWORK
+======================================================================
+
+If external agents are supported:
+
+define trust boundaries.
+
+======================================================================
+195. AGENT MARKETPLACE
+======================================================================
+
+Do NOT assume an agent marketplace is required.
+
+Evaluate only if business/use-case requirements justify it.
+
+======================================================================
+196. AGENT REPUTATION
+======================================================================
+
+Do NOT assume reputation systems are required.
+
+If external discovery requires trust scoring:
+
+evaluate separately.
+
+======================================================================
+197. AGENT SLA
+======================================================================
+
+Evaluate:
+
+- availability
+- latency
+- quality
+- cost
+- task completion.
+
+======================================================================
+198. CONTRACT
+======================================================================
+
+Agent capabilities should have:
+
+machine-readable contract.
+
+======================================================================
+199. CONTRACT VALIDATION
+======================================================================
+
+Validate:
+
+inputs and outputs.
+
+======================================================================
+200. SCHEMA EVOLUTION
+======================================================================
+
+Agent task schemas evolve.
+
+Support:
+
+versioning.
+
+======================================================================
+201. INVALID INPUT
+======================================================================
+
+Remote agents must reject:
+
+malformed or unauthorized requests.
+
+======================================================================
+202. PROMPT INJECTION
+======================================================================
+
+A2A payloads may contain:
+
+untrusted natural language.
+
+Treat remote agent messages as:
+
+untrusted input.
+
+======================================================================
+203. CROSS-AGENT PROMPT INJECTION
+======================================================================
+
+Agent B may send malicious instructions to Agent A.
+
+The architecture must prevent:
+
+remote agent output
+
+from automatically becoming:
+
+trusted instruction.
+
+======================================================================
+204. TRUSTED VS UNTRUSTED CONTENT
+======================================================================
+
+Separate:
+
+- protocol metadata
+- policy metadata
+- task content
+- agent-generated content
+- user content.
+
+======================================================================
+205. INSTRUCTION PRIORITY
+======================================================================
+
+A remote agent cannot override:
+
+platform policy
+
+or:
+
+caller authorization.
+
+======================================================================
+206. TOOL ESCALATION
+======================================================================
+
+Remote agent output must not automatically cause:
+
+privileged tool invocation.
+
+======================================================================
+207. DATA EXFILTRATION
+======================================================================
+
+Threat-model malicious agent attempting to obtain:
+
+- secrets
+- memory
+- credentials
+- tenant data.
+
+======================================================================
+208. SECRET ISOLATION
+======================================================================
+
+Never forward:
+
+provider credentials
+
+to remote agents.
+
+======================================================================
+209. MEMORY EXFILTRATION
+======================================================================
+
+Do not expose:
+
+private memory
+
+unless explicitly required and authorized.
+
+======================================================================
+210. KNOWLEDGE EXFILTRATION
+======================================================================
+
+Do not expose:
+
+entire knowledge bases.
+
+======================================================================
+211. RESULT VALIDATION
+======================================================================
+
+Remote agent outputs must be validated before use.
+
+Potential:
+
+- schema validation
+- policy validation
+- semantic validation
+- security checks.
+
+======================================================================
+212. AGENT RESULT TRUST
+======================================================================
+
+Do not treat:
+
+remote agent output
+
+as:
+
+fact.
+
+======================================================================
+213. SOURCE PROVENANCE
+======================================================================
+
+Preserve:
+
+who produced the result.
+
+======================================================================
+214. CONFIDENCE
+======================================================================
+
+Do not automatically propagate:
+
+agent confidence
+
+as:
+
+system confidence.
+
+======================================================================
+215. AGENT QUALITY
+======================================================================
+
+Evaluate whether agents require:
+
+quality score / reliability metadata.
+
+======================================================================
+216. AGENT FAILURE
+======================================================================
+
+A remote agent may:
+
+- timeout
+- fail
+- return invalid output
+- partially complete
+- become unavailable.
+
+======================================================================
+217. FAILURE CLASSIFICATION
+======================================================================
+
+Classify:
+
+- transport failure
+- authentication failure
+- authorization failure
+- protocol failure
+- task failure
+- model failure
+- tool failure
+- policy rejection.
+
+======================================================================
+218. ERROR MODEL
+======================================================================
+
+Define structured error semantics.
+
+======================================================================
+219. RETRYABLE ERROR
+======================================================================
+
+Only retry errors classified as:
+
+safe to retry.
+
+======================================================================
+220. NON-RETRYABLE ERROR
+======================================================================
+
+Do not retry:
+
+authorization denial
+
+as if:
+
+transient failure.
+
+======================================================================
+221. CIRCUIT BREAKER
+======================================================================
+
+Evaluate circuit breaking for unhealthy agents.
+
+======================================================================
+222. FALLBACK AGENT
+======================================================================
+
+Using 27:
+
+evaluate:
+
+Agent B
+
+fails
+
+→
+
+Agent C.
+
+======================================================================
+223. FALLBACK AUTHORIZATION
+======================================================================
+
+Fallback agent must have:
+
+equivalent authorized capability.
+
+======================================================================
+224. FALLBACK COST
+======================================================================
+
+Track additional cost.
+
+======================================================================
+225. FALLBACK SEMANTICS
+======================================================================
+
+Fallback may produce different quality.
+
+Record:
+
+which agent actually executed.
+
+======================================================================
+226. TASK RECOVERY
+======================================================================
+
+If caller crashes:
+
+determine whether delegated task continues.
+
+======================================================================
+227. ORPHAN TASK
+======================================================================
+
+Define handling for:
+
+task without active caller.
+
+======================================================================
+228. TASK OWNERSHIP
+======================================================================
+
+Determine:
+
+who owns task state.
+
+======================================================================
+229. TASK PERSISTENCE
+======================================================================
+
+Long-running tasks require durable state.
+
+======================================================================
+230. TASK RESUME
+======================================================================
+
+Define:
+
+resume semantics.
+
+======================================================================
+231. TASK CANCELLATION PROPAGATION
+======================================================================
+
+If parent task is canceled:
+
+child tasks should receive cancellation where appropriate.
+
+======================================================================
+232. TASK DEADLINE PROPAGATION
+======================================================================
+
+Parent deadline should constrain child execution.
+
+======================================================================
+233. TASK BUDGET PROPAGATION
+======================================================================
+
+Parent budget should constrain child execution.
+
+======================================================================
+234. DELEGATION AUDIT
+======================================================================
+
+Every delegation must be attributable.
+
+======================================================================
+235. COST ATTRIBUTION
+======================================================================
+
+Track:
+
+root request
+
+→
+
+Agent A
+
+→
+
+Agent B
+
+→
+
+Agent C.
+
+======================================================================
+236. LATENCY ATTRIBUTION
+======================================================================
+
+Measure:
+
+where time was spent.
+
+======================================================================
+237. QUALITY ATTRIBUTION
+======================================================================
+
+Determine:
+
+which agent contributed to final result.
+
+======================================================================
+238. REPLAY GRAPH
+======================================================================
+
+Using 29:
+
+A2A delegation graph must be reconstructable.
+
+======================================================================
+239. REPLAY SAFETY
+======================================================================
+
+Never replay:
+
+live side effects
+
+by default.
+
+======================================================================
+240. A2A REPLAY MODES
+======================================================================
+
+Evaluate:
+
+- recorded response
+- simulated agent
+- deterministic agent
+- live isolated agent.
+
+======================================================================
+241. EVALUATION REPLAY
+======================================================================
+
+Using 17:
+
+reuse historical A2A interactions for:
+
+regression.
+
+======================================================================
+242. SECURITY TESTING
+======================================================================
+
+Create adversarial scenarios:
+
+- malicious agent
+- compromised agent
+- fake capability
+- prompt injection
+- task spoofing
+- replay attack
+- privilege escalation
+- cross-tenant leakage.
+
+======================================================================
+243. ARCHITECTURE OPTIONS MATRIX
+======================================================================
+
+Create:
+
+| Architecture | Boundary Fit | Performance | Security | Interoperability | Complexity | Recommendation |
+
+======================================================================
+244. PROTOCOL MATRIX
+======================================================================
+
+Create:
+
+| Mechanism | In-Process | Remote | External | Async | Discovery | Recommended Use |
+
+======================================================================
+245. TRUST MATRIX
+======================================================================
+
+Create:
+
+| Agent Type | Trust Level | Authentication | Authorization | Allowed Tasks |
+
+======================================================================
+246. TASK MATRIX
+======================================================================
+
+Create:
+
+| Task Type | Sync | Async | Streaming | Human | Retry |
+
+======================================================================
+247. FAILURE MATRIX
+======================================================================
+
+Create:
+
+| Failure | Retry | Fallback | Escalation | Audit |
+
+======================================================================
+248. SECURITY MATRIX
+======================================================================
+
+Create:
+
+| Threat | Impact | Control | Residual Risk |
+
+======================================================================
+249. DATA FLOW MATRIX
+======================================================================
+
+Create:
+
+| Data | Sender | Receiver | Sensitivity | Allowed? | Retention |
+
+======================================================================
+250. COST MATRIX
+======================================================================
+
+Create:
+
+| Delegation | Model Cost | Network Cost | Storage | Budget |
+
+======================================================================
+251. REQUIRED DIAGRAMS
+======================================================================
+
+Include Mermaid diagrams for:
+
+1. Complete A2A architecture
+2. In-process vs remote agent decision
+3. Agent topology
+4. Agent discovery
+5. AgentCard / capability discovery
+6. Authentication
+7. Authorization
+8. Delegated authority
+9. Task lifecycle
+10. Task delegation graph
+11. Synchronous interaction
+12. Streaming interaction
+13. Asynchronous interaction
+14. Brokered interaction
+15. Central orchestration
+16. Peer-to-peer delegation
+17. Hybrid orchestration
+18. MCP + A2A interaction
+19. Multi-tenant A2A
+20. External agent trust boundary
+21. Failure / retry
+22. Circuit breaker
+23. Cancellation propagation
+24. Budget propagation
+25. Observability
+26. Audit
+27. Replay
+28. Evaluation
+29. Security threat model
+30. Agent lifecycle
+31. Day-1 → Enterprise evolution.
+
+======================================================================
+252. ARCHITECTURE COMPARISON
+======================================================================
+
+Compare at minimum:
+
+A. In-process only
+
+B. Internal APIs
+
+C. A2A internally
+
+D. A2A internally + externally
+
+E. Hybrid internal orchestration + A2A boundaries
+
+F. A2A + broker
+
+For each:
+
+- advantages
+- disadvantages
+- operational complexity
+- security implications
+- performance
+- interoperability
+- debugging
+- observability
+- cost
+- scalability
+- reversibility.
+
+======================================================================
+253. WHY NOT ANALYSIS
+======================================================================
+
+Explicitly answer:
+
+WHY NOT MAKE EVERY AGENT AN A2A SERVICE?
+
+WHY NOT KEEP ALL AGENTS IN-PROCESS?
+
+WHY NOT USE FUNCTION CALLS EVERYWHERE?
+
+WHY NOT USE MCP FOR AGENT-TO-AGENT COMMUNICATION?
+
+WHY NOT USE A CUSTOM PROTOCOL?
+
+WHY NOT BUILD A GLOBAL AGENT REGISTRY?
+
+WHY NOT USE FULL PEER-TO-PEER DISCOVERY?
+
+WHY NOT USE A CENTRAL ORCHESTRATOR FOR EVERYTHING?
+
+WHY NOT USE DECENTRALIZED DELEGATION FOR EVERYTHING?
+
+WHY NOT USE A MESSAGE BROKER FOR EVERYTHING?
+
+WHY NOT USE SYNCHRONOUS REQUEST/RESPONSE EVERYWHERE?
+
+WHY NOT MAKE EVERYTHING ASYNCHRONOUS?
+
+WHY NOT ALLOW UNBOUNDED DELEGATION?
+
+WHY NOT SHARE FULL CONTEXT BETWEEN AGENTS?
+
+WHY NOT SHARE MEMORY?
+
+WHY NOT SHARE TOOL ACCESS?
+
+WHY NOT TRUST REMOTE AGENTS?
+
+WHY NOT USE CURRENT AUTHORIZATION FOR HISTORICAL TASKS?
+
+WHY NOT REEXECUTE REMOTE AGENTS DURING REPLAY?
+
+WHY NOT BUILD EXTERNAL AGENT MARKETPLACE ON DAY 1?
+
+Only retain alternatives that survive architectural analysis.
+
+======================================================================
+254. REVERSIBILITY
+======================================================================
+
+Classify:
+
+- A2A adoption
+- task model
+- agent identity
+- registry
+- discovery
+- message schema
+- authorization model
+- broker
+- external interoperability
+
+as:
+
+- easily reversible
+- moderately reversible
+- expensive
+- effectively irreversible.
+
+======================================================================
+255. DAY-1 REQUIREMENTS
+======================================================================
+
+Define the minimum Day-1 foundation.
+
+Potential:
+
+- stable agent identity
+- execution IDs
+- task IDs
+- parent/child relationships
+- capability abstraction
+- authorization boundary
+- provenance
+- trace propagation
+- structured errors
+- idempotency.
+
+These are candidates.
+
+Determine actual requirements.
+
+======================================================================
+256. DAY-1 NON-REQUIREMENTS
+======================================================================
+
+Explicitly identify what should NOT be built on Day 1.
+
+Potential:
+
+- public agent marketplace
+- decentralized discovery
+- full external A2A federation
+- arbitrary peer-to-peer agent mesh
+- unrestricted dynamic delegation.
+
+Determine actual non-requirements.
+
+======================================================================
+257. FUTURE TRIGGERS
+======================================================================
+
+Define objective conditions that justify expanding A2A.
+
+Potential:
+
+- independent agent teams
+- external agent integration
+- cross-organization collaboration
+- agent specialization
+- service boundaries
+- multi-tenant agent ecosystems.
+
+Determine actual triggers.
+
+======================================================================
+258. STABLE CONTRACTS
+======================================================================
+
+Define stable abstractions such as:
+
+AgentIdentity
+AgentCapability
+AgentEndpoint
+AgentCard
+AgentTrust
+AgentAuthorization
+Task
+TaskRequest
+TaskResult
+TaskStatus
+TaskArtifact
+TaskContext
+Delegation
+DelegatedAuthority
+AgentMessage
+AgentError
+AgentHealth
+AgentVersion
+CapabilityVersion
+TaskBudget
+TaskDeadline
+TaskTrace
+TaskAuditRecord.
+
+These are examples.
+
+Determine the minimum required contracts.
+
+Contracts must remain independent of:
+
+- specific A2A SDK
+- workflow engine
+- model provider
+- programming language
+- service mesh.
+
+======================================================================
+259. ADR CANDIDATES
+======================================================================
+
+Identify ADRs for:
+
+- A2A adoption
+- agent boundary
+- internal vs external A2A
+- discovery
+- registry
+- identity
+- authorization
+- delegated authority
+- task lifecycle
+- transport
+- broker
+- retries
+- idempotency
+- task persistence
+- agent trust
+- multi-tenancy
+- external agent federation.
+
+For each:
+
+- problem
+- alternatives
+- recommendation
+- consequences
+- reversibility
+- decision deadline.
+
+======================================================================
+260. A2A READINESS MATRIX
+======================================================================
+
+Create:
+
+| Capability | Day 1 | Prepare | Enterprise | Verified |
+
+Cover:
+
+- agent identity
+- capability metadata
+- task identity
+- delegation
+- authorization
+- idempotency
+- deadlines
+- budget propagation
+- trace propagation
+- audit
+- replay
+- discovery
+- registry
+- protocol support
+- streaming
+- async
+- external agents
+- multi-tenancy
+- security
+- evaluation.
+
+======================================================================
+261. ATTEMPT TO FALSIFY THE RECOMMENDATION
+======================================================================
+
+Try to prove the selected architecture wrong.
+
+At minimum analyze:
+
+- agent impersonation
+- fake AgentCard
+- malicious agent
+- compromised trusted agent
+- confused deputy
+- privilege escalation
+- cross-tenant request
+- prompt injection
+- tool escalation
+- memory exfiltration
+- knowledge exfiltration
+- secret exfiltration
+- replay attack
+- duplicate task
+- duplicate side effect
+- infinite delegation
+- circular delegation
+- excessive fan-out
+- excessive fan-in
+- cascading failure
+- timeout
+- partial failure
+- orphan task
+- stale agent
+- incompatible protocol
+- incompatible capability
+- unavailable agent
+- overloaded agent
+- malicious artifact
+- corrupted artifact
+- invalid output
+- model drift
+- policy drift
+- external agent withdrawal
+- registry compromise
+- discovery poisoning
+- task cancellation race
+- budget exhaustion
+- cost explosion
+- tenant escape
+- audit failure
+- trace loss
+- replay incompleteness
+- human approval spoofing
+- offline queued A2A task.
+
+For each:
+
+- failure mode
+- containment
+- residual risk
+- architecture impact.
+
+======================================================================
+262. ARCHITECTURAL SELF-CRITIQUE
+======================================================================
+
+Before finalizing ask:
+
+1. Did I prove A2A is actually necessary?
+2. Did I distinguish A2A from MCP?
+3. Did I distinguish A2A from workflow orchestration?
+4. Did I distinguish A2A from function calls?
+5. Did I identify genuine architectural boundaries?
+6. Did I avoid making every agent remote?
+7. Did I model agent identity?
+8. Did I model capability discovery?
+9. Did I model authorization?
+10. Did I model delegated authority?
+11. Did I prevent confused deputy attacks?
+12. Did I model untrusted agents?
+13. Did I model prompt injection?
+14. Did I model tool escalation?
+15. Did I model tenant isolation?
+16. Did I model task lifecycle?
+17. Did I model retries?
+18. Did I model idempotency?
+19. Did I model cancellation?
+20. Did I model deadlines?
+21. Did I model budgets?
+22. Did I model cascading failure?
+23. Did I model circular delegation?
+24. Did I model fan-out?
+25. Did I model async tasks?
+26. Did I model streaming?
+27. Did I model artifacts?
+28. Did I model observability?
+29. Did I model audit?
+30. Did I model replay?
+31. Did I model evaluation?
+32. Did I model cost?
+33. Did I avoid over-engineering Day 1?
+34. What assumption could invalidate the architecture?
+
+Include:
+
+# ARCHITECTURAL SELF-CRITIQUE
+
+======================================================================
+263. FINAL RECOMMENDATION
+======================================================================
+
+End with:
+
+# FINAL A2A ARCHITECTURE RECOMMENDATION
+
+Answer:
+
+"How should this platform implement agent-to-agent communication?"
+
+Be concrete.
+
+Describe:
+
+- whether A2A is required
+- where A2A is required
+- where A2A is NOT appropriate
+- agent boundaries
+- identity
+- capability discovery
+- AgentCard strategy
+- registry strategy
+- task model
+- message model
+- artifact model
+- synchronous communication
+- streaming
+- asynchronous communication
+- transport
+- authentication
+- authorization
+- delegated authority
+- tenant isolation
+- security
+- prompt injection defense
+- tool isolation
+- memory boundaries
+- knowledge boundaries
+- retries
+- idempotency
+- cancellation
+- deadlines
+- budgets
+- failure handling
+- orchestration
+- broker
+- observability
+- audit
+- replay
+- evaluation
+- cost attribution
+- deployment
+- versioning
+- external agents
+- Day-1 foundation
+- enterprise evolution.
+
+Then explicitly answer:
+
+"IS A2A ACTUALLY REQUIRED?"
+
+Then:
+
+"WHERE SHOULD A2A BE USED?"
+
+Then:
+
+"WHERE SHOULD A2A NOT BE USED?"
+
+Then:
+
+"WHAT MUST EXIST ON DAY 1?"
+
+Then:
+
+"WHAT MUST NOT BE BUILT ON DAY 1?"
+
+Then:
+
+"WHAT OBJECTIVE CONDITIONS SHOULD TRIGGER EXPANSION TO A2A?"
+
+Then:
+
+"WHAT TRUST MODEL SHOULD GOVERN REMOTE AGENTS?"
+
+======================================================================
+264. REQUIRED OUTPUT
+======================================================================
+
+Produce:
+
+31_A2A_ARCHITECTURE.md
+
+The document MUST explicitly reference:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_ARCHITECTURE.md
+04_AGENT_RUNTIME.md
+05_MODEL_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+08_KNOWLEDGE_DATA_ARCHITECTURE.md
+09_MEMORY_ARCHITECTURE.md
+10_SECURITY_ARCHITECTURE.md
+11_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+12_TRUST_PROVENANCE_ARCHITECTURE.md
+13_RELIABILITY_ARCHITECTURE.md
+14_CONCURRENCY_ARCHITECTURE.md
+15_OBSERVABILITY_ARCHITECTURE.md
+16_AUDIT_ARCHITECTURE.md
+17_EVALUATION_ARCHITECTURE.md
+18_DEPLOYMENT_LIFECYCLE_ARCHITECTURE.md
+19_MULTI_TENANCY_ARCHITECTURE.md
+20_COST_ARCHITECTURE.md
+21_CAPACITY_PLANNING_ARCHITECTURE.md
+22_NETWORKING_ARCHITECTURE.md
+23_STORAGE_ARCHITECTURE.md
+24_DR_ENTERPRISE_ARCHITECTURE.md
+25_ADVANCED_SUPPLY_CHAIN_ARCHITECTURE.md
+26_ENTERPRISE_COMPLIANCE_ARCHITECTURE.md
+27_MULTI_MODEL_FALLBACK_ARCHITECTURE.md
+28_HUMAN_IN_THE_LOOP_ARCHITECTURE.md
+29_REPLAY_ARCHITECTURE.md
+30_OFFLINE_MOBILE_ARCHITECTURE.md
+
+Also identify future interactions with:
+
+32_ADMIN_CONSOLE_ARCHITECTURE.md
+33_ADR_ARCHITECTURE.md
+34_QUALITY_MODEL_ARCHITECTURE.md
+
+If documents do not exist:
+
+DO NOT invent their contents.
+
+Define only:
+
+- dependency
+- stable interface
+- unresolved assumption.
+
+======================================================================
+265. SOURCE REQUIREMENTS
+======================================================================
+
+THIS SECTION IS MANDATORY.
+
+Use current web research.
+
+Prioritize:
+
+- official A2A specification
+- official A2A documentation
+- official A2A project repository
+- official MCP documentation
+- official identity/security standards
+- NIST
+- OWASP
+- CNCF
+- official cloud provider documentation
+- official enterprise networking/security documentation.
+
+When discussing A2A:
+
+use the current specification available at research time.
+
+Do not rely on obsolete A2A versions.
+
+When comparing A2A with MCP:
+
+use authoritative protocol documentation.
+
+When discussing security:
+
+use authoritative security standards.
+
+Clearly distinguish:
+
+SOURCE FACT
+
+from:
+
+MEASUREMENT
+
+from:
+
+INFERENCE
+
+from:
+
+ARCHITECTURAL RECOMMENDATION.
+
+======================================================================
+266. RESEARCH DATE
+======================================================================
+
+At the beginning state:
+
+RESEARCH DATE
+
+and:
+
+A2A VERSION / PROTOCOL VERSIONS / RUNTIMES EVALUATED.
+
+======================================================================
+267. SECURITY DISCIPLINE
+======================================================================
+
+Never assume:
+
+agent = trusted.
+
+Treat remote agents as:
+
+potentially compromised principals.
+
+Every A2A interaction must respect:
+
+identity
+
++
+
+authentication
+
++
+
+authorization
+
++
+
+tenant isolation
+
++
+
+bounded delegation
+
++
+
+policy.
+
+======================================================================
+268. DATA DISCIPLINE
+======================================================================
+
+Never assume:
+
+more context = better collaboration.
+
+Use:
+
+minimum necessary context.
+
+Do not automatically share:
+
+- memory
+- knowledge
+- credentials
+- prompts
+- private data.
+
+======================================================================
+269. DELEGATION DISCIPLINE
+======================================================================
+
+Never allow:
+
+unbounded agent delegation.
+
+Every delegation must be bounded by:
+
+- authority
+- scope
+- time
+- cost
+- depth
+- resource budget.
+
+======================================================================
+270. FAILURE DISCIPLINE
+======================================================================
+
+Never assume:
+
+remote agent availability.
+
+Design for:
+
+timeouts
+
++
+
+retries
+
++
+
+partial failure
+
++
+
+cancellation
+
++
+
+idempotency
+
++
+
+fallback
+
+where appropriate.
+
+======================================================================
+271. OBSERVABILITY DISCIPLINE
+======================================================================
+
+Never allow:
+
+agent-to-agent communication
+
+to become:
+
+an opaque distributed black box.
+
+Every delegated task must be traceable.
+
+======================================================================
+272. REPLAY DISCIPLINE
+======================================================================
+
+Never assume:
+
+A2A communication
+
+is automatically replayable.
+
+Capture sufficient metadata for:
+
+historical reconstruction
+
+where required.
+
+Do not replay:
+
+real-world side effects
+
+by default.
+
+======================================================================
+273. PROTOCOL DISCIPLINE
+======================================================================
+
+Do not:
+
+fork A2A
+
+unless absolutely necessary.
+
+Prefer:
+
+standard protocol semantics
+
++
+
+small, explicit extensions.
+
+======================================================================
+274. ABSOLUTE FINAL INSTRUCTION
+======================================================================
+
+Act as an INDEPENDENT Principal AI Multi-Agent Systems Architect.
+
+Your responsibility is to determine the best Agent-to-Agent
+Architecture for THIS platform.
+
+Do not assume:
+
+A2A = REQUIRED.
+
+Do not assume:
+
+EVERY AGENT = REMOTE AGENT.
+
+Do not assume:
+
+EVERY AGENT = A2A SERVICE.
+
+Do not assume:
+
+A2A = ORCHESTRATION.
+
+Do not assume:
+
+A2A = MCP.
+
+Do not assume:
+
+MCP = A2A.
+
+Do not assume:
+
+PEER-TO-PEER = BETTER.
+
+Do not assume:
+
+DECENTRALIZATION = BETTER.
+
+Do not assume:
+
+CENTRAL ORCHESTRATION = ALWAYS BETTER.
+
+Do not assume:
+
+AGENT DISCOVERY = ALWAYS REQUIRED.
+
+Do not assume:
+
+GLOBAL AGENT REGISTRY = REQUIRED.
+
+Do not assume:
+
+BROKER = REQUIRED.
+
+Do not assume:
+
+SYNCHRONOUS = REQUIRED.
+
+Do not assume:
+
+ASYNC = REQUIRED.
+
+Do not assume:
+
+STREAMING = REQUIRED.
+
+Do not assume:
+
+FULL CONTEXT = REQUIRED.
+
+Do not assume:
+
+MEMORY SHARING = REQUIRED.
+
+Do not assume:
+
+TOOL SHARING = REQUIRED.
+
+Do not assume:
+
+TRUST = TRANSITIVE.
+
+Do not assume:
+
+AGENT OUTPUT = TRUSTED.
+
+Do not assume:
+
+REMOTE AGENT = HONEST.
+
+Do not assume:
+
+RETRY = SAFE.
+
+Do not assume:
+
+EXACTLY-ONCE = AVAILABLE.
+
+Do not assume:
+
+CURRENT POLICY = HISTORICAL POLICY.
+
+Do not allow:
+
+REMOTE AGENTS
+
+to bypass:
+
+PLATFORM GOVERNANCE.
+
+Do not allow:
+
+REMOTE AGENTS
+
+to bypass:
+
+AUTHORIZATION.
+
+Do not allow:
+
+REMOTE AGENTS
+
+to bypass:
+
+TENANT ISOLATION.
+
+Do not allow:
+
+REMOTE AGENTS
+
+to obtain:
+
+UNBOUNDED TOOL ACCESS.
+
+Do not allow:
+
+REMOTE AGENTS
+
+to obtain:
+
+PRIVATE MEMORY.
+
+Do not allow:
+
+REMOTE AGENTS
+
+to obtain:
+
+UNNECESSARY KNOWLEDGE.
+
+Do not allow:
+
+REMOTE AGENT OUTPUT
+
+to become:
+
+TRUSTED INSTRUCTION
+
+without validation.
+
+Do not allow:
+
+AGENT DELEGATION
+
+to become:
+
+UNBOUNDED RECURSION.
+
+Do not allow:
+
+A2A
+
+to become:
+
+A DISTRIBUTED BLACK BOX.
+
+Do not allow:
+
+A2A
+
+to become:
+
+AN UNCONTROLLED COST MULTIPLIER.
+
+Do not allow:
+
+A2A
+
+to become:
+
+A SUBSTITUTE FOR WORKFLOW ORCHESTRATION.
+
+Do not allow:
+
+A2A
+
+to become:
+
+A SUBSTITUTE FOR MCP.
+
+Optimize for:
+
+ACTUAL BOUNDARY FIT
++
+INTEROPERABILITY
++
+SECURITY
++
+BOUNDED DELEGATION
++
+TENANT ISOLATION
++
+OBSERVABILITY
++
+AUDITABILITY
++
+REPLAYABILITY
++
+RELIABILITY
++
+COST CONTROL
++
+LOW OPERATIONAL COMPLEXITY
++
+FUTURE EXTENSIBILITY
++
+PROTOCOL COMPATIBILITY.
+
+The final architecture MUST result from:
+
+    AGENT INVENTORY
+       ↓
+    COMMUNICATION USE CASES
+       ↓
+    BOUNDARY ANALYSIS
+       ↓
+    IN-PROCESS VS REMOTE
+       ↓
+    TRUST MODEL
+       ↓
+    TASK MODEL
+       ↓
+    DISCOVERY
+       ↓
+    IDENTITY / AUTHORIZATION
+       ↓
+    MESSAGE / ARTIFACT MODEL
+       ↓
+    ASYNC / STREAMING
+       ↓
+    FAILURE / RETRY
+       ↓
+    IDEMPOTENCY
+       ↓
+    SECURITY
+       ↓
+    MULTI-TENANCY
+       ↓
+    OBSERVABILITY
+       ↓
+    AUDIT
+       ↓
+    REPLAY
+       ↓
+    EVALUATION
+       ↓
+    COST / CAPACITY
+       ↓
+    PROTOCOL COMPARISON
+       ↓
+    ADVERSARIAL ANALYSIS
+       ↓
+    FALSIFICATION
+       ↓
+    FINAL DECISION.
+
+DO NOT CHOOSE A2A FIRST.
+
+DO NOT CHOOSE A2A SDK FIRST.
+
+DO NOT CHOOSE A REGISTRY FIRST.
+
+DO NOT CHOOSE A BROKER FIRST.
+
+DO NOT CHOOSE A SERVICE MESH FIRST.
+
+DO NOT CHOOSE PEER-TO-PEER FIRST.
+
+DO NOT CHOOSE CENTRAL ORCHESTRATION FIRST.
+
+UNDERSTAND THE AGENT BOUNDARIES FIRST.
+
+UNDERSTAND WHY AGENTS NEED TO COMMUNICATE FIRST.
+
+UNDERSTAND WHETHER THEY ACTUALLY NEED TO BE INDEPENDENT FIRST.
+
+UNDERSTAND THE TRUST BOUNDARIES FIRST.
+
+UNDERSTAND THE AUTHORIZATION MODEL FIRST.
+
+UNDERSTAND THE FAILURE MODEL FIRST.
+
+UNDERSTAND THE COST MODEL FIRST.
+
+UNDERSTAND THE SECURITY MODEL FIRST.
+
+THEN COMPARE:
+
+IN-PROCESS
+
+VS
+
+INTERNAL SERVICE API
+
+VS
+
+A2A
+
+VS
+
+BROKERED A2A
+
+VS
+
+HYBRID ARCHITECTURE.
+
+THEN ATTEMPT TO DISPROVE THE PREFERRED ARCHITECTURE.
+
+THEN SELECT THE BEST ARCHITECTURE AVAILABLE FOR THIS PROJECT.
+
+THEN DEFINE THE MINIMUM DAY-1 FOUNDATIONS REQUIRED TO KEEP THAT
+ARCHITECTURE POSSIBLE.
+
+THEN DESIGN IT.

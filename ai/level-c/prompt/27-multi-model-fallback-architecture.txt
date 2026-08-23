@@ -1,0 +1,3575 @@
+# 27 — MULTI-MODEL FALLBACK ARCHITECTURE
+## Enterprise AI Agent Platform
+
+======================================================================
+ROLE
+======================================================================
+
+Act as the Principal AI Systems Architect, Model Runtime Architect,
+AI Reliability Architect, Model Routing Architect, AI Safety Architect,
+Inference Infrastructure Architect, Distributed Systems Architect and
+Enterprise AI Platform Architect responsible for designing the complete
+Multi-Model Fallback Architecture of this platform.
+
+You have deep expertise in:
+
+- LLM serving
+- model routing
+- model selection
+- inference infrastructure
+- distributed systems
+- fault tolerance
+- reliability engineering
+- circuit breakers
+- retries
+- load shedding
+- rate limiting
+- provider failover
+- multi-region systems
+- multi-provider architectures
+- local inference
+- cloud inference
+- model capability matching
+- structured output
+- tool calling
+- context windows
+- model compatibility
+- model evaluation
+- AI safety
+- model governance
+- model provenance
+- model lifecycle
+- cost optimization
+- capacity planning
+- latency optimization
+- privacy
+- data residency
+- enterprise compliance
+- tenant isolation
+- observability
+- auditability
+- incident response.
+
+======================================================================
+1. MOST IMPORTANT INSTRUCTION
+## CLAUDE MUST CHOOSE THE MULTI-MODEL ARCHITECTURE
+======================================================================
+
+This is NOT a prompt asking for a predetermined:
+
+PRIMARY MODEL
++
+BACKUP MODEL.
+
+Claude MUST independently determine the best architecture for model
+failure, degradation, substitution and fallback in THIS platform.
+
+Do NOT begin by assuming:
+
+- one primary model
+- one secondary model
+- round-robin routing
+- load balancing
+- automatic retries
+- a specific model provider
+- a specific inference engine
+- a specific cloud
+- a specific model router
+- a specific gateway
+- local inference
+- multi-cloud.
+
+These are candidate mechanisms.
+
+They are NOT architectural conclusions.
+
+Claude MUST first understand:
+
+- what constitutes model failure
+- what constitutes model degradation
+- which failures are recoverable
+- which failures require fallback
+- which models are actually compatible
+- what information can be transferred
+- what information cannot be transferred
+- which policies restrict fallback
+- what quality loss is acceptable
+- what safety constraints apply
+- what compliance constraints apply
+- what cost constraints apply
+- what latency constraints apply
+- what tenant requirements apply.
+
+Only then select the architecture.
+
+======================================================================
+2. REQUIRED ARCHITECTURAL PROCESS
+======================================================================
+
+The final architecture MUST result from:
+
+    MODEL INVENTORY
+       ↓
+    CAPABILITY GRAPH
+       ↓
+    FAILURE TAXONOMY
+       ↓
+    TRUST CONSTRAINTS
+       ↓
+    DATA / PRIVACY CONSTRAINTS
+       ↓
+    COMPATIBILITY ANALYSIS
+       ↓
+    ROUTING OPTIONS
+       ↓
+    FALLBACK OPTIONS
+       ↓
+    FAILURE CONTAINMENT
+       ↓
+    QUALITY VALIDATION
+       ↓
+    COST / CAPACITY ANALYSIS
+       ↓
+    PROVIDER DIVERSITY
+       ↓
+    MULTI-REGION ANALYSIS
+       ↓
+    ADVERSARIAL ANALYSIS
+       ↓
+    FALSIFICATION
+       ↓
+    FINAL MODEL FALLBACK ARCHITECTURE.
+
+======================================================================
+3. CRITICAL DISTINCTION
+======================================================================
+
+Distinguish:
+
+MODEL FAILURE
+
+MODEL UNAVAILABLE
+
+MODEL TIMEOUT
+
+MODEL OVERLOADED
+
+MODEL RATE LIMITED
+
+MODEL QUOTA EXHAUSTED
+
+MODEL PROVIDER UNAVAILABLE
+
+MODEL DEGRADED
+
+MODEL QUALITY DEGRADED
+
+MODEL SAFETY FAILURE
+
+MODEL POLICY FAILURE
+
+MODEL CONTEXT FAILURE
+
+MODEL TOOL-CALL FAILURE
+
+MODEL STRUCTURED-OUTPUT FAILURE
+
+MODEL LATENCY FAILURE
+
+MODEL COST FAILURE
+
+MODEL CAPACITY FAILURE
+
+MODEL SECURITY FAILURE.
+
+Do NOT treat these as one generic:
+
+"model failed".
+
+======================================================================
+4. FALLBACK IS NOT ALWAYS THE CORRECT RESPONSE
+======================================================================
+
+A fallback can be worse than a controlled failure.
+
+For every failure determine whether the correct action is:
+
+- retry
+- wait
+- backoff
+- circuit break
+- fallback
+- degrade functionality
+- ask user
+- human escalation
+- reject request
+- queue request
+- load shed
+- fail closed
+- fail safe.
+
+Do not automatically fallback.
+
+======================================================================
+5. ARCHITECTURAL CONTEXT
+======================================================================
+
+Existing architecture documents:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_ARCHITECTURE.md
+04_AGENT_RUNTIME.md
+05_MODEL_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+08_KNOWLEDGE_DATA_ARCHITECTURE.md
+09_MEMORY_ARCHITECTURE.md
+10_SECURITY_ARCHITECTURE.md
+11_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+12_TRUST_PROVENANCE_ARCHITECTURE.md
+13_RELIABILITY_ARCHITECTURE.md
+14_CONCURRENCY_ARCHITECTURE.md
+15_OBSERVABILITY_ARCHITECTURE.md
+16_AUDIT_ARCHITECTURE.md
+17_EVALUATION_ARCHITECTURE.md
+18_DEPLOYMENT_LIFECYCLE_ARCHITECTURE.md
+19_MULTI_TENANCY_ARCHITECTURE.md
+20_COST_ARCHITECTURE.md
+21_CAPACITY_PLANNING_ARCHITECTURE.md
+22_NETWORKING_ARCHITECTURE.md
+23_STORAGE_ARCHITECTURE.md
+24_DR_ENTERPRISE_ARCHITECTURE.md
+25_ADVANCED_SUPPLY_CHAIN_ARCHITECTURE.md
+26_ENTERPRISE_COMPLIANCE_ARCHITECTURE.md
+
+Future architecture documents:
+
+28_HUMAN_IN_THE_LOOP_ARCHITECTURE.md
+29_REPLAY_ARCHITECTURE.md
+30_OFFLINE_MOBILE_ARCHITECTURE.md
+31_A2A_ARCHITECTURE.md
+32_ADMIN_CONSOLE_ARCHITECTURE.md
+33_ADR_ARCHITECTURE.md
+34_QUALITY_MODEL_ARCHITECTURE.md
+
+If a future document does not exist:
+
+DO NOT invent its contents.
+
+Identify only:
+
+- dependency
+- stable interface
+- unresolved assumption.
+
+If this analysis exposes a conflict with an existing architecture:
+
+DO NOT silently compensate.
+
+Document:
+
+- conflicting assumption
+- affected component
+- consequence
+- recommended change
+- ADR candidate.
+
+======================================================================
+6. LEVEL
+======================================================================
+
+This document belongs to:
+
+LEVEL C — SUCCESSIVE ARCHITECTURE.
+
+The platform does NOT need a sophisticated multi-model fallback system
+on Day 1 unless the actual architecture and business requirements
+justify it.
+
+However:
+
+DAY 1 MUST NOT MAKE MODEL FALLBACK IMPOSSIBLE.
+
+Therefore define stable interfaces for:
+
+- model identity
+- model capability
+- model invocation
+- model health
+- model selection
+- fallback decision
+- model result
+- model error
+- model policy.
+
+Do not hard-code the entire platform to one model provider.
+
+======================================================================
+7. MODEL INVENTORY
+======================================================================
+
+Create a model inventory.
+
+For each model capture where relevant:
+
+- model identity
+- provider
+- version
+- artifact digest
+- modality
+- context size
+- reasoning capabilities
+- tool-calling capability
+- structured-output capability
+- streaming
+- latency characteristics
+- throughput
+- token limits
+- supported languages
+- safety capabilities
+- deployment region
+- data processing constraints
+- cost characteristics
+- availability
+- capacity
+- provenance
+- evaluation status.
+
+Do not invent capabilities.
+
+Verify them through authoritative/current sources where available.
+
+======================================================================
+8. MODEL CAPABILITY GRAPH
+======================================================================
+
+Do not treat models as interchangeable.
+
+Construct a capability graph.
+
+For each model determine:
+
+WHAT CAN IT DO?
+
+WHAT CAN IT NOT DO?
+
+WHAT TASKS CAN IT REPLACE?
+
+WHAT TASKS CAN IT NOT REPLACE?
+
+======================================================================
+9. MODEL COMPATIBILITY
+======================================================================
+
+Analyze compatibility across:
+
+- prompt format
+- system instructions
+- context format
+- tool definitions
+- structured outputs
+- JSON schemas
+- function calling
+- streaming
+- multimodal inputs
+- multimodal outputs
+- tokenization
+- context length
+- safety policy
+- output semantics.
+
+======================================================================
+10. SEMANTIC COMPATIBILITY
+======================================================================
+
+Two models can have compatible APIs but incompatible behavior.
+
+Evaluate:
+
+- instruction following
+- reasoning behavior
+- tool behavior
+- output style
+- refusal behavior
+- safety behavior
+- schema adherence.
+
+======================================================================
+11. FALLBACK QUALITY
+======================================================================
+
+Define what makes a fallback:
+
+ACCEPTABLE.
+
+Potential dimensions:
+
+- task success
+- correctness
+- safety
+- tool execution
+- latency
+- cost
+- user experience.
+
+Do not use one universal quality threshold.
+
+======================================================================
+12. FAILURE TAXONOMY
+======================================================================
+
+Create a formal failure taxonomy.
+
+At minimum:
+
+A. NETWORK FAILURE
+B. AUTHENTICATION FAILURE
+C. AUTHORIZATION FAILURE
+D. RATE LIMIT
+E. QUOTA EXHAUSTION
+F. TIMEOUT
+G. PROVIDER OUTAGE
+H. REGION OUTAGE
+I. MODEL OVERLOAD
+J. CAPACITY EXHAUSTION
+K. MODEL ERROR
+L. INVALID OUTPUT
+M. STRUCTURED OUTPUT FAILURE
+N. TOOL-CALL FAILURE
+O. SAFETY FAILURE
+P. POLICY FAILURE
+Q. QUALITY DEGRADATION
+R. COST THRESHOLD EXCEEDED
+S. DATA RESIDENCY INCOMPATIBILITY
+T. MODEL VERSION INCOMPATIBILITY
+U. MODEL RETIREMENT.
+
+Determine whether additional categories are required.
+
+======================================================================
+13. ERROR CLASSIFICATION
+======================================================================
+
+For every model error determine:
+
+- retryable?
+- fallbackable?
+- terminal?
+- user-visible?
+- auditable?
+- security-sensitive?
+
+======================================================================
+14. RETRY VS FALLBACK
+======================================================================
+
+Never blindly retry.
+
+Analyze:
+
+- transient failure
+- persistent failure
+- rate limit
+- timeout
+- provider outage.
+
+Define:
+
+retry budget.
+
+======================================================================
+15. RETRY STORM
+======================================================================
+
+Threat-model:
+
+thousands of agents
+
+simultaneously retrying.
+
+======================================================================
+16. EXPONENTIAL BACKOFF
+======================================================================
+
+Evaluate:
+
+- backoff
+- jitter
+- retry budgets.
+
+Do not assume exponential backoff solves all overload conditions.
+
+======================================================================
+17. CIRCUIT BREAKER
+======================================================================
+
+Evaluate circuit breakers.
+
+Define:
+
+- failure threshold
+- open state
+- half-open state
+- recovery.
+
+Do not invent numerical thresholds without measurement.
+
+======================================================================
+18. LOAD SHEDDING
+======================================================================
+
+When all models are overloaded:
+
+determine whether requests should be:
+
+- rejected
+- queued
+- degraded
+- prioritized.
+
+======================================================================
+19. PRIORITY MODEL
+======================================================================
+
+Using 03/14/19:
+
+different requests may have different priority.
+
+Potential:
+
+- emergency
+- enterprise
+- interactive
+- background
+- batch.
+
+Determine actual priority model.
+
+======================================================================
+20. TENANT MODEL POLICY
+======================================================================
+
+Using 19:
+
+tenants may have:
+
+- allowed models
+- forbidden providers
+- residency constraints
+- cost constraints
+- quality requirements
+- latency requirements.
+
+Define policy precedence.
+
+======================================================================
+21. DATA RESIDENCY CONSTRAINT
+======================================================================
+
+Using 26:
+
+a technically available model may be legally unusable.
+
+Example:
+
+EU-only tenant
+
+cannot necessarily fallback
+
+to non-EU provider.
+
+Do not assume region names alone establish compliance.
+
+======================================================================
+22. PRIVACY CONSTRAINT
+======================================================================
+
+A fallback may change:
+
+- data processor
+- retention
+- training use
+- jurisdiction.
+
+Therefore:
+
+fallback is a data-processing decision.
+
+======================================================================
+23. TRUST CONSTRAINT
+======================================================================
+
+Using 12:
+
+not every model has equal trust.
+
+Define trust tiers if justified.
+
+======================================================================
+24. SECURITY CONSTRAINT
+======================================================================
+
+Using 10:
+
+a model fallback cannot silently weaken:
+
+- security
+- policy
+- authorization
+- tool restrictions.
+
+======================================================================
+25. TOOL COMPATIBILITY
+======================================================================
+
+Using 06:
+
+if the primary model supports a tool call but fallback model does not:
+
+determine correct behavior.
+
+Do NOT blindly execute the fallback model's output.
+
+======================================================================
+26. TOOL PERMISSION COMPATIBILITY
+======================================================================
+
+Fallback must preserve:
+
+same tool authorization boundaries.
+
+======================================================================
+27. STRUCTURED OUTPUT
+======================================================================
+
+If the primary model produces:
+
+strict schema
+
+and fallback cannot:
+
+determine:
+
+- reject
+- retry
+- constrained decoding
+- transformation
+- human review.
+
+======================================================================
+28. CONTEXT COMPATIBILITY
+======================================================================
+
+A fallback model may have a smaller context window.
+
+Determine:
+
+- summarization
+- truncation
+- retrieval reduction
+- failure.
+
+Do not silently truncate critical information.
+
+======================================================================
+29. CONTEXT INTEGRITY
+======================================================================
+
+Fallback must not cause:
+
+loss of critical system instructions.
+
+======================================================================
+30. SYSTEM PROMPT COMPATIBILITY
+======================================================================
+
+Different models may interpret system instructions differently.
+
+Evaluate:
+
+- instruction hierarchy
+- refusal
+- tool policy
+- output policy.
+
+======================================================================
+31. MODEL-SPECIFIC PROMPT ADAPTERS
+======================================================================
+
+Evaluate whether model adapters are necessary.
+
+Do not allow adapters to alter security policy.
+
+======================================================================
+32. MODEL ABSTRACTION
+======================================================================
+
+Define the stable model invocation interface.
+
+Potential conceptual interface:
+
+ModelRequest
+
+ModelSelectionContext
+
+ModelInvocation
+
+ModelResponse
+
+ModelError
+
+FallbackDecision.
+
+Determine the actual contract.
+
+======================================================================
+33. MODEL ROUTER
+======================================================================
+
+Evaluate whether routing should be:
+
+- centralized
+- distributed
+- hybrid.
+
+Do not assume a central router is always optimal.
+
+======================================================================
+34. CONTROL PLANE VS DATA PLANE
+======================================================================
+
+Using 02:
+
+model selection policy may belong to the Control Plane.
+
+Inference execution belongs to the data plane.
+
+Define the boundary.
+
+======================================================================
+35. ROUTING DECISION
+======================================================================
+
+Routing may depend on:
+
+- task
+- tenant
+- model capability
+- latency
+- cost
+- availability
+- residency
+- safety
+- capacity.
+
+Determine actual decision order.
+
+======================================================================
+36. ROUTING PRIORITY
+======================================================================
+
+Do not optimize:
+
+cost
+
+before:
+
+policy and safety.
+
+Define the precedence hierarchy.
+
+======================================================================
+37. MODEL SELECTION
+======================================================================
+
+Determine whether model selection occurs:
+
+- before request
+- dynamically
+- per agent step
+- per tool call
+- per retry.
+
+Evaluate consequences.
+
+======================================================================
+38. MID-AGENT FALLBACK
+======================================================================
+
+An agent may have executed:
+
+step 1
+step 2
+step 3
+
+and model fails at step 4.
+
+Determine how fallback preserves:
+
+- state
+- memory
+- tool results
+- reasoning context
+- authorization.
+
+======================================================================
+39. STATE PRESERVATION
+======================================================================
+
+Using 04/09:
+
+fallback must not lose:
+
+- agent state
+- memory
+- task state
+- tool state.
+
+======================================================================
+40. REASONING STATE
+======================================================================
+
+Do not assume internal reasoning traces are transferable between
+models.
+
+Determine what state can safely transfer.
+
+======================================================================
+41. CONVERSATION CONTINUITY
+======================================================================
+
+Fallback should preserve user-visible conversation continuity without
+pretending the second model is identical.
+
+======================================================================
+42. TOOL STATE
+======================================================================
+
+If a tool was partially executed:
+
+fallback must know whether:
+
+- execution completed
+- execution failed
+- execution is unknown.
+
+======================================================================
+43. IDEMPOTENCY
+======================================================================
+
+Retries/fallback can repeat tool calls.
+
+Using 06:
+
+define idempotency requirements.
+
+======================================================================
+44. DUPLICATE SIDE EFFECTS
+======================================================================
+
+Threat-model:
+
+model A invokes payment/email/database tool.
+
+Response is lost.
+
+Model B retries.
+
+Potential duplicate side effect.
+
+Architecture MUST prevent unsafe duplication.
+
+======================================================================
+45. FALLBACK + SIDE EFFECTS
+======================================================================
+
+This is a critical boundary.
+
+Do not retry side-effecting operations blindly.
+
+======================================================================
+46. TOOL TRANSACTION MODEL
+======================================================================
+
+Evaluate:
+
+- idempotency key
+- transaction state
+- execution receipt
+- exactly-once illusion vs actual semantics.
+
+======================================================================
+47. FALLBACK LOOP
+======================================================================
+
+Prevent:
+
+Model A
+→
+Model B
+→
+Model A
+→
+Model B.
+
+Define maximum fallback chain.
+
+======================================================================
+48. CASCADING FAILURE
+======================================================================
+
+If primary fails:
+
+all traffic moves to secondary.
+
+Secondary fails.
+
+Then:
+
+tertiary.
+
+Then:
+
+entire system collapses.
+
+Model this explicitly.
+
+======================================================================
+49. CAPACITY RESERVATION
+======================================================================
+
+Using 21:
+
+determine whether fallback models require:
+
+reserved capacity.
+
+======================================================================
+50. FALLBACK CAPACITY
+======================================================================
+
+A fallback that cannot handle peak load is not a real fallback.
+
+Evaluate:
+
+capacity under primary outage.
+
+======================================================================
+51. N+1 CAPACITY
+======================================================================
+
+Determine whether the architecture requires enough capacity to absorb:
+
+N
+
+primary traffic
+
+during failure.
+
+Do not assume infinite scaling.
+
+======================================================================
+52. PROVIDER DIVERSITY
+======================================================================
+
+Evaluate:
+
+same provider / different model
+
+vs:
+
+different provider.
+
+======================================================================
+53. CORRELATED FAILURE
+======================================================================
+
+Two models from the same provider may fail together.
+
+Two cloud regions may share:
+
+common control-plane dependencies.
+
+Two vendors may use:
+
+the same upstream infrastructure.
+
+Analyze correlated failure.
+
+======================================================================
+54. MODEL DIVERSITY
+======================================================================
+
+Evaluate diversity across:
+
+- architecture
+- provider
+- region
+- runtime
+- infrastructure.
+
+Do not maximize diversity blindly.
+
+======================================================================
+55. LOCAL MODEL FALLBACK
+======================================================================
+
+Evaluate local inference as a candidate fallback.
+
+Potential benefits:
+
+- data residency
+- independence
+- availability.
+
+Potential costs:
+
+- GPU capacity
+- maintenance
+- quality
+- latency
+- model updates.
+
+Determine whether it is justified.
+
+======================================================================
+56. CLOUD MODEL FALLBACK
+======================================================================
+
+Evaluate external providers.
+
+Determine:
+
+- availability
+- contractual restrictions
+- privacy
+- latency
+- cost.
+
+======================================================================
+57. MULTI-REGION FALLBACK
+======================================================================
+
+Evaluate:
+
+region-level failover.
+
+======================================================================
+58. MULTI-CLOUD FALLBACK
+======================================================================
+
+Evaluate:
+
+multi-cloud
+
+only if it materially reduces risk.
+
+Do not create multi-cloud complexity without measurable benefit.
+
+======================================================================
+59. PROVIDER CONTRACTS
+======================================================================
+
+Model:
+
+- quotas
+- rate limits
+- SLAs
+- model retirement
+- pricing
+- data handling
+- regional availability.
+
+Use current official provider documentation.
+
+======================================================================
+60. PROVIDER OUTAGE
+======================================================================
+
+Define behavior for:
+
+complete provider outage.
+
+======================================================================
+61. PROVIDER DEGRADATION
+======================================================================
+
+Provider may technically respond while quality or latency deteriorates.
+
+Define detection.
+
+======================================================================
+62. MODEL QUALITY MONITORING
+======================================================================
+
+Using 17:
+
+evaluate:
+
+- task success
+- structured output
+- tool correctness
+- policy adherence
+- quality degradation.
+
+Do not rely only on:
+
+HTTP 200.
+
+======================================================================
+63. QUALITY-BASED FALLBACK
+======================================================================
+
+Can the platform detect:
+
+poor response quality
+
+and fallback?
+
+Evaluate.
+
+Do not make claims about perfect quality detection.
+
+======================================================================
+64. SAFETY-BASED FALLBACK
+======================================================================
+
+If primary model refuses a request:
+
+should fallback be attempted?
+
+Usually:
+
+DO NOT ASSUME.
+
+Determine policy.
+
+A fallback must not become:
+
+a safety bypass.
+
+======================================================================
+65. POLICY-PRESERVING FALLBACK
+======================================================================
+
+Fallback model must inherit:
+
+same safety and governance constraints.
+
+======================================================================
+66. MODEL SAFETY TIERS
+======================================================================
+
+Evaluate model trust/safety tiers.
+
+======================================================================
+67. MODEL EVALUATION GATES
+======================================================================
+
+Using 17:
+
+every production fallback model must satisfy:
+
+appropriate evaluation.
+
+======================================================================
+68. FALLBACK MODEL APPROVAL
+======================================================================
+
+Define:
+
+- who approves
+- what evidence is required
+- when approval expires
+- what changes invalidate approval.
+
+======================================================================
+69. MODEL VERSION CHANGE
+======================================================================
+
+A provider may silently change a model alias.
+
+Prefer immutable model identity where possible.
+
+======================================================================
+70. MODEL DEPRECATION
+======================================================================
+
+Fallback architecture must handle:
+
+model retirement.
+
+======================================================================
+71. MODEL DISCOVERY
+======================================================================
+
+Do not dynamically route to an unknown model merely because it is
+available.
+
+======================================================================
+72. ALLOWLIST
+======================================================================
+
+Evaluate model allowlisting.
+
+======================================================================
+73. DENYLIST
+======================================================================
+
+Evaluate whether denylisting is sufficient.
+
+Likely:
+
+not sufficient alone.
+
+Determine actual architecture.
+
+======================================================================
+74. MODEL REGISTRY
+======================================================================
+
+Evaluate a registry containing:
+
+- approved models
+- versions
+- capabilities
+- regions
+- evaluation status
+- policies
+- costs
+- limits.
+
+Do not assume a registry is necessary if another architecture is
+better.
+
+======================================================================
+75. MODEL CAPABILITY PROFILE
+======================================================================
+
+Define a canonical capability representation.
+
+Potential:
+
+supports_tools
+supports_json
+supports_streaming
+context_limit
+modalities
+regions
+trust_tier.
+
+These are examples.
+
+Determine actual contract.
+
+======================================================================
+76. MODEL HEALTH
+======================================================================
+
+Health is multidimensional.
+
+Evaluate:
+
+- endpoint availability
+- latency
+- error rate
+- throughput
+- quality
+- safety
+- quota.
+
+======================================================================
+77. HEALTH ≠ HTTP STATUS
+======================================================================
+
+A model returning HTTP 200 may still be unusable.
+
+======================================================================
+78. HEALTH SIGNALS
+======================================================================
+
+Define:
+
+- infrastructure signals
+- provider signals
+- application signals
+- evaluation signals.
+
+======================================================================
+79. HEALTH CHECKS
+======================================================================
+
+Avoid health checks that:
+
+- consume excessive tokens
+- trigger tools
+- expose sensitive data.
+
+======================================================================
+80. SYNTHETIC TESTS
+======================================================================
+
+Evaluate synthetic model probes.
+
+Do not send customer data merely to test health.
+
+======================================================================
+81. FALLBACK LATENCY
+======================================================================
+
+Fallback adds latency.
+
+Model:
+
+primary failure
+
+→
+
+detection
+
+→
+
+retry/backoff
+
+→
+
+fallback
+
+→
+
+response.
+
+======================================================================
+82. LATENCY BUDGET
+======================================================================
+
+Define:
+
+maximum acceptable fallback overhead.
+
+Do not invent universal numbers.
+
+======================================================================
+83. STREAMING FALLBACK
+======================================================================
+
+What happens if:
+
+primary model streamed 30% of response
+
+then failed?
+
+Determine whether continuation is possible.
+
+Do not concatenate incompatible model outputs blindly.
+
+======================================================================
+84. PARTIAL RESPONSE
+======================================================================
+
+Determine:
+
+- discard
+- continue
+- restart.
+
+======================================================================
+85. OUTPUT DEDUPLICATION
+======================================================================
+
+If fallback restarts generation:
+
+avoid duplicate user-visible content.
+
+======================================================================
+86. COST-AWARE FALLBACK
+======================================================================
+
+A fallback may be:
+
+more expensive.
+
+Define:
+
+cost policy.
+
+======================================================================
+87. COST ESCALATION
+======================================================================
+
+Do not allow an outage to automatically create:
+
+unbounded cost.
+
+======================================================================
+88. BUDGET ENFORCEMENT
+======================================================================
+
+Using 20:
+
+define:
+
+- per-request budget
+- tenant budget
+- workload budget
+- emergency budget.
+
+======================================================================
+89. COST VS QUALITY
+======================================================================
+
+Determine tradeoff.
+
+Do not optimize solely for:
+
+lowest cost.
+
+======================================================================
+90. TENANT COST POLICY
+======================================================================
+
+Some tenants may have:
+
+- premium model access
+- cost ceilings
+- provider restrictions.
+
+======================================================================
+91. PRIORITY + COST
+======================================================================
+
+Define whether:
+
+critical workload
+
+can bypass:
+
+normal cost limits.
+
+If yes:
+
+require explicit policy.
+
+======================================================================
+92. DATA RESIDENCY + FALLBACK
+======================================================================
+
+If only Model A satisfies residency:
+
+Model B cannot become fallback.
+
+Therefore:
+
+fallback candidates must be filtered BEFORE routing.
+
+======================================================================
+93. COMPLIANCE + FALLBACK
+======================================================================
+
+Using 26:
+
+fallback must preserve applicable compliance constraints.
+
+======================================================================
+94. SUPPLY CHAIN + FALLBACK
+======================================================================
+
+Using 25:
+
+fallback model artifacts must have:
+
+- provenance
+- integrity
+- approval
+- vulnerability posture.
+
+======================================================================
+95. DEPLOYMENT + FALLBACK
+======================================================================
+
+Using 18:
+
+model versions must be promoted through approved lifecycle.
+
+======================================================================
+96. OBSERVABILITY
+======================================================================
+
+Using 15:
+
+capture:
+
+- selected model
+- fallback reason
+- attempt count
+- latency
+- cost
+- outcome
+- provider
+- region.
+
+======================================================================
+97. AUDIT
+======================================================================
+
+Using 16:
+
+fallback decisions must be auditable where required.
+
+======================================================================
+98. PRIVACY OF FALLBACK LOGS
+======================================================================
+
+Do not log entire prompts merely to understand fallback.
+
+Use:
+
+metadata
+
+where possible.
+
+======================================================================
+99. TRACEABILITY
+======================================================================
+
+Every response should be traceable to:
+
+- model
+- version
+- provider
+- region
+- policy
+- fallback chain.
+
+======================================================================
+100. FALLBACK EVENT
+======================================================================
+
+Define conceptual event:
+
+ModelFallbackTriggered
+
+with:
+
+- request ID
+- tenant
+- primary model
+- fallback model
+- reason
+- policy
+- timestamp
+- outcome.
+
+Determine actual schema.
+
+======================================================================
+101. FALLBACK POLICY
+======================================================================
+
+Define policy inputs:
+
+- task
+- tenant
+- model
+- region
+- capability
+- quality
+- cost
+- latency
+- availability.
+
+======================================================================
+102. POLICY PRECEDENCE
+======================================================================
+
+Determine precedence between:
+
+security
+
+compliance
+
+tenant
+
+cost
+
+latency
+
+quality.
+
+Security/compliance constraints should not be accidentally overridden
+by cost optimization.
+
+Determine the exact hierarchy.
+
+======================================================================
+103. HUMAN ESCALATION
+======================================================================
+
+Future 28 may define human-in-the-loop.
+
+Define only the dependency:
+
+if no compliant/safe model is available:
+
+possible human escalation.
+
+======================================================================
+104. OFFLINE FALLBACK
+======================================================================
+
+Future 30 may require offline operation.
+
+Define dependency only.
+
+======================================================================
+105. A2A FALLBACK
+======================================================================
+
+Future 31 may involve agent-to-agent execution.
+
+Define how model failure may affect:
+
+agent-to-agent workflows.
+
+Do not invent future architecture.
+
+======================================================================
+106. REPLAY
+======================================================================
+
+Future 29 may replay executions.
+
+Fallback decisions must be reproducible enough for diagnosis.
+
+Do not assume exact deterministic replay is possible.
+
+======================================================================
+107. MODEL FALLBACK + MEMORY
+======================================================================
+
+Using 09:
+
+determine whether fallback receives:
+
+- same memory
+- filtered memory
+- summarized memory.
+
+======================================================================
+108. MODEL FALLBACK + KNOWLEDGE
+======================================================================
+
+Using 08:
+
+fallback should use compatible:
+
+- retrieval context
+- embeddings
+- documents.
+
+======================================================================
+109. EMBEDDING COMPATIBILITY
+======================================================================
+
+Do not assume generation model fallback requires embedding model change.
+
+Keep concerns separate unless architecture requires otherwise.
+
+======================================================================
+110. AGENT POLICY PRESERVATION
+======================================================================
+
+Using 03/04:
+
+fallback must preserve:
+
+- system policy
+- tool policy
+- tenant policy
+- security policy.
+
+======================================================================
+111. MODEL FALLBACK + AUTHORIZATION
+======================================================================
+
+Model substitution must not change:
+
+the user's authority.
+
+======================================================================
+112. MODEL FALLBACK + TOOL AUTHORIZATION
+======================================================================
+
+A fallback model must not gain:
+
+new tools
+
+simply because it is a different model.
+
+======================================================================
+113. MODEL FALLBACK + SIDE EFFECTS
+======================================================================
+
+Model substitution cannot bypass:
+
+tool execution controls.
+
+======================================================================
+114. MODEL FALLBACK + CONCURRENCY
+======================================================================
+
+Using 14:
+
+avoid:
+
+multiple model attempts
+
+simultaneously generating conflicting tool actions.
+
+======================================================================
+115. SPECULATIVE EXECUTION
+======================================================================
+
+Evaluate speculative multi-model execution.
+
+Do NOT assume it is beneficial.
+
+Potential risks:
+
+- cost multiplication
+- duplicate tool calls
+- conflicting outputs
+- increased attack surface.
+
+======================================================================
+116. PARALLEL FALLBACK
+======================================================================
+
+Evaluate:
+
+primary + fallback simultaneously.
+
+Compare against:
+
+sequential fallback.
+
+======================================================================
+117. HEDGE REQUESTS
+======================================================================
+
+Evaluate hedged requests for latency reduction.
+
+Determine whether they are justified.
+
+======================================================================
+118. DUPLICATE INFERENCE COST
+======================================================================
+
+Parallel strategies may double cost.
+
+Model explicitly.
+
+======================================================================
+119. FAILURE CORRELATION
+======================================================================
+
+Evaluate whether simultaneous providers actually provide independent
+failure domains.
+
+======================================================================
+120. MODEL CASCADE
+======================================================================
+
+A fallback chain can become:
+
+A → B → C → D.
+
+Define maximum chain depth.
+
+======================================================================
+121. FALLBACK GRAPH
+======================================================================
+
+Represent fallback as:
+
+directed graph
+
+rather than merely:
+
+primary → backup.
+
+Each edge must have conditions.
+
+======================================================================
+122. FALLBACK EDGE POLICY
+======================================================================
+
+For each transition:
+
+A → B
+
+define:
+
+- allowed?
+- reason
+- capability compatibility
+- residency
+- cost
+- trust
+- quality.
+
+======================================================================
+123. FALLBACK CYCLE DETECTION
+======================================================================
+
+Prevent cycles.
+
+======================================================================
+124. FALLBACK TERMINATION
+======================================================================
+
+Define terminal states:
+
+- success
+- controlled failure
+- human escalation
+- queue
+- user retry.
+
+======================================================================
+125. FAILURE BUDGET
+======================================================================
+
+Using 13:
+
+define reliability objectives.
+
+Do not create infinite fallback attempts.
+
+======================================================================
+126. MODEL SLO
+======================================================================
+
+Evaluate:
+
+- availability
+- latency
+- quality
+- tool success.
+
+======================================================================
+127. FALLBACK SLO
+======================================================================
+
+A fallback architecture should have measurable goals.
+
+======================================================================
+128. ERROR BUDGET
+======================================================================
+
+Determine how fallback affects:
+
+error budget.
+
+======================================================================
+129. MODEL CAPACITY PLANNING
+======================================================================
+
+Using 21:
+
+calculate capacity requirements under:
+
+- normal
+- degraded
+- provider outage
+- regional outage
+- peak traffic.
+
+======================================================================
+130. GPU CAPACITY
+======================================================================
+
+If local models are used:
+
+model:
+
+- GPU capacity
+- memory
+- warm/cold state
+- model loading
+- failover.
+
+======================================================================
+131. MODEL COLD START
+======================================================================
+
+Fallback may require loading a model.
+
+Determine whether:
+
+cold start
+
+is acceptable.
+
+======================================================================
+132. MODEL WARM POOLS
+======================================================================
+
+Evaluate pre-warmed fallback models.
+
+======================================================================
+133. MODEL MEMORY PRESSURE
+======================================================================
+
+Multiple models may compete for GPU memory.
+
+Using 05/21:
+
+analyze scheduling.
+
+======================================================================
+134. MODEL UNLOADING
+======================================================================
+
+Evaluate model lifecycle:
+
+load
+
+→
+
+warm
+
+→
+
+cold
+
+→
+
+unload.
+
+======================================================================
+135. INFERENCE SCHEDULING
+======================================================================
+
+Determine whether:
+
+GPU scheduler
+
+must be aware of fallback priorities.
+
+======================================================================
+136. MODEL PROVIDER RATE LIMITS
+======================================================================
+
+Track:
+
+- requests/minute
+- tokens/minute
+- concurrent requests.
+
+Use current official provider documentation where available.
+
+======================================================================
+137. QUOTA EXHAUSTION
+======================================================================
+
+Quota exhaustion may look like:
+
+provider outage.
+
+Distinguish them.
+
+======================================================================
+138. PROVIDER FAIRNESS
+======================================================================
+
+If multiple providers are available:
+
+determine whether traffic should be:
+
+- active/active
+- active/passive
+- weighted.
+
+Do not assume one strategy.
+
+======================================================================
+139. ACTIVE/ACTIVE
+======================================================================
+
+Evaluate:
+
+advantages
+
+and:
+
+failure correlation.
+
+======================================================================
+140. ACTIVE/PASSIVE
+======================================================================
+
+Evaluate:
+
+cost
+
+and:
+
+warm-up latency.
+
+======================================================================
+141. WEIGHTED ROUTING
+======================================================================
+
+Weights may reflect:
+
+- capacity
+- quality
+- cost
+- risk.
+
+Determine whether dynamic weights are necessary.
+
+======================================================================
+142. DYNAMIC ROUTING
+======================================================================
+
+Dynamic routing can create instability.
+
+Threat-model:
+
+route oscillation.
+
+======================================================================
+143. ROUTING HYSTERESIS
+======================================================================
+
+Evaluate mechanisms preventing:
+
+constant switching.
+
+======================================================================
+144. MODEL FLAPPING
+======================================================================
+
+Model may alternate:
+
+A → B → A → B.
+
+Prevent unstable behavior.
+
+======================================================================
+145. MODEL DEGRADATION DETECTION
+======================================================================
+
+Determine whether degradation can be detected from:
+
+- latency
+- errors
+- quality signals
+- user feedback
+- evaluation.
+
+======================================================================
+146. QUALITY SIGNAL TRUST
+======================================================================
+
+Quality signals themselves may be noisy.
+
+Do not treat one failed evaluator as proof of model failure.
+
+======================================================================
+147. EVALUATOR FAILURE
+======================================================================
+
+What if the model evaluator is wrong or unavailable?
+
+======================================================================
+148. FALLBACK ON QUALITY
+======================================================================
+
+Avoid recursive:
+
+model generates answer
+
+→
+
+model evaluator rejects
+
+→
+
+fallback
+
+→
+
+model evaluator rejects.
+
+Define bounded behavior.
+
+======================================================================
+149. MODEL SAFETY EVALUATION
+======================================================================
+
+Determine whether fallback candidates need:
+
+- pre-deployment safety evaluation
+- runtime monitoring
+- incident response.
+
+======================================================================
+150. MODEL RETIREMENT
+======================================================================
+
+When a model is deprecated:
+
+remove it from fallback graph only after:
+
+- replacement
+- migration
+- validation.
+
+======================================================================
+151. EMERGENCY MODEL REPLACEMENT
+======================================================================
+
+If a model is suddenly compromised:
+
+define emergency process.
+
+Using 10/25:
+
+- revoke
+- quarantine
+- replace
+- validate
+- redeploy.
+
+======================================================================
+152. COMPROMISED MODEL
+======================================================================
+
+A model must not remain a fallback merely because:
+
+"primary is down."
+
+Security takes precedence.
+
+======================================================================
+153. MODEL REPUTATION
+======================================================================
+
+Do not create a vague trust score that becomes a substitute for:
+
+actual security evidence.
+
+======================================================================
+154. MODEL ALLOWLIST
+======================================================================
+
+Evaluate explicit approved-model inventory.
+
+======================================================================
+155. MODEL DISCOVERY VS MODEL ADMISSION
+======================================================================
+
+A discovered model is not automatically an approved model.
+
+======================================================================
+156. MODEL REGISTRY GOVERNANCE
+======================================================================
+
+Define:
+
+- who can add
+- who can approve
+- who can remove
+- who can modify model metadata.
+
+======================================================================
+157. MODEL METADATA INTEGRITY
+======================================================================
+
+Capabilities and policy metadata must themselves be trusted.
+
+======================================================================
+158. FALLBACK CONFIGURATION INTEGRITY
+======================================================================
+
+Fallback policies are security-sensitive configuration.
+
+Use:
+
+- versioning
+- review
+- audit
+- provenance.
+
+======================================================================
+159. FALLBACK POLICY ROLLBACK
+======================================================================
+
+Define rollback to:
+
+known trusted routing policy.
+
+======================================================================
+160. CUSTOMER-CONTROLLED FALLBACK
+======================================================================
+
+Determine what customers can configure.
+
+Potential:
+
+- allowed providers
+- allowed regions
+- max cost
+- model quality tier.
+
+Customer configuration must not override platform safety controls.
+
+======================================================================
+161. ENTERPRISE MODEL PINNING
+======================================================================
+
+Customers may require:
+
+specific model/version.
+
+Determine support.
+
+======================================================================
+162. MODEL VERSION PINNING
+======================================================================
+
+Avoid mutable aliases for critical workloads where possible.
+
+======================================================================
+163. MODEL MIGRATION
+======================================================================
+
+Define:
+
+old model
+
+→
+
+new model.
+
+Must include:
+
+- evaluation
+- compatibility
+- rollback.
+
+======================================================================
+164. MODEL FALLBACK + COMPLIANCE
+======================================================================
+
+For every fallback edge verify:
+
+- jurisdiction
+- processor
+- retention
+- data handling
+- contractual eligibility.
+
+======================================================================
+165. MODEL FALLBACK + SUPPLY CHAIN
+======================================================================
+
+For every fallback model verify:
+
+- artifact identity
+- provenance
+- integrity
+- evaluation
+- vulnerability status.
+
+======================================================================
+166. MODEL FALLBACK + AUDIT
+======================================================================
+
+Record enough metadata to reconstruct:
+
+WHY
+
+a fallback occurred.
+
+======================================================================
+167. MODEL FALLBACK + OBSERVABILITY
+======================================================================
+
+Monitor:
+
+- fallback frequency
+- fallback reason
+- model distribution
+- latency
+- quality
+- cost
+- provider utilization.
+
+======================================================================
+168. FALLBACK ANOMALIES
+======================================================================
+
+Detect:
+
+- sudden increase
+- unexpected model usage
+- repeated fallback loops
+- unusual provider traffic
+- abnormal cost.
+
+======================================================================
+169. SECURITY MONITORING
+======================================================================
+
+Fallback anomalies may indicate:
+
+- provider attack
+- routing attack
+- configuration compromise
+- quota attack
+- denial of service.
+
+======================================================================
+170. COST ATTACK
+======================================================================
+
+Threat-model:
+
+attacker intentionally triggers expensive fallback models.
+
+======================================================================
+171. RESOURCE EXHAUSTION
+======================================================================
+
+Threat-model:
+
+attacker intentionally causes:
+
+fallback capacity exhaustion.
+
+======================================================================
+172. TENANT ABUSE
+======================================================================
+
+One tenant must not consume:
+
+all fallback capacity.
+
+======================================================================
+173. FAIRNESS
+======================================================================
+
+Define resource allocation.
+
+======================================================================
+174. PRIORITY INVERSION
+======================================================================
+
+A low-priority workload must not consume capacity needed by:
+
+critical workloads.
+
+======================================================================
+175. FALLBACK QUEUE
+======================================================================
+
+Evaluate queueing when all models are saturated.
+
+======================================================================
+176. BACKPRESSURE
+======================================================================
+
+Define backpressure between:
+
+Agent Runtime
+
+and:
+
+Model Runtime.
+
+======================================================================
+177. ADMISSION CONTROL
+======================================================================
+
+Requests may be rejected before consuming model capacity.
+
+======================================================================
+178. REQUEST CLASSIFICATION
+======================================================================
+
+Classify workload before model routing.
+
+Potential:
+
+- interactive
+- batch
+- critical
+- background.
+
+Determine actual classes.
+
+======================================================================
+179. MODEL ROUTING SECURITY
+======================================================================
+
+Prevent untrusted request data from influencing routing policy in unsafe
+ways.
+
+======================================================================
+180. PROMPT-BASED ROUTING MANIPULATION
+======================================================================
+
+Threat-model:
+
+user attempts to force:
+
+"Use the expensive model."
+
+or:
+
+"Use this external provider."
+
+Routing decisions must remain controlled by trusted policy.
+
+======================================================================
+181. TENANT POLICY INJECTION
+======================================================================
+
+Tenant configuration must not override:
+
+global safety/security constraints.
+
+======================================================================
+182. MODEL PROVIDER SECRETS
+======================================================================
+
+Provider API keys must remain isolated.
+
+Fallback must not expose credentials to models or tools.
+
+======================================================================
+183. PROVIDER CREDENTIAL ROTATION
+======================================================================
+
+Using 10/11:
+
+define key rotation.
+
+======================================================================
+184. PROVIDER OUTAGE + CREDENTIAL OUTAGE
+======================================================================
+
+Distinguish:
+
+provider unavailable
+
+from:
+
+platform credential invalid.
+
+======================================================================
+185. MODEL RESPONSE VALIDATION
+======================================================================
+
+Before accepting fallback output:
+
+validate:
+
+- schema
+- policy
+- safety
+- tool-call constraints.
+
+======================================================================
+186. OUTPUT SANITIZATION
+======================================================================
+
+Do not blindly pass fallback output to:
+
+tools.
+
+======================================================================
+187. MODEL OUTPUT → TOOL
+======================================================================
+
+This boundary is security critical.
+
+Validate before side effects.
+
+======================================================================
+188. FALLBACK OUTPUT EQUIVALENCE
+======================================================================
+
+Do not assume:
+
+same prompt
+
+→
+
+same semantics.
+
+======================================================================
+189. USER EXPERIENCE
+======================================================================
+
+Determine whether the user should know:
+
+- model changed
+- provider changed
+- quality tier changed.
+
+Do not expose internal infrastructure unnecessarily.
+
+======================================================================
+190. TRANSPARENCY POLICY
+======================================================================
+
+Define when model/provider substitution is:
+
+- invisible
+- disclosed
+- auditable only.
+
+======================================================================
+191. BILLING
+======================================================================
+
+Using 20:
+
+determine whether fallback changes:
+
+- billable model
+- token usage
+- tenant budget.
+
+======================================================================
+192. BILLING CONSISTENCY
+======================================================================
+
+Ensure:
+
+fallback
+
+does not create:
+
+unexpected billing ambiguity.
+
+======================================================================
+193. FALLBACK ACCOUNTING
+======================================================================
+
+Track:
+
+- model usage
+- token usage
+- cost
+- provider.
+
+======================================================================
+194. MODEL FALLBACK + EVALUATION
+======================================================================
+
+Using 17:
+
+evaluate whether fallback models meet:
+
+task-specific quality thresholds.
+
+======================================================================
+195. MODEL-SPECIFIC EVALUATION
+======================================================================
+
+A model can be approved for:
+
+coding
+
+but not:
+
+financial reasoning.
+
+Do not use global approval.
+
+======================================================================
+196. CAPABILITY-SPECIFIC FALLBACK
+======================================================================
+
+Fallback eligibility must be:
+
+task-aware.
+
+======================================================================
+197. MODEL TASK CLASSIFICATION
+======================================================================
+
+Determine how the platform identifies:
+
+task class.
+
+Potential:
+
+- agent metadata
+- tool requirements
+- workflow type
+- explicit policy.
+
+======================================================================
+198. FALLBACK MATRIX
+======================================================================
+
+Create:
+
+| Task | Primary | Candidate Fallbacks | Constraints | Quality Gate |
+
+======================================================================
+199. MODEL COMPATIBILITY MATRIX
+======================================================================
+
+Create:
+
+| Model A | Model B | Prompt | Tools | Context | Schema | Safety | Policy |
+
+======================================================================
+200. FAILURE RESPONSE MATRIX
+======================================================================
+
+Create:
+
+| Failure | Retry | Fallback | Queue | Reject | Human | Audit |
+
+======================================================================
+201. FALLBACK POLICY MATRIX
+======================================================================
+
+Create:
+
+| Condition | Decision | Reason | Constraints |
+
+======================================================================
+202. CAPACITY MATRIX
+======================================================================
+
+Create:
+
+| Model | Normal Capacity | Outage Capacity | Warm/Cold | Region |
+
+Use measured or sourced data where possible.
+
+Do not invent numbers.
+
+======================================================================
+203. ARCHITECTURE OPTIONS
+======================================================================
+
+Evaluate at minimum:
+
+OPTION A
+--------
+Single model + retry.
+
+OPTION B
+--------
+Primary + secondary sequential fallback.
+
+OPTION C
+--------
+Multi-model centralized router.
+
+OPTION D
+--------
+Multi-provider active/active.
+
+OPTION E
+--------
+Hybrid architecture:
+central routing policy + multiple model runtimes + selective fallback.
+
+OPTION F
+--------
+Local + external hybrid fallback.
+
+These are candidate architectures.
+
+Claude MUST determine which options are actually appropriate.
+
+======================================================================
+204. ARCHITECTURE SELECTION
+======================================================================
+
+Compare:
+
+| Criterion |
+| Availability |
+| Quality |
+| Safety |
+| Tool compatibility |
+| Context compatibility |
+| Privacy |
+| Data residency |
+| Compliance |
+| Cost |
+| Latency |
+| Capacity |
+| Operational complexity |
+| Provider independence |
+| Recovery |
+| Auditability |
+| Day-1 practicality |
+| Enterprise scalability |
+| Recommendation |
+
+======================================================================
+205. WHY NOT ANALYSIS
+======================================================================
+
+Explicitly answer:
+
+WHY NOT ONE MODEL?
+
+WHY NOT SIMPLE RETRY?
+
+WHY NOT PRIMARY + BACKUP?
+
+WHY NOT ACTIVE/ACTIVE?
+
+WHY NOT MULTI-CLOUD?
+
+WHY NOT LOCAL FALLBACK?
+
+WHY NOT CLOUD-ONLY?
+
+WHY NOT CENTRALIZED ROUTING?
+
+WHY NOT DISTRIBUTED ROUTING?
+
+WHY NOT PARALLEL INFERENCE?
+
+WHY NOT QUALITY-BASED FALLBACK?
+
+WHY NOT COST-BASED FALLBACK?
+
+WHY NOT AUTOMATIC FALLBACK FOR EVERY ERROR?
+
+WHY NOT ALWAYS FAIL CLOSED?
+
+WHY NOT ALWAYS FAIL OPEN?
+
+WHY NOT LET THE MODEL CHOOSE ITS FALLBACK?
+
+WHY NOT LET THE USER CHOOSE THE MODEL?
+
+WHY NOT DYNAMICALLY DISCOVER MODELS?
+
+Only retain alternatives that remain technically relevant after research.
+
+======================================================================
+206. REVERSIBILITY
+======================================================================
+
+Classify:
+
+- model abstraction
+- router
+- routing policy
+- model registry
+- provider integration
+- local inference
+- multi-cloud
+- fallback graph
+
+as:
+
+- easily reversible
+- moderately reversible
+- expensive
+- effectively irreversible.
+
+======================================================================
+207. DAY-1 REQUIREMENTS
+======================================================================
+
+Define the minimum Day-1 foundation.
+
+Potential:
+
+- provider abstraction
+- model identity
+- model capability metadata
+- explicit model policy
+- bounded retries
+- model error taxonomy
+- traceability
+- clean model/runtime interface.
+
+These are candidates only.
+
+Determine actual requirements.
+
+======================================================================
+208. DAY-1 NON-REQUIREMENTS
+======================================================================
+
+Explicitly identify advanced mechanisms that should NOT be implemented
+Day 1 unless justified.
+
+======================================================================
+209. FUTURE TRIGGERS
+======================================================================
+
+Define objective conditions that justify activating advanced fallback.
+
+Potential:
+
+- enterprise SLA requirements
+- provider concentration risk
+- scale
+- model criticality
+- regional requirements
+- cost volatility
+- model retirement
+- regulatory requirements.
+
+Do not invent arbitrary thresholds.
+
+======================================================================
+210. STABLE MODEL CONTRACTS
+======================================================================
+
+Define stable interfaces such as:
+
+ModelIdentity
+ModelCapability
+ModelPolicy
+ModelRequest
+ModelResponse
+ModelError
+ModelHealth
+ModelSelection
+FallbackDecision
+FallbackChain
+ModelEvaluation
+ModelApproval.
+
+These are examples.
+
+Determine the minimum required contract set.
+
+Contracts must remain independent of:
+
+- OpenAI
+- Anthropic
+- Google
+- AWS
+- Azure
+- a specific inference engine
+- a specific model router.
+
+======================================================================
+211. REQUIRED DIAGRAMS
+======================================================================
+
+Include Mermaid diagrams for:
+
+1. Complete multi-model architecture
+2. Model registry
+3. Model capability graph
+4. Routing decision
+5. Failure taxonomy
+6. Retry vs fallback
+7. Circuit breaker
+8. Fallback graph
+9. Cascading failure
+10. Multi-provider architecture
+11. Multi-region architecture
+12. Local + cloud fallback
+13. Model capacity
+14. Model state preservation
+15. Tool-call fallback
+16. Side-effect protection
+17. Quality-based fallback
+18. Cost-aware fallback
+19. Compliance-aware fallback
+20. Tenant-aware routing
+21. Emergency model revocation
+22. Model migration
+23. Day-1 → Enterprise evolution.
+
+======================================================================
+212. ADR CANDIDATES
+======================================================================
+
+Identify ADRs for:
+
+- model abstraction
+- model registry
+- routing architecture
+- fallback graph
+- retry policy
+- circuit breakers
+- provider diversity
+- local inference
+- multi-region
+- multi-provider
+- quality gates
+- model approval
+- customer model pinning
+- emergency model revocation.
+
+For each:
+
+- problem
+- alternatives
+- recommendation
+- consequences
+- reversibility
+- decision deadline.
+
+======================================================================
+213. FALLBACK READINESS MATRIX
+======================================================================
+
+Create:
+
+| Capability | Day 1 | Prepare | Enterprise | Verified |
+
+Cover:
+
+- model abstraction
+- model identity
+- capability metadata
+- retry
+- fallback
+- circuit breaking
+- provider diversity
+- model registry
+- capacity failover
+- quality monitoring
+- cost controls
+- compliance-aware routing
+- tenant-aware routing
+- model revocation
+- emergency replacement
+- audit
+- replay compatibility.
+
+======================================================================
+214. ATTEMPT TO FALSIFY THE RECOMMENDATION
+======================================================================
+
+Try to prove the selected architecture wrong.
+
+At minimum analyze:
+
+- all providers fail simultaneously
+- primary provider fails
+- fallback provider fails
+- fallback provider is overloaded
+- fallback model has lower context capacity
+- fallback model does not support tools
+- fallback model violates structured output
+- fallback model is less safe
+- fallback model is outside the permitted jurisdiction
+- fallback model has different data-retention rules
+- fallback model is more expensive
+- fallback model is compromised
+- fallback model has a vulnerability
+- fallback model is retired
+- provider changes model behavior
+- model quality degrades
+- evaluator fails
+- routing policy is compromised
+- fallback graph enters a loop
+- retries create a storm
+- multiple agents trigger fallback simultaneously
+- fallback capacity is exhausted
+- a tool side effect is duplicated
+- streaming fails halfway
+- model response is partially delivered
+- customer pins a model that becomes unavailable
+- compliance forbids every remaining fallback
+- security policy forbids every remaining fallback
+- DR environment has no access to fallback model.
+
+For each:
+
+identify:
+
+- failure mode
+- containment
+- residual risk
+- architecture impact.
+
+======================================================================
+215. ARCHITECTURAL SELF-CRITIQUE
+======================================================================
+
+Before finalizing ask:
+
+1. Did I define what failure actually means?
+2. Did I distinguish retry from fallback?
+3. Did I distinguish availability from quality?
+4. Did I distinguish quality from safety?
+5. Did I analyze tool compatibility?
+6. Did I analyze structured output?
+7. Did I analyze context compatibility?
+8. Did I protect tool side effects?
+9. Did I prevent fallback loops?
+10. Did I model correlated provider failures?
+11. Did I model capacity during outage?
+12. Did I model cost explosion?
+13. Did I model residency restrictions?
+14. Did I model compliance restrictions?
+15. Did I preserve authorization?
+16. Did I preserve agent state?
+17. Did I preserve memory?
+18. Did I preserve auditability?
+19. Did I model local inference?
+20. Did I evaluate multi-provider?
+21. Did I evaluate multi-region?
+22. Did I avoid unnecessary multi-cloud?
+23. Did I avoid over-engineering Day 1?
+24. Did I preserve provider independence?
+25. Did I define emergency model revocation?
+26. What assumption could invalidate the architecture?
+
+Include:
+
+# ARCHITECTURAL SELF-CRITIQUE
+
+======================================================================
+216. FINAL RECOMMENDATION
+======================================================================
+
+End with:
+
+# FINAL MULTI-MODEL FALLBACK ARCHITECTURE RECOMMENDATION
+
+Answer:
+
+"What Multi-Model Fallback Architecture should this platform actually
+build?"
+
+Be concrete.
+
+Describe:
+
+- model abstraction
+- model inventory
+- capability graph
+- model registry
+- routing
+- retry
+- circuit breaking
+- fallback graph
+- provider diversity
+- region diversity
+- local inference if justified
+- state preservation
+- context preservation
+- tool compatibility
+- side-effect protection
+- quality gates
+- safety gates
+- compliance gates
+- cost controls
+- capacity controls
+- tenant policy
+- observability
+- audit
+- revocation
+- model migration
+- emergency replacement
+- Day-1 foundation
+- enterprise evolution.
+
+Then explicitly answer:
+
+"WHAT MUST EXIST ON DAY 1?"
+
+Then:
+
+"WHAT MUST NOT BE BUILT ON DAY 1?"
+
+Then:
+
+"WHAT OBJECTIVE CONDITIONS SHOULD TRIGGER THE ADVANCED
+MULTI-MODEL FALLBACK ARCHITECTURE?"
+
+======================================================================
+217. REQUIRED OUTPUT
+======================================================================
+
+Produce:
+
+27_MULTI_MODEL_FALLBACK_ARCHITECTURE.md
+
+The document MUST explicitly reference:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_ARCHITECTURE.md
+04_AGENT_RUNTIME.md
+05_MODEL_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+08_KNOWLEDGE_DATA_ARCHITECTURE.md
+09_MEMORY_ARCHITECTURE.md
+10_SECURITY_ARCHITECTURE.md
+11_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+12_TRUST_PROVENANCE_ARCHITECTURE.md
+13_RELIABILITY_ARCHITECTURE.md
+14_CONCURRENCY_ARCHITECTURE.md
+15_OBSERVABILITY_ARCHITECTURE.md
+16_AUDIT_ARCHITECTURE.md
+17_EVALUATION_ARCHITECTURE.md
+18_DEPLOYMENT_LIFECYCLE_ARCHITECTURE.md
+19_MULTI_TENANCY_ARCHITECTURE.md
+20_COST_ARCHITECTURE.md
+21_CAPACITY_PLANNING_ARCHITECTURE.md
+22_NETWORKING_ARCHITECTURE.md
+23_STORAGE_ARCHITECTURE.md
+24_DR_ENTERPRISE_ARCHITECTURE.md
+25_ADVANCED_SUPPLY_CHAIN_ARCHITECTURE.md
+26_ENTERPRISE_COMPLIANCE_ARCHITECTURE.md
+
+Also identify future interactions with:
+
+28_HUMAN_IN_THE_LOOP_ARCHITECTURE.md
+29_REPLAY_ARCHITECTURE.md
+30_OFFLINE_MOBILE_ARCHITECTURE.md
+31_A2A_ARCHITECTURE.md
+32_ADMIN_CONSOLE_ARCHITECTURE.md
+33_ADR_ARCHITECTURE.md
+34_QUALITY_MODEL_ARCHITECTURE.md
+
+If documents do not exist:
+
+DO NOT invent their contents.
+
+Define only:
+
+- dependency
+- stable interface
+- unresolved assumption.
+
+======================================================================
+218. SOURCE REQUIREMENTS
+======================================================================
+
+THIS SECTION IS MANDATORY.
+
+Use current web research.
+
+Prioritize:
+
+- official model provider documentation
+- official inference/runtime documentation
+- official cloud documentation
+- official Kubernetes documentation
+- official distributed-systems documentation
+- NIST
+- CNCF where relevant
+- official model documentation
+- official pricing documentation where cost is analyzed.
+
+When evaluating a model/provider:
+
+verify current:
+
+- capabilities
+- context limits
+- tool support
+- structured output support
+- regional availability
+- rate limits
+- quotas
+- pricing
+- deprecation policy
+- data handling.
+
+Do not rely on old model specifications.
+
+Do not invent:
+
+- SLAs
+- latency
+- capacity
+- model capabilities
+- regional availability
+- data retention guarantees.
+
+Clearly distinguish:
+
+SOURCE FACT
+
+from:
+
+MEASUREMENT
+
+from:
+
+INFERENCE
+
+from:
+
+ARCHITECTURAL RECOMMENDATION.
+
+======================================================================
+219. MODEL VERSION DISCIPLINE
+======================================================================
+
+At the beginning state:
+
+RESEARCH DATE
+
+and:
+
+MODEL / PROVIDER VERSIONS
+
+evaluated.
+
+Model capabilities and provider policies change.
+
+======================================================================
+220. SECURITY CLAIM DISCIPLINE
+======================================================================
+
+Never state:
+
+"multi-model fallback makes the system highly available."
+
+Instead explain:
+
+WHICH FAILURE
+
+the architecture mitigates,
+
+WHAT FAILURE
+
+it does not mitigate,
+
+and:
+
+WHAT CORRELATED FAILURES
+
+remain.
+
+======================================================================
+221. ABSOLUTE FINAL INSTRUCTION
+======================================================================
+
+Act as an INDEPENDENT Principal AI Architecture and Reliability
+Architect.
+
+Your responsibility is to determine the best Multi-Model Fallback
+Architecture for THIS platform.
+
+Do not assume:
+
+FALLBACK = RETRY.
+
+Do not assume:
+
+SECOND MODEL = TRUE FALLBACK.
+
+Do not assume:
+
+DIFFERENT MODEL = DIFFERENT FAILURE DOMAIN.
+
+Do not assume:
+
+DIFFERENT PROVIDER = INDEPENDENT FAILURE DOMAIN.
+
+Do not assume:
+
+HTTP 200 = MODEL HEALTH.
+
+Do not assume:
+
+MODEL AVAILABLE = MODEL SUITABLE.
+
+Do not assume:
+
+MODEL SUITABLE = MODEL SAFE.
+
+Do not assume:
+
+MODEL SAFE = MODEL COMPLIANT.
+
+Do not assume:
+
+MODEL COMPLIANT = MODEL COMPATIBLE.
+
+Do not assume:
+
+MODEL COMPATIBLE = SEMANTICALLY EQUIVALENT.
+
+Do not assume:
+
+MODEL FAILURE = RETRYABLE.
+
+Do not assume:
+
+RETRY = SAFE.
+
+Do not assume:
+
+FALLBACK = SAFE.
+
+Do not assume:
+
+FALLBACK = CHEAP.
+
+Do not assume:
+
+FALLBACK = FAST.
+
+Do not assume:
+
+FALLBACK = CAPACITY AVAILABLE.
+
+Do not assume:
+
+FALLBACK MODEL SUPPORTS TOOLS.
+
+Do not assume:
+
+FALLBACK MODEL SUPPORTS STRUCTURED OUTPUT.
+
+Do not assume:
+
+FALLBACK MODEL SUPPORTS THE SAME CONTEXT.
+
+Do not assume:
+
+FALLBACK MODEL PRESERVES THE SAME SAFETY BEHAVIOR.
+
+Do not assume:
+
+FALLBACK MODEL CAN ACCESS THE SAME REGION.
+
+Do not assume:
+
+FALLBACK MODEL CAN PROCESS THE SAME DATA.
+
+Do not assume:
+
+FALLBACK MODEL CAN REPLACE THE PRIMARY FOR EVERY TASK.
+
+Do not allow:
+
+A FALLBACK
+
+to silently bypass:
+
+SECURITY POLICY.
+
+Do not allow:
+
+A FALLBACK
+
+to silently bypass:
+
+COMPLIANCE POLICY.
+
+Do not allow:
+
+A FALLBACK
+
+to silently change:
+
+USER AUTHORIZATION.
+
+Do not allow:
+
+A FALLBACK
+
+to silently gain:
+
+ADDITIONAL TOOLS.
+
+Do not allow:
+
+A RETRY
+
+to duplicate:
+
+SIDE EFFECTS.
+
+Do not allow:
+
+A FALLBACK CHAIN
+
+to become:
+
+AN INFINITE LOOP.
+
+Do not allow:
+
+PRIMARY FAILURE
+
+to cause:
+
+FALLBACK CAPACITY EXHAUSTION.
+
+Do not allow:
+
+FALLBACK
+
+to become:
+
+AN UNBOUNDED COST ESCALATION.
+
+Do not allow:
+
+MODEL ROUTING
+
+to be controlled by:
+
+UNTRUSTED USER INPUT.
+
+Do not allow:
+
+MODEL DISCOVERY
+
+to become:
+
+MODEL TRUST.
+
+Do not allow:
+
+MODEL REGISTRY METADATA
+
+to become:
+
+UNVERIFIED SECURITY POLICY.
+
+Do not allow:
+
+MODEL RETIREMENT
+
+to create:
+
+AN UNDETECTED PRODUCTION FAILURE.
+
+Do not allow:
+
+MODEL COMPROMISE
+
+to leave:
+
+THE COMPROMISED MODEL
+
+inside the fallback graph.
+
+Do not allow:
+
+DAY-1 ARCHITECTURE
+
+to create:
+
+UNNECESSARY DEPENDENCY ON ONE MODEL PROVIDER.
+
+Optimize for:
+
+RELIABILITY
++
+SAFETY
++
+SECURITY
++
+POLICY PRESERVATION
++
+SEMANTIC COMPATIBILITY
++
+DATA PRIVACY
++
+DATA RESIDENCY
++
+COST CONTROL
++
+CAPACITY RESILIENCE
++
+LOW OPERATIONAL COMPLEXITY
++
+AUDITABILITY
++
+RECOVERABILITY
++
+FUTURE MODEL EVOLUTION.
+
+The final architecture MUST result from:
+
+    MODEL INVENTORY
+       ↓
+    CAPABILITY GRAPH
+       ↓
+    FAILURE TAXONOMY
+       ↓
+    TRUST CONSTRAINTS
+       ↓
+    DATA / PRIVACY CONSTRAINTS
+       ↓
+    COMPATIBILITY ANALYSIS
+       ↓
+    ROUTING OPTIONS
+       ↓
+    FALLBACK OPTIONS
+       ↓
+    RETRY / CIRCUIT BREAKER ANALYSIS
+       ↓
+    CAPACITY ANALYSIS
+       ↓
+    PROVIDER DIVERSITY
+       ↓
+    QUALITY / SAFETY ANALYSIS
+       ↓
+    COMPLIANCE ANALYSIS
+       ↓
+    COST ANALYSIS
+       ↓
+    ADVERSARIAL ANALYSIS
+       ↓
+    FALSIFICATION
+       ↓
+    FINAL DECISION.
+
+DO NOT CHOOSE THE PRIMARY MODEL FIRST.
+
+DO NOT CHOOSE THE BACKUP MODEL FIRST.
+
+DO NOT CHOOSE THE ROUTER FIRST.
+
+DO NOT CHOOSE MULTI-CLOUD FIRST.
+
+DO NOT CHOOSE LOCAL INFERENCE FIRST.
+
+DO NOT CHOOSE ACTIVE/ACTIVE FIRST.
+
+DO NOT CHOOSE RETRIES FIRST.
+
+UNDERSTAND THE FAILURE MODES FIRST.
+
+UNDERSTAND THE MODEL CAPABILITIES FIRST.
+
+UNDERSTAND THE COMPATIBILITY REQUIREMENTS FIRST.
+
+UNDERSTAND THE SECURITY CONSTRAINTS FIRST.
+
+UNDERSTAND THE COMPLIANCE CONSTRAINTS FIRST.
+
+UNDERSTAND THE CAPACITY REQUIREMENTS FIRST.
+
+THEN COMPARE THE AVAILABLE ARCHITECTURES.
+
+THEN ATTEMPT TO DISPROVE THE PREFERRED ARCHITECTURE.
+
+THEN SELECT THE BEST MULTI-MODEL FALLBACK ARCHITECTURE AVAILABLE FOR
+THIS PROJECT.
+
+THEN DEFINE WHAT MUST EXIST ON DAY 1 TO MAKE THAT ARCHITECTURE
+POSSIBLE.
+
+THEN DESIGN IT.

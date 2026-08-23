@@ -1,0 +1,3006 @@
+# 22 — NETWORKING ARCHITECTURE
+## Enterprise AI Agent Platform
+
+======================================================================
+ROLE
+======================================================================
+
+Act as the Principal Network Architect, Zero Trust Architect,
+Distributed Systems Architect, Cloud Network Architect, Security
+Architect and Platform Infrastructure Architect responsible for
+designing the complete Networking Architecture of an enterprise-grade
+AI agent platform.
+
+You have deep expertise in:
+
+- enterprise networking
+- Zero Trust Architecture
+- network segmentation
+- microsegmentation
+- service-to-service networking
+- Kubernetes networking
+- container networking
+- network policies
+- ingress
+- egress
+- API gateways
+- reverse proxies
+- load balancers
+- service discovery
+- DNS
+- TLS
+- mTLS
+- workload identity
+- service identity
+- private networking
+- private endpoints
+- NAT
+- firewalls
+- WAF
+- network security groups
+- security groups
+- service meshes
+- east-west traffic
+- north-south traffic
+- network observability
+- traffic management
+- retries
+- timeouts
+- connection pools
+- circuit breakers
+- network resilience
+- network capacity
+- bandwidth
+- latency
+- multi-region networking
+- cross-region networking
+- data transfer economics
+- tenant isolation.
+
+You are working within:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_ARCHITECTURE.md
+04_AGENT_RUNTIME.md
+05_MODEL_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+08_KNOWLEDGE_DATA_ARCHITECTURE.md
+09_MEMORY_ARCHITECTURE.md
+10_SECURITY_ARCHITECTURE.md
+11_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+12_TRUST_PROVENANCE_ARCHITECTURE.md
+13_RELIABILITY_ARCHITECTURE.md
+14_CONCURRENCY_ARCHITECTURE.md
+15_OBSERVABILITY_ARCHITECTURE.md
+16_AUDIT_ARCHITECTURE.md
+17_EVALUATION_ARCHITECTURE.md
+18_DEPLOYMENT_LIFECYCLE_ARCHITECTURE.md
+19_MULTI_TENANCY_ARCHITECTURE.md
+20_COST_ARCHITECTURE.md
+21_CAPACITY_PLANNING_ARCHITECTURE.md
+
+Future architecture documents include:
+
+23_STORAGE_ARCHITECTURE.md
+24_DR_ENTERPRISE_ARCHITECTURE.md
+25_ADVANCED_SUPPLY_CHAIN_ARCHITECTURE.md
+26_ENTERPRISE_COMPLIANCE_ARCHITECTURE.md
+27_MULTI_MODEL_FALLBACK_ARCHITECTURE.md
+28_HUMAN_IN_THE_LOOP_ARCHITECTURE.md
+29_REPLAY_ARCHITECTURE.md
+30_OFFLINE_MOBILE_ARCHITECTURE.md
+31_A2A_ARCHITECTURE.md
+32_ADMIN_CONSOLE_ARCHITECTURE.md
+33_ADR_ARCHITECTURE.md
+34_QUALITY_MODEL_ARCHITECTURE.md
+
+If future documents do not exist:
+
+DO NOT invent their content.
+
+Instead identify the dependency and define the stable contract that
+must remain compatible.
+
+Existing architecture documents are not immune from challenge.
+
+If research demonstrates that an assumption in another architecture
+document is incorrect, incomplete, obsolete or suboptimal, explicitly
+identify the conflict and recommend the superior architectural
+decision.
+
+======================================================================
+1. PRIMARY OBJECTIVE
+======================================================================
+
+Design the complete Networking Architecture.
+
+The architecture must answer:
+
+HOW DO ALL COMPONENTS COMMUNICATE?
+
+WHO IS ALLOWED TO COMMUNICATE WITH WHOM?
+
+WHICH TRAFFIC IS INTERNAL?
+
+WHICH TRAFFIC IS EXTERNAL?
+
+WHICH TRAFFIC IS NORTH-SOUTH?
+
+WHICH TRAFFIC IS EAST-WEST?
+
+WHERE IS IDENTITY ESTABLISHED?
+
+WHERE IS AUTHORIZATION ENFORCED?
+
+WHERE IS TLS TERMINATED?
+
+WHERE IS mTLS REQUIRED?
+
+HOW IS SERVICE IDENTITY ESTABLISHED?
+
+HOW IS NETWORK IDENTITY DIFFERENT FROM APPLICATION IDENTITY?
+
+HOW IS TENANT ISOLATION ENFORCED?
+
+HOW IS EGRESS CONTROLLED?
+
+HOW ARE EXTERNAL TOOL CALLS CONTROLLED?
+
+HOW DOES MCP TRAFFIC WORK?
+
+HOW DOES THE AGENT RUNTIME REACH THE MODEL RUNTIME?
+
+HOW DOES THE MODEL RUNTIME REACH REQUIRED SERVICES?
+
+HOW DO SERVICES REACH DATABASES?
+
+HOW DOES THE PLATFORM REACH OBJECT STORAGE?
+
+HOW DOES THE PLATFORM REACH EXTERNAL APIs?
+
+HOW DOES THE PLATFORM PREVENT UNAUTHORIZED INTERNET ACCESS?
+
+HOW DOES THE PLATFORM HANDLE DNS?
+
+HOW DOES THE PLATFORM HANDLE SERVICE DISCOVERY?
+
+HOW DOES THE PLATFORM HANDLE NETWORK FAILURES?
+
+HOW DOES THE PLATFORM HANDLE NETWORK SATURATION?
+
+HOW DOES THE PLATFORM HANDLE CROSS-REGION TRAFFIC?
+
+HOW DOES NETWORKING SUPPORT MULTI-TENANCY?
+
+HOW DOES NETWORKING EVOLVE FROM DAY 1 TO ENTERPRISE?
+
+======================================================================
+2. MOST IMPORTANT INSTRUCTION
+## RESEARCH FIRST — SELECT ARCHITECTURE SECOND
+======================================================================
+
+DO NOT begin by choosing:
+
+- VPC
+- VNet
+- Kubernetes
+- service mesh
+- Istio
+- Linkerd
+- Cilium
+- Calico
+- Envoy
+- API Gateway
+- NGINX
+- cloud load balancer
+- NAT Gateway
+- firewall
+- private endpoint
+- VPN
+- dedicated network
+- mTLS.
+
+Research first.
+
+Claude MUST independently determine the best networking architecture
+for THIS platform.
+
+Do not assume that the existence of a private network creates
+sufficient security.
+
+Do not assume that Kubernetes networking is automatically secure.
+
+Do not assume that a service mesh is automatically required.
+
+Do not assume that mTLS everywhere is automatically superior.
+
+Do not assume that physical network segmentation is always better than
+logical authorization.
+
+Do not assume that network isolation alone provides tenant isolation.
+
+NIST Zero Trust explicitly emphasizes protecting resources rather than
+trusting network location, and states that authentication and
+authorization are discrete functions before access to enterprise
+resources. Use this principle as a research input, not as a reason to
+blindly prescribe one implementation. :contentReference[oaicite:1]{index=1}
+
+Research:
+
+- Zero Trust networking
+- Kubernetes networking
+- network policies
+- service identity
+- service meshes
+- API gateways
+- ingress architectures
+- egress control
+- private connectivity
+- DNS
+- workload identity
+- TLS/mTLS
+- network observability
+- multi-region networking.
+
+Prioritize:
+
+- NIST
+- official Kubernetes documentation
+- official cloud provider documentation
+- official networking technology documentation
+- authoritative security research
+- authoritative distributed-systems research.
+
+Kubernetes currently defines a Pod-level network model and exposes
+`NetworkPolicy` for controlling traffic between Pods and between Pods
+and the outside world; the selected implementation must be researched
+rather than assumed. :contentReference[oaicite:2]{index=2}
+
+Required process:
+
+    SYSTEM COMMUNICATION MODEL
+       ↓
+    TRUST BOUNDARIES
+       ↓
+    IDENTITY MODEL
+       ↓
+    TRAFFIC CLASSIFICATION
+       ↓
+    NETWORK TOPOLOGY
+       ↓
+    INGRESS
+       ↓
+    EAST-WEST
+       ↓
+    EGRESS
+       ↓
+    DATA SERVICES
+       ↓
+    EXTERNAL SERVICES
+       ↓
+    TENANT ISOLATION
+       ↓
+    TLS / mTLS
+       ↓
+    FAILURE MODEL
+       ↓
+    CAPACITY MODEL
+       ↓
+    COST MODEL
+       ↓
+    ARCHITECTURE OPTIONS
+       ↓
+    ADVERSARIAL CHALLENGE
+       ↓
+    FALSIFICATION
+       ↓
+    FINAL DECISION
+       ↓
+    DAY-1 IMPLEMENTATION
+       ↓
+    FUTURE EVOLUTION
+
+CLAUDE MUST DETERMINE THE BEST NETWORKING ARCHITECTURE AVAILABLE FOR
+THIS PROJECT.
+
+======================================================================
+3. CENTRAL PRINCIPLE
+======================================================================
+
+NETWORK LOCATION ≠ TRUST.
+
+A component being:
+
+- inside a VPC
+- inside a VNet
+- inside a Kubernetes cluster
+- inside a private subnet
+- on the same node
+
+must NOT automatically imply:
+
+TRUST.
+
+Networking must establish controlled communication paths.
+
+Application authorization remains authoritative.
+
+======================================================================
+4. LEVEL B CONSTRAINT
+======================================================================
+
+This is:
+
+LEVEL B — PREPARED DAY 1.
+
+Day 1 does NOT require:
+
+- complex multi-region networking
+- global traffic management
+- full enterprise SASE
+- dedicated network per tenant
+- service mesh everywhere
+- private connectivity for every external service
+- advanced network segmentation across dozens of zones.
+
+But Day 1 MUST establish:
+
+- explicit traffic boundaries
+- controlled ingress
+- controlled egress
+- service-to-service authorization
+- encrypted communication
+- network observability
+- basic network policy
+- clear trust zones.
+
+======================================================================
+5. DAY-1 PRINCIPLE
+======================================================================
+
+Day 1 should establish:
+
+IDENTITY
+
+→
+
+AUTHORIZED CONNECTION
+
+→
+
+ENCRYPTED TRANSPORT
+
+→
+
+RESOURCE
+
+rather than:
+
+NETWORK LOCATION
+
+→
+
+TRUST.
+
+======================================================================
+6. NETWORK TOPOLOGY
+======================================================================
+
+Design the logical topology.
+
+At minimum evaluate:
+
+Internet
+   ↓
+Edge
+   ↓
+Ingress
+   ↓
+Control Plane / API
+   ↓
+Agent Runtime
+   ↓
+Model Runtime
+   ↓
+Data Services
+   ↓
+External Integrations.
+
+Determine the actual topology.
+
+======================================================================
+7. TRUST ZONES
+======================================================================
+
+Identify zones such as:
+
+PUBLIC EDGE
+
+CONTROL PLANE
+
+DATA PLANE
+
+MODEL PLANE
+
+DATA SERVICES
+
+TOOL / INTEGRATION PLANE
+
+MANAGEMENT PLANE.
+
+These are examples only.
+
+Determine the actual trust boundaries.
+
+======================================================================
+8. CONTROL PLANE
+======================================================================
+
+Using 02 determine:
+
+- API endpoints
+- administrative interfaces
+- configuration services
+- policy services
+- orchestration services.
+
+Determine which are externally reachable.
+
+======================================================================
+9. DATA PLANE
+======================================================================
+
+Define communication between:
+
+- Agent Runtime
+- Model Runtime
+- Tool Runtime
+- Memory
+- Knowledge
+- storage.
+
+======================================================================
+10. MANAGEMENT PLANE
+======================================================================
+
+Separate:
+
+production data traffic
+
+from:
+
+infrastructure management traffic
+
+where appropriate.
+
+======================================================================
+11. NORTH-SOUTH TRAFFIC
+======================================================================
+
+Define:
+
+Internet
+→
+Platform.
+
+Include:
+
+- DNS
+- CDN where applicable
+- WAF where applicable
+- load balancing
+- TLS
+- authentication
+- rate limiting.
+
+======================================================================
+12. EAST-WEST TRAFFIC
+======================================================================
+
+Define:
+
+Service
+→
+Service.
+
+Do not assume internal traffic is trusted.
+
+======================================================================
+13. INGRESS
+======================================================================
+
+Evaluate:
+
+- API Gateway
+- Load Balancer
+- Reverse Proxy
+- Gateway API
+- Ingress.
+
+Determine the minimum required architecture.
+
+======================================================================
+14. INGRESS SECURITY
+======================================================================
+
+At ingress evaluate:
+
+- TLS
+- authentication
+- authorization
+- rate limits
+- request size
+- WAF
+- DDoS protection
+- IP restrictions where appropriate.
+
+Do not put authorization exclusively at the network layer.
+
+======================================================================
+15. API GATEWAY
+======================================================================
+
+Determine whether a dedicated API Gateway is required.
+
+Evaluate:
+
+- routing
+- authentication
+- authorization
+- rate limiting
+- observability
+- request transformation.
+
+Do not introduce a gateway solely because it is conventional.
+
+======================================================================
+16. LOAD BALANCING
+======================================================================
+
+Determine:
+
+- L4
+- L7
+- external
+- internal.
+
+Match to actual requirements.
+
+======================================================================
+17. TLS
+======================================================================
+
+Define TLS requirements.
+
+At minimum evaluate:
+
+Internet
+→
+Edge.
+
+Service
+→
+Service.
+
+Service
+→
+Database.
+
+Service
+→
+External API.
+
+======================================================================
+18. TLS TERMINATION
+======================================================================
+
+Determine where TLS terminates.
+
+If TLS terminates at the edge:
+
+define the trust implications.
+
+======================================================================
+19. mTLS
+======================================================================
+
+Evaluate mTLS.
+
+Compare:
+
+NO mTLS
+
+vs:
+
+SELECTIVE mTLS
+
+vs:
+
+UNIVERSAL mTLS.
+
+Do not assume universal mTLS is automatically the best architecture.
+
+Evaluate:
+
+- identity
+- operational complexity
+- certificate lifecycle
+- performance
+- debugging
+- compatibility.
+
+======================================================================
+20. WORKLOAD IDENTITY
+======================================================================
+
+Using 11 define how services identify themselves.
+
+Potential:
+
+service account
+
+workload identity
+
+SPIFFE-like identity
+
+cloud-native identity.
+
+These are examples only.
+
+Research and select.
+
+======================================================================
+21. NETWORK IDENTITY
+======================================================================
+
+Network identity may include:
+
+- IP
+- service identity
+- workload identity
+- certificate identity.
+
+Do not confuse them.
+
+======================================================================
+22. AUTHORIZATION
+======================================================================
+
+Network access must answer:
+
+WHO
+
+is connecting
+
+TO WHAT
+
+FOR WHAT PURPOSE?
+
+======================================================================
+23. NETWORK POLICY
+======================================================================
+
+Evaluate network policies.
+
+Define:
+
+ALLOW
+
+and:
+
+DENY.
+
+Prefer explicit policy where practical.
+
+======================================================================
+24. DEFAULT DENY
+======================================================================
+
+Evaluate whether trust zones should default to:
+
+DENY
+
+and explicitly allow required communication.
+
+Do not blindly apply default-deny without identifying operational
+dependencies.
+
+======================================================================
+25. KUBERNETES NETWORKING
+======================================================================
+
+If Kubernetes is selected:
+
+research:
+
+- Pod networking
+- Service networking
+- NetworkPolicy
+- Gateway API
+- DNS
+- node networking
+- CNI.
+
+Do not assume the CNI implementation provides identical capabilities.
+
+Kubernetes documentation states that NetworkPolicy is an API for
+controlling traffic between Pods and between Pods and external
+endpoints, but its enforcement depends on the network implementation.
+:contentReference[oaicite:3]{index=3}
+
+======================================================================
+26. CNI
+======================================================================
+
+Evaluate:
+
+- capabilities
+- policy enforcement
+- observability
+- performance
+- eBPF
+- operational complexity.
+
+Do not choose Cilium, Calico or another CNI merely because it is popular.
+
+======================================================================
+27. SERVICE MESH
+======================================================================
+
+Evaluate:
+
+- no service mesh
+- lightweight proxy
+- service mesh.
+
+Compare:
+
+- mTLS
+- traffic policy
+- retries
+- observability
+- failure modes
+- resource overhead
+- operational complexity.
+
+======================================================================
+28. SERVICE MESH CRITICISM
+======================================================================
+
+Explicitly determine:
+
+WHAT PROBLEM DOES THE SERVICE MESH SOLVE?
+
+WHAT PROBLEMS DOES IT INTRODUCE?
+
+Do not add one merely to achieve "enterprise architecture" aesthetics.
+
+======================================================================
+29. SERVICE DISCOVERY
+======================================================================
+
+Define how services discover:
+
+- Model Runtime
+- Agent Runtime
+- Knowledge
+- Memory
+- Tool Runtime
+- databases.
+
+======================================================================
+30. DNS
+======================================================================
+
+Define:
+
+- external DNS
+- internal DNS
+- service DNS
+- private zones.
+
+======================================================================
+31. DNS FAILURE
+======================================================================
+
+Model:
+
+DNS unavailable.
+
+What happens?
+
+Do services fail immediately?
+
+Can existing connections continue?
+
+======================================================================
+32. SERVICE ENDPOINTS
+======================================================================
+
+Determine whether services use:
+
+- stable names
+- stable virtual IPs
+- service discovery
+- direct IP.
+
+Prefer stable logical identities over hard-coded IP addresses.
+
+======================================================================
+33. INTERNAL LOAD BALANCING
+======================================================================
+
+Determine how traffic reaches replicated services.
+
+======================================================================
+34. CONNECTION MANAGEMENT
+======================================================================
+
+Define:
+
+- connection pools
+- keep-alive
+- max connections
+- idle timeout.
+
+These must align with 13, 14 and 21.
+
+======================================================================
+35. TIMEOUTS
+======================================================================
+
+Define timeout hierarchy.
+
+Potential:
+
+Client
+>
+Gateway
+>
+Service
+>
+Database.
+
+Never allow a downstream timeout to exceed the upstream timeout
+without understanding the consequences.
+
+======================================================================
+36. RETRIES
+======================================================================
+
+Retries consume capacity.
+
+Using 13, 14 and 21:
+
+define:
+
+- retry limits
+- exponential backoff
+- jitter
+- retryable errors.
+
+======================================================================
+37. RETRY AMPLIFICATION
+======================================================================
+
+Model:
+
+Network failure
+→
+retry
+→
+more load
+→
+more failure.
+
+Prevent retry storms.
+
+======================================================================
+38. CIRCUIT BREAKERS
+======================================================================
+
+Evaluate circuit breakers for:
+
+- Model Runtime
+- database
+- external APIs
+- MCP
+- tool services.
+
+======================================================================
+39. BULKHEADS
+======================================================================
+
+Evaluate network/resource bulkheads.
+
+One failing integration should not consume all connection capacity.
+
+======================================================================
+40. EGRESS
+======================================================================
+
+This is CRITICAL.
+
+Define:
+
+WHO
+
+can connect
+
+TO WHICH
+
+external destinations
+
+OVER WHICH
+
+protocols
+
+FOR WHICH
+
+purpose.
+
+======================================================================
+41. EGRESS ALLOWLIST
+======================================================================
+
+Evaluate whether external traffic should be:
+
+DENY BY DEFAULT
+
+with explicit allowlists.
+
+======================================================================
+42. EGRESS PROXY
+======================================================================
+
+Evaluate:
+
+Direct egress
+
+vs:
+
+Central egress proxy
+
+vs:
+
+Per-zone egress.
+
+Compare:
+
+- security
+- observability
+- latency
+- cost
+- failure domain
+- operational complexity.
+
+======================================================================
+43. SSRF
+======================================================================
+
+Threat-model SSRF.
+
+An agent or tool must not be able to use arbitrary URLs to access:
+
+- internal metadata services
+- control plane
+- private databases
+- internal APIs
+- cloud credentials endpoints.
+
+======================================================================
+44. AGENT INTERNET ACCESS
+======================================================================
+
+Determine whether Agent Runtime has:
+
+NO INTERNET
+
+LIMITED INTERNET
+
+FULL INTERNET.
+
+Do not assume full internet access is acceptable.
+
+======================================================================
+45. MODEL INTERNET ACCESS
+======================================================================
+
+Determine whether Model Runtime needs direct internet access.
+
+Prefer avoiding it unless required.
+
+======================================================================
+46. TOOL INTERNET ACCESS
+======================================================================
+
+Tools may legitimately require internet access.
+
+Make this explicit.
+
+======================================================================
+47. MCP NETWORKING
+======================================================================
+
+Using 07 determine:
+
+Agent
+→
+MCP Server.
+
+Define:
+
+- authentication
+- authorization
+- TLS
+- egress
+- tenant context
+- network policy.
+
+======================================================================
+48. MCP SERVER TRUST
+======================================================================
+
+Do not automatically trust an MCP server merely because it is reachable.
+
+======================================================================
+49. EXTERNAL API NETWORKING
+======================================================================
+
+Define secure connectivity to:
+
+- model providers
+- SaaS tools
+- APIs
+- MCP servers.
+
+======================================================================
+50. PRIVATE CONNECTIVITY
+======================================================================
+
+Evaluate:
+
+- public HTTPS
+- private endpoints
+- VPN
+- private interconnect
+- dedicated links.
+
+Choose based on actual security and operational requirements.
+
+======================================================================
+51. DATABASE NETWORKING
+======================================================================
+
+Databases should not be publicly reachable unless there is a compelling
+and explicitly justified requirement.
+
+======================================================================
+52. DATABASE ACCESS
+======================================================================
+
+Define:
+
+Application
+→
+Database.
+
+Only authorized workloads should be able to establish connections.
+
+======================================================================
+53. DATABASE PORT EXPOSURE
+======================================================================
+
+Do not expose:
+
+PostgreSQL
+
+Redis
+
+vector database
+
+directly to the public internet.
+
+======================================================================
+54. CACHE NETWORKING
+======================================================================
+
+Using 09/19 define:
+
+which workloads may reach the cache.
+
+======================================================================
+55. VECTOR DATABASE NETWORKING
+======================================================================
+
+Define access boundary.
+
+======================================================================
+56. OBJECT STORAGE
+======================================================================
+
+Future 23:
+
+define whether object storage is accessed via:
+
+- private endpoint
+- service endpoint
+- public HTTPS.
+
+======================================================================
+57. NETWORK TENANT ISOLATION
+======================================================================
+
+Using 19:
+
+determine whether tenant isolation is:
+
+logical
+
+network-level
+
+physical
+
+or hybrid.
+
+Do not assume network-level tenant isolation is required for every
+tenant.
+
+======================================================================
+58. TENANT EGRESS
+======================================================================
+
+If tenant-specific external credentials/tools exist:
+
+determine whether egress requires tenant-specific policy.
+
+======================================================================
+59. TENANT NETWORK IDENTITY
+======================================================================
+
+A tenant must not be inferred solely from:
+
+IP address.
+
+Use authoritative identity from 11 and 19.
+
+======================================================================
+60. CROSS-TENANT NETWORK ACCESS
+======================================================================
+
+Determine whether:
+
+Tenant A workload
+
+can ever communicate with:
+
+Tenant B workload.
+
+Default principle should be:
+
+NO
+
+unless explicitly designed and authorized.
+
+======================================================================
+61. NETWORK POLICY VS APPLICATION AUTHORIZATION
+======================================================================
+
+Network policy controls:
+
+CAN CONNECT.
+
+Application authorization controls:
+
+CAN ACCESS RESOURCE.
+
+Both may be required.
+
+======================================================================
+62. ZERO TRUST
+======================================================================
+
+Use NIST Zero Trust as a research foundation.
+
+NIST emphasizes that trust should not be granted merely because an
+asset or account is on a particular network and that access should be
+based on explicit authentication and authorization. :contentReference[oaicite:4]{index=4}
+
+Do not translate Zero Trust into:
+
+"put everything behind a proxy."
+
+Determine the actual architecture.
+
+======================================================================
+63. MICROSEGMENTATION
+======================================================================
+
+Evaluate:
+
+- coarse segmentation
+- microsegmentation
+- identity-based policy.
+
+Determine the appropriate level.
+
+======================================================================
+64. SEGMENTATION GRANULARITY
+======================================================================
+
+Too coarse:
+
+one network for everything.
+
+Too fine:
+
+every microservice has unique network policy complexity.
+
+Find the correct balance.
+
+======================================================================
+65. CONTROL PLANE ISOLATION
+======================================================================
+
+Data Plane workloads should not automatically reach:
+
+Control Plane administration interfaces.
+
+======================================================================
+66. MANAGEMENT ACCESS
+======================================================================
+
+Define administrative network access.
+
+Prefer:
+
+identity-aware
+
+authenticated
+
+audited
+
+restricted access.
+
+======================================================================
+67. BASTION / JUMP HOST
+======================================================================
+
+Evaluate whether a traditional bastion is needed.
+
+Do not assume it is.
+
+======================================================================
+68. BREAK-GLASS NETWORK ACCESS
+======================================================================
+
+Emergency network access must be:
+
+- authenticated
+- authorized
+- time-bounded
+- audited.
+
+======================================================================
+69. NETWORK SECRETS
+======================================================================
+
+Do not embed:
+
+- API keys
+- credentials
+- certificates
+- private keys
+
+in network configuration.
+
+======================================================================
+70. CERTIFICATE MANAGEMENT
+======================================================================
+
+Define:
+
+- certificate issuance
+- rotation
+- revocation
+- expiry
+- trust roots.
+
+Coordinate with 10 and 11.
+
+======================================================================
+71. CERTIFICATE FAILURE
+======================================================================
+
+What happens when:
+
+certificate expires?
+
+Certificate authority unavailable?
+
+Trust root changes?
+
+======================================================================
+72. NETWORK ENCRYPTION
+======================================================================
+
+Define encryption:
+
+- external
+- internal
+- database
+- storage
+- management.
+
+======================================================================
+73. INTERNAL TRAFFIC
+======================================================================
+
+Do not automatically exempt internal traffic from encryption.
+
+Evaluate risk and performance.
+
+======================================================================
+74. NETWORK OBSERVABILITY
+======================================================================
+
+Using 15 define:
+
+- flow logs
+- DNS logs
+- connection metrics
+- latency
+- packet loss
+- retransmissions
+- rejected connections.
+
+======================================================================
+75. NETWORK AUDIT
+======================================================================
+
+Using 16:
+
+network policy decisions and privileged network access should be
+auditable where required.
+
+======================================================================
+76. NETWORK SECURITY EVENTS
+======================================================================
+
+Define events such as:
+
+ConnectionDenied
+
+PolicyViolation
+
+UnexpectedEgress
+
+CertificateFailure
+
+DNSFailure
+
+These are examples only.
+
+======================================================================
+77. NETWORK TELEMETRY
+======================================================================
+
+Do not log full payloads by default.
+
+Network observability should generally focus on metadata unless payload
+inspection is explicitly justified and governed.
+
+======================================================================
+78. NETWORK CAPACITY
+======================================================================
+
+Using 21 define:
+
+- bandwidth
+- connection count
+- packet rate
+- DNS capacity
+- load balancer capacity
+- NAT capacity.
+
+======================================================================
+79. NETWORK BOTTLENECKS
+======================================================================
+
+Potential:
+
+- NAT
+- load balancer
+- DNS
+- proxy
+- service mesh
+- firewall
+- egress gateway.
+
+Identify them through measurement.
+
+======================================================================
+80. CONNECTION LIMITS
+======================================================================
+
+External APIs may impose:
+
+connection limits.
+
+Database may impose:
+
+connection limits.
+
+Model them as capacity constraints.
+
+======================================================================
+81. NAT
+======================================================================
+
+If NAT is used:
+
+evaluate:
+
+- throughput
+- connection limits
+- availability
+- cost
+- failure domain.
+
+======================================================================
+82. EGRESS COST
+======================================================================
+
+Using 20:
+
+measure network egress cost.
+
+Cross-region traffic can become material.
+
+======================================================================
+83. CROSS-REGION COST
+======================================================================
+
+Future multi-region architecture must account for:
+
+- transfer cost
+- latency
+- replication
+- failure behavior.
+
+======================================================================
+84. NETWORK LATENCY
+======================================================================
+
+Measure:
+
+- service-to-service latency
+- database latency
+- model-provider latency
+- external tool latency.
+
+======================================================================
+85. LATENCY BUDGET
+======================================================================
+
+Define end-to-end latency budget:
+
+User
+→
+Gateway
+→
+Agent
+→
+Model
+→
+Tool
+→
+Model
+→
+Response.
+
+Avoid allocating latency arbitrarily.
+
+======================================================================
+86. NETWORK JITTER
+======================================================================
+
+Where relevant measure variability.
+
+======================================================================
+87. PACKET LOSS
+======================================================================
+
+Define behavior under packet loss.
+
+Retries must not amplify failures.
+
+======================================================================
+88. NETWORK PARTITION
+======================================================================
+
+Model:
+
+Service A
+cannot reach
+Service B.
+
+Determine whether the system:
+
+- fails closed
+- degrades
+- queues
+- uses fallback.
+
+======================================================================
+89. DNS PARTITION
+======================================================================
+
+Model DNS failure separately.
+
+======================================================================
+90. LOAD BALANCER FAILURE
+======================================================================
+
+Define redundancy.
+
+======================================================================
+91. EGRESS GATEWAY FAILURE
+======================================================================
+
+If all external traffic passes through one gateway:
+
+it becomes a major failure domain.
+
+Evaluate redundancy.
+
+======================================================================
+92. SERVICE MESH FAILURE
+======================================================================
+
+If a service mesh is selected:
+
+what happens when:
+
+control plane fails?
+
+sidecar/proxy fails?
+
+certificate rotation fails?
+
+======================================================================
+93. NETWORK POLICY FAILURE
+======================================================================
+
+What happens if the policy engine cannot update?
+
+Fail-open or fail-closed?
+
+Determine by security context.
+
+======================================================================
+94. DEPLOYMENT
+======================================================================
+
+Using 18:
+
+network configuration must be versioned and safely deployed.
+
+======================================================================
+95. NETWORK POLICY DEPLOYMENT
+======================================================================
+
+A bad network policy can:
+
+- disconnect production
+- block DNS
+- block databases
+- block external APIs.
+
+Require validation and rollback.
+
+======================================================================
+96. POLICY TESTING
+======================================================================
+
+Test:
+
+ALLOW
+
+DENY
+
+before production rollout.
+
+======================================================================
+97. NETWORK CONFIGURATION DRIFT
+======================================================================
+
+Detect differences between:
+
+declared policy
+
+and:
+
+actual network state.
+
+======================================================================
+98. INFRASTRUCTURE AS CODE
+======================================================================
+
+Evaluate whether networking should be managed declaratively.
+
+Do not assume a particular IaC technology.
+
+======================================================================
+99. NETWORK CHANGE CONTROL
+======================================================================
+
+Network changes can have platform-wide blast radius.
+
+Define:
+
+- review
+- testing
+- deployment
+- rollback.
+
+======================================================================
+100. NETWORK SECURITY BOUNDARY
+======================================================================
+
+Map:
+
+Internet
+→
+Edge
+→
+Application
+→
+Data
+→
+External Services.
+
+For every boundary define:
+
+- identity
+- authorization
+- encryption
+- monitoring.
+
+======================================================================
+101. DATA EXFILTRATION
+======================================================================
+
+Threat-model:
+
+Compromised Agent
+
+attempts:
+
+large outbound transfer.
+
+Define:
+
+- egress policy
+- monitoring
+- anomaly detection
+- rate limits where justified.
+
+======================================================================
+102. COMMAND AND CONTROL
+======================================================================
+
+Threat-model compromised workloads attempting external command-and-
+control communication.
+
+Do not rely solely on DNS filtering.
+
+======================================================================
+103. SSRF DEFENSE
+======================================================================
+
+Implement defense in depth:
+
+Application validation
++
+network policy
++
+egress controls
++
+metadata endpoint protection.
+
+======================================================================
+104. DNS REBINDING
+======================================================================
+
+Evaluate DNS rebinding risks for agent-controlled URLs.
+
+======================================================================
+105. INTERNAL DNS ACCESS
+======================================================================
+
+Do not expose internal DNS zones to untrusted workloads unnecessarily.
+
+======================================================================
+106. METADATA SERVICE
+======================================================================
+
+Cloud metadata endpoints are high-value targets.
+
+Restrict workload access.
+
+======================================================================
+107. CLOUD CREDENTIAL ENDPOINTS
+======================================================================
+
+Ensure workloads cannot arbitrarily access credential metadata services.
+
+======================================================================
+108. TENANT-SPECIFIC EGRESS
+======================================================================
+
+If tenants have custom integrations:
+
+define how policy identifies:
+
+Tenant
++
+Tool
++
+Destination.
+
+======================================================================
+109. EXTERNAL DOMAIN ALLOWLIST
+======================================================================
+
+Evaluate whether tenant tools require destination allowlists.
+
+======================================================================
+110. URL SECURITY
+======================================================================
+
+Do not allow:
+
+user-controlled URL
+
+to directly determine:
+
+arbitrary network destination
+
+without validation.
+
+======================================================================
+111. PROXY SECURITY
+======================================================================
+
+If an egress proxy exists:
+
+protect it from:
+
+- SSRF
+- open proxy abuse
+- bypass
+- DNS attacks.
+
+======================================================================
+112. PROXY BYPASS
+======================================================================
+
+Ensure workloads cannot simply bypass the intended egress control path.
+
+======================================================================
+113. NETWORK IDENTITY PROPAGATION
+======================================================================
+
+Using 11/19:
+
+network authorization should be able to associate:
+
+workload identity
+
+with:
+
+tenant context
+
+where required.
+
+======================================================================
+114. MODEL RUNTIME NETWORKING
+======================================================================
+
+Define exactly what Model Runtime can reach.
+
+Prefer minimum required connectivity.
+
+======================================================================
+115. AGENT RUNTIME NETWORKING
+======================================================================
+
+Define exactly what Agent Runtime can reach.
+
+======================================================================
+116. TOOL RUNTIME NETWORKING
+======================================================================
+
+Tool Runtime may require broader egress.
+
+Isolate it from sensitive internal services.
+
+======================================================================
+117. KNOWLEDGE RUNTIME NETWORKING
+======================================================================
+
+Define access to:
+
+- object storage
+- database
+- vector database
+- embedding service.
+
+======================================================================
+118. MEMORY NETWORKING
+======================================================================
+
+Define access to:
+
+- memory store
+- embedding service
+- database.
+
+======================================================================
+119. OBSERVABILITY NETWORKING
+======================================================================
+
+Telemetry agents need access to observability infrastructure.
+
+Do not grant them unnecessary production access.
+
+======================================================================
+120. AUDIT NETWORKING
+======================================================================
+
+Audit pipelines should be reachable only by authorized producers and
+consumers.
+
+======================================================================
+121. CONTROL PLANE → DATA PLANE
+======================================================================
+
+Define exactly which Control Plane services can communicate with Data
+Plane services.
+
+Avoid unrestricted bidirectional access.
+
+======================================================================
+122. DATA PLANE → CONTROL PLANE
+======================================================================
+
+Determine whether Data Plane can call Control Plane.
+
+Prefer narrowly scoped APIs.
+
+======================================================================
+123. MODEL → AGENT
+======================================================================
+
+Define whether Model Runtime initiates communication back to Agent
+Runtime.
+
+Prefer:
+
+Agent → Model
+
+unless a callback is explicitly required.
+
+======================================================================
+124. MODEL → INTERNET
+======================================================================
+
+Default assumption:
+
+NO
+
+unless explicitly required.
+
+======================================================================
+125. AGENT → DATABASE
+======================================================================
+
+Determine whether Agent Runtime directly accesses databases.
+
+If possible, evaluate mediation through dedicated services.
+
+======================================================================
+126. SERVICE MEDIATION
+======================================================================
+
+Compare:
+
+Agent
+→
+Database
+
+vs:
+
+Agent
+→
+Data Service
+→
+Database.
+
+Determine the better architecture.
+
+======================================================================
+127. DIRECT DATABASE ACCESS
+======================================================================
+
+Do not reject direct access automatically.
+
+Analyze:
+
+- security
+- performance
+- complexity
+- authorization
+- operational burden.
+
+======================================================================
+128. NETWORK ARCHITECTURE OPTIONS
+======================================================================
+
+Identify real alternatives.
+
+Potential:
+
+OPTION A
+--------
+Simple private network + firewall + network policies.
+
+OPTION B
+--------
+Private network + identity-aware service communication.
+
+OPTION C
+--------
+Service mesh + mTLS + network policy.
+
+OPTION D
+--------
+Hybrid Zero Trust + selective service mesh.
+
+OPTION E
+--------
+Physical network segmentation for selected workloads.
+
+These are examples only.
+
+Research and determine the actual candidates.
+
+======================================================================
+129. ARCHITECTURE SELECTION MATRIX
+======================================================================
+
+Compare:
+
+| Criterion |
+| Security |
+| Tenant isolation |
+| Zero Trust alignment |
+| Performance |
+| Latency |
+| Operational complexity |
+| Debuggability |
+| Reliability |
+| Cost |
+| Scalability |
+| Egress control |
+| mTLS capability |
+| Observability |
+| Day-1 practicality |
+| Enterprise evolution |
+| Recommendation |
+
+======================================================================
+130. "WHY NOT?" ANALYSIS
+======================================================================
+
+For the final architecture explicitly answer:
+
+WHY THIS?
+
+WHY NOT A SIMPLE VPC/VNET?
+
+WHY NOT DEFAULT-DENY EVERYTHING?
+
+WHY NOT ALLOW INTERNAL TRAFFIC?
+
+WHY NOT SERVICE MESH EVERY SERVICE?
+
+WHY NOT mTLS EVERYWHERE?
+
+WHY NOT NO mTLS?
+
+WHY NOT ONE NETWORK PER TENANT?
+
+WHY NOT ONE SUBNET PER TENANT?
+
+WHY NOT PHYSICAL NETWORK ISOLATION?
+
+WHY NOT LOGICAL ISOLATION?
+
+WHY NOT CENTRAL EGRESS?
+
+WHY NOT DIRECT EGRESS?
+
+WHY NOT ONE API GATEWAY?
+
+WHY NOT MULTIPLE GATEWAYS?
+
+WHY NOT KUBERNETES NETWORKPOLICY ONLY?
+
+WHY NOT A SERVICE MESH ONLY?
+
+WHY NOT BOTH?
+
+Only retain alternatives that are actually relevant after research.
+
+======================================================================
+131. REVERSIBILITY ANALYSIS
+======================================================================
+
+Classify:
+
+- network topology
+- trust zones
+- ingress
+- API gateway
+- egress architecture
+- CNI
+- network policy
+- service mesh
+- mTLS
+- workload identity
+- private connectivity
+- DNS architecture
+- multi-region architecture
+
+as:
+
+- easily reversible
+- moderately reversible
+- expensive to reverse
+- effectively irreversible.
+
+======================================================================
+132. CONTRACT VS IMPLEMENTATION
+======================================================================
+
+Define stable internal contracts.
+
+Potential:
+
+NetworkIdentity
+ServiceEndpoint
+TrafficPolicy
+EgressPolicy
+IngressPolicy
+TrustZone
+NetworkRoute
+NetworkAccessDecision
+ServiceIdentity.
+
+These are examples only.
+
+Determine the minimum required set.
+
+The contracts must remain independent from:
+
+- Kubernetes
+- Istio
+- Linkerd
+- Cilium
+- Calico
+- AWS
+- Azure
+- GCP
+- any specific networking vendor.
+
+======================================================================
+133. REQUIRED DIAGRAMS
+======================================================================
+
+Include Mermaid diagrams for:
+
+1. Complete network architecture
+2. Trust zones
+3. North-south traffic
+4. East-west traffic
+5. Control Plane networking
+6. Data Plane networking
+7. Agent → Model
+8. Agent → Tool
+9. Agent → MCP
+10. Service → Database
+11. Service → Storage
+12. External API connectivity
+13. Ingress
+14. Egress
+15. Egress proxy
+16. DNS / service discovery
+17. TLS / mTLS
+18. Network policy
+19. Tenant isolation
+20. Network failure domains
+21. Network observability
+22. Day-1 → enterprise evolution
+
+======================================================================
+134. ADR CANDIDATES
+======================================================================
+
+Identify ADRs for:
+
+- network topology
+- trust zones
+- ingress
+- egress
+- API gateway
+- network policy
+- CNI
+- service mesh
+- mTLS
+- workload identity
+- DNS
+- service discovery
+- private connectivity
+- tenant network isolation
+- egress allowlisting
+- SSRF protection
+- network observability
+- network failure policy.
+
+For each:
+
+- problem
+- alternatives
+- recommendation
+- consequences
+- reversibility
+- decision deadline
+
+======================================================================
+135. DAY-1 / PREPARE / SCALE / ENTERPRISE
+======================================================================
+
+Create:
+
+| Capability | Day 1 | Prepare | Scale | Enterprise |
+
+Cover:
+
+- ingress
+- API gateway
+- DNS
+- service discovery
+- network policy
+- egress control
+- TLS
+- mTLS
+- workload identity
+- service mesh
+- SSRF protection
+- private endpoints
+- tenant isolation
+- network observability
+- network audit
+- network capacity
+- multi-region
+- global routing
+- cross-region connectivity
+- enterprise private connectivity.
+
+======================================================================
+136. NETWORK SECURITY TEST MATRIX
+======================================================================
+
+Create:
+
+| Threat | Attack | Control | Detection | Recovery |
+
+At minimum:
+
+- unauthorized ingress
+- unauthorized east-west access
+- unauthorized egress
+- SSRF
+- metadata endpoint access
+- DNS rebinding
+- open proxy
+- proxy bypass
+- cross-tenant communication
+- certificate compromise
+- certificate expiry
+- network policy bypass
+- compromised workload
+- data exfiltration
+- DNS failure
+- egress gateway failure
+- service mesh failure
+- network partition.
+
+======================================================================
+137. NETWORK CONNECTIVITY TEST MATRIX
+======================================================================
+
+For every critical service pair define:
+
+SOURCE
+
+DESTINATION
+
+PROTOCOL
+
+PORT
+
+IDENTITY
+
+AUTHORIZATION
+
+ENCRYPTION
+
+TIMEOUT
+
+RETRY
+
+FAILURE BEHAVIOR.
+
+Do not leave undocumented implicit connectivity.
+
+======================================================================
+138. NETWORK POLICY TESTING
+======================================================================
+
+For every intended connection:
+
+test:
+
+ALLOW.
+
+For every unintended connection:
+
+test:
+
+DENY.
+
+Include negative tests.
+
+======================================================================
+139. SSRF TESTING
+======================================================================
+
+Attempt access to:
+
+- internal services
+- metadata endpoints
+- localhost
+- private IP ranges
+- loopback
+- link-local addresses
+- internal DNS names.
+
+Verify controls at multiple layers.
+
+======================================================================
+140. EGRESS TESTING
+======================================================================
+
+Attempt:
+
+Agent
+→
+unauthorized external domain.
+
+Must fail.
+
+Attempt:
+
+Tool
+→
+authorized external API.
+
+Must succeed.
+
+======================================================================
+141. CROSS-TENANT TESTING
+======================================================================
+
+Attempt:
+
+Tenant A workload
+→
+Tenant B service.
+
+Must fail unless explicitly authorized.
+
+======================================================================
+142. CERTIFICATE TESTING
+======================================================================
+
+Test:
+
+- expired certificate
+- invalid certificate
+- wrong identity
+- revoked certificate
+- CA failure.
+
+======================================================================
+143. FAILURE TESTING
+======================================================================
+
+Test:
+
+- DNS failure
+- load balancer failure
+- proxy failure
+- egress gateway failure
+- network policy controller failure
+- service mesh control-plane failure
+- service endpoint failure
+- packet loss
+- latency injection.
+
+======================================================================
+144. RETRY STORM TEST
+======================================================================
+
+Simulate downstream failure.
+
+Measure:
+
+- retries
+- connection count
+- queue growth
+- CPU
+- latency.
+
+Verify the network architecture does not amplify the outage.
+
+======================================================================
+145. NETWORK CAPACITY TEST
+======================================================================
+
+Measure:
+
+- bandwidth
+- connections
+- requests/sec
+- packet rate
+- DNS queries
+- proxy throughput.
+
+Identify saturation points.
+
+======================================================================
+146. NETWORK COST TEST
+======================================================================
+
+Measure material:
+
+- egress
+- cross-zone
+- cross-region
+- proxy
+- NAT
+
+costs.
+
+Do not optimize theoretical costs without evidence.
+
+======================================================================
+147. DEPLOYMENT TEST
+======================================================================
+
+Deploy a network policy change.
+
+Verify:
+
+- validation
+- rollout
+- monitoring
+- rollback.
+
+======================================================================
+148. POLICY DRIFT TEST
+======================================================================
+
+Compare:
+
+declared network policy
+
+vs:
+
+actual enforced policy.
+
+======================================================================
+149. INCIDENT RESPONSE
+======================================================================
+
+Walk through:
+
+SCENARIO A
+----------
+Unexpected outbound traffic from Agent Runtime.
+
+SCENARIO B
+----------
+Compromised Tool Runtime attempts internal access.
+
+SCENARIO C
+----------
+Tenant A attempts to reach Tenant B.
+
+SCENARIO D
+----------
+Egress gateway fails.
+
+SCENARIO E
+----------
+DNS becomes unavailable.
+
+SCENARIO F
+----------
+Certificate rotation fails.
+
+SCENARIO G
+----------
+Network policy accidentally blocks production.
+
+SCENARIO H
+----------
+Service mesh control plane becomes unavailable.
+
+SCENARIO I
+----------
+SSRF reaches an internal endpoint.
+
+For each:
+
+DETECTION
+→
+CONTAINMENT
+→
+BLAST-RADIUS ANALYSIS
+→
+RECOVERY
+→
+ROOT CAUSE
+→
+PREVENTION.
+
+======================================================================
+150. ATTEMPT TO FALSIFY THE RECOMMENDATION
+======================================================================
+
+Try to prove the selected architecture wrong.
+
+Ask:
+
+- What happens when one trust zone is compromised?
+- What happens when the CNI fails?
+- What happens when the service mesh fails?
+- What happens when DNS fails?
+- What happens when egress fails?
+- What happens when a certificate expires?
+- What happens when the API Gateway saturates?
+- What happens when a tenant attempts SSRF?
+- What happens when one tenant generates extreme egress?
+- What happens when cross-region traffic increases?
+- What happens when network policy becomes inconsistent?
+- What happens when a workload bypasses the intended proxy?
+- What happens when external API latency increases?
+- What happens when packet loss increases?
+- What happens when retries amplify traffic?
+- What happens when network capacity is exhausted?
+
+Determine the first architectural trigger.
+
+======================================================================
+151. ARCHITECTURAL SELF-CRITIQUE
+======================================================================
+
+Before finalizing, ask:
+
+1. Did I define trust boundaries?
+2. Did I separate network location from trust?
+3. Is service identity authoritative?
+4. Is application authorization still required?
+5. Is ingress controlled?
+6. Is egress controlled?
+7. Is SSRF addressed?
+8. Are internal services protected?
+9. Is database access restricted?
+10. Is tenant isolation defined?
+11. Is TLS defined?
+12. Is mTLS actually justified?
+13. Is service mesh actually justified?
+14. Is network policy enforceable?
+15. Is DNS resilient?
+16. Are retries bounded?
+17. Are failure domains defined?
+18. Is network capacity measurable?
+19. Are network costs measurable?
+20. Can the architecture evolve to multi-region?
+21. What assumptions could invalidate the architecture?
+
+Include:
+
+# ARCHITECTURAL SELF-CRITIQUE
+
+======================================================================
+152. FINAL RECOMMENDATION
+======================================================================
+
+End with:
+
+# FINAL NETWORKING ARCHITECTURE RECOMMENDATION
+
+Answer:
+
+"What Networking Architecture should this platform actually build?"
+
+Be concrete.
+
+Describe:
+
+- network topology
+- trust zones
+- ingress
+- egress
+- API gateway
+- service discovery
+- DNS
+- TLS
+- mTLS
+- workload identity
+- network policies
+- CNI
+- service mesh decision
+- database networking
+- storage networking
+- model networking
+- tool networking
+- MCP networking
+- tenant isolation
+- SSRF protection
+- network observability
+- network audit
+- network capacity
+- network cost
+- failure behavior
+- Day-1 implementation
+- future enterprise evolution.
+
+Then explicitly answer:
+
+"What MUST NOT be built on Day 1?"
+
+Then:
+
+"What future condition should trigger stronger network isolation?"
+
+======================================================================
+153. REQUIRED OUTPUT
+======================================================================
+
+Produce:
+
+22_NETWORKING_ARCHITECTURE.md
+
+The document MUST explicitly reference:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_ARCHITECTURE.md
+04_AGENT_RUNTIME.md
+05_MODEL_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+08_KNOWLEDGE_DATA_ARCHITECTURE.md
+09_MEMORY_ARCHITECTURE.md
+10_SECURITY_ARCHITECTURE.md
+11_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+12_TRUST_PROVENANCE_ARCHITECTURE.md
+13_RELIABILITY_ARCHITECTURE.md
+14_CONCURRENCY_ARCHITECTURE.md
+15_OBSERVABILITY_ARCHITECTURE.md
+16_AUDIT_ARCHITECTURE.md
+17_EVALUATION_ARCHITECTURE.md
+18_DEPLOYMENT_LIFECYCLE_ARCHITECTURE.md
+19_MULTI_TENANCY_ARCHITECTURE.md
+20_COST_ARCHITECTURE.md
+21_CAPACITY_PLANNING_ARCHITECTURE.md
+
+Also identify future interactions with:
+
+23_STORAGE_ARCHITECTURE.md
+24_DR_ENTERPRISE_ARCHITECTURE.md
+25_ADVANCED_SUPPLY_CHAIN_ARCHITECTURE.md
+26_ENTERPRISE_COMPLIANCE_ARCHITECTURE.md
+27_MULTI_MODEL_FALLBACK_ARCHITECTURE.md
+28_HUMAN_IN_THE_LOOP_ARCHITECTURE.md
+29_REPLAY_ARCHITECTURE.md
+30_OFFLINE_MOBILE_ARCHITECTURE.md
+31_A2A_ARCHITECTURE.md
+32_ADMIN_CONSOLE_ARCHITECTURE.md
+34_QUALITY_MODEL_ARCHITECTURE.md
+
+If these documents do not exist:
+
+DO NOT invent their content.
+
+Define only stable contracts and future dependencies.
+
+If there is a conflict:
+
+DO NOT silently resolve it.
+
+Identify the conflict.
+
+Explain the trade-off.
+
+Recommend the superior architectural decision.
+
+Create an ADR candidate where appropriate.
+
+======================================================================
+154. SOURCE REQUIREMENTS
+======================================================================
+
+THIS SECTION IS MANDATORY.
+
+Use current web research.
+
+Prioritize:
+
+- NIST SP 800-207
+- NIST Zero Trust implementation guidance
+- official Kubernetes networking documentation
+- official Kubernetes NetworkPolicy documentation
+- official Gateway API documentation
+- official CNI documentation
+- official service mesh documentation where evaluated
+- official cloud networking documentation
+- authoritative network security research.
+
+NIST's implementation guidance explicitly notes that there is no
+single technical approach that is best for every enterprise; therefore
+do not turn Zero Trust into a predetermined technology choice. :contentReference[oaicite:5]{index=5}
+
+Do not fabricate:
+
+- network capabilities
+- CNI capabilities
+- service mesh capabilities
+- performance numbers
+- latency numbers
+- throughput numbers
+- security guarantees.
+
+Do not cite sources that were not actually inspected.
+
+Clearly distinguish:
+
+SOURCE FACT
+
+from:
+
+SECURITY RESEARCH
+
+from:
+
+BENCHMARK
+
+from:
+
+MEASUREMENT
+
+from:
+
+INFERENCE
+
+from:
+
+ARCHITECTURAL RECOMMENDATION.
+
+======================================================================
+155. VERSION AND DATE DISCIPLINE
+======================================================================
+
+At the beginning of the document state:
+
+RESEARCH DATE
+
+BENCHMARK DATE
+
+and relevant:
+
+KUBERNETES VERSION
+
+CNI VERSION
+
+SERVICE MESH VERSION
+
+CLOUD NETWORKING COMPONENT VERSIONS
+
+for technologies actually selected.
+
+Do not assume networking behavior is identical across versions.
+
+======================================================================
+156. ABSOLUTE FINAL INSTRUCTION
+======================================================================
+
+Act as an INDEPENDENT Principal Network and Zero Trust Architect.
+
+Your responsibility is to determine the best networking architecture
+for THIS platform.
+
+Do not assume:
+
+VPC = SECURITY.
+
+Do not assume:
+
+PRIVATE SUBNET = TRUST.
+
+Do not assume:
+
+KUBERNETES CLUSTER = TRUST BOUNDARY.
+
+Do not assume:
+
+INTERNAL NETWORK = SAFE.
+
+Do not assume:
+
+NETWORK POLICY = APPLICATION AUTHORIZATION.
+
+Do not assume:
+
+mTLS = ZERO TRUST.
+
+Do not assume:
+
+SERVICE MESH = REQUIRED.
+
+Do not assume:
+
+SERVICE MESH = SECURITY BY DEFAULT.
+
+Do not assume:
+
+DEFAULT DENY = AUTOMATICALLY THE BEST ARCHITECTURE.
+
+Do not assume:
+
+PHYSICAL NETWORK ISOLATION = ALWAYS SUPERIOR.
+
+Do not assume:
+
+LOGICAL ISOLATION = ALWAYS SUFFICIENT.
+
+Do not assume:
+
+NETWORK ISOLATION = TENANT ISOLATION.
+
+Do not assume:
+
+IP ADDRESS = IDENTITY.
+
+Do not assume:
+
+DNS = TRUST.
+
+Do not assume:
+
+TLS TERMINATION = END-TO-END SECURITY.
+
+Do not assume:
+
+PRIVATE CONNECTIVITY = AUTHORIZATION.
+
+Do not assume:
+
+EGRESS CONTROL = SSRF PROTECTION BY ITSELF.
+
+Do not assume:
+
+API GATEWAY = COMPLETE SECURITY.
+
+Do not assume:
+
+NETWORK SECURITY = APPLICATION SECURITY.
+
+Do not allow:
+
+AGENT RUNTIME
+
+to reach:
+
+ARBITRARY INTERNAL RESOURCES.
+
+Do not allow:
+
+AGENT-CONTROLLED URLS
+
+to determine:
+
+ARBITRARY NETWORK DESTINATIONS.
+
+Do not allow:
+
+TOOL RUNTIME
+
+to inherit:
+
+UNNECESSARY INTERNAL NETWORK ACCESS.
+
+Do not allow:
+
+TENANT A
+
+to communicate with:
+
+TENANT B
+
+without explicit authorization.
+
+Do not allow:
+
+COMPROMISED WORKLOADS
+
+to use:
+
+NETWORK LOCATION
+
+as an implicit trust mechanism.
+
+Do not allow:
+
+RETRIES
+
+to create:
+
+NETWORK AMPLIFICATION LOOPS.
+
+Do not allow:
+
+A SINGLE EGRESS COMPONENT
+
+to become:
+
+AN UNMODELED SINGLE POINT OF FAILURE.
+
+Do not allow:
+
+A NETWORK POLICY CHANGE
+
+to reach production without:
+
+VALIDATION
++
+OBSERVABILITY
++
+ROLLBACK.
+
+Optimize for:
+
+EXPLICIT TRUST BOUNDARIES
++
+LEAST PRIVILEGE
++
+STRONG SERVICE IDENTITY
++
+CONTROLLED EGRESS
++
+DEFENSE IN DEPTH
++
+TENANT ISOLATION
++
+LOW OPERATIONAL COMPLEXITY
++
+HIGH OBSERVABILITY
++
+PREDICTABLE FAILURE
++
+PERFORMANCE
++
+COST EFFICIENCY
++
+FUTURE MULTI-REGION EVOLUTION.
+
+The final architecture MUST result from:
+
+    SYSTEM COMMUNICATION MODEL
+       ↓
+    TRUST BOUNDARIES
+       ↓
+    IDENTITY MODEL
+       ↓
+    TRAFFIC CLASSIFICATION
+       ↓
+    NETWORK TOPOLOGY
+       ↓
+    INGRESS
+       ↓
+    EAST-WEST
+       ↓
+    EGRESS
+       ↓
+    TLS / mTLS
+       ↓
+    TENANT ISOLATION
+       ↓
+    SSRF / EXFILTRATION MODEL
+       ↓
+    FAILURE MODEL
+       ↓
+    CAPACITY MODEL
+       ↓
+    COST MODEL
+       ↓
+    ALTERNATIVE COMPARISON
+       ↓
+    ADVERSARIAL CHALLENGE
+       ↓
+    FALSIFICATION
+       ↓
+    FINAL DECISION
+
+DO NOT CHOOSE THE CNI FIRST.
+
+DO NOT CHOOSE THE SERVICE MESH FIRST.
+
+DO NOT CHOOSE THE CLOUD NETWORK FIRST.
+
+DO NOT CHOOSE mTLS FIRST.
+
+DO NOT CHOOSE THE API GATEWAY FIRST.
+
+DO NOT CHOOSE THE FIREWALL FIRST.
+
+RESEARCH THE COMMUNICATION REQUIREMENTS FIRST.
+
+MAP EVERY SERVICE.
+
+MAP EVERY TRUST BOUNDARY.
+
+MAP EVERY ALLOWED CONNECTION.
+
+MAP EVERY FORBIDDEN CONNECTION.
+
+MAP EVERY EXTERNAL DESTINATION.
+
+MAP EVERY TENANT-SENSITIVE PATH.
+
+THREAT-MODEL SSRF.
+
+THREAT-MODEL DATA EXFILTRATION.
+
+THREAT-MODEL COMPROMISED WORKLOADS.
+
+MODEL NETWORK FAILURE.
+
+MODEL NETWORK CAPACITY.
+
+MODEL NETWORK COST.
+
+CHALLENGE THE DESIGN.
+
+FALSIFY THE ARCHITECTURE.
+
+THEN SELECT THE BEST NETWORKING ARCHITECTURE AVAILABLE FOR THIS
+PROJECT.
+
+THEN DESIGN IT.

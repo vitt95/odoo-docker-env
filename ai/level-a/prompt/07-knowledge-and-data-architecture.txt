@@ -1,0 +1,1998 @@
+# 07 — KNOWLEDGE & DATA ARCHITECTURE
+## Enterprise AI Agent Platform
+
+======================================================================
+ROLE
+======================================================================
+
+Act as the Principal Data Architect, Knowledge Systems Architect and
+Enterprise AI Data Architect responsible for designing the Knowledge and
+Data Architecture of an enterprise-grade AI agent platform.
+
+You have deep expertise in:
+
+- data architecture
+- knowledge systems
+- enterprise search
+- information retrieval
+- RAG
+- vector databases
+- PostgreSQL
+- full-text search
+- metadata systems
+- document processing
+- ingestion pipelines
+- data lineage
+- provenance
+- data governance
+- access-controlled retrieval
+- multi-tenancy
+- knowledge graphs
+- graph databases
+- semantic search
+- hybrid retrieval
+- ranking
+- reranking
+- embeddings
+- chunking
+- document intelligence
+- event-driven ingestion
+- synchronization
+- data quality
+- data lifecycle management
+- AI agent architectures
+- enterprise security
+
+You are working within:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_PLANE.md
+04_AGENT_RUNTIME.md
+05_MODEL_INFERENCE_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+
+These documents provide the current architectural context.
+
+However:
+
+THEY ARE NOT AUTHORITY OVER TECHNICAL TRUTH.
+
+If research demonstrates that an assumption is wrong, incomplete or
+suboptimal, explicitly identify the conflict and recommend the superior
+architecture.
+
+======================================================================
+1. PRIMARY OBJECTIVE
+======================================================================
+
+Design the Knowledge and Data Architecture of the platform.
+
+The architecture must support agents working with enterprise information
+such as:
+
+- CRM records
+- ERP records
+- emails
+- calendars
+- documents
+- PDFs
+- spreadsheets
+- contracts
+- knowledge bases
+- databases
+- tickets
+- internal APIs
+- external SaaS systems
+- structured records
+- semi-structured data
+- unstructured data
+- future enterprise systems
+
+The architecture must answer:
+
+WHERE DOES DATA LIVE?
+
+WHAT IS THE SOURCE OF TRUTH?
+
+WHAT IS INDEXED?
+
+WHAT IS EMBEDDED?
+
+WHAT IS RETRIEVED?
+
+HOW IS DATA SYNCHRONIZED?
+
+HOW IS KNOWLEDGE REPRESENTED?
+
+HOW IS PROVENANCE PRESERVED?
+
+HOW ARE PERMISSIONS ENFORCED DURING RETRIEVAL?
+
+HOW ARE TENANTS ISOLATED?
+
+HOW DOES INFORMATION STAY FRESH?
+
+HOW DOES THE AGENT KNOW WHETHER INFORMATION IS TRUSTWORTHY?
+
+======================================================================
+2. MOST IMPORTANT INSTRUCTION
+## RESEARCH FIRST — SELECT ARCHITECTURE SECOND
+======================================================================
+
+DO NOT begin by designing a vector database.
+
+DO NOT assume RAG is the answer.
+
+DO NOT assume PostgreSQL is sufficient.
+
+DO NOT assume a graph database is required.
+
+DO NOT assume embeddings are required for every dataset.
+
+DO NOT assume every document should be chunked.
+
+DO NOT assume every database should be copied into the platform.
+
+Research first.
+
+The required sequence is:
+
+    RESEARCH
+       ↓
+    DATA REQUIREMENTS
+       ↓
+    KNOWLEDGE ACCESS PATTERNS
+       ↓
+    CANDIDATE ARCHITECTURES
+       ↓
+    COMPARATIVE ANALYSIS
+       ↓
+    SECURITY / AUTHORIZATION ANALYSIS
+       ↓
+    FRESHNESS / CONSISTENCY ANALYSIS
+       ↓
+    PERFORMANCE ANALYSIS
+       ↓
+    ADVERSARIAL CHALLENGE
+       ↓
+    FINAL ARCHITECTURAL DECISION
+       ↓
+    DAY-1 IMPLEMENTATION
+       ↓
+    FUTURE EVOLUTION
+
+The architecture MUST be the result of this process.
+
+======================================================================
+3. CORE PRINCIPLE
+======================================================================
+
+Explicitly investigate the distinction between:
+
+DATA
+
+KNOWLEDGE
+
+MEMORY
+
+CONTEXT
+
+RETRIEVAL
+
+The platform must NOT collapse all five concepts into one database.
+
+Determine the correct boundaries.
+
+At minimum investigate:
+
+DATA
+----
+Authoritative enterprise information.
+
+KNOWLEDGE
+---------
+Information prepared for retrieval and reasoning.
+
+MEMORY
+------
+Information representing agent/user interaction history or learned
+operational context.
+
+CONTEXT
+-------
+Information assembled for a specific model invocation.
+
+RETRIEVAL
+---------
+The process of finding relevant information.
+
+These concepts may use shared infrastructure, but they are not identical.
+
+======================================================================
+4. DAY-1 CONSTRAINTS
+======================================================================
+
+Day 1:
+
+- one machine
+- one GPU if available
+- Qwen3.5 9B
+- PostgreSQL
+- local/containerized services
+- small engineering team
+
+Avoid mandatory:
+
+- distributed data lake
+- Kafka
+- Spark
+- Kubernetes
+- separate vector database
+- graph database
+- search cluster
+- distributed ETL platform
+
+unless research demonstrates a concrete Day-1 requirement.
+
+The Day-1 system should be:
+
+- simple
+- inspectable
+- recoverable
+- secure
+- testable
+- inexpensive
+- easy to operate
+
+======================================================================
+5. FUTURE REQUIREMENTS
+======================================================================
+
+Future requirements may include:
+
+- millions of documents
+- large CRM datasets
+- multiple tenants
+- continuous synchronization
+- enterprise connectors
+- large document collections
+- multilingual data
+- structured and unstructured data
+- semantic search
+- keyword search
+- hybrid search
+- reranking
+- knowledge graphs
+- temporal knowledge
+- data lineage
+- enterprise data governance
+- access-controlled retrieval
+- data residency
+- regional storage
+- large-scale ingestion
+- incremental indexing
+- real-time updates
+- event-driven synchronization
+
+Determine what belongs in:
+
+DAY 1
+PREPARE
+SCALE
+ENTERPRISE
+
+======================================================================
+6. SOURCE OF TRUTH
+======================================================================
+
+This is foundational.
+
+For every data category determine whether the platform should:
+
+A.
+Store the authoritative data.
+
+B.
+Cache the data.
+
+C.
+Index the data.
+
+D.
+Store a derived representation.
+
+E.
+Reference the external system.
+
+F.
+Use a combination.
+
+Example:
+
+CRM customer record
+
+may remain authoritative in CRM.
+
+The platform may maintain:
+
+- metadata
+- search index
+- embeddings
+- synchronized projection
+- provenance
+
+but not necessarily become the source of truth.
+
+Determine the correct model.
+
+======================================================================
+7. DATA OWNERSHIP
+======================================================================
+
+Classify data sources:
+
+- internal database
+- external SaaS
+- user-uploaded document
+- generated artifact
+- agent-generated data
+- system metadata
+- telemetry
+- audit data
+
+For each determine:
+
+- owner
+- authority
+- lifecycle
+- retention
+- update mechanism
+- access control
+- deletion semantics
+
+======================================================================
+8. DATA ARCHITECTURE ALTERNATIVES
+======================================================================
+
+This is MANDATORY.
+
+Identify at least THREE meaningful architectures.
+
+Potential candidates:
+
+OPTION A
+--------
+PostgreSQL-centric architecture.
+
+OPTION B
+--------
+PostgreSQL + object storage + vector search.
+
+OPTION C
+--------
+PostgreSQL + dedicated search engine + vector database.
+
+OPTION D
+--------
+Data lake / lakehouse architecture.
+
+OPTION E
+--------
+Polyglot knowledge architecture.
+
+OPTION F
+--------
+Knowledge graph-centric architecture.
+
+These are examples only.
+
+Research and identify the actual strongest alternatives.
+
+For each evaluate:
+
+- Day-1 complexity
+- query patterns
+- search
+- semantic retrieval
+- transactional requirements
+- consistency
+- freshness
+- scalability
+- security
+- tenant isolation
+- operational burden
+- migration complexity
+- future extensibility
+
+Then select the best architecture.
+
+======================================================================
+9. STRUCTURED DATA VS UNSTRUCTURED DATA
+======================================================================
+
+Do not treat:
+
+CRM record
+
+and:
+
+PDF contract
+
+as the same type of information.
+
+Determine appropriate representations for:
+
+STRUCTURED
+
+SEMI-STRUCTURED
+
+UNSTRUCTURED
+
+TEMPORAL
+
+RELATIONAL
+
+DOCUMENT
+
+EVENT
+
+SEMANTIC
+
+Determine how they should be connected.
+
+======================================================================
+10. POSTGRESQL
+======================================================================
+
+Research current PostgreSQL capabilities relevant to this architecture.
+
+Evaluate:
+
+- relational storage
+- JSONB
+- full-text search
+- indexes
+- partitioning
+- row-level security
+- pgvector
+- transactions
+- logical replication
+- LISTEN/NOTIFY where relevant
+- extensions
+- backup / recovery
+
+Determine how much of the Day-1 architecture can responsibly remain inside
+PostgreSQL.
+
+Do not assume PostgreSQL must do everything.
+
+Do not assume PostgreSQL cannot do enough.
+
+======================================================================
+11. VECTOR SEARCH
+======================================================================
+
+Determine when vector search is actually useful.
+
+Analyze:
+
+- semantic similarity
+- embeddings
+- approximate nearest neighbor
+- exact nearest neighbor
+- metadata filtering
+- tenant filtering
+- hybrid retrieval
+- reranking
+
+Determine whether vector search belongs:
+
+- inside PostgreSQL
+- in a dedicated vector store
+- in a search engine
+- in another architecture
+
+======================================================================
+12. EMBEDDINGS
+======================================================================
+
+Determine:
+
+- which data should be embedded
+- which should not
+- when embeddings are generated
+- which model generates them
+- embedding version
+- dimensions
+- normalization
+- language support
+- re-embedding strategy
+
+Every embedding must be attributable to:
+
+- source
+- source version
+- embedding model
+- embedding model version
+- preprocessing version
+
+======================================================================
+13. EMBEDDING MODEL ARCHITECTURE
+======================================================================
+
+Do not assume the generation model should also generate embeddings.
+
+Determine whether the platform requires:
+
+- dedicated embedding model
+- local embedding model
+- cloud embedding model
+- multiple embedding models
+
+Day 1 may use a local model.
+
+Determine the correct abstraction.
+
+======================================================================
+14. CHUNKING
+======================================================================
+
+Do not assume fixed-size chunking is optimal.
+
+Research:
+
+- fixed chunking
+- semantic chunking
+- hierarchical chunking
+- document-aware chunking
+- structure-aware chunking
+- sentence-level chunking
+- paragraph-level chunking
+
+Determine appropriate strategies for:
+
+- PDFs
+- contracts
+- CRM records
+- emails
+- technical documentation
+- spreadsheets
+
+Determine whether chunking should preserve:
+
+- document hierarchy
+- section
+- page
+- table
+- author
+- timestamp
+- access metadata
+
+======================================================================
+15. DOCUMENT REPRESENTATION
+======================================================================
+
+Determine whether documents require multiple representations:
+
+RAW DOCUMENT
+
+PARSED DOCUMENT
+
+STRUCTURED CONTENT
+
+CHUNKS
+
+EMBEDDINGS
+
+METADATA
+
+PROVENANCE
+
+Do not collapse these into one entity.
+
+Define the lifecycle.
+
+======================================================================
+16. DOCUMENT INGESTION
+======================================================================
+
+Define:
+
+SOURCE
+ ↓
+FETCH
+ ↓
+VALIDATE
+ ↓
+PARSE
+ ↓
+NORMALIZE
+ ↓
+CLASSIFY
+ ↓
+CHUNK
+ ↓
+EMBED
+ ↓
+INDEX
+ ↓
+READY
+
+Determine whether this pipeline is correct.
+
+Identify:
+
+- synchronous ingestion
+- asynchronous ingestion
+- retries
+- partial failure
+- idempotency
+- deduplication
+- versioning
+
+======================================================================
+17. DATA INGESTION
+======================================================================
+
+For structured sources evaluate:
+
+- polling
+- webhooks
+- CDC
+- API synchronization
+- event streams
+- scheduled sync
+
+Determine the correct Day-1 strategy.
+
+======================================================================
+18. FRESHNESS
+======================================================================
+
+Different data has different freshness requirements.
+
+Examples:
+
+CRM customer:
+minutes
+
+Calendar:
+seconds/minutes
+
+Contract:
+hours/days
+
+Historical documentation:
+days/months
+
+Determine freshness classes.
+
+Do not impose one global synchronization strategy.
+
+======================================================================
+19. CONSISTENCY
+======================================================================
+
+Determine whether the knowledge layer needs:
+
+- strong consistency
+- eventual consistency
+- read-after-write consistency
+- version consistency
+- source-version consistency
+
+Critical requirement:
+
+The agent must not unknowingly reason over stale data when the task requires
+current state.
+
+Determine mechanisms to detect stale information.
+
+======================================================================
+20. SYNCHRONIZATION
+======================================================================
+
+Define how external systems synchronize into the platform.
+
+Analyze:
+
+- full sync
+- incremental sync
+- webhook
+- polling
+- CDC
+- event-driven
+
+Determine:
+
+- ordering
+- duplicates
+- missing events
+- retries
+- reconciliation
+- backfill
+
+======================================================================
+21. RECONCILIATION
+======================================================================
+
+Every synchronization system eventually encounters divergence.
+
+Define reconciliation mechanisms.
+
+Examples:
+
+- periodic full comparison
+- checksums
+- source version
+- updated_at
+- change cursor
+- event replay
+
+Determine Day-1 requirements.
+
+======================================================================
+22. DATA LINEAGE
+======================================================================
+
+Every derived knowledge object should be traceable to its source.
+
+Example:
+
+Answer
+ ↓
+Retrieved Chunk
+ ↓
+Document Version
+ ↓
+Source Record
+ ↓
+External CRM / Document System
+
+Determine minimum lineage.
+
+======================================================================
+23. PROVENANCE
+======================================================================
+
+Define provenance metadata.
+
+Potential fields:
+
+- source_system
+- source_id
+- source_version
+- retrieved_at
+- indexed_at
+- author
+- timestamp
+- tenant
+- document_id
+- document_version
+- transformation_version
+- embedding_model
+- embedding_version
+
+Determine the canonical provenance model.
+
+======================================================================
+24. TRUST AND SOURCE QUALITY
+======================================================================
+
+Not all sources are equally trustworthy.
+
+Classify:
+
+- authoritative
+- trusted
+- user-generated
+- external
+- unverified
+- stale
+
+Determine whether source trust should affect:
+
+- retrieval
+- ranking
+- model context
+- answer generation
+- tool decisions
+
+Do not allow trust scores to become arbitrary hidden heuristics.
+
+======================================================================
+25. ACCESS-CONTROLLED RETRIEVAL
+======================================================================
+
+This is CRITICAL.
+
+A document may exist in the index but still be inaccessible to the current
+user or agent.
+
+Determine how retrieval enforces:
+
+- tenant
+- user
+- role
+- resource
+- field
+- document
+- classification
+- ownership
+
+Evaluate:
+
+FILTER BEFORE RETRIEVAL
+
+versus:
+
+RETRIEVE THEN FILTER
+
+versus:
+
+HYBRID.
+
+The architecture must prevent unauthorized data from reaching the model
+context whenever possible.
+
+======================================================================
+26. SECURITY FILTERING
+======================================================================
+
+Determine where authorization metadata is stored.
+
+Potentially:
+
+chunk
+ ↓
+document
+ ↓
+resource
+ ↓
+tenant
+ ↓
+policy
+
+Determine whether the retrieval engine can enforce policy predicates
+directly.
+
+======================================================================
+27. TENANT ISOLATION
+======================================================================
+
+Determine:
+
+- tenant identifiers
+- storage isolation
+- index isolation
+- row-level security
+- query filters
+- encryption
+- cache isolation
+- embedding isolation
+
+Do not rely on a single tenant filter.
+
+Use defense in depth.
+
+======================================================================
+28. RETRIEVAL ARCHITECTURE
+======================================================================
+
+Compare:
+
+A.
+Vector retrieval
+
+B.
+Keyword retrieval
+
+C.
+Full-text retrieval
+
+D.
+Hybrid retrieval
+
+E.
+Graph retrieval
+
+F.
+Structured query
+
+G.
+Multi-stage retrieval
+
+Determine the best architecture.
+
+Do not assume vector search should be the primary mechanism.
+
+======================================================================
+29. QUERY UNDERSTANDING
+======================================================================
+
+Determine whether retrieval requires query transformation.
+
+Potential techniques:
+
+- query rewriting
+- decomposition
+- expansion
+- metadata extraction
+- entity extraction
+- temporal constraints
+
+Determine which belong in:
+
+- Runtime
+- Retrieval Layer
+- Model Layer
+
+======================================================================
+30. RERANKING
+======================================================================
+
+Evaluate whether a reranker is useful.
+
+Compare:
+
+- no reranker
+- embedding similarity only
+- cross-encoder
+- LLM reranker
+- hybrid ranking
+
+Determine Day-1 versus future.
+
+======================================================================
+31. RETRIEVAL PIPELINE
+======================================================================
+
+Define the complete retrieval flow.
+
+Potential:
+
+User Intent
+ ↓
+Query Construction
+ ↓
+Authorization Filter
+ ↓
+Candidate Retrieval
+ ↓
+Metadata Filtering
+ ↓
+Reranking
+ ↓
+Deduplication
+ ↓
+Context Assembly
+ ↓
+Model
+
+Do not assume this exact sequence.
+
+Determine the correct pipeline.
+
+======================================================================
+32. CONTEXT ASSEMBLY
+======================================================================
+
+Determine how retrieved information becomes model context.
+
+Consider:
+
+- relevance
+- source diversity
+- token budget
+- freshness
+- trust
+- provenance
+- duplication
+- conflicting sources
+
+The model should receive enough information to reason, but not an
+unbounded dump.
+
+======================================================================
+33. CONFLICTING DATA
+======================================================================
+
+What happens when sources disagree?
+
+Example:
+
+CRM says:
+customer address = A
+
+Document says:
+customer address = B
+
+Email says:
+customer address = C
+
+Determine:
+
+- source precedence
+- recency
+- authority
+- conflict representation
+- human escalation
+
+Do not silently choose a source without defining the policy.
+
+======================================================================
+34. TEMPORAL DATA
+======================================================================
+
+Enterprise information changes over time.
+
+Determine whether the system needs:
+
+- current value
+- historical value
+- effective date
+- event time
+- ingestion time
+- version history
+
+Agents may ask:
+
+"What was the customer's address in March?"
+
+This requires more than current-state retrieval.
+
+======================================================================
+35. KNOWLEDGE GRAPH
+======================================================================
+
+Research whether a knowledge graph is justified.
+
+Potential entities:
+
+Customer
+Company
+Contact
+Opportunity
+Contract
+Invoice
+Employee
+Product
+Document
+
+Potential relationships:
+
+owns
+works_for
+signed
+contains
+related_to
+belongs_to
+
+Determine whether a graph database is necessary.
+
+Evaluate alternatives:
+
+- relational graph modeling
+- PostgreSQL relations
+- recursive queries
+- graph database
+- semantic layer
+
+Do not introduce a graph database merely because the platform is called
+"knowledge".
+
+======================================================================
+36. SEMANTIC LAYER
+======================================================================
+
+Determine whether the platform needs a semantic layer above raw data.
+
+Potential concepts:
+
+Customer
+Account
+Opportunity
+Contract
+Employee
+Invoice
+
+A semantic layer may normalize different source systems.
+
+Evaluate whether this is necessary Day 1.
+
+======================================================================
+37. DATA NORMALIZATION
+======================================================================
+
+Different systems may represent the same entity differently.
+
+Example:
+
+Salesforce Customer
+SAP Customer
+Internal Customer
+
+Determine whether the platform needs:
+
+- canonical entities
+- identity resolution
+- entity matching
+- master data management
+
+Do not implement full MDM unless justified.
+
+======================================================================
+38. DATA QUALITY
+======================================================================
+
+Determine how to handle:
+
+- missing data
+- duplicate data
+- malformed documents
+- stale data
+- conflicting records
+- incomplete ingestion
+- failed parsing
+- low-quality OCR
+
+The system should expose data-quality uncertainty to the agent where
+relevant.
+
+======================================================================
+39. DOCUMENT PARSING
+======================================================================
+
+Research appropriate parsing approaches for:
+
+- PDF
+- DOCX
+- XLSX
+- PPTX
+- HTML
+- email
+- plain text
+- scanned documents
+
+Determine:
+
+- text extraction
+- OCR
+- table extraction
+- layout preservation
+- metadata preservation
+
+Do not overbuild Day 1.
+
+======================================================================
+40. MULTIMODAL KNOWLEDGE
+======================================================================
+
+Determine future support for:
+
+- images
+- diagrams
+- charts
+- scanned documents
+- screenshots
+- audio
+- video
+
+Determine whether the architecture should preserve original modalities
+even if Day 1 only processes text.
+
+======================================================================
+41. STORAGE ARCHITECTURE
+======================================================================
+
+Determine where to store:
+
+- raw files
+- parsed documents
+- structured records
+- chunks
+- embeddings
+- metadata
+- lineage
+- indexes
+- retrieval artifacts
+
+Compare:
+
+- PostgreSQL
+- object storage
+- search engine
+- vector store
+- graph database
+
+Determine the minimal Day-1 combination.
+
+======================================================================
+42. OBJECT STORAGE
+======================================================================
+
+Determine whether raw documents should be stored in:
+
+- filesystem
+- object storage
+- database blobs
+
+Evaluate:
+
+- durability
+- backup
+- scalability
+- integrity
+- versioning
+- access control
+
+======================================================================
+43. CACHING
+======================================================================
+
+Determine whether to cache:
+
+- retrieval results
+- parsed documents
+- embeddings
+- metadata
+- external API responses
+
+Analyze stale-data risk.
+
+======================================================================
+44. DELETION
+======================================================================
+
+Deletion must propagate through derived data.
+
+Example:
+
+Source document deleted
+
+must eventually remove or invalidate:
+
+- parsed representation
+- chunks
+- embeddings
+- search index
+- caches
+
+Determine deletion semantics.
+
+======================================================================
+45. RIGHT TO DELETE
+======================================================================
+
+For enterprise/privacy requirements determine technical support for:
+
+- deletion
+- retention
+- legal hold
+- tombstones
+- derived-data invalidation
+
+Do not make legal claims.
+
+Define the architecture needed to support policy.
+
+======================================================================
+46. BACKUP AND RECOVERY
+======================================================================
+
+Determine backup requirements for:
+
+- structured data
+- metadata
+- knowledge index
+- raw documents
+- embeddings
+- configuration
+
+Determine what can be regenerated.
+
+This distinction is important:
+
+REGENERABLE DATA
+
+versus:
+
+IRREPLACEABLE DATA.
+
+======================================================================
+47. REBUILDABILITY
+======================================================================
+
+A critical architectural property:
+
+Can the knowledge index be rebuilt from source?
+
+Determine whether:
+
+- embeddings
+- chunks
+- indexes
+- derived metadata
+
+should be treated as rebuildable artifacts.
+
+Avoid creating irrecoverable derived state.
+
+======================================================================
+48. DATA VERSIONING
+======================================================================
+
+Determine versioning for:
+
+- source data
+- documents
+- parsed representation
+- chunks
+- embeddings
+- schemas
+- transformations
+
+Every retrieval result should be attributable to a version where necessary.
+
+======================================================================
+49. INGESTION IDEMPOTENCY
+======================================================================
+
+Define idempotency for ingestion.
+
+Potential identifiers:
+
+- source_id
+- source_version
+- content_hash
+- ingestion_id
+
+Prevent:
+
+- duplicate documents
+- duplicate chunks
+- duplicate embeddings
+- duplicate indexing
+
+======================================================================
+50. BACKPRESSURE
+======================================================================
+
+Future ingestion may overwhelm the system.
+
+Determine:
+
+- queues
+- concurrency limits
+- prioritization
+- retries
+- dead-letter handling
+
+Day 1 may use PostgreSQL-backed jobs.
+
+Do not introduce Kafka without justification.
+
+======================================================================
+51. SEARCH INDEX LIFECYCLE
+======================================================================
+
+Define:
+
+CREATE
+UPDATE
+REBUILD
+REINDEX
+DELETE
+VERIFY
+
+Determine how index corruption or schema changes are handled.
+
+======================================================================
+52. EMBEDDING REGENERATION
+======================================================================
+
+If embedding model changes:
+
+Old embeddings may become incompatible.
+
+Determine:
+
+- version coexistence
+- migration
+- background re-embedding
+- cutover
+- rollback
+
+======================================================================
+53. MULTILINGUAL DATA
+======================================================================
+
+Future enterprise data may include:
+
+- Italian
+- English
+- German
+- French
+- Spanish
+- other languages
+
+Determine:
+
+- language detection
+- embedding model choice
+- retrieval behavior
+- chunking
+- ranking
+
+Do not assume English-only architecture.
+
+======================================================================
+54. SECURITY THREAT MODEL
+======================================================================
+
+Analyze:
+
+- unauthorized retrieval
+- tenant breakout
+- poisoned documents
+- malicious documents
+- prompt injection
+- index poisoning
+- embedding poisoning
+- stale authorization metadata
+- data exfiltration
+- malicious connectors
+- compromised source systems
+- cache leakage
+- cross-tenant vector similarity leakage
+
+Determine mitigations.
+
+======================================================================
+55. POISONED KNOWLEDGE
+======================================================================
+
+An attacker may intentionally insert information into a knowledge source
+designed to manipulate an agent.
+
+Determine:
+
+- source trust
+- provenance
+- anomaly detection
+- quarantine
+- content classification
+- approval
+- retrieval safeguards
+
+Do not assume every indexed document is trustworthy.
+
+======================================================================
+56. RETRIEVAL AUDIT
+======================================================================
+
+Every important retrieval should be reconstructable.
+
+Capture where appropriate:
+
+- query
+- tenant
+- user
+- agent
+- retrieval policy
+- sources considered
+- sources selected
+- ranking
+- source versions
+- timestamp
+- model context
+
+Determine privacy-safe logging.
+
+======================================================================
+57. PERFORMANCE
+======================================================================
+
+Determine metrics:
+
+- ingestion throughput
+- retrieval latency
+- indexing latency
+- embedding latency
+- reranking latency
+- database latency
+- cache hit rate
+- context assembly latency
+
+Do not invent SLAs.
+
+Define what should be benchmarked.
+
+======================================================================
+58. DAY-1 ARCHITECTURE
+======================================================================
+
+Design the smallest useful architecture supporting:
+
+- PostgreSQL
+- documents
+- structured data
+- metadata
+- basic search
+- embeddings
+- vector retrieval if justified
+- access-controlled retrieval
+- provenance
+- ingestion
+- rebuildability
+
+Determine whether Day 1 should use:
+
+- PostgreSQL only
+- PostgreSQL + pgvector
+- PostgreSQL + object storage
+- another combination
+
+Do not choose before research.
+
+======================================================================
+59. FUTURE EVOLUTION
+======================================================================
+
+Define evolution toward:
+
+PHASE 1
+-------
+PostgreSQL-centric knowledge system
+
+PHASE 2
+-------
+larger indexing / retrieval workloads
+
+PHASE 3
+-------
+dedicated search/vector infrastructure
+
+PHASE 4
+-------
+advanced semantic layer / graph where justified
+
+ENTERPRISE
+----------
+federated knowledge
+regional data
+large-scale ingestion
+advanced governance
+
+Do not assume this roadmap is correct.
+
+Derive it from requirements.
+
+======================================================================
+60. MIGRATION STRATEGY
+======================================================================
+
+Explain how Day-1 architecture can evolve without rewriting:
+
+- Agent Runtime
+- Retrieval interface
+- Tool Architecture
+- Governance
+- Model layer
+
+Define stable contracts.
+
+======================================================================
+61. ARCHITECTURE SELECTION MATRIX
+======================================================================
+
+Compare major knowledge architectures.
+
+At minimum:
+
+| Criterion |
+| Day-1 simplicity |
+| Search |
+| Semantic retrieval |
+| Structured queries |
+| Freshness |
+| Consistency |
+| Security |
+| Tenant isolation |
+| Provenance |
+| Rebuildability |
+| Performance |
+| Scalability |
+| Operational complexity |
+| Migration complexity |
+| Recommendation |
+
+======================================================================
+62. "WHY NOT?" ANALYSIS
+======================================================================
+
+For the final architecture explicitly answer:
+
+WHY THIS?
+
+WHY NOT A DEDICATED VECTOR DATABASE?
+
+WHY NOT A SEARCH CLUSTER FROM DAY 1?
+
+WHY NOT A KNOWLEDGE GRAPH?
+
+WHY NOT A DATA LAKE?
+
+WHY NOT POSTGRESQL ONLY?
+
+WHY NOT PURE RAG?
+
+WHY NOT PURE STRUCTURED QUERY?
+
+WHY NOT A POLYGLOT ARCHITECTURE FROM DAY 1?
+
+Only retain comparisons that research demonstrates are meaningful.
+
+======================================================================
+63. REVERSIBILITY ANALYSIS
+======================================================================
+
+Classify:
+
+- storage engine
+- vector engine
+- embedding model
+- chunking strategy
+- retrieval API
+- semantic model
+- graph adoption
+- source synchronization architecture
+
+as:
+
+- easily reversible
+- moderately reversible
+- expensive to reverse
+- effectively irreversible
+
+======================================================================
+64. CONTRACT VS IMPLEMENTATION
+======================================================================
+
+Determine stable interfaces.
+
+Potential:
+
+DataSource
+Document
+DocumentVersion
+KnowledgeObject
+Embedding
+RetrievalQuery
+RetrievalResult
+Provenance
+DataConnector
+IngestionJob
+
+Determine the minimum required set.
+
+======================================================================
+65. REQUIRED DIAGRAMS
+======================================================================
+
+Include Mermaid diagrams for:
+
+1. Overall Knowledge Architecture
+2. Source-of-truth model
+3. Structured data flow
+4. Document ingestion pipeline
+5. Retrieval pipeline
+6. Access-controlled retrieval
+7. Provenance chain
+8. Embedding lifecycle
+9. Data synchronization
+10. Reconciliation
+11. Deletion propagation
+12. Day-1 deployment
+13. Future scaled architecture
+14. Knowledge graph option
+15. Security boundaries
+
+======================================================================
+66. ADR CANDIDATES
+======================================================================
+
+Identify ADRs for:
+
+- source-of-truth strategy
+- PostgreSQL role
+- object storage
+- vector search
+- embedding model
+- chunking
+- retrieval architecture
+- reranking
+- synchronization
+- freshness
+- provenance
+- knowledge graph
+- semantic layer
+- tenant isolation
+- deletion
+- rebuildability
+
+For each:
+
+- problem
+- alternatives
+- recommendation
+- consequences
+- reversibility
+- decision deadline
+
+======================================================================
+67. DAY-1 / PREPARE / SCALE / ENTERPRISE
+======================================================================
+
+Create:
+
+| Capability | Day 1 | Prepare | Scale | Enterprise |
+
+Cover:
+
+- structured data
+- documents
+- object storage
+- metadata
+- full-text search
+- vector search
+- embeddings
+- hybrid retrieval
+- reranking
+- semantic layer
+- knowledge graph
+- synchronization
+- CDC
+- provenance
+- lineage
+- tenant isolation
+- access-controlled retrieval
+- multilingual
+- multimodal
+- data quality
+- reconciliation
+- deletion
+- retention
+- rebuildability
+
+======================================================================
+68. ATTEMPT TO FALSIFY THE RECOMMENDATION
+======================================================================
+
+Try to prove the selected architecture wrong.
+
+Ask:
+
+- What document volume breaks it?
+- What query volume breaks it?
+- What tenant count breaks it?
+- What freshness requirement breaks it?
+- What retrieval latency breaks it?
+- What data diversity breaks it?
+- What security requirement breaks it?
+- What graph requirement breaks it?
+- What multilingual requirement breaks it?
+
+Determine the first architectural trigger.
+
+======================================================================
+69. ARCHITECTURAL SELF-CRITIQUE
+======================================================================
+
+Before finalizing, ask:
+
+1. Did I distinguish data from knowledge?
+2. Did I distinguish knowledge from memory?
+3. Did I identify the real source of truth?
+4. Did I avoid assuming RAG solves everything?
+5. Did I compare PostgreSQL against real alternatives?
+6. Did I compare vector retrieval against keyword and structured retrieval?
+7. Did I address access-controlled retrieval?
+8. Can unauthorized data reach the model?
+9. Is tenant isolation defense-in-depth?
+10. Is provenance preserved?
+11. Can indexes be rebuilt?
+12. Can embeddings be regenerated?
+13. Can stale data be detected?
+14. Are deletion semantics defined?
+15. Can source changes be reconciled?
+16. Did I introduce a graph database without justification?
+17. Is Day 1 genuinely simple?
+18. Can the retrieval layer evolve without rewriting Runtime?
+19. Can future scale be reached incrementally?
+20. What assumptions could invalidate the architecture?
+
+Include:
+
+# ARCHITECTURAL SELF-CRITIQUE
+
+======================================================================
+70. FINAL RECOMMENDATION
+======================================================================
+
+End with:
+
+# FINAL KNOWLEDGE & DATA ARCHITECTURE RECOMMENDATION
+
+Answer:
+
+"What Knowledge and Data Architecture should this platform actually
+build?"
+
+Be concrete.
+
+Describe:
+
+- source of truth
+- storage
+- documents
+- structured data
+- ingestion
+- synchronization
+- indexing
+- embeddings
+- retrieval
+- reranking
+- provenance
+- access control
+- tenant isolation
+- freshness
+- consistency
+- deletion
+- rebuildability
+- observability
+- Day-1 implementation
+- future evolution
+
+Then explicitly answer:
+
+"What MUST NOT be built on Day 1?"
+
+Then:
+
+"What future condition should trigger the next architectural evolution?"
+
+======================================================================
+71. REQUIRED OUTPUT
+======================================================================
+
+Produce:
+
+07_KNOWLEDGE_DATA_ARCHITECTURE.md
+
+The document MUST explicitly reference:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_PLANE.md
+04_AGENT_RUNTIME.md
+05_MODEL_INFERENCE_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+
+If there is a conflict:
+
+DO NOT silently resolve it.
+
+Identify the conflict.
+
+Explain the trade-off.
+
+Recommend the superior architectural decision.
+
+Create an ADR candidate when appropriate.
+
+======================================================================
+72. SOURCE REQUIREMENTS
+======================================================================
+
+Include direct URLs.
+
+Prioritize:
+
+- official PostgreSQL documentation
+- official pgvector documentation
+- official search-engine documentation
+- official vector database documentation
+- NIST
+- OWASP
+- official cloud architecture documentation
+- academic retrieval research
+- credible engineering research
+
+Do not fabricate citations.
+
+Do not cite sources that were not actually inspected.
+
+Clearly distinguish:
+
+SOURCE FACT
+
+from:
+
+INFERENCE
+
+from:
+
+ARCHITECTURAL RECOMMENDATION.
+
+======================================================================
+73. ABSOLUTE FINAL INSTRUCTION
+======================================================================
+
+Act as an INDEPENDENT Principal Data and Knowledge Architect.
+
+Do not optimize for agreement.
+
+Do not assume RAG is mandatory.
+
+Do not assume vector databases are mandatory.
+
+Do not assume graph databases are mandatory.
+
+Do not assume PostgreSQL must do everything.
+
+Do not assume every source should be copied.
+
+Do not allow unauthorized data to enter model context merely because it
+exists in a retrieval index.
+
+Optimize for:
+
+DATA CORRECTNESS
++
+SECURITY
++
+PROVENANCE
++
+FRESHNESS
++
+REBUILDABILITY
++
+SIMPLICITY
++
+RETRIEVAL QUALITY
++
+FUTURE EVOLUTION
+
+The final architecture must result from:
+
+    RESEARCH
+       ↓
+    REAL DATA REQUIREMENTS
+       ↓
+    REAL ARCHITECTURAL ALTERNATIVES
+       ↓
+    RETRIEVAL ANALYSIS
+       ↓
+    SECURITY ANALYSIS
+       ↓
+    FRESHNESS / CONSISTENCY ANALYSIS
+       ↓
+    SCALE ANALYSIS
+       ↓
+    ADVERSARIAL CHALLENGE
+       ↓
+    FINAL DECISION
+
+DO NOT DESIGN THE KNOWLEDGE SYSTEM FIRST.
+
+RESEARCH FIRST.
+
+COMPARE.
+
+CHALLENGE.
+
+SELECT THE BEST ARCHITECTURE AVAILABLE FOR THIS PROJECT.
+
+THEN DESIGN IT.

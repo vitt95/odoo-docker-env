@@ -1,0 +1,2493 @@
+# 14 — CONCURRENCY ARCHITECTURE
+## Enterprise AI Agent Platform
+
+======================================================================
+ROLE
+======================================================================
+
+Act as the Principal Distributed Systems Architect, Concurrency
+Architect, Scheduling Architect, AI Runtime Architect and Performance
+Architect responsible for designing the complete Concurrency Architecture
+of an enterprise-grade AI agent platform.
+
+You have deep expertise in:
+
+- concurrent systems
+- distributed systems
+- asynchronous programming
+- queues
+- scheduling
+- admission control
+- backpressure
+- rate limiting
+- concurrency limiting
+- resource pools
+- worker pools
+- task execution
+- futures/promises
+- cancellation
+- deadlines
+- timeouts
+- fairness
+- starvation prevention
+- priority scheduling
+- distributed locks
+- leases
+- semaphores
+- token buckets
+- circuit breakers
+- bulkheads
+- actor models
+- event-driven systems
+- workflow engines
+- LLM inference concurrency
+- GPU scheduling
+- tool execution concurrency
+- database connection pools
+- multi-tenant systems
+- observability
+- reliability
+- failure isolation.
+
+You are working within:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_ARCHITECTURE.md
+04_AGENT_RUNTIME.md
+05_MODEL_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+08_KNOWLEDGE_DATA_ARCHITECTURE.md
+09_MEMORY_ARCHITECTURE.md
+10_SECURITY_ARCHITECTURE.md
+11_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+12_TRUST_PROVENANCE_ARCHITECTURE.md
+13_RELIABILITY_ARCHITECTURE.md
+15_OBSERVABILITY_ARCHITECTURE.md
+16_AUDIT_ARCHITECTURE.md
+17_EVALUATION_ARCHITECTURE.md
+18_DEPLOYMENT_LIFECYCLE_ARCHITECTURE.md
+
+Future architecture documents include:
+
+19_MULTI_TENANCY_ARCHITECTURE.md
+20_COST_ARCHITECTURE.md
+21_CAPACITY_PLANNING_ARCHITECTURE.md
+22_NETWORKING_ARCHITECTURE.md
+23_STORAGE_ARCHITECTURE.md
+24_DR_ENTERPRISE_ARCHITECTURE.md
+25_ADVANCED_SUPPLY_CHAIN_ARCHITECTURE.md
+26_ENTERPRISE_COMPLIANCE_ARCHITECTURE.md
+27_MULTI_MODEL_FALLBACK_ARCHITECTURE.md
+28_HUMAN_IN_THE_LOOP_ARCHITECTURE.md
+29_REPLAY_ARCHITECTURE.md
+30_OFFLINE_MOBILE_ARCHITECTURE.md
+31_A2A_ARCHITECTURE.md
+32_ADMIN_CONSOLE_ARCHITECTURE.md
+33_ADR_ARCHITECTURE.md
+34_QUALITY_MODEL_ARCHITECTURE.md
+
+If these documents do not yet exist:
+
+DO NOT invent their content.
+
+Instead identify the future dependency and define the stable contract
+that must remain compatible.
+
+Existing architecture documents are not immune from challenge.
+
+If research demonstrates that an assumption in another architecture
+document is incorrect, incomplete, obsolete or suboptimal, explicitly
+identify the conflict and recommend the superior architecture.
+
+======================================================================
+1. PRIMARY OBJECTIVE
+======================================================================
+
+Design the complete Concurrency Architecture.
+
+The architecture must answer:
+
+HOW MANY OPERATIONS CAN RUN AT THE SAME TIME?
+
+WHO DECIDES?
+
+WHERE IS CONCURRENCY CONTROL ENFORCED?
+
+WHAT EXACTLY IS BEING LIMITED?
+
+AGENT RUNS?
+
+MODEL REQUESTS?
+
+GPU REQUESTS?
+
+TOOL CALLS?
+
+DATABASE CONNECTIONS?
+
+NETWORK REQUESTS?
+
+WORKFLOW STEPS?
+
+TENANT WORKLOADS?
+
+HOW DO DIFFERENT CONCURRENCY LIMITS INTERACT?
+
+HOW DOES THE SYSTEM PREVENT OVERLOAD?
+
+HOW DOES IT PROVIDE BACKPRESSURE?
+
+HOW DOES IT HANDLE QUEUES?
+
+HOW DOES IT HANDLE PRIORITY?
+
+HOW DOES IT PREVENT STARVATION?
+
+HOW DOES IT HANDLE CANCELLATION?
+
+HOW DOES IT HANDLE TIMEOUTS?
+
+HOW DOES IT HANDLE FAILURES?
+
+HOW DOES IT SCALE FROM ONE PROCESS TO MULTIPLE WORKERS?
+
+HOW DOES IT SCALE FROM ONE MACHINE TO MULTIPLE MACHINES?
+
+HOW DOES IT SCALE TO MULTIPLE TENANTS?
+
+======================================================================
+2. MOST IMPORTANT INSTRUCTION
+## RESEARCH FIRST — SELECT ARCHITECTURE SECOND
+======================================================================
+
+DO NOT start by choosing:
+
+- Redis
+- Kafka
+- RabbitMQ
+- Celery
+- Temporal
+- Kubernetes
+- asyncio
+- threads
+- actors
+- semaphores
+- token buckets
+- a specific queue
+- a specific scheduler.
+
+Research first.
+
+The concurrency architecture must emerge from:
+
+- actual workload characteristics
+- Agent Runtime requirements
+- Model Runtime requirements
+- GPU constraints
+- Tool execution behavior
+- database behavior
+- network behavior
+- reliability requirements
+- expected workload patterns.
+
+Research authoritative technical sources where appropriate.
+
+Prioritize:
+
+- official runtime documentation
+- official queue/scheduler documentation
+- operating system documentation
+- distributed systems literature
+- authoritative cloud architecture documentation
+- benchmark evidence
+- peer-reviewed research where relevant.
+
+Then identify the real architectural alternatives.
+
+Then compare them.
+
+Then select the architecture best suited to THIS project.
+
+Then attempt to falsify it.
+
+Required process:
+
+    WORKLOAD ANALYSIS
+       ↓
+    CONCURRENCY MODEL
+       ↓
+    RESOURCE MODEL
+       ↓
+    EXECUTION MODEL
+       ↓
+    QUEUE MODEL
+       ↓
+    BACKPRESSURE MODEL
+       ↓
+    SCHEDULING OPTIONS
+       ↓
+    FAILURE ANALYSIS
+       ↓
+    DISTRIBUTED SCALING ANALYSIS
+       ↓
+    ALTERNATIVES
+       ↓
+    BENCHMARKING
+       ↓
+    ADVERSARIAL CHALLENGE
+       ↓
+    FALSIFICATION
+       ↓
+    FINAL DECISION
+       ↓
+    DAY-1 IMPLEMENTATION
+       ↓
+    FUTURE EVOLUTION
+
+CLAUDE MUST DETERMINE THE BEST CONCURRENCY ARCHITECTURE AVAILABLE FOR
+THIS PROJECT.
+
+======================================================================
+3. CENTRAL PRINCIPLE
+======================================================================
+
+CONCURRENCY IS NOT ONE NUMBER.
+
+A system can simultaneously have:
+
+10 agent runs
+
+2 model generations
+
+20 network calls
+
+5 tool executions
+
+8 database queries
+
+and:
+
+1 GPU.
+
+Therefore:
+
+DO NOT CREATE ONE GLOBAL "MAX CONCURRENCY" SETTING AND CALL THE PROBLEM
+SOLVED.
+
+Model concurrency by RESOURCE AND EXECUTION DOMAIN.
+
+======================================================================
+4. LEVEL B CONSTRAINT
+======================================================================
+
+This is:
+
+LEVEL B — PREPARED DAY 1.
+
+Day 1 does not require:
+
+- distributed global scheduler
+- sophisticated priority queue
+- multi-region concurrency management
+- complex fair-share scheduling
+- enterprise multi-tenant quotas.
+
+But Day 1 MUST establish correct concurrency boundaries.
+
+The architecture must not make future concurrency control impossible.
+
+======================================================================
+5. DAY-1 PRINCIPLE
+======================================================================
+
+Day 1 should be:
+
+SIMPLE
+
+but must already define:
+
+- execution units
+- concurrency boundaries
+- limits
+- queues
+- cancellation
+- deadlines
+- backpressure
+- overload behavior.
+
+Future distributed scheduling should be an evolution of these contracts,
+not a rewrite of Agent Runtime.
+
+======================================================================
+6. CONCURRENCY TAXONOMY
+======================================================================
+
+Define the different concurrency domains.
+
+At minimum evaluate:
+
+AGENT RUN CONCURRENCY
+
+MODEL REQUEST CONCURRENCY
+
+GPU CONCURRENCY
+
+TOOL CONCURRENCY
+
+DATABASE CONCURRENCY
+
+NETWORK CONCURRENCY
+
+WORKFLOW CONCURRENCY
+
+BACKGROUND JOB CONCURRENCY
+
+EVALUATION CONCURRENCY
+
+TENANT CONCURRENCY.
+
+Determine which should be first-class.
+
+======================================================================
+7. EXECUTION UNIT
+======================================================================
+
+Define the fundamental unit of concurrent work.
+
+Potential:
+
+Run
+Task
+Step
+ToolCall
+ModelRequest
+Job.
+
+Determine the correct hierarchy.
+
+======================================================================
+8. CONCURRENCY HIERARCHY
+======================================================================
+
+Analyze a possible hierarchy:
+
+Request
+  ↓
+Agent Run
+  ↓
+Workflow
+  ↓
+Step
+  ↓
+Model Request / Tool Call
+  ↓
+Resource Operation.
+
+Determine the actual architecture.
+
+======================================================================
+9. PARENT / CHILD CONCURRENCY
+======================================================================
+
+An agent run may create multiple child operations.
+
+Example:
+
+Agent Run
+ ├── Model Request
+ ├── Tool Call A
+ ├── Tool Call B
+ └── Retrieval
+
+Define how parent limits affect children.
+
+======================================================================
+10. CONCURRENCY BUDGET
+======================================================================
+
+Determine whether every run should have a concurrency budget.
+
+Potential:
+
+max_parallel_tools
+max_model_requests
+max_network_operations
+max_subtasks.
+
+These are examples only.
+
+Determine the minimum useful model.
+
+======================================================================
+11. RESOURCE BUDGET VS CONCURRENCY BUDGET
+======================================================================
+
+Distinguish:
+
+CONCURRENCY LIMIT
+
+from:
+
+RESOURCE LIMIT.
+
+Example:
+
+5 simultaneous model requests
+
+does not necessarily mean:
+
+5 GPUs.
+
+Integrate with 05_RESOURCE_GPU_ARCHITECTURE.md.
+
+======================================================================
+12. AGENT RUN CONCURRENCY
+======================================================================
+
+Define:
+
+How many agent runs can exist simultaneously?
+
+Determine whether limits apply at:
+
+- process
+- machine
+- worker
+- environment
+- tenant
+- agent
+- model.
+
+======================================================================
+13. MODEL CONCURRENCY
+======================================================================
+
+Using 05 determine:
+
+- maximum simultaneous generations
+- batching
+- queue depth
+- VRAM pressure
+- context pressure.
+
+Do not invent safe numbers.
+
+Define how they are benchmarked.
+
+======================================================================
+14. TOOL CONCURRENCY
+======================================================================
+
+Using 06 determine:
+
+- global tool concurrency
+- per-tool concurrency
+- per-agent concurrency
+- per-run concurrency
+- per-external-service concurrency.
+
+======================================================================
+15. TOOL-SPECIFIC LIMITS
+======================================================================
+
+Some tools may tolerate:
+
+100 concurrent calls.
+
+Others may tolerate:
+
+2.
+
+Define per-tool concurrency metadata.
+
+Potential:
+
+max_concurrency
+
+rate_limit
+
+burst_limit
+
+timeout.
+
+Determine the correct abstraction.
+
+======================================================================
+16. EXTERNAL API CONCURRENCY
+======================================================================
+
+External services may impose limits.
+
+Define:
+
+Agent
+ ↓
+Tool
+ ↓
+External API
+ ↓
+Concurrency Limit.
+
+Do not allow internal scaling to overwhelm external systems.
+
+======================================================================
+17. DATABASE CONCURRENCY
+======================================================================
+
+Using 08/09 determine:
+
+- connection pool limits
+- query concurrency
+- transaction concurrency.
+
+Do not create one DB connection per agent task without justification.
+
+======================================================================
+18. NETWORK CONCURRENCY
+======================================================================
+
+Determine whether network requests need:
+
+- global limit
+- per-destination limit
+- per-tool limit
+- per-tenant limit.
+
+======================================================================
+19. WORKFLOW CONCURRENCY
+======================================================================
+
+A workflow may contain many steps.
+
+Define:
+
+- workflow concurrency
+- step concurrency
+- parallel branches.
+
+======================================================================
+20. FAN-OUT
+======================================================================
+
+Agent systems can accidentally produce:
+
+1 task
+→
+100 subtasks
+→
+1000 tool calls.
+
+Define fan-out limits.
+
+======================================================================
+21. FAN-IN
+======================================================================
+
+Define how parallel operations converge.
+
+Consider:
+
+- partial failures
+- timeouts
+- cancellation
+- aggregation.
+
+======================================================================
+22. NESTED CONCURRENCY
+======================================================================
+
+Example:
+
+Agent
+→ Tool
+→ Tool internally starts multiple requests.
+
+Define whether nested concurrency is:
+
+- allowed
+- bounded
+- visible
+- chargeable.
+
+======================================================================
+23. RECURSION
+======================================================================
+
+Prevent uncontrolled:
+
+Agent
+→ Agent
+→ Agent
+→ Agent.
+
+Define depth and concurrency controls where relevant.
+
+======================================================================
+24. ASYNC EXECUTION
+======================================================================
+
+Determine where asynchronous execution is useful.
+
+Compare:
+
+- synchronous
+- asynchronous
+- queued
+- workflow-based.
+
+======================================================================
+25. THREADS VS ASYNC
+======================================================================
+
+Research actual workload characteristics.
+
+Determine appropriate concurrency model for:
+
+- I/O
+- CPU
+- GPU
+- network
+- blocking libraries.
+
+Do not choose asyncio simply because it is popular.
+
+======================================================================
+26. PROCESS VS THREAD VS TASK
+======================================================================
+
+Determine the correct execution primitive for each workload.
+
+Consider:
+
+- Python runtime behavior
+- CPU-bound work
+- GPU work
+- blocking tool calls
+- isolation.
+
+======================================================================
+27. WORKER POOL
+======================================================================
+
+Evaluate worker pools.
+
+Determine:
+
+- pool size
+- dynamic sizing
+- queue interaction
+- worker lifecycle.
+
+Do not hard-code worker counts without benchmarking.
+
+======================================================================
+28. QUEUE MODEL
+======================================================================
+
+Determine whether the system requires queues.
+
+Potential:
+
+- in-memory queue
+- database-backed queue
+- external queue
+- workflow engine.
+
+Select based on workload durability requirements.
+
+======================================================================
+29. QUEUE DURABILITY
+======================================================================
+
+Distinguish:
+
+transient queue
+
+from:
+
+durable queue.
+
+Not every operation needs durable scheduling.
+
+======================================================================
+30. INTERACTIVE VS BACKGROUND
+======================================================================
+
+Separate:
+
+INTERACTIVE
+
+from:
+
+BACKGROUND.
+
+Examples:
+
+interactive agent request
+
+vs:
+
+evaluation batch.
+
+Determine whether they need separate concurrency pools.
+
+======================================================================
+31. BULKHEADS
+======================================================================
+
+Evaluate bulkhead isolation.
+
+Example:
+
+Evaluation workload
+must not consume all capacity needed by
+interactive agents.
+
+======================================================================
+32. CONCURRENCY ISOLATION
+======================================================================
+
+Potential isolation domains:
+
+- workload
+- agent
+- model
+- tool
+- tenant
+- environment.
+
+Determine minimum useful boundaries.
+
+======================================================================
+33. BACKPRESSURE
+======================================================================
+
+This is CRITICAL.
+
+When concurrency capacity is exhausted:
+
+DO NOT ACCEPT UNLIMITED WORK.
+
+Define:
+
+QUEUE
+
+REJECT
+
+SHED
+
+DEGRADE.
+
+======================================================================
+34. QUEUE BOUNDS
+======================================================================
+
+Queues must have finite bounds.
+
+Determine:
+
+- maximum queue depth
+- queue timeout
+- overflow behavior.
+
+Do not invent values.
+
+Define how values should be benchmarked.
+
+======================================================================
+35. QUEUE SATURATION
+======================================================================
+
+Define behavior:
+
+Capacity exhausted
++
+queue full
+=
+what happens?
+
+Potential:
+
+429 / overload response
+
+or:
+
+controlled degradation.
+
+======================================================================
+36. FAIRNESS
+======================================================================
+
+Evaluate:
+
+FIFO
+
+priority
+
+weighted fairness
+
+round-robin
+
+tenant fairness.
+
+Determine the correct approach.
+
+======================================================================
+37. STARVATION
+======================================================================
+
+Prevent:
+
+Low-priority workload
+never executes.
+
+Analyze starvation scenarios.
+
+======================================================================
+38. PRIORITY
+======================================================================
+
+Potential:
+
+CRITICAL
+
+INTERACTIVE
+
+NORMAL
+
+BACKGROUND
+
+EVALUATION.
+
+Determine whether priority classes are necessary.
+
+======================================================================
+39. PRIORITY INVERSION
+======================================================================
+
+Analyze:
+
+High priority
+waiting for
+low priority.
+
+Determine whether resource inheritance or other mechanisms are needed.
+
+======================================================================
+40. DEADLINES
+======================================================================
+
+Every meaningful operation should have a deadline where appropriate.
+
+Distinguish:
+
+queue deadline
+
+execution deadline
+
+overall run deadline.
+
+======================================================================
+41. TIMEOUTS
+======================================================================
+
+Define timeout hierarchy.
+
+Example:
+
+Run timeout
+>
+Tool timeout
+>
+Network timeout.
+
+Do not allow child operations to outlive their parent indefinitely.
+
+======================================================================
+42. DEADLINE PROPAGATION
+======================================================================
+
+Define:
+
+Parent deadline
+ ↓
+Child deadline
+ ↓
+Tool deadline
+ ↓
+Network deadline.
+
+======================================================================
+43. CANCELLATION
+======================================================================
+
+Cancellation must propagate through:
+
+User
+ ↓
+Agent Run
+ ↓
+Workflow
+ ↓
+Model / Tool
+ ↓
+Resource.
+
+======================================================================
+44. COOPERATIVE CANCELLATION
+======================================================================
+
+Determine where cancellation is cooperative.
+
+Examples:
+
+- model generation
+- async task
+- HTTP request
+- database query.
+
+======================================================================
+45. FORCEFUL CANCELLATION
+======================================================================
+
+Determine where hard termination is required.
+
+Do not use process termination as the default cancellation mechanism.
+
+======================================================================
+46. ORPHANED TASKS
+======================================================================
+
+Prevent:
+
+Parent task dies
+↓
+child task continues
+↓
+resource leak.
+
+Define orphan detection.
+
+======================================================================
+47. RESOURCE LEAKS
+======================================================================
+
+Using 05 and 13 define:
+
+- worker leaks
+- GPU reservations
+- DB connections
+- network sockets
+- queue reservations.
+
+======================================================================
+48. IDEMPOTENCY
+======================================================================
+
+Concurrency creates duplicate execution risk.
+
+Define idempotency requirements for:
+
+- tool calls
+- external APIs
+- workflow steps
+- jobs.
+
+======================================================================
+49. DUPLICATE EXECUTION
+======================================================================
+
+A retry may produce:
+
+two identical external side effects.
+
+Define safeguards.
+
+======================================================================
+50. DISTRIBUTED LOCKS
+======================================================================
+
+Evaluate whether distributed locks are necessary.
+
+Potential alternatives:
+
+- idempotency
+- leases
+- database constraints
+- queue semantics.
+
+Do not introduce distributed locks by default.
+
+======================================================================
+51. LEASES
+======================================================================
+
+Evaluate leases for:
+
+- resource ownership
+- worker ownership
+- long-running tasks.
+
+======================================================================
+52. SEMAPHORES
+======================================================================
+
+Evaluate semaphores for local concurrency control.
+
+Determine when distributed semaphores are justified.
+
+======================================================================
+53. TOKEN BUCKET
+======================================================================
+
+Rate limiting is not identical to concurrency limiting.
+
+Explain:
+
+RATE LIMIT
+
+vs:
+
+CONCURRENCY LIMIT.
+
+======================================================================
+54. RATE LIMITING
+======================================================================
+
+Using 06 and future 19 determine rate limits at:
+
+- tool
+- tenant
+- agent
+- external service.
+
+======================================================================
+55. CONCURRENCY + RATE LIMIT
+======================================================================
+
+Determine how they interact.
+
+Example:
+
+100 requests/minute
+
+and:
+
+5 concurrent.
+
+Both constraints may be valid.
+
+======================================================================
+56. GLOBAL CONCURRENCY
+======================================================================
+
+Evaluate whether a global system-wide concurrency limit is useful.
+
+Avoid making it the only control.
+
+======================================================================
+57. LOCAL CONCURRENCY
+======================================================================
+
+Worker-level limits may provide faster protection.
+
+Determine architecture.
+
+======================================================================
+58. DISTRIBUTED CONCURRENCY
+======================================================================
+
+When multiple workers exist:
+
+Worker A
+Worker B
+Worker C
+
+how do they collectively enforce:
+
+max = 10?
+
+Compare:
+
+- centralized counter
+- distributed semaphore
+- queue ownership
+- partitioning
+- admission gateway.
+
+======================================================================
+59. CONSISTENCY
+======================================================================
+
+Determine whether concurrency counters require:
+
+strong consistency
+
+or:
+
+eventual consistency.
+
+Different limits may require different guarantees.
+
+======================================================================
+60. CONTROL PLANE VS DATA PLANE
+======================================================================
+
+Using 02 determine:
+
+Control Plane:
+
+- policy
+- configuration
+- limits.
+
+Data Plane:
+
+- actual enforcement
+- scheduling
+- execution.
+
+Do not put high-frequency concurrency decisions in a slow Control Plane.
+
+======================================================================
+61. GOVERNANCE
+======================================================================
+
+Using 03 determine whether concurrency limits are policy-controlled.
+
+Examples:
+
+- max concurrent tools
+- maximum agent runs
+- restricted tools.
+
+======================================================================
+62. IDENTITY
+======================================================================
+
+Using 11 determine whether concurrency limits depend on:
+
+- user
+- tenant
+- agent
+- service identity.
+
+======================================================================
+63. TRUST / PROVENANCE
+======================================================================
+
+Using 12 determine whether untrusted workloads receive different
+concurrency limits.
+
+Example:
+
+untrusted external tool
+
+vs:
+
+trusted internal tool.
+
+Do not assume this is required; evaluate it.
+
+======================================================================
+64. RELIABILITY
+======================================================================
+
+Using 13 define behavior for:
+
+- worker crash
+- queue failure
+- counter inconsistency
+- task timeout
+- resource leak
+- scheduler failure.
+
+======================================================================
+65. OBSERVABILITY
+======================================================================
+
+Using 15 define:
+
+- active tasks
+- queued tasks
+- queue age
+- concurrency utilization
+- rejection rate
+- timeout rate
+- cancellation rate
+- saturation.
+
+======================================================================
+66. AUDIT
+======================================================================
+
+Using 16 determine whether important concurrency decisions need audit.
+
+Avoid auditing every internal semaphore operation.
+
+======================================================================
+67. EVALUATION
+======================================================================
+
+Using 17 determine whether evaluation workloads receive:
+
+- isolated queue
+- separate concurrency budget
+- lower priority
+- dedicated capacity.
+
+======================================================================
+68. DEPLOYMENT
+======================================================================
+
+Using 18 determine how concurrency limits change during:
+
+- rollout
+- rollback
+- maintenance
+- draining.
+
+======================================================================
+69. GPU INTERACTION
+======================================================================
+
+Using 05 determine:
+
+Agent concurrency
+        ↓
+Model concurrency
+        ↓
+GPU capacity.
+
+Do not allow Agent Runtime to bypass GPU resource constraints.
+
+======================================================================
+70. GPU QUEUE
+======================================================================
+
+Determine whether GPU work should queue separately from agent work.
+
+Example:
+
+Agent run exists
+
+but:
+
+model request waits for GPU capacity.
+
+======================================================================
+71. TOOL + GPU INTERACTION
+======================================================================
+
+A tool may itself consume GPU.
+
+Define how nested GPU usage is accounted for.
+
+======================================================================
+72. DATABASE INTERACTION
+======================================================================
+
+Agent concurrency can overload PostgreSQL.
+
+Define relationship between:
+
+agent concurrency
+
+and:
+
+DB connection/query concurrency.
+
+======================================================================
+73. MEMORY INTERACTION
+======================================================================
+
+Concurrent agent runs may increase:
+
+- RAM
+- context
+- memory entries
+- cache usage.
+
+Define protections.
+
+======================================================================
+74. KNOWLEDGE / RETRIEVAL INTERACTION
+======================================================================
+
+Concurrent retrieval requests may overload:
+
+- vector store
+- database
+- embedding model.
+
+Define limits.
+
+======================================================================
+75. TOOL FAN-OUT
+======================================================================
+
+Define maximum parallelism for tool calls within a single agent run.
+
+Do not assume:
+
+more parallelism = faster.
+
+======================================================================
+76. MODEL FAN-OUT
+======================================================================
+
+Agent reasoning may request multiple model calls.
+
+Define:
+
+- maximum parallel model requests
+- total model request budget.
+
+======================================================================
+77. CONCURRENCY ACCOUNTING
+======================================================================
+
+Every concurrent operation should have:
+
+- operation ID
+- parent ID
+- resource class
+- start time
+- deadline
+- state.
+
+======================================================================
+78. STATE MACHINE
+======================================================================
+
+Define task states.
+
+Potential:
+
+CREATED
+QUEUED
+ADMITTED
+RUNNING
+CANCELLING
+COMPLETED
+FAILED
+TIMED_OUT
+CANCELLED
+EXPIRED.
+
+Determine the correct state machine.
+
+======================================================================
+79. TASK OWNERSHIP
+======================================================================
+
+Determine who owns an operation:
+
+- Agent Runtime
+- Worker
+- Scheduler
+- Queue
+- Resource Manager.
+
+Avoid ambiguous ownership.
+
+======================================================================
+80. EXACTLY-ONCE VS AT-LEAST-ONCE
+======================================================================
+
+Research and explicitly determine the correct delivery semantics for
+different workloads.
+
+Do not promise exactly-once execution where it cannot be guaranteed.
+
+======================================================================
+81. AT-MOST-ONCE
+======================================================================
+
+Evaluate where at-most-once is preferable.
+
+======================================================================
+82. RETRY POLICY
+======================================================================
+
+Retry must consider:
+
+- timeout
+- transient error
+- idempotency
+- side effects
+- remaining deadline.
+
+======================================================================
+83. RETRY STORMS
+======================================================================
+
+Prevent:
+
+service failure
+→
+100 requests retry
+→
+100 more requests
+→
+system collapse.
+
+Define:
+
+- exponential backoff
+- jitter
+- retry budgets
+- circuit breakers.
+
+======================================================================
+84. CIRCUIT BREAKERS
+======================================================================
+
+Evaluate circuit breakers for:
+
+- external tools
+- model runtime
+- databases
+- external APIs.
+
+======================================================================
+85. BULKHEADS
+======================================================================
+
+Evaluate isolated resource pools for:
+
+- production
+- background
+- evaluation
+- administrative work.
+
+======================================================================
+86. LOAD SHEDDING
+======================================================================
+
+Define which work may be rejected first during overload.
+
+Potential:
+
+background
+
+evaluation
+
+low-priority.
+
+======================================================================
+87. DEGRADED MODE
+======================================================================
+
+Evaluate:
+
+overload
+ ↓
+degrade
+
+Examples:
+
+- disable optional tools
+- reduce parallelism
+- reject background work.
+
+Do not silently change business semantics.
+
+======================================================================
+88. CONCURRENCY THRESHOLDS
+======================================================================
+
+Do not invent thresholds.
+
+Define methodology to determine:
+
+- safe concurrency
+- saturation point
+- queue threshold
+- rejection threshold.
+
+======================================================================
+89. BENCHMARKING
+======================================================================
+
+Define benchmark methodology for:
+
+- 1 concurrent request
+- 2
+- 4
+- 8
+- 16
+- higher levels as justified.
+
+Measure:
+
+- latency
+- throughput
+- queue time
+- GPU utilization
+- CPU utilization
+- RAM
+- errors
+- timeouts.
+
+Use actual hardware.
+
+======================================================================
+90. LOAD TESTING
+======================================================================
+
+Define tests for:
+
+- steady load
+- burst load
+- ramp-up
+- sustained saturation
+- recovery after saturation.
+
+======================================================================
+91. SPIKE TEST
+======================================================================
+
+Test:
+
+10x normal request volume.
+
+Determine:
+
+- queue behavior
+- rejection behavior
+- recovery time.
+
+======================================================================
+92. SOAK TEST
+======================================================================
+
+Long-running load should detect:
+
+- memory leaks
+- queue leaks
+- worker leaks
+- GPU leaks
+- connection leaks.
+
+======================================================================
+93. FAIRNESS TEST
+======================================================================
+
+Test whether one workload class can starve another.
+
+======================================================================
+94. CANCELLATION TEST
+======================================================================
+
+Test:
+
+100 queued tasks
+
+then:
+
+cancel 80%.
+
+Verify resources are released.
+
+======================================================================
+95. FAILURE TEST
+======================================================================
+
+Test:
+
+Worker dies while task is:
+
+- queued
+- running
+- cancelling.
+
+Determine recovery.
+
+======================================================================
+96. DISTRIBUTED FAILURE
+======================================================================
+
+Future multi-worker environment:
+
+Worker A dies
+while holding
+concurrency reservation.
+
+Determine how reservation expires.
+
+======================================================================
+97. CLOCKS
+======================================================================
+
+Distributed deadlines and leases may depend on clocks.
+
+Research whether:
+
+- monotonic clocks
+- wall clocks
+- lease expiration
+
+are required.
+
+======================================================================
+98. QUEUE FAIRNESS
+======================================================================
+
+Determine whether FIFO is sufficient.
+
+Consider:
+
+- priority
+- aging
+- tenant fairness.
+
+======================================================================
+99. AGING
+======================================================================
+
+Evaluate priority aging to prevent starvation.
+
+Do not implement unless justified.
+
+======================================================================
+100. MULTI-TENANCY PREPARATION
+======================================================================
+
+Future 19 may require:
+
+Tenant A
+Tenant B
+Tenant C.
+
+Day 1 should define an abstraction for per-tenant concurrency limits
+without building full enterprise scheduling.
+
+======================================================================
+101. COST INTERACTION
+======================================================================
+
+Future 20 may require concurrency limits based on cost.
+
+Define stable usage telemetry.
+
+======================================================================
+102. CAPACITY PLANNING
+======================================================================
+
+Future 21 should be able to derive:
+
+capacity
+
+from:
+
+concurrency + resource usage + workload characteristics.
+
+======================================================================
+103. NETWORKING
+======================================================================
+
+Future 22 may introduce:
+
+- per-region concurrency
+- network locality
+- connection limits.
+
+Do not hard-code a single network topology.
+
+======================================================================
+104. STORAGE
+======================================================================
+
+Future 23 may introduce storage concurrency limits.
+
+Define the general resource-control abstraction.
+
+======================================================================
+105. HUMAN-IN-THE-LOOP
+======================================================================
+
+Future 28 may pause an agent.
+
+Determine whether paused workflows consume concurrency slots.
+
+This is important.
+
+======================================================================
+106. REPLAY
+======================================================================
+
+Future 29 may replay historical agent runs.
+
+Replay workloads must not accidentally consume production concurrency.
+
+======================================================================
+107. A2A
+======================================================================
+
+Future 31 may introduce agent-to-agent communication.
+
+Determine how A2A calls interact with:
+
+- concurrency
+- fan-out
+- deadlines
+- cancellation
+- tenant quotas.
+
+======================================================================
+108. ADMIN CONSOLE
+======================================================================
+
+Future 32 may expose:
+
+- current concurrency
+- queues
+- limits
+- saturation.
+
+Define stable observability contracts.
+
+======================================================================
+109. ARCHITECTURE OPTIONS
+======================================================================
+
+Identify real alternatives.
+
+Potential:
+
+OPTION A
+--------
+Local in-process concurrency controls.
+
+OPTION B
+--------
+Local controls + centralized admission.
+
+OPTION C
+--------
+Queue-driven worker architecture.
+
+OPTION D
+--------
+Distributed scheduler.
+
+OPTION E
+--------
+Workflow engine.
+
+OPTION F
+--------
+Hybrid.
+
+These are examples only.
+
+Research and determine the real candidates.
+
+======================================================================
+110. ARCHITECTURE SELECTION MATRIX
+======================================================================
+
+Compare:
+
+| Criterion |
+| Day-1 simplicity |
+| Latency |
+| Throughput |
+| Fairness |
+| Backpressure |
+| Failure handling |
+| Distributed scaling |
+| Multi-tenancy |
+| Resource isolation |
+| Observability |
+| Operational complexity |
+| Cost |
+| Recommendation |
+
+======================================================================
+111. "WHY NOT?" ANALYSIS
+======================================================================
+
+For the final architecture explicitly answer:
+
+WHY THIS?
+
+WHY NOT ONE GLOBAL CONCURRENCY LIMIT?
+
+WHY NOT UNLIMITED ASYNC TASKS?
+
+WHY NOT KAFKA?
+
+WHY NOT RABBITMQ?
+
+WHY NOT REDIS?
+
+WHY NOT CELERY?
+
+WHY NOT TEMPORAL?
+
+WHY NOT KUBERNETES?
+
+WHY NOT A DISTRIBUTED LOCK?
+
+WHY NOT A GLOBAL SEMAPHORE?
+
+WHY NOT FIFO FOR EVERYTHING?
+
+WHY NOT PRIORITY FOR EVERYTHING?
+
+WHY NOT RETRY EVERYTHING?
+
+WHY NOT QUEUE EVERYTHING?
+
+WHY NOT REJECT EVERYTHING WHEN BUSY?
+
+Only retain alternatives that are actually relevant after research.
+
+======================================================================
+112. REVERSIBILITY ANALYSIS
+======================================================================
+
+Classify:
+
+- concurrency contracts
+- execution model
+- queue technology
+- scheduler
+- worker model
+- priority model
+- fairness model
+- distributed semaphore
+- rate limiter
+- workflow engine
+
+as:
+
+- easily reversible
+- moderately reversible
+- expensive to reverse
+- effectively irreversible.
+
+======================================================================
+113. CONTRACT VS IMPLEMENTATION
+======================================================================
+
+Define stable internal contracts.
+
+Potential:
+
+ConcurrencyRequest
+ConcurrencyBudget
+ConcurrencyLimit
+AdmissionDecision
+QueueItem
+TaskState
+Deadline
+CancellationToken
+ResourceReservation
+ConcurrencyUsage
+PriorityClass.
+
+These are examples only.
+
+Determine the minimum required set.
+
+The internal contract must remain independent from:
+
+- Redis
+- Kafka
+- RabbitMQ
+- Celery
+- Temporal
+- Kubernetes
+- any specific scheduler.
+
+======================================================================
+114. REQUIRED DIAGRAMS
+======================================================================
+
+Include Mermaid diagrams for:
+
+1. Concurrency architecture
+2. Execution hierarchy
+3. Agent Run → child operations
+4. Concurrency budget
+5. Admission control
+6. Queue lifecycle
+7. Backpressure
+8. Priority scheduling
+9. Fairness
+10. Cancellation propagation
+11. Deadline propagation
+12. Retry / backoff
+13. Circuit breaker
+14. Bulkhead isolation
+15. GPU concurrency interaction
+16. Tool concurrency interaction
+17. Database concurrency interaction
+18. Multi-worker concurrency
+19. Future multi-tenant concurrency
+20. Day-1 → enterprise evolution
+
+======================================================================
+115. ADR CANDIDATES
+======================================================================
+
+Identify ADRs for:
+
+- execution unit
+- concurrency hierarchy
+- local vs distributed control
+- queue architecture
+- worker model
+- admission control
+- backpressure
+- priority
+- fairness
+- cancellation
+- deadlines
+- retry
+- idempotency
+- circuit breakers
+- bulkheads
+- multi-tenant concurrency
+- GPU concurrency
+- tool concurrency.
+
+For each:
+
+- problem
+- alternatives
+- recommendation
+- consequences
+- reversibility
+- decision deadline
+
+======================================================================
+116. DAY-1 / PREPARE / SCALE / ENTERPRISE
+======================================================================
+
+Create:
+
+| Capability | Day 1 | Prepare | Scale | Enterprise |
+
+Cover:
+
+- agent concurrency
+- model concurrency
+- GPU concurrency
+- tool concurrency
+- DB concurrency
+- network concurrency
+- workflow concurrency
+- fan-out
+- queues
+- backpressure
+- priority
+- fairness
+- cancellation
+- deadlines
+- retries
+- circuit breakers
+- bulkheads
+- tenant limits
+- distributed scheduling
+- global capacity
+- multi-region scheduling.
+
+======================================================================
+117. CONCURRENCY TEST MATRIX
+======================================================================
+
+Create:
+
+| Scenario | Expected Behavior | Detection | Recovery | Regression Test |
+
+At minimum:
+
+- normal load
+- burst load
+- queue saturation
+- queue overflow
+- worker crash
+- task timeout
+- cancellation
+- orphaned task
+- GPU saturation
+- tool saturation
+- DB saturation
+- external API rate limit
+- retry storm
+- priority starvation
+- fairness violation
+- distributed counter failure
+- lease expiration
+- tenant quota exceeded.
+
+======================================================================
+118. LOAD TEST PLAN
+======================================================================
+
+Define exactly how Claude should benchmark the architecture.
+
+Include:
+
+- workload distribution
+- concurrency ramp
+- burst profile
+- steady-state profile
+- soak duration
+- failure injection
+- cancellation tests.
+
+Measure:
+
+- throughput
+- latency
+- queue time
+- saturation
+- rejection rate
+- error rate
+- resource utilization
+- recovery time.
+
+Do not fabricate benchmark values.
+
+======================================================================
+119. ATTEMPT TO FALSIFY THE RECOMMENDATION
+======================================================================
+
+Try to prove the selected architecture wrong.
+
+Ask:
+
+- What concurrency breaks it?
+- What fan-out breaks it?
+- What queue depth breaks it?
+- What workload mix breaks it?
+- What GPU pressure breaks it?
+- What external API limit breaks it?
+- What tenant count breaks it?
+- What worker count breaks it?
+- What distributed failure breaks it?
+- What retry storm breaks it?
+- What cancellation pattern breaks it?
+
+Determine the first architectural trigger.
+
+======================================================================
+120. ARCHITECTURAL SELF-CRITIQUE
+======================================================================
+
+Before finalizing, ask:
+
+1. Did I model concurrency by resource/domain?
+2. Did I avoid one global concurrency number?
+3. Did I define admission control?
+4. Did I define finite queues?
+5. Did I define backpressure?
+6. Did I define cancellation?
+7. Did I define deadline propagation?
+8. Did I define retry semantics?
+9. Did I define idempotency?
+10. Did I define starvation prevention?
+11. Did I define fairness?
+12. Did I define bulkheads?
+13. Did I define GPU interaction?
+14. Did I define tool interaction?
+15. Did I define DB interaction?
+16. Did I define worker failure?
+17. Can the architecture evolve to multiple workers?
+18. Can it evolve to multiple machines?
+19. Can it evolve to multi-tenancy?
+20. What assumptions could invalidate the architecture?
+
+Include:
+
+# ARCHITECTURAL SELF-CRITIQUE
+
+======================================================================
+121. FINAL RECOMMENDATION
+======================================================================
+
+End with:
+
+# FINAL CONCURRENCY ARCHITECTURE RECOMMENDATION
+
+Answer:
+
+"What Concurrency Architecture should this platform actually build?"
+
+Be concrete.
+
+Describe:
+
+- execution hierarchy
+- concurrency domains
+- concurrency budgets
+- admission control
+- queues
+- worker model
+- backpressure
+- priority
+- fairness
+- cancellation
+- deadlines
+- retries
+- idempotency
+- circuit breakers
+- bulkheads
+- GPU interaction
+- tool interaction
+- DB interaction
+- observability
+- failure recovery
+- Day-1 implementation
+- future distributed evolution
+- future multi-tenant evolution.
+
+Then explicitly answer:
+
+"What MUST NOT be built on Day 1?"
+
+Then:
+
+"What future condition should trigger the next architectural evolution?"
+
+======================================================================
+122. REQUIRED OUTPUT
+======================================================================
+
+Produce:
+
+14_CONCURRENCY_ARCHITECTURE.md
+
+The document MUST explicitly reference:
+
+01_ARCHITECTURE_PRINCIPLES.md
+02_CONTROL_PLANE.md
+03_GOVERNANCE_POLICY_ARCHITECTURE.md
+04_AGENT_RUNTIME.md
+05_MODEL_ARCHITECTURE.md
+06_TOOL_ARCHITECTURE.md
+08_KNOWLEDGE_DATA_ARCHITECTURE.md
+09_MEMORY_ARCHITECTURE.md
+10_SECURITY_ARCHITECTURE.md
+11_IDENTITY_AUTHORIZATION_ARCHITECTURE.md
+12_TRUST_PROVENANCE_ARCHITECTURE.md
+13_RELIABILITY_ARCHITECTURE.md
+15_OBSERVABILITY_ARCHITECTURE.md
+16_AUDIT_ARCHITECTURE.md
+17_EVALUATION_ARCHITECTURE.md
+18_DEPLOYMENT_LIFECYCLE_ARCHITECTURE.md
+
+Also identify future interactions with:
+
+19_MULTI_TENANCY_ARCHITECTURE.md
+20_COST_ARCHITECTURE.md
+21_CAPACITY_PLANNING_ARCHITECTURE.md
+22_NETWORKING_ARCHITECTURE.md
+23_STORAGE_ARCHITECTURE.md
+27_MULTI_MODEL_FALLBACK_ARCHITECTURE.md
+28_HUMAN_IN_THE_LOOP_ARCHITECTURE.md
+29_REPLAY_ARCHITECTURE.md
+31_A2A_ARCHITECTURE.md
+32_ADMIN_CONSOLE_ARCHITECTURE.md
+
+If these documents do not exist:
+
+DO NOT invent their content.
+
+Define only the stable contracts and future dependencies.
+
+If there is a conflict:
+
+DO NOT silently resolve it.
+
+Identify the conflict.
+
+Explain the trade-off.
+
+Recommend the superior architectural decision.
+
+Create an ADR candidate where appropriate.
+
+======================================================================
+123. SOURCE REQUIREMENTS
+======================================================================
+
+THIS SECTION IS MANDATORY.
+
+Use current research where the decision depends on external technology
+behavior.
+
+Prioritize:
+
+- official runtime documentation
+- official queue documentation
+- official workflow-engine documentation
+- official Redis documentation
+- official Kafka documentation
+- official RabbitMQ documentation
+- official Temporal documentation
+- official Kubernetes documentation
+- authoritative distributed-systems research
+- operating-system documentation
+- official Python/runtime documentation where relevant.
+
+Do not cite technologies merely because they were mentioned as examples.
+
+Only compare technologies that are actually relevant after workload
+analysis.
+
+Do not fabricate citations.
+
+Do not cite sources that were not actually inspected.
+
+Clearly distinguish:
+
+SOURCE FACT
+
+from:
+
+BENCHMARK RESULT
+
+from:
+
+CALCULATION
+
+from:
+
+INFERENCE
+
+from:
+
+ARCHITECTURAL RECOMMENDATION.
+
+======================================================================
+124. VERSION AND DATE DISCIPLINE
+======================================================================
+
+At the beginning of the document state:
+
+RESEARCH DATE
+
+and relevant:
+
+RUNTIME / TECHNOLOGY VERSIONS
+
+for technologies actually selected.
+
+If a technology is rapidly evolving:
+
+identify where the architecture requires future revalidation.
+
+======================================================================
+125. ABSOLUTE FINAL INSTRUCTION
+======================================================================
+
+Act as an INDEPENDENT Principal Distributed Systems and Concurrency
+Architect.
+
+Your responsibility is to determine the best concurrency architecture
+for THIS platform.
+
+Do not assume:
+
+ONE GLOBAL CONCURRENCY LIMIT = SOLUTION.
+
+Do not assume:
+
+UNLIMITED ASYNC = SCALABILITY.
+
+Do not assume:
+
+QUEUE = BACKPRESSURE.
+
+Do not assume:
+
+RATE LIMIT = CONCURRENCY LIMIT.
+
+Do not assume:
+
+RETRY = RELIABILITY.
+
+Do not assume:
+
+EXACTLY-ONCE = ACHIEVABLE EVERYWHERE.
+
+Do not assume:
+
+DISTRIBUTED LOCK = BEST COORDINATION MECHANISM.
+
+Do not assume:
+
+REDIS = REQUIRED.
+
+Do not assume:
+
+KAFKA = REQUIRED.
+
+Do not assume:
+
+RABBITMQ = REQUIRED.
+
+Do not assume:
+
+CELERY = REQUIRED.
+
+Do not assume:
+
+TEMPORAL = REQUIRED.
+
+Do not assume:
+
+KUBERNETES = REQUIRED.
+
+Do not assume:
+
+MORE CONCURRENCY = MORE PERFORMANCE.
+
+Do not assume:
+
+MORE WORKERS = MORE THROUGHPUT.
+
+Do not allow:
+
+AGENT CONCURRENCY
+
+to bypass:
+
+MODEL / GPU CAPACITY.
+
+Do not allow:
+
+BACKGROUND WORK
+
+to starve:
+
+INTERACTIVE WORK.
+
+Do not allow:
+
+RETRY LOOPS
+
+to become:
+
+RETRY STORMS.
+
+Do not allow:
+
+CHILD TASKS
+
+to outlive:
+
+THEIR PARENT WITHOUT EXPLICIT JUSTIFICATION.
+
+Do not allow:
+
+CONCURRENCY CONTROL
+
+to be duplicated independently across:
+
+Agent Runtime
++
+Tool Runtime
++
+Model Runtime
++
+Infrastructure
+
+without clearly defined ownership.
+
+The architecture must establish:
+
+WHO OWNS THE DECISION.
+
+Optimize for:
+
+PREDICTABLE LATENCY
++
+CONTROLLED THROUGHPUT
++
+BACKPRESSURE
++
+RESOURCE PROTECTION
++
+FAILURE ISOLATION
++
+FAIRNESS
++
+CANCELLATION
++
+OBSERVABILITY
++
+SIMPLICITY
++
+FUTURE DISTRIBUTED SCALING
++
+MULTI-TENANT EVOLUTION.
+
+The final architecture MUST result from:
+
+    WORKLOAD ANALYSIS
+       ↓
+    CONCURRENCY MODEL
+       ↓
+    RESOURCE MODEL
+       ↓
+    EXECUTION MODEL
+       ↓
+    QUEUE MODEL
+       ↓
+    BACKPRESSURE MODEL
+       ↓
+    FAILURE MODEL
+       ↓
+    DISTRIBUTED SCALING ANALYSIS
+       ↓
+    ALTERNATIVE COMPARISON
+       ↓
+    BENCHMARKING
+       ↓
+    ADVERSARIAL CHALLENGE
+       ↓
+    FALSIFICATION
+       ↓
+    FINAL DECISION
+
+DO NOT DESIGN THE SCHEDULER FIRST.
+
+DO NOT SELECT A QUEUE FIRST.
+
+DO NOT SELECT REDIS FIRST.
+
+DO NOT SELECT KAFKA FIRST.
+
+DO NOT SELECT A WORKFLOW ENGINE FIRST.
+
+RESEARCH THE WORKLOAD FIRST.
+
+UNDERSTAND THE CONCURRENCY DOMAINS.
+
+MAP THE RESOURCE CONSTRAINTS.
+
+DEFINE THE EXECUTION HIERARCHY.
+
+DEFINE BACKPRESSURE.
+
+DEFINE FAILURE SEMANTICS.
+
+COMPARE THE REAL ALTERNATIVES.
+
+BENCHMARK WHERE NECESSARY.
+
+CHALLENGE THE DESIGN.
+
+FALSIFY IT.
+
+SELECT THE BEST CONCURRENCY ARCHITECTURE AVAILABLE FOR THIS PROJECT.
+
+THEN DESIGN IT.
